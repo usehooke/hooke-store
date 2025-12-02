@@ -4,11 +4,30 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Check, MessageCircle } from "lucide-react";
 import { products } from "../../../data/products"; 
+import { Metadata } from "next";
 
 interface ProductPageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+// 1. GERAÇÃO DINÂMICA DE SEO (O Título da aba muda para o nome do produto)
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const product = products.find((p) => p.slug === resolvedParams.slug);
+
+  if (!product) {
+    return { title: "Produto não encontrado" };
+  }
+
+  return {
+    title: `${product.name} | Hooke`,
+    description: product.description,
+    openGraph: {
+      images: [product.imageUrl], // A foto do produto aparece no zap
+    },
+  };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -19,13 +38,38 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // SEU NÚMERO DO WHATSAPP
+  // DADOS PARA O GOOGLE (JSON-LD) - A Arma Secreta
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: `https://www.usehooke.com.br${product.imageUrl}`,
+    description: product.description,
+    brand: {
+      '@type': 'Brand',
+      name: 'Hooke',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://www.usehooke.com.br/produto/${product.slug}`,
+      priceCurrency: 'BRL',
+      price: product.price,
+      availability: 'https://schema.org/InStock',
+    },
+  };
+
   const whatsappNumber = "5511999999999"; 
   const message = `Olá! Vi o produto *${product.name}* no site da Hooke e fiquei interessado.`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   return (
     <main className="min-h-screen bg-white pb-20">
+      {/* Injeção dos dados invisíveis para o Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <nav className="border-b border-hooke-100 py-4 px-6 mb-8">
         <Link href="/" className="flex items-center text-sm font-medium text-hooke-500 hover:text-hooke-900 transition-colors">
           <ChevronLeft size={16} className="mr-1" />
@@ -36,7 +80,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           
-          {/* FOTO DO PRODUTO */}
           <div className="relative aspect-[4/5] bg-hooke-50 rounded-sm overflow-hidden shadow-sm">
             <Image
               src={product.imageUrl}
@@ -47,7 +90,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
           </div>
 
-          {/* DETALHES DO PRODUTO */}
           <div className="flex flex-col h-full pt-4">
             <span className="text-sm text-hooke-500 uppercase tracking-widest font-semibold mb-2">
               Hooke | Moda Masculina
