@@ -2,8 +2,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// 1. Importação correta
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Footer from "@/components/layout/Footer"; // <--- Importamos o Footer
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -19,9 +19,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} font-sans antialiased bg-hooke-50 text-hooke-900`}>
-        {children}
-        {/* 2. O componente TEM que ficar aqui dentro para funcionar */}
+      <body className={`${inter.variable} font-sans antialiased bg-hooke-50 text-hooke-900 flex flex-col min-h-screen`}>
+        {/* O children é o conteúdo da página (Home, Sobre, etc) */}
+        <div className="flex-grow">
+          {children}
+        </div>
+        
+        {/* O Footer fica fixo aqui embaixo */}
+        <Footer />
+        
         <SpeedInsights />
       </body>
     </html>
