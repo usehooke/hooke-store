@@ -27,7 +27,7 @@ export default function Hero() {
       {/* A classe `hidden lg:block` faz ela sumir no celular */}
       <div className="relative hidden lg:block h-full w-full bg-hooke-800 border-l border-white/10">
         <Image
-          src="/hero-preta.avifS"
+          src="/hero-preta.avif"
           alt="Detalhe camiseta Hooke Fusca"
           fill
           className="object-cover object-center opacity-95 transition-transform duration-[2s] hover:scale-105"
