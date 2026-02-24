@@ -60,12 +60,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           <div className="space-y-6">
-            {/* Descrição */}
+            {/* Descrição Rica */}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-hooke-900 mb-2">Descrição</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
-                {product.description}
-              </p>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-hooke-900 mb-2">Detalhes</h3>
+              {product.description.includes('<') ? (
+                <div
+                  className="prose prose-sm prose-gray max-w-none text-gray-600 leading-relaxed font-sans prose-p:mb-2 prose-ul:my-2 prose-li:my-0.5"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              ) : (
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  {product.description}
+                </p>
+              )}
             </div>
 
             {/* Grid de Especificações Técnicas (Bento) */}
@@ -108,11 +115,11 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
   return {
     title: `${product.name} | Hooke Moda Masculina`,
-    description: `Compre ${product.name} online. ${product.description}. Frete para todo o Brasil.`,
+    description: product.seo?.metaDescription || `Compre ${product.name} online. ${product.description.replace(/<[^>]*>?/gm, '').substring(0, 100)}... Frete para todo o Brasil.`,
     openGraph: {
       images: [product.imageUrl],
       title: product.name,
-      description: product.description,
+      description: product.seo?.metaDescription || `Compre ${product.name} online. ${product.description.replace(/<[^>]*>?/gm, '').substring(0, 100)}...`,
       type: 'website',
     }
   };

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { ShoppingBag, Check } from "lucide-react";
+import Image from "next/image";
 import SizeGuideModal from "./SizeGuideModal";
 import toast from "react-hot-toast"; // CORRIGIDO: Agora está em inglês correto
 
@@ -74,6 +75,32 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
 
   return (
     <div className="flex flex-col gap-8 animate-in fade-in duration-700 delay-300">
+
+      {/* SELEÇÃO DE CORES (V4) */}
+      {product.colors && product.colors.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-hooke-900 mb-4">
+            Cores
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {product.colors.map((color, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('change-product-image', { detail: color.imageUrl }));
+                }}
+                className="group relative flex flex-col items-center gap-1"
+              >
+                <div className="w-10 h-10 rounded-full border border-gray-200 overflow-hidden relative group-hover:ring-2 group-hover:ring-hooke-900 group-hover:ring-offset-2 transition-all">
+                  <Image src={color.imageUrl} alt={color.name} fill className="object-cover" sizes="40px" />
+                </div>
+                <span className="text-[10px] uppercase font-bold text-gray-500 group-hover:text-hooke-900">{color.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* SELEÇÃO DE TAMANHOS */}
       <div>
         <div className="flex justify-between items-end mb-4">

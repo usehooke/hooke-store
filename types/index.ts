@@ -8,6 +8,8 @@ export interface Product {
   imageUrl: string;
   secondaryImageUrl?: string;
   images?: string[]; // Adicionando URLs de imagens da galeria
+  seo?: { altText: string; metaDescription: string };
+  colors?: { name: string; imageUrl: string }[];
   sizes: string[];
   category: 'Vintage' | 'Regatas' | 'Lifestyle' | 'camisetas-lisas' | 'camisetas-estampadas' | 'acessorios' | 'Kits' | 'Oversized';
   details?: {

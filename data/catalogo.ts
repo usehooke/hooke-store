@@ -30,6 +30,8 @@ export interface Product {
   description: string;
   imageUrl: string;  // Foto principal (Capa)
   images: string[];  // Galeria de fotos
+  seo?: { altText: string; metaDescription: string }; // Novo: SEO
+  colors?: { name: string; imageUrl: string }[]; // Novo: Variações com Foto
   sizes: string[];
   category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle";
   details: {

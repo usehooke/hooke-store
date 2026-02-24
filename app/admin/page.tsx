@@ -9,8 +9,9 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3 } from "lucide-react";
 import { Toaster, toast } from "sonner";
+import ProductForm from "./components/ProductForm";
 
 interface AdminProduct {
     id: string;
@@ -19,6 +20,7 @@ interface AdminProduct {
     imagem?: string;
     isActive?: boolean;
     sizes?: string[];
+    [key: string]: unknown;
 }
 
 export default function AdminPage() {
@@ -31,16 +33,7 @@ export default function AdminPage() {
     // Novos estados de Formulário de Cadastro
     const [showForm, setShowForm] = useState(false);
     const [isSavingNew, setIsSavingNew] = useState(false);
-    const [newProduct, setNewProduct] = useState({
-        name: "",
-        category: "Oversized",
-        price: 0,
-        description: "",
-        featured: false,
-        imagem: "",
-        isActive: true,
-        sizes: ["P", "M", "G", "GG"], // Default checkeds
-    });
+    const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
 
     const AVAILABLE_SIZES = ["P", "M", "G", "GG", "XG"];
 
@@ -65,12 +58,13 @@ export default function AdminPage() {
                 const data = doc.data();
                 productsData.push({
                     id: doc.id,
+                    ...data,
                     name: data.name,
                     price: data.price,
                     imagem: data.imagem,
                     isActive: data.isActive !== false, // se não existir, assume true
                     sizes: data.sizes || ["P", "M", "G", "GG"], // fallback
-                });
+                } as AdminProduct);
             });
             setProducts(productsData);
         } catch (error) {
@@ -127,14 +121,7 @@ export default function AdminPage() {
         handleChange(id, "sizes", newSizes);
     };
 
-    const toggleNewProductSize = (sizeToToggle: string) => {
-        setNewProduct(prev => ({
-            ...prev,
-            sizes: prev.sizes.includes(sizeToToggle)
-                ? prev.sizes.filter(s => s !== sizeToToggle)
-                : [...prev.sizes, sizeToToggle]
-        }));
-    };
+
 
     const handleChange = (id: string, field: "name" | "price" | "imagem" | "isActive" | "sizes", value: string | number | boolean | string[]) => {
         setProducts((prev) =>
@@ -155,53 +142,42 @@ export default function AdminPage() {
         return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     };
 
-    const handleCreateProduct = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newProduct.name || !newProduct.price || !newProduct.imagem) {
-            toast.error("Preencha todos os campos obrigatórios e adicione uma imagem.");
-            return;
-        }
-
+    const handleSavePro = async (data: Record<string, unknown>) => {
         setIsSavingNew(true);
         try {
-            // 2. Gerar Slug / ID baseado no nome
-            const slug = generateSlug(newProduct.name);
+            const isEditing = !!editingProduct;
+            const slug = isEditing && editingProduct.id ? String(editingProduct.id) : generateSlug(String(data.name));
             const id = slug;
 
-            // 3. Montar objeto do produto final
             const finalProduct = {
                 id,
-                name: newProduct.name,
+                name: data.name,
                 slug,
-                price: Number(newProduct.price),
-                featured: newProduct.featured,
-                isNew: true,
-                description: newProduct.description,
-                imagem: newProduct.imagem,       // Campo de imagem retornado pelo UploadThing
-                imageUrl: newProduct.imagem,     // Mantendo pro design atual
-                images: [newProduct.imagem],     // Galeria passa a ter pelo menos 1 imagem
-                sizes: newProduct.sizes,         // Tamanhos controlados pelo usuário
-                isActive: newProduct.isActive,   // Status na vitrine
-                category: newProduct.category,
-                details: { // Informações Padrão / Mockadas para facilitar
-                    fabric: "Algodão Premium",
-                    model: "Regular",
-                    wash: "Amaciada"
-                }
+                price: Number(data.price),
+                featured: data.featured,
+                isNew: isEditing ? (editingProduct.isNew || false) : true,
+                description: data.description,
+                imagem: data.imagem,
+                imageUrl: data.imagem,
+                images: data.images,
+                sizes: data.sizes,
+                isActive: data.isActive,
+                category: data.category,
+                seo: data.seo || { altText: "", metaDescription: "" },
+                colors: data.colors || [],
+                details: isEditing ? (editingProduct.details || { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }) : { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
             };
 
-            // 4. Salvar no Firestore
             await setDoc(doc(db, "produtos", id), finalProduct);
-            toast.success("Produto cadastrado com sucesso!");
+            toast.success(isEditing ? "Produto atualizado na Versão PRO!" : "Produto cadastrado com sucesso!");
 
-            // 5. Reset do Formulário e Fetch Reativo
             setShowForm(false);
-            setNewProduct({ name: "", category: "Oversized", price: 0, description: "", featured: false, imagem: "", isActive: true, sizes: ["P", "M", "G", "GG"] });
+            setEditingProduct(null);
             fetchProducts();
 
         } catch (err) {
-            console.error("Erro ao salvar o novo produto:", err);
-            toast.error("Erro ao cadastrar novo produto. Veja o console.");
+            console.error("Erro ao salvar produto:", err);
+            toast.error("Erro ao salvar produto. Veja o console.");
         } finally {
             setIsSavingNew(false);
         }
@@ -239,10 +215,13 @@ export default function AdminPage() {
                         </button>
 
                         <button
-                            onClick={() => setShowForm(!showForm)}
+                            onClick={() => {
+                                setEditingProduct(null);
+                                setShowForm(!showForm);
+                            }}
                             className="text-xs font-bold uppercase tracking-widest text-white bg-hooke-900 border border-hooke-900 px-6 py-3 hover:bg-black rounded-none transition-colors"
                         >
-                            {showForm ? "CANCELAR" : "+ NOVO PRODUTO"}
+                            {showForm ? "CANCELAR" : "+ NOVO PRODUTO PRO"}
                         </button>
                         <Link
                             href="/admin/pedidos"
@@ -259,158 +238,18 @@ export default function AdminPage() {
                     </div>
                 </div>
 
-                {/* Formulário de Criação Condicional */}
-                {showForm && (
-                    <div className="mb-12 p-8 border border-hooke-900 bg-gray-50">
-                        <h2 className="text-xl font-black uppercase tracking-tighter text-hooke-900 mb-6">Cadastrar Novo Produto</h2>
-
-                        <form onSubmit={handleCreateProduct} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Nome */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-hooke-900 block">Nome do Produto *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={newProduct.name}
-                                        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                                        className="w-full border border-hooke-900 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-hooke-900 transition-all rounded-none"
-                                        placeholder="Ex: Camiseta Oversized Preta"
-                                    />
-                                </div>
-                                {/* Categoria */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-hooke-900 block">Categoria *</label>
-                                    <select
-                                        value={newProduct.category}
-                                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                                        className="w-full border border-hooke-900 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-hooke-900 transition-all rounded-none bg-white"
-                                    >
-                                        <option value="Oversized">Oversized</option>
-                                        <option value="Regatas">Regatas</option>
-                                        <option value="Vintage">Vintage</option>
-                                        <option value="Kits">Kits</option>
-                                        <option value="Lifestyle">Lifestyle</option>
-                                    </select>
-                                </div>
-                                {/* Preço */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-hooke-900 block">Preço (R$) *</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        step="0.01"
-                                        value={newProduct.price || ""}
-                                        onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
-                                        className="w-full border border-hooke-900 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-hooke-900 transition-all rounded-none"
-                                        placeholder="Ex: 89.90"
-                                    />
-                                </div>
-                                {/* Imagem */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-hooke-900 block">Foto do Produto *</label>
-                                    {newProduct.imagem ? (
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative w-16 h-16 border border-hooke-900">
-                                                <Image src={newProduct.imagem} alt="Preview" fill className="object-cover" />
-                                            </div>
-                                            <button type="button" onClick={() => setNewProduct({ ...newProduct, imagem: "" })} className="text-xs font-bold text-red-500 uppercase tracking-widest hover:underline">
-                                                Remover Foto
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="w-full relative shrink-0 flex items-center min-h-[48px] border border-hooke-900 bg-white">
-                                            <UploadButton
-                                                endpoint="imageUploader"
-                                                onClientUploadComplete={(res) => {
-                                                    if (res && res[0]) {
-                                                        setNewProduct({ ...newProduct, imagem: res[0].url });
-                                                    }
-                                                }}
-                                                onUploadError={(error: Error) => {
-                                                    alert(`Erro ao fazer upload: ${error.message}`);
-                                                }}
-                                                appearance={{
-                                                    button: "bg-hooke-900 text-white rounded-none uppercase text-xs font-bold tracking-widest px-4 py-2 hover:bg-black transition-colors w-full h-11 m-0",
-                                                    allowedContent: "hidden"
-                                                }}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Descrição */}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-widest text-hooke-900 block">Descrição</label>
-                                <textarea
-                                    value={newProduct.description}
-                                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                                    rows={3}
-                                    className="w-full border border-hooke-900 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-hooke-900 transition-all rounded-none resize-none"
-                                    placeholder="Detalhes sobre o tecido, modelagem..."
-                                />
-                            </div>
-
-                            {/* Tamanhos Disponíveis */}
-                            <div className="space-y-2 border-t border-gray-200 pt-4">
-                                <label className="text-xs font-bold uppercase tracking-widest text-hooke-900 block mb-3">Tamanhos Disponíveis</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {AVAILABLE_SIZES.map(size => {
-                                        const isSelected = newProduct.sizes.includes(size);
-                                        return (
-                                            <button
-                                                key={size}
-                                                type="button"
-                                                onClick={() => toggleNewProductSize(size)}
-                                                className={`w-10 h-10 flex items-center justify-center font-bold text-sm transition-all border-2
-                                                ${isSelected ? 'bg-hooke-900 text-white border-hooke-900' : 'bg-transparent text-gray-400 border-gray-200 hover:border-gray-400'}
-                                              `}
-                                            >
-                                                {size}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                <p className="text-[10px] text-gray-400 uppercase mt-2">Dica: Desmarque os tamanhos que estão esgotados neste produto.</p>
-                            </div>
-
-                            {/* Options */}
-                            <div className="flex items-center gap-6 border-t border-gray-200 pt-4">
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="featuredCheckbox"
-                                        checked={newProduct.featured}
-                                        onChange={(e) => setNewProduct({ ...newProduct, featured: e.target.checked })}
-                                        className="w-4 h-4 border-hooke-900 text-hooke-900 focus:ring-hooke-900 rounded-none accent-hooke-900"
-                                    />
-                                    <label htmlFor="featuredCheckbox" className="text-xs font-bold uppercase tracking-widest text-hooke-900 cursor-pointer">
-                                        Destacar na Home
-                                    </label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="activeCheckbox"
-                                        checked={newProduct.isActive}
-                                        onChange={(e) => setNewProduct({ ...newProduct, isActive: e.target.checked })}
-                                        className="w-4 h-4 border-hooke-900 text-hooke-900 focus:ring-hooke-900 rounded-none accent-hooke-900"
-                                    />
-                                    <label htmlFor="activeCheckbox" className="text-xs font-bold uppercase tracking-widest text-hooke-900 cursor-pointer">
-                                        Ativo na Loja (Visível)
-                                    </label>
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isSavingNew}
-                                className="w-full bg-hooke-900 text-white font-black uppercase tracking-widest py-4 text-sm hover:bg-black transition-colors disabled:opacity-70 rounded-none disabled:cursor-not-allowed mt-4"
-                            >
-                                {isSavingNew ? "CARREGANDO FOTO E SALVANDO..." : "CADASTRAR PRODUTO"}
-                            </button>
-                        </form>
+                {/* Formulário de Criação Condicional V4 */}
+                {(showForm || editingProduct) && (
+                    <div className="mb-12">
+                        <ProductForm
+                            initialData={editingProduct}
+                            onSubmit={handleSavePro}
+                            onCancel={() => {
+                                setShowForm(false);
+                                setEditingProduct(null);
+                            }}
+                            isSaving={isSavingNew}
+                        />
                     </div>
                 )}
 
@@ -505,7 +344,19 @@ export default function AdminPage() {
                                                 disabled={savingId === product.id}
                                                 className="bg-hooke-900 hover:bg-black text-white px-4 py-2 rounded-none text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {savingId === product.id ? "Salvando" : "Salvar"}
+                                                {savingId === product.id ? "Salvando" : "Salvar Rápido"}
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    setEditingProduct(product);
+                                                    setShowForm(false);
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
+                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-none text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                                                title="Editar PRO"
+                                            >
+                                                <Edit3 size={14} /> PRO
                                             </button>
 
                                             <button
