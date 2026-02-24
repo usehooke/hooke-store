@@ -1,5 +1,7 @@
 import { getFeaturedProducts } from "@/lib/productService";
 
+export const revalidate = 0;
+
 import BentoHero from "@/components/home/BentoHero";
 import BrandMarquee from "@/components/ui/BrandMarquee";
 import ProductCard from "@/components/shop/ProductCard";

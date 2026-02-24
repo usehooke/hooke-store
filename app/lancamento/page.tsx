@@ -8,6 +8,8 @@ export const metadata = {
   description: "A autêntica modelagem Oversized. Malha Suedine 240g, gola de 2,5cm e caimento estruturado.",
 };
 
+export const revalidate = 0;
+
 export default async function LandingPage() {
   const PRODUTOS = await getProducts();
 

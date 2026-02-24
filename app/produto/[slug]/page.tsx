@@ -1,4 +1,4 @@
-import { getProductBySlug, getProducts } from "@/lib/productService";
+import { getProductBySlug } from "@/lib/productService";
 import { notFound } from "next/navigation";
 
 // Componentes da Loja (Certifique-se que eles existem e não usam tipos antigos)
@@ -14,6 +14,8 @@ import KitPromoCard from "@/components/shop/KitPromoCard";
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
+
+export const revalidate = 0;
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
@@ -123,12 +125,4 @@ export async function generateMetadata({ params }: ProductPageProps) {
       type: 'website',
     }
   };
-}
-
-// --- GERAÇÃO ESTÁTICA (Performance) ---
-export async function generateStaticParams() {
-  const produtos = await getProducts();
-  return produtos.map((product) => ({
-    slug: product.slug,
-  }));
 }
