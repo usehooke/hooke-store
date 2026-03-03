@@ -1,0 +1,384 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { db, auth } from "@/lib/firebase";
+import { collection, getDocs, doc, updateDoc, setDoc } from "firebase/firestore";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { UploadButton } from "@/utils/uploadthing";
+import Image from "next/image";
+import Link from "next/link";
+
+import { Trash2, Eye, EyeOff, Edit3 } from "lucide-react";
+import { Toaster, toast } from "sonner";
+import ProductForm from "./components/ProductForm";
+
+interface AdminProduct {
+    id: string;
+    name: string;
+    price: number;
+    imagem?: string;
+    isActive?: boolean;
+    sizes?: string[];
+    [key: string]: unknown;
+}
+
+export default function AdminPage() {
+    const [products, setProducts] = useState<AdminProduct[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [savingId, setSavingId] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const router = useRouter();
+
+    // Novos estados de Formulário de Cadastro
+    const [showForm, setShowForm] = useState(false);
+    const [isSavingNew, setIsSavingNew] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+
+    const AVAILABLE_SIZES = ["P", "M", "G", "GG", "XG"];
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (!currentUser) {
+                router.push("/login");
+            } else {
+                setUser(currentUser);
+                fetchProducts();
+            }
+        });
+
+        return () => unsubscribe();
+    }, [router]);
+
+    async function fetchProducts() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "produtos"));
+            const productsData: AdminProduct[] = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                productsData.push({
+                    id: doc.id,
+                    ...data,
+                    name: data.name,
+                    price: data.price,
+                    imagem: data.imagem,
+                    isActive: data.isActive !== false, // se não existir, assume true
+                    sizes: data.sizes || ["P", "M", "G", "GG"], // fallback
+                } as AdminProduct);
+            });
+            setProducts(productsData);
+        } catch (error) {
+            console.error("Erro ao buscar produtos:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleUpdate = async (id: string, newName: string, newPrice: number, newImagem?: string, newIsActive?: boolean, newSizes?: string[]) => {
+        setSavingId(id);
+        try {
+            const productRef = doc(db, "produtos", id);
+            await updateDoc(productRef, {
+                name: newName,
+                price: Number(newPrice),
+                ...(newImagem && { imagem: newImagem }),
+                isActive: newIsActive !== undefined ? newIsActive : true,
+                sizes: newSizes || [],
+            });
+            toast.success(`Alterações salvas!`);
+        } catch (error) {
+            console.error("Erro ao atualizar produto:", error);
+            toast.error("Erro ao atualizar produto.");
+        } finally {
+            setSavingId(null);
+        }
+    };
+
+    const handleDelete = async (id: string, name: string) => {
+        if (!window.confirm(`Tem certeza que deseja EXCLUIR DEFINITIVAMENTE o produto "${name}"? Essa ação não pode ser desfeita.`)) {
+            return;
+        }
+
+        try {
+            const productRef = doc(db, "produtos", id);
+            // import { deleteDoc } from "firebase/firestore"; <-- vou garantir isso no top
+            // Usando abordagem segura de exclusão real
+            const { deleteDoc } = await import("firebase/firestore");
+            await deleteDoc(productRef);
+            toast.success(`Produto "${name}" excluído.`);
+            fetchProducts();
+        } catch (error) {
+            console.error("Erro ao excluir:", error);
+            toast.error("Erro ao excluir produto.");
+        }
+    };
+
+    const toggleSize = (id: string, sizeToToggle: string, currentSizes: string[]) => {
+        const newSizes = currentSizes.includes(sizeToToggle)
+            ? currentSizes.filter(s => s !== sizeToToggle)
+            : [...currentSizes, sizeToToggle];
+
+        handleChange(id, "sizes", newSizes);
+    };
+
+
+
+    const handleChange = (id: string, field: "name" | "price" | "imagem" | "isActive" | "sizes", value: string | number | boolean | string[]) => {
+        setProducts((prev) =>
+            prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+        );
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            router.push("/login");
+        } catch (error) {
+            console.error("Erro ao deslogar:", error);
+        }
+    };
+
+    const generateSlug = (name: string) => {
+        return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    };
+
+    const handleSavePro = async (data: Record<string, unknown>) => {
+        setIsSavingNew(true);
+        try {
+            const isEditing = !!editingProduct;
+            const slug = isEditing && editingProduct.id ? String(editingProduct.id) : generateSlug(String(data.name));
+            const id = slug;
+
+            const finalProduct = {
+                id,
+                name: data.name,
+                slug,
+                price: Number(data.price),
+                featured: data.featured,
+                isNew: isEditing ? (editingProduct.isNew || false) : true,
+                description: data.description,
+                imagem: data.imagem,
+                imageUrl: data.imagem,
+                images: data.images,
+                sizes: data.sizes,
+                isActive: data.isActive,
+                category: data.category,
+                seo: data.seo || { altText: "", metaDescription: "" },
+                colors: data.colors || [],
+                details: isEditing ? (editingProduct.details || { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }) : { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
+            };
+
+            await setDoc(doc(db, "produtos", id), finalProduct);
+            toast.success(isEditing ? "Produto atualizado na Versão PRO!" : "Produto cadastrado com sucesso!");
+
+            setShowForm(false);
+            setEditingProduct(null);
+            fetchProducts();
+
+        } catch (err) {
+            console.error("Erro ao salvar produto:", err);
+            toast.error("Erro ao salvar produto. Veja o console.");
+        } finally {
+            setIsSavingNew(false);
+        }
+    };
+
+    if (loading || !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white font-sans">
+                <p className="text-hooke-900 font-bold uppercase tracking-widest text-xs">Acessando painel...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-white p-8 font-sans pb-24">
+            <Toaster position="top-right" richColors />
+            <div className="max-w-6xl mx-auto">
+
+                {/* Cabeçalho */}
+                <div className="flex items-center justify-between mb-10 border-b border-hooke-900 pb-6">
+                    <div>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-hooke-900">Painel Admin</h1>
+                        <p className="text-xs uppercase tracking-widest text-gray-400 mt-2">Logado como: {user.email}</p>
+                    </div>
+                    <div className="flex items-center gap-4 flex-wrap">
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/api/feed.xml`);
+                                toast.success("URL do Catálogo Copiada! Cole no Gerenciador do Meta.");
+                            }}
+                            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-pink-600 bg-pink-50 border border-pink-200 px-6 py-3 hover:bg-pink-100 hover:text-pink-700 rounded-none transition-colors"
+                            title="Copiar Link XML para Instagram Shopping"
+                        >
+                            Catálogo Instagram
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                setEditingProduct(null);
+                                setShowForm(!showForm);
+                            }}
+                            className="text-xs font-bold uppercase tracking-widest text-white bg-hooke-900 border border-hooke-900 px-6 py-3 hover:bg-black rounded-none transition-colors"
+                        >
+                            {showForm ? "CANCELAR" : "+ NOVO PRODUTO PRO"}
+                        </button>
+                        <Link
+                            href="/admin/pedidos"
+                            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-hooke-900 bg-gray-100 border border-transparent px-6 py-3 hover:bg-gray-200 rounded-none transition-colors"
+                        >
+                            Ver Pedidos
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="text-xs font-bold uppercase tracking-widest text-hooke-900 hover:text-white transition-colors border border-hooke-900 px-6 py-3 hover:bg-hooke-900 rounded-none bg-white"
+                        >
+                            Sair
+                        </button>
+                    </div>
+                </div>
+
+                {/* Formulário de Criação Condicional V4 */}
+                {(showForm || editingProduct) && (
+                    <div className="mb-12">
+                        <ProductForm
+                            initialData={editingProduct}
+                            onSubmit={handleSavePro}
+                            onCancel={() => {
+                                setShowForm(false);
+                                setEditingProduct(null);
+                            }}
+                            isSaving={isSavingNew}
+                        />
+                    </div>
+                )}
+
+                {/* Tabela de Produtos */}
+                <h2 className="text-xl font-black uppercase tracking-tighter text-hooke-900 mb-6">Seus Produtos</h2>
+                <div className="bg-white border border-hooke-900 overflow-hidden rounded-none">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-hooke-900 bg-gray-50">
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900 hidden md:table-cell">ID</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Visível</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Imagem</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900 w-[20%]">Nome do Produto</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Preço (R$)</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900 min-w-[200px]">Estoque (Tamanhos)</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {products.map((product) => (
+                                <tr key={product.id} className={`border-b border-gray-200 last:border-0 hover:bg-gray-50 transition-colors ${!product.isActive ? 'opacity-50 grayscale' : ''}`}>
+                                    <td className="p-4 text-xs font-mono text-gray-500 truncate max-w-[100px] hidden md:table-cell" title={product.id}>{product.id}</td>
+
+                                    {/* Toggle Visibility */}
+                                    <td className="p-4 text-center">
+                                        <button
+                                            onClick={() => handleChange(product.id, "isActive", !product.isActive)}
+                                            className="text-hooke-900 hover:scale-110 transition-transform flex justify-center w-full"
+                                            title={product.isActive ? "Visível na vitrine" : "Oculto na vitrine"}
+                                        >
+                                            {product.isActive ? <Eye size={20} /> : <EyeOff size={20} className="text-gray-400" />}
+                                        </button>
+                                    </td>
+                                    <td className="p-4">
+                                        {product.imagem ? (
+                                            <div className="flex flex-col gap-2 items-start">
+                                                <div className="relative w-12 h-12 border border-hooke-900">
+                                                    <Image src={product.imagem} alt={product.name} fill className="object-cover" />
+                                                </div>
+                                                <button onClick={() => handleChange(product.id, "imagem", "")} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-left hover:underline">Remover</button>
+                                            </div>
+                                        ) : (
+                                            <div className="w-28 relative h-10 border border-gray-300 pointer-events-auto flex items-center bg-white p-0">
+                                                <UploadButton
+                                                    endpoint="imageUploader"
+                                                    onClientUploadComplete={(res) => {
+                                                        if (res && res[0]) {
+                                                            handleChange(product.id, "imagem", res[0].url);
+                                                        }
+                                                    }}
+                                                    onUploadError={(error: Error) => {
+                                                        alert(`Erro ao fazer upload: ${error.message}`);
+                                                    }}
+                                                    appearance={{
+                                                        button: "bg-hooke-900 text-white rounded-none uppercase text-[10px] font-bold tracking-widest px-2 hover:bg-black transition-colors w-full h-10 m-0",
+                                                        allowedContent: "hidden"
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="p-4">
+                                        <input
+                                            type="text"
+                                            value={product.name}
+                                            onChange={(e) => handleChange(product.id, "name", e.target.value)}
+                                            className="w-full bg-white border border-gray-300 rounded-none px-3 py-2 text-sm focus:ring-1 focus:ring-hooke-900 focus:border-hooke-900 outline-none transition-all text-hooke-900"
+                                        />
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="flex gap-1 flex-wrap">
+                                            {AVAILABLE_SIZES.map(size => {
+                                                const isStocked = (product.sizes || []).includes(size);
+                                                return (
+                                                    <button
+                                                        key={size}
+                                                        onClick={() => toggleSize(product.id, size, product.sizes || [])}
+                                                        className={`w-7 h-7 text-[10px] font-bold border flex items-center justify-center transition-colors
+                                                            ${isStocked ? 'bg-hooke-900 text-white border-hooke-900' : 'bg-transparent text-gray-300 border-gray-200'}    
+                                                        `}
+                                                    >
+                                                        {size}
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                        <div className="flex justify-end gap-2 items-center">
+                                            <button
+                                                onClick={() => handleUpdate(product.id, product.name, product.price, product.imagem, product.isActive, product.sizes)}
+                                                disabled={savingId === product.id}
+                                                className="bg-hooke-900 hover:bg-black text-white px-4 py-2 rounded-none text-[10px] font-bold uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {savingId === product.id ? "Salvando" : "Salvar Rápido"}
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    setEditingProduct(product);
+                                                    setShowForm(false);
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
+                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-none text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                                                title="Editar PRO"
+                                            >
+                                                <Edit3 size={14} /> PRO
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleDelete(product.id, product.name)}
+                                                className="text-red-300 hover:text-red-600 transition-colors p-2"
+                                                title="Excluir Produto"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {products.length === 0 && (
+                        <div className="p-8 text-center text-xs font-bold uppercase tracking-widest text-gray-400">
+                            Nenhum produto encontrado.
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
