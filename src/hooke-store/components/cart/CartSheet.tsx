@@ -157,7 +157,7 @@ export default function CartSheet() {
     let message = "*Olá, Hooke!* Gostaria de finalizar o seguinte pedido:\n\n";
     items.forEach((item) => {
       const itemTotal = formatter.format(item.price * item.quantity);
-      message += `- ${item.quantity}x ${item.name} (Tamanho: ${item.selectedSize}) - ${itemTotal}\n`;
+      message += `- ${item.quantity}x ${item.name} (Tamanho: ${item.selectedSize}${item.selectedColor ? `, Cor: ${item.selectedColor}` : ''}) - ${itemTotal}\n`;
     });
     message += `\n*Subtotal: ${formatter.format(subtotal)}*`;
     if (shippingCost) {
@@ -206,6 +206,7 @@ export default function CartSheet() {
           unit_price: item.price,
           quantity: item.quantity,
           size: item.selectedSize,
+          color: item.selectedColor || "",
           imageUrl: item.imageUrl || (item.images && item.images.length > 0 ? item.images[0] : "")
         }))
       };
@@ -281,7 +282,7 @@ export default function CartSheet() {
                       <h3 className="text-base font-bold text-hooke-900">
                         <Link href={`/produto/${item.id}`} className="hover:underline">{item.name}</Link>
                       </h3>
-                      <p className="mt-1 text-sm text-hooke-500">Tamanho: {item.selectedSize}</p>
+                      <p className="mt-1 text-sm text-hooke-500">Tamanho: {item.selectedSize}{item.selectedColor && ` | Cor: ${item.selectedColor}`}</p>
                     </div>
                     <p className="text-base font-bold text-hooke-900 text-right">
                       {formatter.format(item.price * item.quantity)}

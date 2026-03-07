@@ -6,6 +6,7 @@ import { Product } from '@/types';
 export interface CartItem extends Product {
   quantity: number;
   selectedSize: string;
+  selectedColor?: string;
   cartItemId: string;
 }
 
@@ -14,7 +15,7 @@ interface CartState {
   isOpen: boolean;
 
   // Ações
-  addItem: (product: Product, size: string) => void;
+  addItem: (product: Product, size: string, color?: string) => void;
   removeItem: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -50,12 +51,12 @@ export const useCartStore = create<CartState>()(
         set({ shippingZipCode: zip, shippingCost: cost, shippingMethod: method }),
       clearShipping: () =>
         set({ shippingZipCode: null, shippingCost: null, shippingMethod: null }),
-        
+
       setCoupon: (code: string | null) => set({ appliedCoupon: code }),
 
-      addItem: (product: Product, size: string) => {
+      addItem: (product: Product, size: string, color?: string) => {
         const currentItems = get().items;
-        const uniqueId = `${product.id}-${size}`;
+        const uniqueId = color ? `${product.id}-${color}-${size}` : `${product.id}-${size}`;
 
         const existingItemIndex = currentItems.findIndex(
           (item) => item.cartItemId === uniqueId
@@ -71,6 +72,7 @@ export const useCartStore = create<CartState>()(
             ...product,
             quantity: 1,
             selectedSize: size,
+            selectedColor: color,
             cartItemId: uniqueId,
           };
           // Abre o carrinho ao adicionar

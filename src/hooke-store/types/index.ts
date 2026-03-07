@@ -11,6 +11,7 @@ export interface Product {
   seo?: { altText: string; metaDescription: string };
   colors?: { name: string; imageUrl: string }[];
   sizes: string[];
+  stock?: Record<string, number>; // Controle de estoque em formato MAP. Chave: 'Cor-Tamanho' (ex: 'Branca-P') ou 'Tamanho' ('P')
   category: 'Vintage' | 'Regatas' | 'Lifestyle' | 'camisetas-lisas' | 'camisetas-estampadas' | 'acessorios' | 'Kits' | 'Oversized';
   details?: {
     fabric: string;

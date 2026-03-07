@@ -85,7 +85,7 @@ export default async function SocialFeed() {
             {/* Cabeçalho da Seção */}
             <div className="flex flex-col items-center justify-center mb-12 px-6 text-center">
                 <a
-                    href="https://instagram.com/hookestore"
+                    href="https://instagram.com/use.hooke"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex flex-col items-center gap-3"
@@ -98,7 +98,7 @@ export default async function SocialFeed() {
                             Siga os Bastidores
                         </span>
                         <h2 className="text-2xl md:text-3xl font-black text-hooke-900 uppercase tracking-tighter hover:opacity-80 transition-opacity">
-                            @HookeStore
+                            @use.hooke
                         </h2>
                     </div>
                 </a>

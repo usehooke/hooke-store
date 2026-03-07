@@ -45,6 +45,7 @@ interface FormProductData {
     colors?: { name: string; imageUrl: string }[];
     seoAltText?: string;
     seo?: { altText?: string; metaDescription?: string };
+    stock?: Record<string, number>;
     [key: string]: unknown;
 }
 
@@ -99,6 +100,9 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
     const [isActive, setIsActive] = useState(initialData?.isActive !== false);
     const [sizes, setSizes] = useState<string[]>(initialData?.sizes || ["P", "M", "G", "GG"]);
 
+    // Estoque
+    const [stock, setStock] = useState<Record<string, number>>(initialData?.stock || {});
+
     // Pro Gallery V4
     const [images, setImages] = useState<string[]>(initialData?.images || (initialData?.imagem ? [initialData?.imagem] : []));
 
@@ -117,7 +121,23 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
     );
 
     const toggleSize = (size: string) => {
-        setSizes((prev) => prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]);
+        setSizes((prev) => {
+            const isRemoving = prev.includes(size);
+            const newSizes = isRemoving ? prev.filter((s) => s !== size) : [...prev, size];
+
+            // Opcional: Limpar estoque das variações que possuem o tamanho removido (descomente se desejar limpeza estrita)
+            /* if (isRemoving) {
+                const newStock = { ...stock };
+                Object.keys(newStock).forEach(key => {
+                    if (key === size || key.endsWith(`-${size}`)) {
+                        delete newStock[key];
+                    }
+                });
+                setStock(newStock);
+            } */
+
+            return newSizes;
+        });
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -160,7 +180,8 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
             imagem: images[0], // Capa principal
             seoAltText,
             seo: { metaDescription },
-            colors
+            colors,
+            stock // Salva o controle de estoque
         };
 
         onSubmit(formData);
@@ -403,6 +424,73 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                 );
                             })}
                         </div>
+                    </div>
+
+                    <div className="space-y-4 pt-6 border-t border-gray-200">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-hooke-900">
+                                Grade de Estoque
+                            </h3>
+                            {Object.keys(stock).length > 0 && (
+                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 font-bold">
+                                    Total: {Object.values(stock).reduce((a, b) => a + (Number(b) || 0), 0)} itens
+                                </span>
+                            )}
+                        </div>
+
+                        {sizes.length === 0 ? (
+                            <p className="text-xs text-red-500 font-bold bg-red-50 p-3 border border-red-200">
+                                Selecione pelo menos 1 tamanho para definir o estoque.
+                            </p>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 border border-gray-200 p-4">
+                                {colors.length > 0 ? (
+                                    // Com cores: Iterar Cores x Tamanhos
+                                    colors.map(color => (
+                                        sizes.map(size => {
+                                            const comboKey = `${color.name}-${size}`;
+                                            return (
+                                                <div key={comboKey} className="flex justify-between items-center bg-white border border-gray-300 p-2">
+                                                    <div className="flex items-center gap-2">
+                                                        {color.imageUrl && (
+                                                            <div className="w-6 h-6 relative border border-gray-200">
+                                                                <Image src={color.imageUrl} alt={color.name} fill className="object-cover" />
+                                                            </div>
+                                                        )}
+                                                        <span className="text-xs font-bold text-gray-700">
+                                                            {color.name} / {size}
+                                                        </span>
+                                                    </div>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Qtd"
+                                                        value={stock[comboKey] || ""}
+                                                        onChange={(e) => setStock({ ...stock, [comboKey]: parseInt(e.target.value) || 0 })}
+                                                        min={0}
+                                                        className="w-20 border border-gray-300 p-1 text-center text-sm focus:outline-none focus:border-hooke-900"
+                                                    />
+                                                </div>
+                                            );
+                                        })
+                                    ))
+                                ) : (
+                                    // Sem cores: Iterar apenas Tamanhos
+                                    sizes.map(size => (
+                                        <div key={size} className="flex justify-between items-center bg-white border border-gray-300 p-2 lg:-col-span-1">
+                                            <span className="text-xs font-bold text-gray-700">Tamanho {size}</span>
+                                            <input
+                                                type="number"
+                                                placeholder="Qtd"
+                                                value={stock[size] || ""}
+                                                onChange={(e) => setStock({ ...stock, [size]: parseInt(e.target.value) || 0 })}
+                                                min={0}
+                                                className="w-20 border border-gray-300 p-1 text-center text-sm focus:outline-none focus:border-hooke-900"
+                                            />
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-6 pt-4 border-t border-gray-200">

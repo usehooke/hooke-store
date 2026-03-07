@@ -15,6 +15,7 @@ interface AddToCartSectionProps {
 
 export default function AddToCartSection({ product }: AddToCartSectionProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(product.colors && product.colors.length > 0 ? product.colors[0].name : null);
   const [isAdded, setIsAdded] = useState(false);
 
   // Pegamos a função de adicionar da store
@@ -38,8 +39,8 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
       return;
     }
 
-    // 2. Adiciona ao carrinho (Passando Produto E Tamanho)
-    addItem(product, selectedSize);
+    // 2. Adiciona ao carrinho (Passando Produto, Tamanho e Cor)
+    addItem(product, selectedSize, selectedColor || undefined);
 
     // 3. Feedback Visual e Notificação
     setIsAdded(true);
@@ -49,7 +50,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
         <div className="flex flex-col items-center gap-2 text-center">
           <div>
             <b className="font-bold">Adicionado à sacola!</b>
-            <p className="text-sm">{`${product.name} (Tam: ${selectedSize})`}</p>
+            <p className="text-sm">{`${product.name} (Tam: ${selectedSize}${selectedColor ? ` / Cor: ${selectedColor}` : ''})`}</p>
           </div>
           <button
             onClick={() => {
@@ -83,20 +84,26 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
             Cores
           </h3>
           <div className="flex flex-wrap gap-3">
-            {product.colors.map((color, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  window.dispatchEvent(new CustomEvent('change-product-image', { detail: color.imageUrl }));
-                }}
-                className="group relative flex flex-col items-center gap-1"
-              >
-                <div className="w-10 h-10 rounded-full border border-gray-200 overflow-hidden relative group-hover:ring-2 group-hover:ring-hooke-900 group-hover:ring-offset-2 transition-all">
-                  <Image src={color.imageUrl} alt={color.name} fill className="object-cover" sizes="40px" />
-                </div>
-                <span className="text-[10px] uppercase font-bold text-gray-500 group-hover:text-hooke-900">{color.name}</span>
-              </button>
-            ))}
+            {product.colors.map((color, idx) => {
+              const isSelected = selectedColor === color.name;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setSelectedColor(color.name);
+                    // Reseta o tamanho caso a nova cor não tenha o tamanho anterior em estoque
+                    setSelectedSize(null);
+                    window.dispatchEvent(new CustomEvent('change-product-image', { detail: color.imageUrl }));
+                  }}
+                  className={`group relative flex flex-col items-center gap-1 ${isSelected ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
+                >
+                  <div className={`w-10 h-10 rounded-full border overflow-hidden relative transition-all ${isSelected ? 'border-hooke-900 ring-2 ring-hooke-900 ring-offset-2' : 'border-gray-200'}`}>
+                    <Image src={color.imageUrl} alt={color.name} fill className="object-cover" sizes="40px" />
+                  </div>
+                  <span className={`text-[10px] uppercase font-bold ${isSelected ? 'text-hooke-900' : 'text-gray-500'}`}>{color.name}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
@@ -112,7 +119,18 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
 
         <div className="flex flex-wrap gap-3">
           {["P", "M", "G", "GG", "XG"].map((size) => {
-            const hasStock = product.sizes.includes(size);
+            let hasStock = false;
+
+            // Nova lógica de verificação de estoque com mapa
+            if (product.stock) {
+              const comboKey = selectedColor ? `${selectedColor}-${size}` : size;
+              const stockQuantity = product.stock[comboKey] || 0;
+              hasStock = stockQuantity > 0;
+            } else {
+              // Fallback para comportamento antigo
+              hasStock = product.sizes.includes(size);
+            }
+
             const isSelected = selectedSize === size;
 
             return (
