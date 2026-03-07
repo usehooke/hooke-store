@@ -9,7 +9,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff, Edit3 } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3, Barcode } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import ProductForm from "./components/ProductForm";
 
@@ -213,6 +213,13 @@ export default function AdminPage() {
                         >
                             Catálogo Instagram
                         </button>
+
+                        <Link
+                            href="/admin/etiquetas"
+                            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-hooke-900 bg-white border border-hooke-900 px-6 py-3 hover:bg-hooke-50 rounded-none transition-colors"
+                        >
+                            <Barcode size={16} /> Etiquetas (SKU)
+                        </Link>
 
                         <button
                             onClick={() => {

@@ -1,0 +1,29 @@
+﻿app/admin/components/ProductForm.tsx(163,16): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(163,17): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(163,19): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(163,21): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(163,23): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(163,24): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(174,35): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(174,36): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(174,37): error TS1134: Variable declaration expected.
+app/admin/components/ProductForm.tsx(174,38): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(174,39): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(234,14): error TS17008: JSX element 'form' has no corresponding closing tag.
+app/admin/components/ProductForm.tsx(271,88): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(271,98): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/admin/components/ProductForm.tsx(276,46): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/admin/components/ProductForm.tsx(453,52): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(455,28): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/admin/components/ProductForm.tsx(456,37): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/admin/components/ProductForm.tsx(458,39): error TS17002: Expected corresponding JSX closing tag for 'div'.
+app/admin/components/ProductForm.tsx(460,29): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/admin/components/ProductForm.tsx(460,31): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/admin/components/ProductForm.tsx(486,62): error TS1127: Invalid character.
+app/admin/components/ProductForm.tsx(530,41): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/admin/components/ProductForm.tsx(534,53): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+app/admin/components/ProductForm.tsx(569,34): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+app/admin/components/ProductForm.tsx(599,17): error TS1005: ')' expected.
+app/admin/components/ProductForm.tsx(617,13): error TS1128: Declaration or statement expected.
+app/admin/components/ProductForm.tsx(618,9): error TS1109: Expression expected.
+app/admin/components/ProductForm.tsx(619,5): error TS1109: Expression expected.

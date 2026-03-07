@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { UploadButton } from "@/utils/uploadthing";
 import { toast } from "sonner";
@@ -46,6 +46,7 @@ interface FormProductData {
     seoAltText?: string;
     seo?: { altText?: string; metaDescription?: string };
     stock?: Record<string, number>;
+    skus?: Record<string, string>;
     [key: string]: unknown;
 }
 
@@ -100,8 +101,9 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
     const [isActive, setIsActive] = useState(initialData?.isActive !== false);
     const [sizes, setSizes] = useState<string[]>(initialData?.sizes || ["P", "M", "G", "GG"]);
 
-    // Estoque
+    // Estoque e SKUs
     const [stock, setStock] = useState<Record<string, number>>(initialData?.stock || {});
+    const [skus, setSkus] = useState<Record<string, string>>(initialData?.skus || {});
 
     // Pro Gallery V4
     const [images, setImages] = useState<string[]>(initialData?.images || (initialData?.imagem ? [initialData?.imagem] : []));
@@ -124,18 +126,6 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
         setSizes((prev) => {
             const isRemoving = prev.includes(size);
             const newSizes = isRemoving ? prev.filter((s) => s !== size) : [...prev, size];
-
-            // Opcional: Limpar estoque das variações que possuem o tamanho removido (descomente se desejar limpeza estrita)
-            /* if (isRemoving) {
-                const newStock = { ...stock };
-                Object.keys(newStock).forEach(key => {
-                    if (key === size || key.endsWith(`-${size}`)) {
-                        delete newStock[key];
-                    }
-                });
-                setStock(newStock);
-            } */
-
             return newSizes;
         });
     };
@@ -161,6 +151,49 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
         setNewColorImg("");
     };
 
+    const generateSKU = (catName: string, colorName: string, sizeName: string, prefixId: string) => {
+        const catCode = catName ? catName.substring(0, 3).toUpperCase() : 'GER';
+
+        const colorClean = colorName.toUpperCase().replace(/[AEIOU\s]/g, '');
+        const colorCode = colorClean.length >= 3 ? colorClean.substring(0, 3) : colorName.substring(0, 3).toUpperCase();
+
+        const randomId = prefixId ? prefixId.substring(0, 3).toUpperCase() : Math.random().toString(36).substring(2, 5).toUpperCase();
+
+        return `${catCode}-${colorCode}-${sizeName}-${randomId}`;
+    };
+
+    // Atualiza SKUs automaticamente ao mudar tamanhos ou cores
+    const updateSkus = (currentColors: { name: string }[], currentSizes: string[], currentCat: string) => {
+        const newSkus = { ...skus };
+        const idPrefix = initialData?.id || '';
+
+        if (currentColors.length > 0) {
+            currentColors.forEach(c => {
+                currentSizes.forEach(s => {
+                    const combo = `${c.name}-${s}`;
+                    if (!newSkus[combo]) {
+                        newSkus[combo] = generateSKU(currentCat, c.name, s, idPrefix);
+                    }
+                });
+            });
+        } else {
+            // Sem cor especificadas
+            currentSizes.forEach(s => {
+                if (!newSkus[s]) {
+                    newSkus[s] = generateSKU(currentCat, 'UNI', s, idPrefix);
+                }
+            });
+        }
+        setSkus(newSkus);
+    };
+
+    // Gera SKUs dinamicamente sempre que categoria, tamanho ou cor mudarem
+    useEffect(() => {
+        // Não substitui se já foi editado para não apagar input manual
+        updateSkus(colors, sizes, category);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [colors, sizes, category]);
+
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
         if (!name || !price || images.length === 0) {
@@ -177,11 +210,12 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
             isActive,
             sizes,
             images,
-            imagem: images[0], // Capa principal
+            imagem: images[0],
             seoAltText,
             seo: { metaDescription },
             colors,
-            stock // Salva o controle de estoque
+            stock,
+            skus
         };
 
         onSubmit(formData);
@@ -416,8 +450,8 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                         type="button"
                                         onClick={() => toggleSize(size)}
                                         className={`w-10 h-10 flex items-center justify-center font-bold text-sm transition-all border-2
-                            ${isSelected ? 'bg-hooke-900 text-white border-hooke-900' : 'bg-transparent text-gray-400 border-gray-200 hover:border-gray-400'}
-                          `}
+                                            ${isSelected ? 'bg-hooke-900 text-white border-hooke-900' : 'bg-transparent text-gray-300 border-gray-200 hover:border-hooke-400'}
+                                        `}
                                     >
                                         {size}
                                     </button>
@@ -429,7 +463,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                     <div className="space-y-4 pt-6 border-t border-gray-200">
                         <div className="flex justify-between items-center">
                             <h3 className="text-sm font-black uppercase tracking-widest text-hooke-900">
-                                Grade de Estoque
+                                Grade de Estoque e SKUs
                             </h3>
                             {Object.keys(stock).length > 0 && (
                                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 font-bold">
@@ -461,14 +495,35 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                                             {color.name} / {size}
                                                         </span>
                                                     </div>
-                                                    <input
-                                                        type="number"
-                                                        placeholder="Qtd"
-                                                        value={stock[comboKey] || ""}
-                                                        onChange={(e) => setStock({ ...stock, [comboKey]: parseInt(e.target.value) || 0 })}
-                                                        min={0}
-                                                        className="w-20 border border-gray-300 p-1 text-center text-sm focus:outline-none focus:border-hooke-900"
-                                                    />
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mb-1">SKU</span>
+                                                            <input
+                                                                type="text"
+                                                                placeholder="SKU-AUTO"
+                                                                value={skus[comboKey] || ""}
+                                                                onChange={(e) => setSkus({ ...skus, [comboKey]: e.target.value.toUpperCase() })}
+                                                                onFocus={() => {
+                                                                    if (!skus[comboKey]) {
+                                                                        const idPref = initialData?.id || '';
+                                                                        setSkus({ ...skus, [comboKey]: generateSKU(category, color.name, size, idPref) });
+                                                                    }
+                                                                }}
+                                                                className="w-28 border border-gray-300 p-1 text-center text-xs focus:outline-none focus:border-hooke-900 bg-gray-50 placeholder:text-gray-300"
+                                                            />
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mb-1">QTD</span>
+                                                            <input
+                                                                type="number"
+                                                                placeholder="Qtd"
+                                                                value={stock[comboKey] || ""}
+                                                                onChange={(e) => setStock({ ...stock, [comboKey]: parseInt(e.target.value) || 0 })}
+                                                                min={0}
+                                                                className="w-16 border border-gray-300 p-1 text-center text-xs focus:outline-none focus:border-hooke-900"
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             );
                                         })
@@ -477,15 +532,37 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                     // Sem cores: Iterar apenas Tamanhos
                                     sizes.map(size => (
                                         <div key={size} className="flex justify-between items-center bg-white border border-gray-300 p-2 lg:-col-span-1">
-                                            <span className="text-xs font-bold text-gray-700">Tamanho {size}</span>
-                                            <input
-                                                type="number"
-                                                placeholder="Qtd"
-                                                value={stock[size] || ""}
-                                                onChange={(e) => setStock({ ...stock, [size]: parseInt(e.target.value) || 0 })}
-                                                min={0}
-                                                className="w-20 border border-gray-300 p-1 text-center text-sm focus:outline-none focus:border-hooke-900"
-                                            />
+                                            <span className="text-xs font-bold text-gray-700 w-24">Tamanho {size}</span>
+
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mb-1">SKU</span>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="SKU-AUTO"
+                                                        value={skus[size] || ""}
+                                                        onChange={(e) => setSkus({ ...skus, [size]: e.target.value.toUpperCase() })}
+                                                        onFocus={() => {
+                                                            if (!skus[size]) {
+                                                                const idPref = initialData?.id || '';
+                                                                setSkus({ ...skus, [size]: generateSKU(category, 'UNI', size, idPref) });
+                                                            }
+                                                        }}
+                                                        className="w-28 border border-gray-300 p-1 text-center text-xs focus:outline-none focus:border-hooke-900 bg-gray-50 placeholder:text-gray-300"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mb-1">QTD</span>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Qtd"
+                                                        value={stock[size] || ""}
+                                                        onChange={(e) => setStock({ ...stock, [size]: parseInt(e.target.value) || 0 })}
+                                                        min={0}
+                                                        className="w-16 border border-gray-300 p-1 text-center text-xs focus:outline-none focus:border-hooke-900"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     ))
                                 )}
