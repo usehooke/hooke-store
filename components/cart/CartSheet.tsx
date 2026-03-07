@@ -16,7 +16,8 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 
-import { useCartStore } from "@/store/cart-store";
+import { useCartStore, selectCartSubTotal, selectCartPromoDiscount } from "@/store/cart-store";
+import { Tag } from "lucide-react";
 
 export default function CartSheet() {
   // Estado e ações reativas da store
@@ -36,7 +37,8 @@ export default function CartSheet() {
     currency: 'BRL',
   });
 
-  const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = useCartStore(selectCartSubTotal);
+  const promoDiscount = useCartStore(selectCartPromoDiscount);
 
   // --- ESTADOS DO CHECKOUT ---
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -145,8 +147,8 @@ export default function CartSheet() {
     setCouponError("");
   };
 
-  const discountValue = appliedCoupon === "MAVERICK10" ? subtotal * 0.1 : 0;
-  const totalGeral = subtotal + (shippingCost || 0) - discountValue;
+  const couponDiscount = appliedCoupon === "MAVERICK10" ? (subtotal - promoDiscount) * 0.1 : 0;
+  const totalGeral = subtotal - promoDiscount - couponDiscount + (shippingCost || 0);
 
   // --- CONFIGURAÇÃO DO WHATSAPP ---
   const whatsappNumber = "5511975902528";
@@ -160,11 +162,14 @@ export default function CartSheet() {
       message += `- ${item.quantity}x ${item.name} (Tamanho: ${item.selectedSize}${item.selectedColor ? `, Cor: ${item.selectedColor}` : ''}) - ${itemTotal}\n`;
     });
     message += `\n*Subtotal: ${formatter.format(subtotal)}*`;
+    if (promoDiscount > 0) {
+      message += `\n*Desconto Kit: -${formatter.format(promoDiscount)}* 🏷️`;
+    }
     if (shippingCost) {
       message += `\n*Frete (${shippingMethod}): ${formatter.format(shippingCost)}*`;
     }
-    if (discountValue > 0) {
-      message += `\n*Desconto (${appliedCoupon}): -${formatter.format(discountValue)}*`;
+    if (couponDiscount > 0) {
+      message += `\n*Cupom (${appliedCoupon}): -${formatter.format(couponDiscount)}*`;
     }
     message += `\n*Total estimado: ${formatter.format(totalGeral)}*`;
     message += "\n\nAguardo retorno para combinar pagamento e envio.";
@@ -197,7 +202,7 @@ export default function CartSheet() {
         shippingValue: shippingCost,
         shippingMethod: shippingMethod,
         shippingZipcode: shippingZipCode,
-        discountValue,
+        discountValue: promoDiscount + couponDiscount,
         couponCode: appliedCoupon || "",
         items: items.map(item => ({
           cartItemId: item.cartItemId,
@@ -507,10 +512,16 @@ export default function CartSheet() {
               <p>Subtotal</p>
               <p>{formatter.format(subtotal)}</p>
             </div>
-            {discountValue > 0 && (
+            {promoDiscount > 0 && (
               <div className="flex justify-between text-base font-bold text-green-600 uppercase tracking-wider">
-                <p>Desconto ({appliedCoupon})</p>
-                <p>- {formatter.format(discountValue)}</p>
+                <p>Pacote Promo (Kit)</p>
+                <p>- {formatter.format(promoDiscount)}</p>
+              </div>
+            )}
+            {couponDiscount > 0 && (
+              <div className="flex justify-between text-base font-bold text-green-600 uppercase tracking-wider">
+                <p>Cupom ({appliedCoupon})</p>
+                <p>- {formatter.format(couponDiscount)}</p>
               </div>
             )}
             {shippingCost !== null && (

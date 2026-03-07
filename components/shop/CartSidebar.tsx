@@ -1,8 +1,8 @@
 // components/shop/CartSidebar.tsx
 "use client";
 
-import { useCartStore, selectCartSubTotal } from "@/store/cart-store";
-import { X, Trash2, ShoppingBag, MessageCircle, ArrowRight } from "lucide-react";
+import { useCartStore, selectCartSubTotal, selectCartPromoDiscount, selectCartFinalTotal } from "@/store/cart-store";
+import { X, Trash2, ShoppingBag, MessageCircle, ArrowRight, Tag } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -22,6 +22,8 @@ export default function CartSidebar() {
   const isOpen = useCartStore((state) => state.isOpen);
   const closeCart = useCartStore((state) => state.closeCart);
   const subTotal = useCartStore(selectCartSubTotal);
+  const promoDiscount = useCartStore(selectCartPromoDiscount);
+  const finalTotal = useCartStore(selectCartFinalTotal);
 
   // Só renderizar no cliente
   useEffect(() => {
@@ -37,7 +39,13 @@ export default function CartSidebar() {
       message += `▪️ ${item.quantity}x ${item.name} | Tam: ${item.selectedSize}\n`;
       message += `   Ref: R$ ${item.price} cada\n`;
     });
-    message += `\n*TOTAL DO PEDIDO: ${formatter.format(subTotal)}*`;
+    
+    if (promoDiscount > 0) {
+      message += `\nSubtotal: ${formatter.format(subTotal)}`;
+      message += `\n*Desconto Kit: -${formatter.format(promoDiscount)}* 🏷️`;
+    }
+    
+    message += `\n*TOTAL DO PEDIDO: ${formatter.format(finalTotal)}*`;
     message += `\n\nOlá! Gostaria de finalizar a compra e combinar o pagamento/entrega.`;
 
     const link = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -137,9 +145,19 @@ export default function CartSidebar() {
         {items.length > 0 && (
           <div className="p-6 bg-gray-50 border-t border-gray-100 space-y-4">
 
+            {promoDiscount > 0 && (
+              <div className="flex justify-between items-center text-green-600 mb-2 animate-in fade-in slide-in-from-bottom-2">
+                <div className="flex items-center gap-1">
+                  <Tag size={12} />
+                  <span className="text-[10px] uppercase tracking-widest font-bold">Pacote Promo (Kit)</span>
+                </div>
+                <span className="text-sm font-bold">-{formatter.format(promoDiscount)}</span>
+              </div>
+            )}
+
             <div className="flex justify-between items-end text-hooke-900">
               <span className="text-xs uppercase tracking-widest font-bold text-gray-500">Total Estimado</span>
-              <span className="text-xl font-black tracking-tight">{formatter.format(subTotal)}</span>
+              <span className="text-xl font-black tracking-tight">{formatter.format(finalTotal)}</span>
             </div>
 
             <button

@@ -143,3 +143,56 @@ export const selectCartTotalItems = (state: CartState) => {
 export const selectCartSubTotal = (state: CartState) => {
   return state.items.reduce((total, item) => total + item.price * item.quantity, 0);
 };
+
+// --- LOGICA DE PROMOÇÃO HOOKE ---
+// 3 peças por R$ 199,90 | 5 peças por R$ 299,90
+// Categorias elegíveis para o Kit
+const ELIGIBLE_CATEGORIES = ['Oversized', 'camisetas-lisas', 'camisetas-estampadas', 'Vintage', 'Regatas'];
+
+export const selectCartPromoDiscount = (state: CartState) => {
+  // Filtra apenas os itens das categorias elegíveis para o pacote
+  const eligibleItems = state.items.filter(item => ELIGIBLE_CATEGORIES.includes(item.category));
+  const totalEligibleQty = eligibleItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  if (totalEligibleQty === 0) return 0;
+
+  // Calculamos o preço médio atual dos itens elegíveis (para o desconto ser proporcional)
+  const currentEligibleSubtotal = eligibleItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  
+  let targetPrice = currentEligibleSubtotal;
+
+  // Regra: 5 peças por 299.90 (Prioridade para o maior kit)
+  if (totalEligibleQty >= 5) {
+      const numKits5 = Math.floor(totalEligibleQty / 5);
+      const remaining = totalEligibleQty % 5;
+      
+      // Preço médio das peças excedentes (usamos o preco medio original dos itens elegíveis)
+      const avgOriginalPrice = currentEligibleSubtotal / totalEligibleQty;
+      
+      // Se sobrar 3 ou 4, aplicamos o kit de 3 no resto
+      let extraPrice = 0;
+      if (remaining >= 3) {
+          extraPrice = 199.90 + (remaining - 3) * avgOriginalPrice;
+      } else {
+          extraPrice = remaining * avgOriginalPrice;
+      }
+      
+      targetPrice = (numKits5 * 299.90) + extraPrice;
+  } 
+  // Regra: 3 peças por 199.90
+  else if (totalEligibleQty >= 3) {
+      const remaining = totalEligibleQty % 3;
+      const avgOriginalPrice = currentEligibleSubtotal / totalEligibleQty;
+      targetPrice = 199.90 + (remaining * avgOriginalPrice);
+  }
+
+  // O desconto é a diferença entre o subtotal original dos itens elegíveis e o preço alvo da promoção
+  const discount = currentEligibleSubtotal - targetPrice;
+  return discount > 0 ? Math.round(discount * 100) / 100 : 0;
+};
+
+export const selectCartFinalTotal = (state: CartState) => {
+  const subtotal = selectCartSubTotal(state);
+  const discount = selectCartPromoDiscount(state);
+  return subtotal - discount;
+};
