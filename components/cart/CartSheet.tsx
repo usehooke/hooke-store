@@ -513,8 +513,11 @@ export default function CartSheet() {
               <p>{formatter.format(subtotal)}</p>
             </div>
             {promoDiscount > 0 && (
-              <div className="flex justify-between text-base font-bold text-green-600 uppercase tracking-wider">
-                <p>Pacote Promo (Kit)</p>
+              <div className="flex justify-between text-base font-bold text-green-600 uppercase tracking-wider items-center">
+                <div className="flex items-center gap-1">
+                  <Tag size={16} />
+                  <span>Pacote Promo (Kit)</span>
+                </div>
                 <p>- {formatter.format(promoDiscount)}</p>
               </div>
             )}
