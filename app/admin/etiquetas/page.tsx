@@ -38,7 +38,7 @@ export default function EtiquetasPage() {
         p.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleToggleSku = (sku: string, productName: string, variation: string) => {
+    const handleToggleSku = (sku: string) => {
         setSelectedSkus(prev => {
             const next = { ...prev };
             if (next[sku]) {
@@ -147,7 +147,7 @@ export default function EtiquetasPage() {
                                             return (
                                                 <div
                                                     key={variation.key}
-                                                    onClick={() => handleToggleSku(variation.sku, product.name, variation.label)}
+                                                    onClick={() => handleToggleSku(variation.sku)}
                                                     className={`flex items-center justify-between p-3 border cursor-pointer transition-colors
                                                         ${isSelected ? 'border-hooke-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}
                                                     `}
@@ -198,7 +198,7 @@ export default function EtiquetasPage() {
                                                 className="w-16 border border-gray-300 p-1 text-center text-sm focus:outline-none focus:border-hooke-900"
                                             />
                                             <button
-                                                onClick={() => handleToggleSku(sku, "", "")}
+                                                onClick={() => handleToggleSku(sku)}
                                                 className="text-red-400 hover:text-red-600 p-1"
                                             >
                                                 <Trash2 size={16} />
