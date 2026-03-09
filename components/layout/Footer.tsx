@@ -14,7 +14,9 @@ export default function Footer() {
 
           {/* Coluna 1: Marca */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-black uppercase tracking-tighter">{brandConfig.name}</h2>
+            <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+              <h2 className="text-2xl font-black uppercase tracking-tighter">{brandConfig.name}</h2>
+            </Link>
             <p className="text-xs text-gray-400 leading-relaxed max-w-xs">
               {brandConfig.description}
             </p>
