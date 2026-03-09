@@ -10,7 +10,6 @@ import { getFeaturedProducts } from "@/lib/productService";
 
 export default function SmartSuggestions() {
   const items = useCartStore(state => state.items);
-  const addItem = useCartStore(state => state.addItem);
   const [suggestions, setSuggestions] = useState<Product[]>([]);
 
   useEffect(() => {

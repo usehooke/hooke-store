@@ -30,7 +30,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return <ProductView product={product} />;
 }
 
-function ProductView({ product }: { product: any }) {
+function ProductView({ product }: { product: Product }) {
   const formatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',

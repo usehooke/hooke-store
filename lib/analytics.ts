@@ -21,15 +21,15 @@ content_ids?: string[] | number[];
   value?: number;
   currency?: string;
   search_string?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
  * Dispara um evento para o Meta Pixel
  */
 export const trackMetaEvent = (event: EventName, data?: EventData) => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', event, data);
+  if (typeof window !== 'undefined' && (window as unknown as { fbq: Function }).fbq) {
+    (window as unknown as { fbq: Function }).fbq('track', event, data);
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Meta Pixel] Event: ${event}`, data);
     }
@@ -40,8 +40,8 @@ export const trackMetaEvent = (event: EventName, data?: EventData) => {
  * Dispara um evento para o Google Analytics 4
  */
 export const trackGAEvent = (event: string, data?: EventData) => {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', event, data);
+  if (typeof window !== 'undefined' && (window as unknown as { gtag: Function }).gtag) {
+    (window as unknown as { gtag: Function }).gtag('event', event, data);
     if (process.env.NODE_ENV === 'development') {
       console.log(`[GA4] Event: ${event}`, data);
     }
