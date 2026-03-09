@@ -1,5 +1,8 @@
 import { getProductBySlug } from "@/lib/productService";
 import { notFound } from "next/navigation";
+import { useEffect } from "react";
+import { trackEvent } from "@/lib/analytics";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 
 // Componentes da Loja (Certifique-se que eles existem e não usam tipos antigos)
 // Se der erro de tipo neles, me avise que ajustamos os componentes também.
@@ -25,6 +28,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProductBySlug(slug);
 
   if (!product) notFound();
+
+  return <ProductView product={product} />;
+}
+
+function ProductView({ product }: { product: any }) {
+  const { addViewedProduct } = useRecentlyViewed();
+
+  useEffect(() => {
+    // Analytics
+    trackEvent('ViewContent', {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.price,
+      currency: 'BRL',
+      content_category: product.category
+    });
+
+    // Rastro de Navegação (Recently Viewed)
+    addViewedProduct(product);
+  }, [product, addViewedProduct]);
 
   const formatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',

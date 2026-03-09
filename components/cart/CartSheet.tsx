@@ -7,6 +7,10 @@ import { useState } from "react";
 import { Minus, Plus, ShoppingBag, Trash2, X, CreditCard, Loader2, Facebook } from "lucide-react";
 import { signInWithPopup } from "firebase/auth";
 import { auth, facebookProvider } from "@/lib/firebase";
+import { brandConfig } from "@/config/brandConfig";
+import { trackEvent } from "@/lib/analytics";
+import FreeShippingBar from "@/components/shop/FreeShippingBar";
+import SmartSuggestions from "@/components/shop/SmartSuggestions";
 
 import {
   SheetHeader,
@@ -151,11 +155,19 @@ export default function CartSheet() {
   const totalGeral = subtotal - promoDiscount - couponDiscount + (shippingCost || 0);
 
   // --- CONFIGURAÇÃO DO WHATSAPP ---
-  const whatsappNumber = "5511975902528";
+  const whatsappNumber = brandConfig.contact.whatsapp.number;
   // --------------------------------
 
   // --- FUNÇÃO QUE GERA O LINK DO ZAP ---
   const handleWhatsAppCheckout = () => {
+    // Analytics
+    trackEvent('InitiateCheckout', {
+      value: totalGeral,
+      currency: 'BRL',
+      content_ids: items.map(i => i.id),
+      content_type: 'product'
+    });
+
     let message = "*Olá, Hooke!* Gostaria de finalizar o seguinte pedido:\n\n";
     items.forEach((item) => {
       const itemTotal = formatter.format(item.price * item.quantity);
@@ -189,6 +201,14 @@ export default function CartSheet() {
       setCheckoutError("Por favor, calcule e selecione um frete antes de prosseguir.");
       return;
     }
+
+    // Analytics
+    trackEvent('InitiateCheckout', {
+      value: totalGeral,
+      currency: 'BRL',
+      content_ids: items.map(i => i.id),
+      content_type: 'product'
+    });
 
     setCheckoutError("");
     setIsProcessing(true);
@@ -253,6 +273,8 @@ export default function CartSheet() {
       </SheetHeader>
 
       <div className="flex-1 overflow-y-auto py-6 px-6">
+        <FreeShippingBar subtotal={subtotal} />
+        
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
             <div className="bg-hooke-50 p-6 rounded-full">
@@ -324,6 +346,8 @@ export default function CartSheet() {
             ))}
           </ul>
         )}
+
+        {items.length > 0 && <SmartSuggestions />}
       </div>
 
       {/* OVERLAY DE CHECKOUT RÁPIDO */}

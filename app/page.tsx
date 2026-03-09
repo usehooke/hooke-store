@@ -7,6 +7,8 @@ import BrandMarquee from "@/components/ui/BrandMarquee";
 import ProductCard from "@/components/shop/ProductCard";
 import BrandBento from "@/components/home/BrandBento";
 import SocialFeed from "@/components/home/SocialFeed";
+import VIPGreeting from "@/components/home/VIPGreeting";
+import RecentlyViewed from "@/components/shop/RecentlyViewed";
 
 export default async function Home() {
   // Pega os primeiros 8 produtos em destaque do banco
@@ -14,6 +16,7 @@ export default async function Home() {
 
   return (
     <main className="bg-white min-h-screen">
+      <VIPGreeting />
 
       {/* 1. HERO BENTO (Full Width - Lê do catálogo) */}
       <BentoHero />
@@ -43,7 +46,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 4. VITRINE SOCIAL (INSTAGRAM) */}
+      {/* 4. VISTOS RECENTEMENTE (VIP EXPERIENCE) */}
+      <RecentlyViewed />
+
+      {/* 5. VITRINE SOCIAL (INSTAGRAM) */}
       <SocialFeed />
 
       {/* 5. AUTORIDADE (Filosofia da Marca) */}

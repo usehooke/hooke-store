@@ -1,9 +1,10 @@
 import { MessageCircle, MapPin, Mail, Clock } from "lucide-react";
 import Link from "next/link";
+import { brandConfig } from "@/config/brandConfig";
 
 export const metadata = {
-  title: "Fale Conosco | Hooke",
-  description: "Entre em contato com a Hooke. Atendimento via WhatsApp, E-mail ou em nossa loja física no Brás.",
+  title: `Fale Conosco | ${brandConfig.name}`,
+  description: brandConfig.description,
 };
 
 export default function ContactPage() {
@@ -38,7 +39,7 @@ export default function ContactPage() {
                 O canal mais rápido. Resolvemos trocas, dúvidas de tamanho e vendas diretas por aqui.
               </p>
               <Link 
-                href="https://wa.me/5511975902528" 
+                href={brandConfig.contact.whatsapp.getLink()} 
                 target="_blank"
                 className="inline-flex w-full items-center justify-center gap-2 bg-green-600 text-white px-6 py-4 text-xs font-bold uppercase tracking-widest hover:bg-green-700 transition-colors shadow-sm"
               >
@@ -53,7 +54,7 @@ export default function ContactPage() {
                   <Mail size={18} />
                   <h4 className="text-xs font-bold uppercase tracking-widest">E-mail</h4>
                 </div>
-                <p className="text-sm text-gray-500">sac@usehooke.com.br</p>
+                <p className="text-sm text-gray-500">{brandConfig.contact.email}</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2 text-hooke-900">

@@ -8,6 +8,8 @@ import { ShoppingBag, Check } from "lucide-react";
 import Image from "next/image";
 import SizeGuideModal from "./SizeGuideModal";
 import toast from "react-hot-toast"; // CORRIGIDO: Agora está em inglês correto
+import { trackEvent } from "@/lib/analytics";
+import InventoryBadge from "./InventoryBadge";
 
 interface AddToCartSectionProps {
   product: Product;
@@ -41,6 +43,16 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
 
     // 2. Adiciona ao carrinho (Passando Produto, Tamanho e Cor)
     addItem(product, selectedSize, selectedColor || undefined);
+
+    // 4. Analytics
+    trackEvent('AddToCart', {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.price,
+      currency: 'BRL',
+      content_category: product.category
+    });
 
     // 3. Feedback Visual e Notificação
     setIsAdded(true);
@@ -154,6 +166,13 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
           })}
         </div>
       </div>
+
+      {/* MOTOR DE ESCASSEZ (BADGE DINÂMICO) */}
+      <InventoryBadge 
+        stock={product.stock} 
+        selectedSize={selectedSize} 
+        selectedColor={selectedColor} 
+      />
 
       {/* BOTÃO DE AÇÃO */}
       <button

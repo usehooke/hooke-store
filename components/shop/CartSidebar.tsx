@@ -7,6 +7,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { brandConfig } from "@/config/brandConfig";
+import { trackEvent } from "@/lib/analytics";
+import FreeShippingBar from "./FreeShippingBar";
+import SmartSuggestions from "./SmartSuggestions";
+
 // Formatter criado FORA do componente para evitar recalcular a cada render
 const formatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -31,8 +36,16 @@ export default function CartSidebar() {
   }, []);
 
   const handleCheckout = () => {
-    const phoneNumber = "5511975902528";
+    const phoneNumber = brandConfig.contact.whatsapp.number;
     const currentItems = useCartStore.getState().items;
+
+    // Analytics
+    trackEvent('InitiateCheckout', {
+      value: finalTotal,
+      currency: 'BRL',
+      content_ids: currentItems.map(i => i.id),
+      content_type: 'product'
+    });
 
     let message = "*NOVO PEDIDO HOOKE* 🛒\n\n";
     currentItems.forEach((item) => {
@@ -85,6 +98,8 @@ export default function CartSidebar() {
 
         {/* Lista de Itens */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+          <FreeShippingBar subtotal={subTotal} />
+          
           {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 space-y-4">
               <ShoppingBag className="w-12 h-12 opacity-20" strokeWidth={1} />
@@ -139,6 +154,8 @@ export default function CartSidebar() {
               </div>
             ))
           )}
+
+          {items.length > 0 && <SmartSuggestions />}
         </div>
 
         {/* Rodapé (Checkout) */}

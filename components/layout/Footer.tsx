@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Send } from "lucide-react";
+import { brandConfig } from "@/config/brandConfig";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -13,18 +14,18 @@ export default function Footer() {
 
           {/* Coluna 1: Marca */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-black uppercase tracking-tighter">Hooke</h2>
+            <h2 className="text-2xl font-black uppercase tracking-tighter">{brandConfig.name}</h2>
             <p className="text-xs text-gray-400 leading-relaxed max-w-xs">
-              Redefinindo o básico masculino. Camisetas de algodão com certificado BCA, modelagem precisa e durabilidade extrema.
+              {brandConfig.description}
             </p>
             <div className="flex gap-4">
-              <a href="https://instagram.com/hookestore" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+              <a href={brandConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
                 <Instagram size={18} strokeWidth={1.5} />
               </a>
-              <a href="https://facebook.com/hookestore" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+              <a href={brandConfig.social.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
                 <Facebook size={18} strokeWidth={1.5} />
               </a>
-              <a href="https://twitter.com/hookestore" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
+              <a href={brandConfig.social.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
                 <Twitter size={18} strokeWidth={1.5} />
               </a>
             </div>

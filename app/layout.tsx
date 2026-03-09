@@ -15,6 +15,8 @@ import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import MetaPixel from "@/components/ui/MetaPixel";
 import { Toaster } from "react-hot-toast";
 import DynamicCart from "@/components/layout/DynamicCart";
+import { brandConfig } from "@/config/brandConfig";
+import TransitionProvider from "@/components/layout/TransitionProvider";
 
 // 1. Configurando a Fonte Única (Estilo Suíço - Inter)
 const inter = Inter({
@@ -23,38 +25,38 @@ const inter = Inter({
   display: "swap",
 });
 
-const baseUrl = "https://www.usehooke.com.br";
-const GA_MEASUREMENT_ID = "G-XXXXXXXXXX";
+const baseUrl = brandConfig.shop.baseUrl;
+const GA_MEASUREMENT_ID = brandConfig.analytics.googleAnalyticsId;
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Hooke | Camisetas de Algodão Egípcio e Moda Masculina Premium",
-    template: "%s | Hooke Store",
+    default: `${brandConfig.name} | ${brandConfig.tagline}`,
+    template: `%s | ${brandConfig.name} Store`,
   },
-  description: "Encontre a camiseta perfeita. Moda masculina minimalista com corte premium e algodão egípcio sustentável.",
+  description: brandConfig.description,
   keywords: [
-    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino"
+    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino", "algodão egípcio", "oversized premium"
   ],
   verification: {
     google: "F1l-lLTgz0IA50BtjKavSlVt3WTmh3DANMB5gr2bmnk",
   },
   icons: {
-    icon: '/icon.svg', // Aponta para o novo Favicon minimalista
+    icon: '/icon.svg',
   },
   openGraph: {
-    title: "Hooke | Camisetas Premium e Moda Masculina",
-    description: "Menos excesso, mais qualidade. Descubra a melhor camiseta básica do Brasil.",
+    title: `${brandConfig.name} | Moda Masculina Premium`,
+    description: brandConfig.description,
     url: baseUrl,
-    siteName: "Hooke Store",
-    locale: "pt_BR",
+    siteName: brandConfig.name,
+    locale: brandConfig.shop.locale,
     type: "website",
     images: [
       {
         url: "/banner-home.jpg",
         width: 1200,
         height: 630,
-        alt: "Coleção Hooke Moda Masculina Premium",
+        alt: `${brandConfig.name} - Moda Masculina Premium`,
       },
     ],
   },
@@ -81,7 +83,9 @@ export default function RootLayout({
         <DynamicCart />
 
         <main className="flex-grow w-full">
-          {children}
+          <TransitionProvider>
+            {children}
+          </TransitionProvider>
         </main>
 
         <WhatsAppButton />

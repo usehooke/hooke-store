@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Product } from "@/data/catalogo"; // IMPORTAÇÃO CORRIGIDA
+import { Product } from "@/data/catalogo";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProductGalleryProps {
   product: Product;
@@ -58,14 +59,25 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
 
       {/* MAIN IMAGE */}
       <div className="relative flex-1 aspect-[4/5] md:aspect-auto md:h-[85vh] bg-gray-50 overflow-hidden group cursor-zoom-in">
-        <Image
-          src={selectedImage}
-          alt={product.seoAltText || product.name}
-          fill
-          priority
-          className="object-cover object-center transition-all duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, 70vw"
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedImage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="relative w-full h-full"
+          >
+            <Image
+              src={selectedImage}
+              alt={product.seoAltText || product.name}
+              fill
+              priority
+              className="object-cover object-center transition-all duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, 70vw"
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

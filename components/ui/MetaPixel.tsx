@@ -4,8 +4,10 @@ import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 
-// Variável de ambiente para o ID do Pixel (ou ID de Homologação)
-const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || '1234567890';
+import { brandConfig } from '@/config/brandConfig';
+
+// Variável de ambiente para o ID do Pixel
+const FB_PIXEL_ID = brandConfig.analytics.metaPixelId;
 
 // Tipagem global para evitar erro de TS ao usar a janela window.fbq
 declare global {

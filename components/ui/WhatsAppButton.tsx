@@ -1,7 +1,7 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import { SITE_CONFIG } from "@/data/catalogo";
+import { brandConfig } from "@/config/brandConfig";
 import { useState, useEffect } from "react";
 
 export default function WhatsAppButton() {
@@ -13,7 +13,7 @@ export default function WhatsAppButton() {
     return () => clearTimeout(timer);
   }, []);
 
-  const whatsappUrl = `https://wa.me/${SITE_CONFIG.whatsapp_number}?text=${encodeURIComponent(SITE_CONFIG.whatsapp_message)}`;
+  const whatsappUrl = brandConfig.contact.whatsapp.getLink();
 
   if (!isVisible) return null;
 
