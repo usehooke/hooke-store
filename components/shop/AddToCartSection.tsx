@@ -4,9 +4,10 @@
 import { useState } from "react";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
-import { ShoppingBag, Check } from "lucide-react";
+import { ShoppingBag, Check, Ruler } from "lucide-react";
 import Image from "next/image";
 import SizeGuideModal from "./SizeGuideModal";
+import SizeQuizModal from "./SizeQuizModal";
 import toast from "react-hot-toast"; // CORRIGIDO: Agora está em inglês correto
 import { trackEvent } from "@/lib/analytics";
 import InventoryBadge from "./InventoryBadge";
@@ -19,6 +20,8 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(product.colors && product.colors.length > 0 ? product.colors[0].name : null);
   const [isAdded, setIsAdded] = useState(false);
+  const [isSizeQuizOpen, setIsSizeQuizOpen] = useState(false);
+  const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
 
   // Pegamos a função de adicionar da store
   const addItem = useCartStore((state) => state.addItem);
@@ -126,8 +129,26 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
           <h3 className="text-sm font-bold uppercase tracking-wider text-hooke-900">
             Tamanhos
           </h3>
-          <SizeGuideModal />
+          <div className="flex gap-4">
+            <button 
+              onClick={() => setIsSizeQuizOpen(true)}
+              className="group flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-hooke-500 hover:text-hooke-900 transition-colors"
+            >
+              <Ruler size={14} className="group-hover:rotate-12 transition-transform" />
+              Provador Virtual
+            </button>
+            <SizeGuideModal />
+          </div>
         </div>
+
+        <SizeQuizModal 
+          isOpen={isSizeQuizOpen} 
+          onClose={() => setIsSizeQuizOpen(false)} 
+          onComplete={(size) => {
+            setRecommendedSize(size);
+            setSelectedSize(size);
+          }}
+        />
 
         <div className="flex flex-wrap gap-3">
           {["P", "M", "G", "GG", "XG"].map((size) => {
@@ -144,6 +165,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
             }
 
             const isSelected = selectedSize === size;
+            const isRecommended = recommendedSize === size;
 
             return (
               <button
@@ -151,16 +173,23 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
                 onClick={() => hasStock && setSelectedSize(size)}
                 disabled={!hasStock}
                 className={`
-                  w-12 h-12 flex items-center justify-center rounded-sm font-bold transition-all duration-200
+                  relative w-12 h-12 flex items-center justify-center rounded-sm font-bold transition-all duration-200
                   ${!hasStock ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400 border-2 border-gray-200" :
                     isSelected
                       ? "bg-hooke-900 text-white border-2 border-hooke-900 scale-105 shadow-md"
-                      : "bg-white text-hooke-600 border-2 border-hooke-200 hover:border-hooke-400 hover:text-hooke-900"
+                      : isRecommended 
+                        ? "bg-white text-hooke-900 border-2 border-hooke-900 shadow-[0_0_10px_rgba(0,0,0,0.1)]"
+                        : "bg-white text-hooke-600 border-2 border-hooke-200 hover:border-hooke-400 hover:text-hooke-900"
                   }
                 `}
-                title={!hasStock ? "Esgotado" : ""}
+                title={!hasStock ? "Esgotado" : isRecommended ? "Tamanho recomendado para você" : ""}
               >
                 {size}
+                {hasStock && isRecommended && (
+                  <span className="absolute -top-2 -right-2 bg-green-500 text-white p-0.5 rounded-full shadow-sm animate-bounce">
+                    <Check size={10} strokeWidth={4} />
+                  </span>
+                )}
               </button>
             );
           })}

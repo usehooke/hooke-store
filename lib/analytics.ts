@@ -25,13 +25,34 @@ content_ids?: string[] | number[];
 }
 
 /**
- * Dispara um evento para o Meta Pixel
+ * Dispara um evento para o Meta Pixel e CAPI (Server-side)
  */
-export const trackMetaEvent = (event: EventName, data?: EventData) => {
-  if (typeof window !== 'undefined' && (window as unknown as { fbq: (t: string, e: string, d?: object) => void }).fbq) {
-    (window as unknown as { fbq: (t: string, e: string, d?: object) => void }).fbq('track', event, data || {});
+export const trackMetaEvent = async (event: EventName, data?: EventData) => {
+  const eventId = `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  // 1. Browser Pixel
+  if (typeof window !== 'undefined' && (window as unknown as { fbq: (t: string, e: string, d?: object, opt?: object) => void }).fbq) {
+    (window as unknown as { fbq: (t: string, e: string, d?: object, opt?: object) => void }).fbq('track', event, data || {}, { eventID: eventId });
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Meta Pixel] Event: ${event}`, data);
+      console.log(`[Meta Pixel] Event: ${event} (ID: ${eventId})`, data);
+    }
+  }
+
+  // 2. Server Side (CAPI) - Chamada via proxy para proteger o token
+  if (typeof window !== 'undefined') {
+    try {
+      fetch('/api/analytics/capi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name: event,
+          event_id: eventId,
+          event_source_url: window.location.href,
+          customData: data
+        }),
+      });
+    } catch (e) {
+      console.error('CAPI Fetch Error:', e);
     }
   }
 };
@@ -59,7 +80,7 @@ export const trackEvent = (event: EventName, data?: EventData) => {
 
   trackMetaEvent(event, defaultData);
   
-  // Mapeamento de nomes de eventos para GA4 se necessário
+  // Mapeamento de nomes de eventos para GA4
   const gaEventName = event === 'PageView' ? 'page_view' : 
                      event === 'AddToCart' ? 'add_to_cart' :
                      event === 'InitiateCheckout' ? 'begin_checkout' :

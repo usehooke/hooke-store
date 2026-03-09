@@ -35,6 +35,8 @@ export const brandConfig = {
   analytics: {
     googleAnalyticsId: process.env.NEXT_PUBLIC_GA_ID,
     metaPixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID,
+    metaCapiToken: process.env.META_CAPI_TOKEN,
+    metaTestEventCode: process.env.META_TEST_EVENT_CODE,
   },
 
   // URLs de rastreamento de pedidos
