@@ -1,4 +1,5 @@
 import { getProductBySlug } from "@/lib/productService";
+import { Product } from "@/data/catalogo";
 import { notFound } from "next/navigation";
 import ProductTracker from "@/components/shop/ProductTracker";
 
