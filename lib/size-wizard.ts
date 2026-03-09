@@ -15,11 +15,11 @@ export function calculateRecommendedSize({ height, weight, preference }: Recomme
   
   let baseSize = 'M';
 
-  // 1. Lógica por Peso (Principal fator de volume)
-  if (weight < 65) baseSize = 'P';
-  else if (weight < 78) baseSize = 'M';
-  else if (weight < 90) baseSize = 'G';
-  else if (weight < 105) baseSize = 'GG';
+  // 1. Lógica por Peso (Ajustada conforme feedback: 93kg -> G)
+  if (weight < 68) baseSize = 'P';
+  else if (weight < 82) baseSize = 'M';
+  else if (weight < 96) baseSize = 'G';
+  else if (weight < 110) baseSize = 'GG';
   else baseSize = 'XG';
 
   // 2. Refinamento por Altura (Distribuição)
