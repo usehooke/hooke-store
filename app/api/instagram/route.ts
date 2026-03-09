@@ -8,8 +8,10 @@ const INSTAGRAM_API_URL = `https://graph.instagram.com/me/media?fields=id,captio
 export async function GET() {
     try {
         if (!INSTAGRAM_ACCESS_TOKEN) {
-            // Se não tem token (ex: ambiente de teste sem o .env), cai no fallback silencioso.
-            return NextResponse.json({ error: 'Missing access token' }, { status: 401 });
+            // Se não tem token, retornamos 200 vazio para não poluir o console do navegador com erros 401.
+            // O desenvolvedor verá o aviso no log do servidor.
+            console.warn('Instagram API: Missing INSTAGRAM_ACCESS_TOKEN in environment variables.');
+            return NextResponse.json({ feed: [] });
         }
 
         const res = await fetch(INSTAGRAM_API_URL, {

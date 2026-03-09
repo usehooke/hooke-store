@@ -84,7 +84,7 @@ export default function Navbar() {
                 <Search strokeWidth={1.5} size={20} />
               </button>
 
-              <Link href="/conta" className="hidden md:block text-hooke-900 hover:text-gray-500 transition-colors">
+              <Link href="/meus-pedidos" className="hidden md:block text-hooke-900 hover:text-gray-500 transition-colors">
                 <User strokeWidth={1.5} size={20} />
               </Link>
 
@@ -139,7 +139,7 @@ export default function Navbar() {
 
             <Link href="/contato" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-hooke-900">Fale Conosco</Link>
             <div className="h-px bg-gray-100 my-2" />
-            <Link href="/conta" className="flex items-center gap-3 text-sm font-medium text-gray-600"><User size={18} /> Minha Conta</Link>
+            <Link href="/meus-pedidos" className="flex items-center gap-3 text-sm font-medium text-gray-600"><User size={18} /> Minha Conta</Link>
           </div>
         </div>
       </div>
