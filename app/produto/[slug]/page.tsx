@@ -1,8 +1,6 @@
 import { getProductBySlug } from "@/lib/productService";
 import { notFound } from "next/navigation";
-import { useEffect } from "react";
-import { trackEvent } from "@/lib/analytics";
-import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import ProductTracker from "@/components/shop/ProductTracker";
 
 // Componentes da Loja (Certifique-se que eles existem e não usam tipos antigos)
 // Se der erro de tipo neles, me avise que ajustamos os componentes também.
@@ -33,23 +31,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 function ProductView({ product }: { product: any }) {
-  const { addViewedProduct } = useRecentlyViewed();
-
-  useEffect(() => {
-    // Analytics
-    trackEvent('ViewContent', {
-      content_name: product.name,
-      content_ids: [product.id],
-      content_type: 'product',
-      value: product.price,
-      currency: 'BRL',
-      content_category: product.category
-    });
-
-    // Rastro de Navegação (Recently Viewed)
-    addViewedProduct(product);
-  }, [product, addViewedProduct]);
-
   const formatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
@@ -57,6 +38,7 @@ function ProductView({ product }: { product: any }) {
 
   return (
     <main className="w-full px-6 md:px-12 py-12 md:py-16 mb-20 animate-in fade-in duration-500">
+      <ProductTracker product={product} />
 
       {/* Grid Assimétrico: 60% Foto (Esq) / 40% Texto (Dir) */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-12 lg:gap-24 items-start">
