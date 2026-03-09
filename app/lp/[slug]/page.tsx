@@ -11,7 +11,7 @@ interface LPPageProps {
   params: Promise<{ slug: string }>;
 }
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ElementType> = {
   Zap,
   ShieldCheck,
   Wind,

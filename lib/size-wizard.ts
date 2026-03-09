@@ -12,8 +12,6 @@ interface RecommendationParams {
 }
 
 export function calculateRecommendedSize({ height, weight, preference }: RecommendationParams): string {
-  // Cálculo de IMC base para estimativa de volume
-  const bmi = weight / ((height / 100) ** 2);
   
   let baseSize = 'M';
 
