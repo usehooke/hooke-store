@@ -93,10 +93,11 @@ function SortablePhoto({ id, url, onRemove }: { id: string; url: string; onRemov
 
 export default function ProductForm({ initialData, onSubmit, onCancel, isSaving }: ProductFormProps) {
     // Estado do Form
-    const [name, setName] = useState(initialData?.name || "");
-    const [category, setCategory] = useState(initialData?.category || "Oversized");
-    const [price, setPrice] = useState(initialData?.price || 0);
-    const [description, setDescription] = useState(initialData?.description || "");
+    const [name, setName] = useState<string>(initialData?.name || "");
+    const [category, setCategory] = useState<string>(initialData?.category || "Oversized");
+    const [price, setPrice] = useState<number>(typeof initialData?.price === 'number' ? initialData.price : 0);
+    const [comboPrice, setComboPrice] = useState<number>(typeof initialData?.comboPrice === 'number' ? initialData.comboPrice : 0);
+    const [description, setDescription] = useState<string>(initialData?.description || "");
     const [featured, setFeatured] = useState(initialData?.featured || false);
     const [isActive, setIsActive] = useState(initialData?.isActive !== false);
     const [sizes, setSizes] = useState<string[]>(initialData?.sizes || ["P", "M", "G", "GG"]);
@@ -205,6 +206,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
             name,
             category,
             price: Number(price),
+            comboPrice: Number(comboPrice),
             description,
             featured,
             isActive,
@@ -401,6 +403,17 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                 onChange={(e) => setPrice(parseFloat(e.target.value))}
                                 className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-hooke-900 transition-all rounded-none"
                                 placeholder="Ex: 89.90"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-hooke-900 block">Preço Combo (3+) R$</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={comboPrice || ""}
+                                onChange={(e) => setComboPrice(parseFloat(e.target.value))}
+                                className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-hooke-900 transition-all rounded-none"
+                                placeholder="Ex: 79.90"
                             />
                         </div>
                     </div>

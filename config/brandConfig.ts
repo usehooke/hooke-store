@@ -52,5 +52,9 @@ export const brandConfig = {
     maxInstallments: 3,
     currency: "BRL",
     locale: "pt-BR",
+  },
+  promotions: {
+    comboThreshold: 3,
+    comboDiscountLabel: "Combo Hooke (3+ peças)",
   }
 };

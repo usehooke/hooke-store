@@ -9,7 +9,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff, Edit3, Barcode } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import ProductForm from "./components/ProductForm";
 
@@ -20,6 +20,7 @@ interface AdminProduct {
     imagem?: string;
     isActive?: boolean;
     sizes?: string[];
+    syncStatus?: 'pending' | 'synced' | 'failed';
     [key: string]: unknown;
 }
 
@@ -154,6 +155,7 @@ export default function AdminPage() {
                 name: data.name,
                 slug,
                 price: Number(data.price),
+                comboPrice: Number(data.comboPrice),
                 featured: data.featured,
                 isNew: isEditing ? (editingProduct.isNew || false) : true,
                 description: data.description,
@@ -165,11 +167,37 @@ export default function AdminPage() {
                 category: data.category,
                 seo: data.seo || { altText: "", metaDescription: "" },
                 colors: data.colors || [],
+                skus: data.skus || {},
+                syncStatus: 'pending', // Inicia como pendente
                 details: isEditing ? (editingProduct.details || { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }) : { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
             };
 
             await setDoc(doc(db, "produtos", id), finalProduct);
-            toast.success(isEditing ? "Produto atualizado na Versão PRO!" : "Produto cadastrado com sucesso!");
+            
+            // Orquestrar Sincronização com Tiny (Sem travar o usuário)
+            const syncWithTiny = async () => {
+                try {
+                    const response = await fetch("/api/admin/sync/tiny", {
+                        method: "POST",
+                        body: JSON.stringify(finalProduct),
+                    });
+                    
+                    if (response.ok) {
+                        await updateDoc(doc(db, "produtos", id), { syncStatus: 'synced' });
+                        toast.success("Sincronizado com Tiny ERP!");
+                    } else {
+                        throw new Error("Tiny fail");
+                    }
+                } catch (err) {
+                    console.error("Erro sync tiny:", err);
+                    await updateDoc(doc(db, "produtos", id), { syncStatus: 'failed' });
+                    toast.error("Salvo no site, mas falhou ao enviar para o Tiny. Tente novamente mais tarde.", { duration: 5000 });
+                }
+            };
+
+            syncWithTiny();
+
+            toast.success(isEditing ? "Produto atualizado!" : "Produto cadastrado!");
 
             setShowForm(false);
             setEditingProduct(null);
@@ -268,6 +296,7 @@ export default function AdminPage() {
                             <tr className="border-b border-hooke-900 bg-gray-50">
                                 <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900 hidden md:table-cell">ID</th>
                                 <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Visível</th>
+                                <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Tiny Sync</th>
                                 <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Imagem</th>
                                 <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900 w-[20%]">Nome do Produto</th>
                                 <th className="p-4 text-xs font-bold uppercase tracking-widest text-hooke-900">Preço (R$)</th>
@@ -289,6 +318,24 @@ export default function AdminPage() {
                                         >
                                             {product.isActive ? <Eye size={20} /> : <EyeOff size={20} className="text-gray-400" />}
                                         </button>
+                                    </td>
+
+                                    <td className="p-4 text-center">
+                                        {(product.syncStatus === 'pending' || product.syncStatus === 'failed') ? (
+                                            <button 
+                                                onClick={() => handleSavePro(product)}
+                                                className={`flex flex-col items-center justify-center w-full gap-1 ${product.syncStatus === 'failed' ? 'text-red-500' : 'text-amber-500'}`}
+                                                title="Clique para tentar sincronizar agora"
+                                            >
+                                                <RefreshCw size={18} className={product.syncStatus === 'pending' ? 'animate-spin' : ''} />
+                                                <span className="text-[8px] font-black uppercase">{product.syncStatus === 'failed' ? 'Falhou' : 'Pendente'}</span>
+                                            </button>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center w-full gap-1 text-green-600">
+                                                <CheckCircle2 size={18} />
+                                                <span className="text-[8px] font-black uppercase">Sincronizado</span>
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="p-4">
                                         {product.imagem ? (

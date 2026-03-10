@@ -5,6 +5,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  comboPrice?: number; // Preço promocional para 3+ peças
   imageUrl: string;
   secondaryImageUrl?: string;
   images?: string[]; // Adicionando URLs de imagens da galeria

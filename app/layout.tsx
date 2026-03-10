@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import DynamicCart from "@/components/layout/DynamicCart";
 import { brandConfig } from "@/config/brandConfig";
 import TransitionProvider from "@/components/layout/TransitionProvider";
+import Providers from "@/components/layout/Providers";
 
 // 1. Configurando a Fonte Única (Estilo Suíço - Inter)
 const inter = Inter({
@@ -72,46 +73,43 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // 2. Injetando apenas a variável da Inter
     <html lang="pt-BR" className={inter.variable}>
-      <body className="font-sans antialiased bg-white text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
+      <body className="font-sans antialiased bg-hooke-50 text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
+        <Providers>
+          <TopBar />
+          <Navbar />
 
-        <TopBar />
-        <Navbar />
+          <DynamicCart />
 
-        {/* Carrinho Lateral */}
-        <DynamicCart />
+          <main className="flex-grow w-full">
+            <TransitionProvider>
+              {children}
+            </TransitionProvider>
+          </main>
 
-        <main className="flex-grow w-full">
-          <TransitionProvider>
-            {children}
-          </TransitionProvider>
-        </main>
+          <WhatsAppButton />
+          <Footer />
 
-        <WhatsAppButton />
-        <Footer />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#000000',
+                color: '#fff',
+                borderRadius: '0px',
+                fontFamily: 'var(--font-inter)',
+                fontSize: '13px',
+                fontWeight: 500,
+                padding: '16px 24px',
+              }
+            }}
+          />
 
-        {/* 3. Toaster Estilizado (Sharp & Black) */}
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: '#000000', // Preto Puro
-              color: '#fff',
-              borderRadius: '0px',   // Cantos 100% retos (Estilo Graphik/Swiss)
-              fontFamily: 'var(--font-inter)',
-              fontSize: '13px',
-              fontWeight: 500,
-              padding: '16px 24px',
-            }
-          }}
-        />
-
-        <SpeedInsights />
-        <Analytics />
-        <MetaPixel />
-        {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
-
+          <MetaPixel />
+          <SpeedInsights />
+          <Analytics />
+          {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
+        </Providers>
       </body>
     </html>
   );
