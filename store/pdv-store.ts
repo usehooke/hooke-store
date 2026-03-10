@@ -26,6 +26,7 @@ export interface OfflineSale {
   id: string;
   items: PDVItem[];
   total: number;
+  paymentMethod: 'dinheiro' | 'pix' | 'cartao';
   timestamp: number;
   status: 'pending' | 'synced' | 'failed';
 }
@@ -97,6 +98,7 @@ export const usePDVStore = create<PDVState>()(
           ...saleData,
           id: `sale-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           status: 'pending',
+          paymentMethod: saleData.paymentMethod,
         };
         set({ 
           offlineQueue: [...get().offlineQueue, newSale],

@@ -2,13 +2,14 @@ const TINY_API_TOKEN = process.env.TINY_API_TOKEN;
 const TINY_API_URL = "https://api.tiny.com.br/api2";
 
 export class TinyClient {
-  private static async post(endpoint: string, data: Record<string, any>) {
+  private static async post(endpoint: string, data: Record<string, unknown>) {
     const formData = new URLSearchParams();
     formData.append("token", TINY_API_TOKEN || "");
     formData.append("formato", "json");
     
     for (const [key, value] of Object.entries(data)) {
-        formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+        const val = typeof value === 'object' ? JSON.stringify(value) : String(value);
+        formData.append(key, val);
     }
 
     const response = await fetch(`${TINY_API_URL}${endpoint}`, {
@@ -41,7 +42,7 @@ export class TinyClient {
   }
 
   // Incluir novo produto (Cadastro Mestre)
-  static async createProduct(productData: any) {
+  static async createProduct(productData: Record<string, unknown>) {
     return this.post("/produto.incluir.php", {
       produto: productData
     });

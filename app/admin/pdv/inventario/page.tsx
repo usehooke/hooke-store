@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/types";
-import { Search, Camera, ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { Camera, ArrowLeft, RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 
@@ -15,7 +13,6 @@ interface AuditItem {
 }
 
 export default function InventoryModePage() {
-  const [bipValue, setBipValue] = useState("");
   const [auditList, setAuditList] = useState<AuditItem[]>([]);
   const [manualSku, setManualSku] = useState("");
 
@@ -40,7 +37,6 @@ export default function InventoryModePage() {
     toast.success(`Bip: ${sku}`, {
         style: { background: '#000', color: '#fff', fontSize: '10px' }
     });
-    setBipValue("");
   };
 
   return (

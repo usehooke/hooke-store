@@ -1,14 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
 import { Trash2, Minus, Plus, Zap, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import ReceiptTemplate from "./ReceiptTemplate";
 
 export default function PDVCartSidebar() {
   const { items, removeItem, updateQuantity, addToQueue, clearCart } = usePDVStore();
   const total = usePDVStore(selectPDVTotal);
   const count = usePDVStore(selectPDVCount);
+
+  const [paymentMethod, setPaymentMethod] = useState<'dinheiro' | 'pix' | 'cartao'>('pix');
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const handleFastSale = () => {
     if (items.length === 0) {
@@ -28,10 +33,11 @@ export default function PDVCartSidebar() {
     addToQueue({
       items: [...items],
       total,
+      paymentMethod,
       timestamp: Date.now(),
     });
 
-    toast.success("Venda registrada! Reservando estoque...", {
+    toast.success(`Venda registrada (${paymentMethod.toUpperCase()})!`, {
         icon: <Zap className="text-yellow-500" />,
         style: {
             background: '#000',
@@ -40,7 +46,10 @@ export default function PDVCartSidebar() {
         }
     });
 
-    clearCart(); // Limpa após registro offline
+    // Abrir comprovante
+    setShowReceipt(true);
+    
+    // O carrinho já é limpo pelo addToQueue dentro da store
   };
 
   return (
@@ -107,12 +116,31 @@ export default function PDVCartSidebar() {
           <span className="text-3xl font-black tracking-tighter">R$ {total.toFixed(2)}</span>
         </div>
 
+        <div className="flex flex-col gap-3 mb-6">
+          <span className="text-[10px] font-black uppercase text-hooke-500">Forma de Pagamento</span>
+          <div className="grid grid-cols-3 gap-2">
+            {(['dinheiro', 'pix', 'cartao'] as const).map((method) => (
+              <button
+                key={method}
+                onClick={() => setPaymentMethod(method)}
+                className={`py-3 text-[10px] font-black uppercase tracking-widest border transition-all ${
+                  paymentMethod === method 
+                    ? 'bg-hooke-900 text-white border-hooke-900 shadow-neumorph-inset' 
+                    : 'bg-white text-hooke-900 border-gray-200 shadow-neumorph active:shadow-neumorph-inset'
+                }`}
+              >
+                {method}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <button
           onClick={handleFastSale}
           className="w-full bg-hooke-900 text-white p-6 font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-neumorph active:scale-[0.98] transition-all"
         >
           <Zap className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-          Venda Rápida
+          Concluir Venda
         </button>
         
         <button
@@ -122,6 +150,16 @@ export default function PDVCartSidebar() {
           Cancelar Tudo
         </button>
       </div>
+
+      {showReceipt && (
+        <ReceiptTemplate
+          saleId={`PED-${Date.now()}`} // Mock ID for display until sync
+          items={items}
+          total={total}
+          paymentMethod={paymentMethod}
+          onClose={() => setShowReceipt(false)}
+        />
+      )}
     </div>
   );
 }

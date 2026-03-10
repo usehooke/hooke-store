@@ -6,8 +6,7 @@ import {
   query, 
   where, 
   getDocs,
-  Timestamp,
-  deleteDoc
+  Timestamp
 } from "firebase/firestore";
 
 interface LockResult {

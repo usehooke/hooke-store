@@ -1,4 +1,8 @@
-import { ShoppingCart, LogOut, Package, RefreshCw, AlertTriangle, Tags, ClipboardList, BarChart3 } from "lucide-react";
+import { LogOut, Package, RefreshCw, AlertTriangle, Tags, ClipboardList, BarChart3 } from "lucide-react";
+import Link from "next/link";
+import { useSyncOfflineSales } from "@/hooks/useSyncOfflineSales";
+import PDVProductGrid from "@/components/pdv/ProductGrid";
+import PDVCartSidebar from "@/components/pdv/CartSidebar";
 
 export default function PDVPage() {
   const { isSyncing, pendingCount, isContingencyMode } = useSyncOfflineSales();

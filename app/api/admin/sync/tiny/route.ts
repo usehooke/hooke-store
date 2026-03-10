@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     // ou processamento de grade. Para a Hooke, cada par Cor-Tamanho tem seu SKU.
     
     if (product.skus) {
-        for (const [key, sku] of Object.entries(product.skus)) {
+        for (const sku of Object.values(product.skus)) {
             // Logica para criar variação no Tiny se necessário
             console.log(`Sincronizando SKU de variação: ${sku}`);
         }
@@ -45,10 +45,11 @@ export async function POST(request: Request) {
       tinyId: tinyResponse.retorno.registros?.[0]?.registro?.id,
     });
 
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as Error;
     console.error("Admin -> Tiny Sync Error:", error);
     return NextResponse.json(
-      { error: error.message || "Erro na sincronização" }, 
+      { error: err.message || "Erro na sincronização" }, 
       { status: 500 }
     );
   }
