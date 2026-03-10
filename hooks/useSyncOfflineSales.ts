@@ -13,7 +13,8 @@ export function useSyncOfflineSales() {
 
   useEffect(() => {
     const syncSales = async () => {
-      if (pendingSales.length === 0 || isSyncing || !navigator.onLine || isContingencyMode) return;
+      const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
+      if (pendingSales.length === 0 || isSyncing || !isOnline || isContingencyMode) return;
 
       setIsSyncing(true);
 

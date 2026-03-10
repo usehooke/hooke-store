@@ -1,3 +1,5 @@
+"use client";
+
 import { LogOut, Package, RefreshCw, AlertTriangle, Tags, ClipboardList, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { useSyncOfflineSales } from "@/hooks/useSyncOfflineSales";
