@@ -7,7 +7,7 @@ export async function GET() {
     // await new Promise(resolve => setTimeout(resolve, 500));
     
     return NextResponse.json(products);
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
   }
 }
