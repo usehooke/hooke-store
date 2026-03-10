@@ -120,7 +120,6 @@ export default function LabelGeneratorPage() {
                         sku={currentSKU} 
                         name={selectedProduct.name} 
                         size={selectedSize}
-                        price={selectedProduct.price}
                     />
                   </div>
                   
