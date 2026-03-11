@@ -26,12 +26,17 @@ export default function LabelGeneratorPage() {
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const currentSKU = selectedProduct ? generateSKU({
-      model: (selectedProduct.category === 'Oversized' ? 'OVE' : 'TSH') as ModelSigla,
-      print: selectedProduct.name.split(' ')[1] || 'HOOK',
-      color: selectedProduct.name.split(' ')[2] || 'BLK',
+  const currentSKU = selectedProduct ? (
+    // Se o produto já tem SKUs definidos para cor/tamanho, tenta usar.
+    // Senão, gera um novo baseado na sigla guardada ou nos padrões.
+    selectedProduct.skus?.[selectedSize] || 
+    generateSKU({
+      model: (selectedProduct.modelSigla || (selectedProduct.category === 'Oversized' ? 'OVE' : 'TSH')) as ModelSigla,
+      print: (selectedProduct.printSigla || 'HK1') as any,
+      color: 'UNI', // Como é a página de etiquetas gerais, o usuário pode selecionar o SKU específico no futuro
       size: selectedSize
-  }) : "";
+    })
+  ) : "";
 
   return (
     <div className="min-h-screen bg-hooke-50 text-hooke-900 font-sans p-6">
@@ -81,15 +86,18 @@ export default function LabelGeneratorPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black uppercase">Tam:</span>
                   <div className="flex gap-2">
-                    {["P", "M", "G", "GG"].map(s => (
-                      <button 
-                        key={s} 
-                        onClick={() => setSelectedSize(s)}
-                        className={`px-3 py-1 text-[10px] font-black shadow-neumorph ${selectedSize === s ? "shadow-neumorph-inset" : ""}`}
-                      >
-                        {s}
-                      </button>
-                    ))}
+                    {["P", "M", "G", "GG", "XG", "G1", "G2"].map(s => {
+                      const hasSize = selectedProduct.sizes.includes(s);
+                      return (
+                        <button 
+                          key={s} 
+                          onClick={() => setSelectedSize(s)}
+                          className={`px-3 py-1 text-[10px] font-black shadow-neumorph ${selectedSize === s ? "shadow-neumorph-inset bg-hooke-900 text-white" : ""} ${!hasSize ? "opacity-30" : ""}`}
+                        >
+                          {s}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 

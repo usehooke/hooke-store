@@ -29,7 +29,17 @@ import { CSS } from "@dnd-kit/utilities";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-const AVAILABLE_SIZES = ["P", "M", "G", "GG", "XG"];
+const AVAILABLE_SIZES = ["P", "M", "G", "GG", "XG", "G1", "G2"];
+
+import { 
+    generateSKU, 
+    MODEL_DICTIONARY, 
+    PRINT_DICTIONARY, 
+    COLOR_DICTIONARY,
+    ModelSigla,
+    PrintSigla,
+    ColorSigla
+} from "@/utils/sku-generator";
 
 interface FormProductData {
     id?: string;
@@ -102,6 +112,11 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
     const [isActive, setIsActive] = useState(initialData?.isActive !== false);
     const [sizes, setSizes] = useState<string[]>(initialData?.sizes || ["P", "M", "G", "GG"]);
 
+    // Dicionário Hooke 2026
+    const [modelSigla, setModelSigla] = useState<ModelSigla>((initialData?.modelSigla as ModelSigla) || "TSH");
+    const [printSigla, setPrintSigla] = useState<PrintSigla>((initialData?.printSigla as PrintSigla) || "HK1");
+    const [weight, setWeight] = useState<number>(Number(initialData?.weight) || 300);
+
     // Estoque e SKUs
     const [stock, setStock] = useState<Record<string, number>>(initialData?.stock || {});
     const [skus, setSkus] = useState<Record<string, string>>(initialData?.skus || {});
@@ -152,48 +167,55 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
         setNewColorImg("");
     };
 
-    const generateSKU = (catName: string, colorName: string, sizeName: string, prefixId: string) => {
-        const catCode = catName ? catName.substring(0, 3).toUpperCase() : 'GER';
-
-        const colorClean = colorName.toUpperCase().replace(/[AEIOU\s]/g, '');
-        const colorCode = colorClean.length >= 3 ? colorClean.substring(0, 3) : colorName.substring(0, 3).toUpperCase();
-
-        const randomId = prefixId ? prefixId.substring(0, 3).toUpperCase() : Math.random().toString(36).substring(2, 5).toUpperCase();
-
-        return `${catCode}-${colorCode}-${sizeName}-${randomId}`;
-    };
-
-    // Atualiza SKUs automaticamente ao mudar tamanhos ou cores
-    const updateSkus = (currentColors: { name: string }[], currentSizes: string[], currentCat: string) => {
+    const updateSkus = (currentColors: { name: string }[], currentSizes: string[], currentModel: ModelSigla, currentPrint: PrintSigla) => {
         const newSkus = { ...skus };
-        const idPrefix = initialData?.id || '';
-
+        
         if (currentColors.length > 0) {
             currentColors.forEach(c => {
+                // Tenta encontrar a sigla da cor no dicionário pelo nome
+                const colorSiglaEntry = Object.entries(COLOR_DICTIONARY).find(([_, info]) => info.label.toLowerCase() === c.name.toLowerCase());
+                const colorSigla = colorSiglaEntry ? colorSiglaEntry[0] as ColorSigla : c.name.substring(0, 3).toUpperCase();
+
                 currentSizes.forEach(s => {
                     const combo = `${c.name}-${s}`;
                     if (!newSkus[combo]) {
-                        newSkus[combo] = generateSKU(currentCat, c.name, s, idPrefix);
+                        newSkus[combo] = generateSKU({
+                            model: currentModel,
+                            print: currentPrint,
+                            color: colorSigla,
+                            size: s
+                        });
                     }
                 });
             });
         } else {
-            // Sem cor especificadas
             currentSizes.forEach(s => {
                 if (!newSkus[s]) {
-                    newSkus[s] = generateSKU(currentCat, 'UNI', s, idPrefix);
+                    newSkus[s] = generateSKU({
+                        model: currentModel,
+                        print: currentPrint,
+                        color: "UNI",
+                        size: s
+                    });
                 }
             });
         }
         setSkus(newSkus);
     };
 
+    // Atualiza Peso automaticamente baseado no tecido (estampa)
+    useEffect(() => {
+        const printInfo = (PRINT_DICTIONARY as any)[printSigla];
+        if (printInfo?.weight) {
+            setWeight(printInfo.weight);
+        }
+    }, [printSigla]);
+
     // Gera SKUs dinamicamente sempre que categoria, tamanho ou cor mudarem
     useEffect(() => {
-        // Não substitui se já foi editado para não apagar input manual
-        updateSkus(colors, sizes, category);
+        updateSkus(colors, sizes, modelSigla, printSigla);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [colors, sizes, category]);
+    }, [colors, sizes, modelSigla, printSigla]);
 
     const submitForm = (e: React.FormEvent) => {
         e.preventDefault();
@@ -213,11 +235,13 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
             sizes,
             images,
             imagem: images[0],
-            seoAltText,
             seo: { metaDescription },
             colors,
             stock,
-            skus
+            skus,
+            modelSigla,
+            printSigla,
+            weight
         };
 
         onSubmit(formData);
@@ -433,6 +457,46 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                         </select>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-hooke-900 block">Modelagem Hooke 2026 *</label>
+                            <select
+                                value={modelSigla}
+                                onChange={(e) => setModelSigla(e.target.value as ModelSigla)}
+                                className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-hooke-900 transition-all rounded-none bg-white"
+                            >
+                                {Object.entries(MODEL_DICTIONARY).map(([sigla, info]) => (
+                                    <option key={sigla} value={sigla}>[{sigla}] {info.label}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-hooke-900 block">Estampa / Tecido Hooke 2026 *</label>
+                            <select
+                                value={printSigla}
+                                onChange={(e) => setPrintSigla(e.target.value as PrintSigla)}
+                                className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-hooke-900 transition-all rounded-none bg-white"
+                            >
+                                {Object.entries(PRINT_DICTIONARY).map(([sigla, info]) => (
+                                    <option key={sigla} value={sigla}>[{sigla}] {info.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-hooke-900 block">Peso Estimado (g)</label>
+                        <input
+                            type="number"
+                            value={weight}
+                            onChange={(e) => setWeight(parseInt(e.target.value))}
+                            className="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-hooke-900 transition-all rounded-none"
+                            placeholder="Ex: 300"
+                        />
+                        <p className="text-[9px] text-gray-400 mt-1 uppercase font-bold">O peso é ajustado automaticamente baseado no tecido, mas pode ser alterado manualmente.</p>
+                    </div>
+
                     <div className="space-y-2 bg-white flex flex-col pt-2 pb-6 z-10 relative">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-hooke-900 block">Descrição Rica (Estilo, Composição, Gramatura) *</label>
                         <div className="border border-gray-300 min-h-[200px] mb-8 relative pb-4">
@@ -518,11 +582,17 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                                                 onChange={(e) => setSkus({ ...skus, [comboKey]: e.target.value.toUpperCase() })}
                                                                 onFocus={() => {
                                                                     if (!skus[comboKey]) {
-                                                                        const idPref = initialData?.id || '';
-                                                                        setSkus({ ...skus, [comboKey]: generateSKU(category, color.name, size, idPref) });
+                                                                        const colorSiglaEntry = Object.entries(COLOR_DICTIONARY).find(([_, info]) => info.label.toLowerCase() === color.name.toLowerCase());
+                                                                        const colorSigla = colorSiglaEntry ? colorSiglaEntry[0] as ColorSigla : color.name.substring(0, 3).toUpperCase();
+                                                                        
+                                                                        setSkus({ ...skus, [comboKey]: generateSKU({
+                                                                            model: modelSigla,
+                                                                            print: printSigla,
+                                                                            color: colorSigla,
+                                                                            size: size
+                                                                        }) });
                                                                     }
                                                                 }}
-                                                                className="w-28 border border-gray-300 p-1 text-center text-xs focus:outline-none focus:border-hooke-900 bg-gray-50 placeholder:text-gray-300"
                                                             />
                                                         </div>
                                                         <div className="flex flex-col">
@@ -557,8 +627,12 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                                         onChange={(e) => setSkus({ ...skus, [size]: e.target.value.toUpperCase() })}
                                                         onFocus={() => {
                                                             if (!skus[size]) {
-                                                                const idPref = initialData?.id || '';
-                                                                setSkus({ ...skus, [size]: generateSKU(category, 'UNI', size, idPref) });
+                                                                setSkus({ ...skus, [size]: generateSKU({
+                                                                    model: modelSigla,
+                                                                    print: printSigla,
+                                                                    color: "UNI",
+                                                                    size: size
+                                                                }) });
                                                             }
                                                         }}
                                                         className="w-28 border border-gray-300 p-1 text-center text-xs focus:outline-none focus:border-hooke-900 bg-gray-50 placeholder:text-gray-300"

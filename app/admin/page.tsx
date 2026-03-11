@@ -9,7 +9,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Database, Zap } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import ProductForm from "./components/ProductForm";
 
@@ -270,6 +270,57 @@ export default function AdminPage() {
                         >
                             Sair
                         </button>
+                    </div>
+                </div>
+
+                {/* Acesso Rápido - Hooke Pro 2026 */}
+                <div className="mb-12">
+                    <h2 className="text-xs font-black uppercase tracking-[0.2em] text-hooke-900/40 mb-4">Módulos Hooke 2026</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Link 
+                            href="/admin/pdv" 
+                            className="bg-white border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+                        >
+                            <div>
+                                <Monitor className="h-6 w-6 mb-4 text-hooke-900 group-hover:scale-110 transition-transform" />
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-hooke-900">Frente de Caixa</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">PDV Touch & Mobile</p>
+                            </div>
+                            <Zap className="h-4 w-4 text-yellow-500 mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Link>
+
+                        <Link 
+                            href="/admin/pdv/etiquetas" 
+                            className="bg-white border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+                        >
+                            <div>
+                                <Tags className="h-6 w-6 mb-4 text-hooke-900 group-hover:scale-110 transition-transform" />
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-hooke-900">Etiquetas</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Gerador Térmico (40x25)</p>
+                            </div>
+                        </Link>
+
+                        <Link 
+                            href="/admin/pdv/folha-skus" 
+                            className="bg-white border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+                        >
+                            <div>
+                                <FileText className="h-6 w-6 mb-4 text-hooke-900 group-hover:scale-110 transition-transform" />
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-hooke-900">Guia de SKUs</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Dicionário Oficial 2026</p>
+                            </div>
+                        </Link>
+
+                        <Link 
+                            href="/admin/pdv/populate" 
+                            className="bg-white border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+                        >
+                            <div>
+                                <Database className="h-6 w-6 mb-4 text-hooke-900 group-hover:scale-110 transition-transform" />
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-hooke-900">Dicionário</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Carga de Dados Firestore</p>
+                            </div>
+                        </Link>
                     </div>
                 </div>
 

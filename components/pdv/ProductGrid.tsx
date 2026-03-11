@@ -28,8 +28,8 @@ export default function PDVProductGrid() {
   const filteredProducts = products?.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
-    // Mock check: if model filter is on, we'd check against SKU prefix if it existed in data
-    return matchesSearch && matchesCategory;
+    const matchesModel = selectedModel === "All" || p.modelSigla === selectedModel || (p.category === 'Oversized' && selectedModel === 'OVE') || (p.category !== 'Oversized' && selectedModel === 'TSH');
+    return matchesSearch && matchesCategory && matchesModel;
   });
 
   if (isLoading) {
@@ -100,7 +100,7 @@ export default function PDVProductGrid() {
           >
             {/* Model Tag Indicator */}
             <div className="absolute top-4 left-4 z-10 bg-black text-white text-[8px] font-black px-2 py-1">
-              {product.category === 'Oversized' ? 'OVE' : 'TSH'}
+              {product.modelSigla || (product.category === 'Oversized' ? 'OVE' : 'TSH')}
             </div>
 
             <div className="relative aspect-square overflow-hidden mb-3 shadow-neumorph-inset">
@@ -116,8 +116,8 @@ export default function PDVProductGrid() {
               <p className="text-xs text-hooke-500 mb-2">R$ {product.price.toFixed(2)}</p>
               
               {/* Quick Size Selection Overlay/Buttons */}
-              <div className="mt-auto grid grid-cols-2 gap-1">
-                {product.sizes.slice(0, 4).map((size) => (
+              <div className="mt-auto grid grid-cols-3 gap-1">
+                {product.sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => addItem(product, size)}
