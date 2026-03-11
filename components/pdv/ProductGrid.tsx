@@ -23,10 +23,11 @@ export default function PDVProductGrid() {
     },
   });
 
-  const categories = ["All", ...new Set(products?.map((p) => p.category) || [])];
+  const categories = ["All", ...new Set(Array.isArray(products) ? products.map((p) => p.category) : [])];
+  const items = Array.isArray(products) ? products : [];
 
-  const filteredProducts = products?.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+  const filteredProducts = items.filter((p) => {
+    const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
     const matchesModel = selectedModel === "All" || p.modelSigla === selectedModel || (p.category === 'Oversized' && selectedModel === 'OVE') || (p.category !== 'Oversized' && selectedModel === 'TSH');
     return matchesSearch && matchesCategory && matchesModel;
@@ -56,7 +57,7 @@ export default function PDVProductGrid() {
           >
             <span className="text-xl font-black">{sigla}</span>
             <span className="text-[8px] font-bold uppercase mt-1 opacity-70">
-              {MODEL_DICTIONARY[sigla].label.split(' ')[0]}
+              {MODEL_DICTIONARY[sigla]?.label?.split(' ')[0] || sigla}
             </span>
           </button>
         ))}
@@ -93,7 +94,7 @@ export default function PDVProductGrid() {
 
       {/* Grid */}
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {filteredProducts?.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product.id}
             className="group relative flex flex-col bg-hooke-50 p-3 shadow-neumorph transition-transform active:scale-95"
@@ -104,20 +105,22 @@ export default function PDVProductGrid() {
             </div>
 
             <div className="relative aspect-square overflow-hidden mb-3 shadow-neumorph-inset">
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                fill
-                className="object-cover"
-              />
+              {product.imageUrl && (
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name || "Produto"}
+                  fill
+                  className="object-cover"
+                />
+              )}
             </div>
             <div className="flex flex-col flex-grow">
-              <h3 className="text-sm font-bold truncate mb-1">{product.name}</h3>
-              <p className="text-xs text-hooke-500 mb-2">R$ {product.price.toFixed(2)}</p>
+              <h3 className="text-sm font-bold truncate mb-1">{product.name || "Sem Nome"}</h3>
+              <p className="text-xs text-hooke-500 mb-2">R$ {(product.price || 0).toFixed(2)}</p>
               
               {/* Quick Size Selection Overlay/Buttons */}
               <div className="mt-auto grid grid-cols-3 gap-1">
-                {product.sizes.map((size) => (
+                {Array.isArray(product.sizes) && product.sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => addItem(product, size)}

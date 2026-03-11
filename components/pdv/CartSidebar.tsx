@@ -80,7 +80,7 @@ export default function PDVCartSidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-bold truncate uppercase">{item.name}</h4>
-                <p className="text-[10px] font-bold text-hooke-500 mb-2">TAM: {item.selectedSize} - R$ {item.price.toFixed(2)}</p>
+                <p className="text-[10px] font-bold text-hooke-500 mb-2">TAM: {item.selectedSize} - R$ {(item.price || 0).toFixed(2)}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <button 
@@ -113,7 +113,7 @@ export default function PDVCartSidebar() {
       <div className="mt-auto pt-6 border-t border-hooke-200">
         <div className="flex justify-between items-end mb-6">
           <span className="text-xs font-bold text-hooke-500">TOTAL DA VENDA</span>
-          <span className="text-3xl font-black tracking-tighter">R$ {total.toFixed(2)}</span>
+          <span className="text-3xl font-black tracking-tighter">R$ {(total || 0).toFixed(2)}</span>
         </div>
 
         <div className="flex flex-col gap-3 mb-6">

@@ -59,7 +59,7 @@ export default function ReceiptTemplate({ saleId, items, total, paymentMethod, o
               </tr>
             </thead>
             <tbody>
-              {items.map((item, idx) => (
+              {Array.isArray(items) && items.map((item, idx) => (
                 <tr key={idx} className="text-[10px]">
                   <td className="py-2">
                     {item.name}
@@ -67,7 +67,7 @@ export default function ReceiptTemplate({ saleId, items, total, paymentMethod, o
                     <span className="opacity-60">{item.selectedSize}</span>
                   </td>
                   <td className="py-2 text-right">{item.quantity}</td>
-                  <td className="py-2 text-right">R$ {(item.price * item.quantity).toFixed(2)}</td>
+                  <td className="py-2 text-right">R$ {((item.price || 0) * (item.quantity || 1)).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -78,7 +78,7 @@ export default function ReceiptTemplate({ saleId, items, total, paymentMethod, o
           <div className="space-y-2 mb-6">
             <div className="flex justify-between text-lg font-black italic">
               <span>TOTAL:</span>
-              <span>R$ {total.toFixed(2)}</span>
+              <span>R$ {(total || 0).toFixed(2)}</span>
             </div>
             <div className="flex justify-between opacity-70">
               <span>PAGAMENTO:</span>
