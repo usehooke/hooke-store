@@ -6,13 +6,14 @@ import { Product } from "@/types";
 import BarcodeLabel from "@/components/pdv/BarcodeLabel";
 import { Package, Printer, Plus, Minus, ArrowLeft, Search } from "lucide-react";
 import Link from "next/link";
-import { generateSKU, ModelSigla, PrintSigla } from "@/utils/sku-generator";
+import { generateSKU, ModelSigla, PrintSigla, COLOR_DICTIONARY, ColorSigla } from "@/utils/sku-generator";
 
 export default function LabelGeneratorPage() {
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedColor, setSelectedColor] = useState<ColorSigla>("PRE");
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["products"],
@@ -33,7 +34,7 @@ export default function LabelGeneratorPage() {
     generateSKU({
       model: (selectedProduct.modelSigla || (selectedProduct.category === 'Oversized' ? 'OVE' : 'TSH')) as ModelSigla,
       print: (selectedProduct.printSigla || 'HK1') as PrintSigla,
-      color: 'UNI', // Como é a página de etiquetas gerais, o usuário pode selecionar o SKU específico no futuro
+      color: selectedColor,
       size: selectedSize
     })
   ) : "";
@@ -83,21 +84,37 @@ export default function LabelGeneratorPage() {
               <div className="bg-hooke-50 p-6 shadow-neumorph space-y-6">
                 <h3 className="text-xs font-black uppercase tracking-widest text-hooke-500">2. Configurações</h3>
                 
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-black uppercase">Tam:</span>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {["P", "M", "G", "GG", "XG", "G1", "G2"].map(s => {
                       const hasSize = selectedProduct.sizes.includes(s);
                       return (
                         <button 
                           key={s} 
                           onClick={() => setSelectedSize(s)}
-                          className={`px-3 py-1 text-[10px] font-black shadow-neumorph ${selectedSize === s ? "shadow-neumorph-inset bg-hooke-900 text-white" : ""} ${!hasSize ? "opacity-30" : ""}`}
+                          className={`px-3 py-2 text-[10px] font-black shadow-neumorph transition-all ${selectedSize === s ? "shadow-neumorph-inset bg-hooke-900 text-white" : "bg-hooke-50"} ${!hasSize ? "opacity-30" : ""}`}
                         >
                           {s}
                         </button>
                       );
                     })}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <span className="text-[10px] font-black uppercase">Cor:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {(Object.keys(COLOR_DICTIONARY) as ColorSigla[]).map(c => (
+                      <button 
+                        key={c} 
+                        onClick={() => setSelectedColor(c)}
+                        className={`px-3 py-2 text-[10px] font-black shadow-neumorph transition-all ${selectedColor === c ? "shadow-neumorph-inset bg-hooke-900 text-white" : "bg-hooke-50"}`}
+                        title={COLOR_DICTIONARY[c].label}
+                      >
+                        {c}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
