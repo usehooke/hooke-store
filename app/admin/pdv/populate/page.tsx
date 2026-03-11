@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { MODEL_DICTIONARY, PRINT_DICTIONARY, COLOR_DICTIONARY } from "@/utils/sku-generator";
 import { Database, CheckCircle, AlertTriangle, ArrowLeft } from "lucide-react";
 import Link from "next/link";

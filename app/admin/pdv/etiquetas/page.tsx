@@ -6,7 +6,7 @@ import { Product } from "@/types";
 import BarcodeLabel from "@/components/pdv/BarcodeLabel";
 import { Package, Printer, Plus, Minus, ArrowLeft, Search } from "lucide-react";
 import Link from "next/link";
-import { generateSKU, ModelSigla } from "@/utils/sku-generator";
+import { generateSKU, ModelSigla, PrintSigla } from "@/utils/sku-generator";
 
 export default function LabelGeneratorPage() {
   const [search, setSearch] = useState("");
@@ -32,7 +32,7 @@ export default function LabelGeneratorPage() {
     selectedProduct.skus?.[selectedSize] || 
     generateSKU({
       model: (selectedProduct.modelSigla || (selectedProduct.category === 'Oversized' ? 'OVE' : 'TSH')) as ModelSigla,
-      print: (selectedProduct.printSigla || 'HK1') as any,
+      print: (selectedProduct.printSigla || 'HK1') as PrintSigla,
       color: 'UNI', // Como é a página de etiquetas gerais, o usuário pode selecionar o SKU específico no futuro
       size: selectedSize
     })
