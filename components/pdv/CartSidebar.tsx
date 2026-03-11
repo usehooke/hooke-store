@@ -2,13 +2,18 @@
 
 import { useState } from "react";
 import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
+import { useShallow } from 'zustand/react/shallow';
 import { Trash2, Minus, Plus, Zap, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import ReceiptTemplate from "./ReceiptTemplate";
 
 export default function PDVCartSidebar() {
-  const { items, removeItem, updateQuantity, addToQueue, clearCart } = usePDVStore();
+  const items = usePDVStore(useShallow(state => state.items));
+  const removeItem = usePDVStore(state => state.removeItem);
+  const updateQuantity = usePDVStore(state => state.updateQuantity);
+  const addToQueue = usePDVStore(state => state.addToQueue);
+  const clearCart = usePDVStore(state => state.clearCart);
   const total = usePDVStore(selectPDVTotal);
   const count = usePDVStore(selectPDVCount);
 

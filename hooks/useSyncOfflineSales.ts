@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { usePDVStore, selectPendingSales } from "@/store/pdv-store";
+import { useShallow } from 'zustand/react/shallow';
 import { toast } from "react-hot-toast";
 
 export function useSyncOfflineSales() {
-  const pendingSales = usePDVStore(selectPendingSales);
-  const { updateSaleStatus, removeFromQueue } = usePDVStore();
+  const pendingSales = usePDVStore(useShallow(selectPendingSales));
+  const updateSaleStatus = usePDVStore(state => state.updateSaleStatus);
+  const removeFromQueue = usePDVStore(state => state.removeFromQueue);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isContingencyMode, setIsContingencyMode] = useState(false);
   const [failureCount, setFailureCount] = useState(0);

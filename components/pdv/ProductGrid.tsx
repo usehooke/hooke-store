@@ -7,9 +7,10 @@ import { usePDVStore } from "@/store/pdv-store";
 import { useState } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { MODEL_DICTIONARY, ModelSigla } from "@/utils/sku-generator";
+import { useShallow } from 'zustand/react/shallow';
 
 export default function PDVProductGrid() {
-  const { addItem } = usePDVStore();
+  const addItem = usePDVStore(state => state.addItem);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedModel, setSelectedModel] = useState<ModelSigla | "All">("All");
