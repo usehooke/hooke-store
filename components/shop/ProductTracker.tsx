@@ -14,8 +14,6 @@ export default function ProductTracker({ product }: ProductTrackerProps) {
   const { addViewedProduct } = useRecentlyViewed();
 
   useEffect(() => {
-    const eventId = `view_${product.id}_${Date.now()}`;
-    
     // Analytics
     trackEvent('ViewContent', {
       content_name: product.name,
@@ -28,7 +26,7 @@ export default function ProductTracker({ product }: ProductTrackerProps) {
 
     // Rastro de Navegação (Recently Viewed)
     addViewedProduct(product);
-  }, [product.id, product.name, product.price, product.category, addViewedProduct]);
+  }, [product, addViewedProduct]);
 
   return null;
 }
