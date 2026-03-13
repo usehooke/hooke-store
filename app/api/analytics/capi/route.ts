@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     const testCode = brandConfig.analytics.metaTestEventCode;
 
     if (!pixelId || !accessToken) {
+      console.error('Meta CAPI Error: Pixel ID or Access Token is missing in environment variables.');
       return NextResponse.json({ error: 'Meta Pixel ID or Access Token missing' }, { status: 400 });
     }
 

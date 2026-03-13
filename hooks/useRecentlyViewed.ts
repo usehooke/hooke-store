@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Product } from '@/data/catalogo';
 
 const RECENTLY_VIEWED_KEY = 'hooke_recently_viewed';
@@ -12,11 +12,15 @@ export function useRecentlyViewed() {
   useEffect(() => {
     const saved = localStorage.getItem(RECENTLY_VIEWED_KEY);
     if (saved) {
-      setItems(JSON.parse(saved));
+      try {
+        setItems(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error parsing recently viewed", e);
+      }
     }
   }, []);
 
-  const addViewedProduct = (product: Product) => {
+  const addViewedProduct = useCallback((product: Product) => {
     const saved = localStorage.getItem(RECENTLY_VIEWED_KEY);
     let current: Product[] = saved ? JSON.parse(saved) : [];
 
@@ -31,7 +35,7 @@ export function useRecentlyViewed() {
     
     localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(trimmed));
     setItems(trimmed);
-  };
+  }, []);
 
   return { items, addViewedProduct };
 }
