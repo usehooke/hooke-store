@@ -14,7 +14,9 @@ const config: Config = {
             // 1. Fontes Unificadas (Tudo Inter agora)
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],    
-                heading: ["var(--font-inter)", "sans-serif"], // Títulos também usam Inter (Visual Limpo)
+                heading: ["var(--font-inter)", "sans-serif"],
+                outfit: ["var(--font-outfit)", "sans-serif"],
+                display: ["var(--font-playfair)", "serif"],
             },
             // 2. Cores: Hooke 900 agora é PRETO PURO (#000)
             colors: {

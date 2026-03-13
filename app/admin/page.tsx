@@ -9,7 +9,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Database, Zap } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Database, Zap, Rocket } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import ProductForm from "./components/ProductForm";
 
@@ -312,14 +312,15 @@ export default function AdminPage() {
                         </Link>
 
                         <Link 
-                            href="/admin/pdv/populate" 
-                            className="bg-white border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+                            href="/admin/lancamentos" 
+                            className="bg-zinc-900 border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
                         >
                             <div>
-                                <Database className="h-6 w-6 mb-4 text-hooke-900 group-hover:scale-110 transition-transform" />
-                                <h3 className="text-lg font-black uppercase tracking-tighter text-hooke-900">Dicionário</h3>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Carga de Dados Firestore</p>
+                                <Rocket className="h-6 w-6 mb-4 text-white group-hover:scale-110 transition-transform" />
+                                <h3 className="text-lg font-black uppercase tracking-tighter text-white">Lançamentos</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mt-1">Lookbooks & Anúncios</p>
                             </div>
+                            <Zap className="h-4 w-4 text-yellow-500 mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </Link>
                     </div>
                 </div>
