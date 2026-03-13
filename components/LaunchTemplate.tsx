@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronDown, Star, Shirt, Wind, Ruler, ShieldCheck } from "lucide-react";
+import { Shirt, Wind, Ruler, ShieldCheck } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import type { Product } from "@/data/catalogo";
 
@@ -11,15 +11,9 @@ interface LaunchTemplateProps {
 }
 
 export default function LaunchTemplate({ product }: LaunchTemplateProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // Scroll handling placeholder if needed in future
   }, []);
 
   // Formatador de Moeda
@@ -91,7 +85,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
             <h3 className="text-3xl font-display font-bold italic font-serif">A Narrativa Hooke</h3>
           </div>
           <div className="hidden md:block max-w-sm text-right">
-            <p className="text-sm text-zinc-500 font-light italic">"Streetwear é a armadura para sobreviver à realidade do dia a dia."</p>
+            <p className="text-sm text-zinc-500 font-light italic">&quot;Streetwear é a armadura para sobreviver à realidade do dia a dia.&quot;</p>
           </div>
         </div>
 

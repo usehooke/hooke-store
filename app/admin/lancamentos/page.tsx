@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Rocket, Camera, ExternalLink, Image as ImageIcon, Send } from "lucide-react";
 import { getProducts } from "@/lib/productService";
 
@@ -39,7 +40,7 @@ export default async function AdminLancamentos() {
             <span className="text-4xl font-black text-zinc-200 block mb-4">01</span>
             <h3 className="text-sm font-bold uppercase tracking-widest mb-4">Gere as Imagens</h3>
             <p className="text-xs text-zinc-500 leading-relaxed">
-              Use o seu **Gem "Fotografia Hooke Store"** no Google Advanced para criar as 5 fotos do catálogo e o banner hero (16:9).
+              Use o seu &quot;Gem Fotografia Hooke Store&quot; no Google Advanced para criar as 5 fotos do catálogo e o banner hero (16:9).
             </p>
           </div>
 
@@ -77,7 +78,7 @@ export default async function AdminLancamentos() {
             {lancamentos.length > 0 ? lancamentos.map(p => (
               <div key={p.id} className="border border-zinc-100 p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-black transition-all">
                 <div className="relative w-24 h-24 bg-zinc-100 flex-shrink-0">
-                  <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                  <Image src={p.imageUrl} alt={p.name} fill className="object-cover" />
                 </div>
                 <div className="flex-grow text-center md:text-left">
                   <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-1">{p.category}</h4>
