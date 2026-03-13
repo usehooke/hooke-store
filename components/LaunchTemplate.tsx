@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Shirt, Wind, Ruler, ShieldCheck } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import type { Product } from "@/data/catalogo";
 
 interface LaunchTemplateProps {
