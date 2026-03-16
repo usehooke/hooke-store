@@ -1,5 +1,26 @@
 import { Truck, RefreshCw, ShieldCheck } from "lucide-react";
-import { Product } from "@/types";
+import { Product as GlobalProduct } from "@/types";
+
+// Re-exportando para manter compatibilidade com componentes que ainda importam daqui
+export type Product = GlobalProduct;
+
+// =================================================================================
+// 🟢 CÉREBRO DA HOOKE (HOOK OS)
+// Centraliza todos os dados do site. Mudou aqui, mudou no site todo.
+// =================================================================================
+
+export const SITE_CONFIG = {
+  nome: "Hooke",
+  descricao_site: "Redefinindo o básico masculino. Camisetas de algodão egípcio e Suedine 240g.",
+  whatsapp_number: "5511975902528", // Número real atualizado
+  whatsapp_message: "Olá! Vim pelo site da UseHooke e gostaria de tirar uma dúvida.",
+  frete_gratis_minimo: 299.00, // Valor para ganhar frete grátis (lógica futura)
+  max_parcelas: 3, // Configuração Global de Parcelamento
+};
+
+// ---------------------------------------------------------------------------------
+// 1. PRODUTOS (SEU ESTOQUE VIRTUAL)
+// ---------------------------------------------------------------------------------
 
 export const PRODUTOS: Product[] = [
   // --- KITS (O CORAÇÃO DO LUCRO) ---
