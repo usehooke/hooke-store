@@ -10,7 +10,7 @@ export default function VirtualCard() {
   const [isFlipped, setIsFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const qrUrl = `${brandConfig.shop.baseUrl}?utm_source=cartao_virtual&utm_medium=physical`;
+  const qrUrl = `${brandConfig.shop.baseUrl}/contato?utm_source=cartao_virtual&utm_medium=physical`;
 
   return (
     <div className="flex flex-col items-center gap-8 w-full max-w-sm mx-auto p-4 perspect-1000">

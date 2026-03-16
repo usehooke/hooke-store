@@ -23,12 +23,12 @@ export const brandConfig = {
     addresses: [
       {
         name: "Vautier Premium",
-        street: "Rua Thiers 184, Loja 148",
+        street: "Rua Tiers, 184 - Loja 148",
         neighborhood: "Brás, São Paulo - SP"
       },
       {
         name: "Shopping Porto",
-        street: "Rua Tiers 282, Loja 1598",
+        street: "Rua Tiers, 282 - Loja 1598",
         neighborhood: "Brás, São Paulo - SP"
       }
     ],
