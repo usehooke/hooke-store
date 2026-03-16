@@ -25,6 +25,7 @@ export interface Product {
   };
   isNew?: boolean;
   featured?: boolean; // Adicionado para produtos em destaque
+  isActive?: boolean; // Flag para visibilidade na loja
   isPremiumCollection?: boolean; // Flag para Sprint v1.5: Gatilho de Qualidade
   seoAltText: string;
   slug: string;

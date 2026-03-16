@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, limit, QueryConstraint } from "firebase/firestore";
-import type { Product } from "@/data/catalogo";
+import { Product } from "@/types";
 
 export const COLLECTION_NAME = "produtos";
 
