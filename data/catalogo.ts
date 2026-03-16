@@ -1,46 +1,5 @@
-// src/data/catalogo.ts
 import { Truck, RefreshCw, ShieldCheck } from "lucide-react";
-
-// =================================================================================
-// 🟢 CÉREBRO DA HOOKE (HOOK OS)
-// Centraliza todos os dados do site. Mudou aqui, mudou no site todo.
-// =================================================================================
-
-export const SITE_CONFIG = {
-  nome: "Hooke",
-  descricao_site: "Redefinindo o básico masculino. Camisetas de algodão egípcio e Suedine 240g.",
-  whatsapp_number: "5511975902528", // Número real atualizado
-  whatsapp_message: "Olá! Vim pelo site da UseHooke e gostaria de tirar uma dúvida.",
-  frete_gratis_minimo: 299.00, // Valor para ganhar frete grátis (lógica futura)
-  max_parcelas: 3, // Configuração Global de Parcelamento
-};
-
-// ---------------------------------------------------------------------------------
-// 1. PRODUTOS (SEU ESTOQUE VIRTUAL)
-// ---------------------------------------------------------------------------------
-
-export interface Product {
-  id: string;
-  name: string;
-  seoAltText: string;
-  slug: string;
-  price: number;
-  featured: boolean; // Se aparece com destaque na Home
-  isNew?: boolean;   // Se tem a tag "Lançamento" ou "Novo"
-  isActive?: boolean; // Se está visível na loja
-  description: string;
-  imageUrl: string;  // Foto principal (Capa)
-  images: string[];  // Galeria de fotos
-  seo?: { altText: string; metaDescription: string }; // Novo: SEO
-  colors?: { name: string; imageUrl: string }[]; // Novo: Variações com Foto
-  sizes: string[];
-  category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle";
-  details: {
-    fabric: string; // Ex: Algodão Egípcio, Suedine 240g
-    model: string;  // Ex: Oversized, Slim, Machão
-    wash: string;   // Ex: Amaciada, Stone Washed
-  };
-}
+import { Product } from "@/types";
 
 export const PRODUTOS: Product[] = [
   // --- KITS (O CORAÇÃO DO LUCRO) ---
@@ -52,6 +11,7 @@ export const PRODUTOS: Product[] = [
     price: 150.90, // Atualizado conforme seu pedido anterior
     featured: true, // Hero Principal
     isNew: true,
+    isPremiumCollection: true,
     description: "O melhor custo-benefício. Leve 3 peças da nossa modelagem Oversized exclusiva. Suedine 240g, gola de 2,5cm e caimento streetwear.",
     imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
     images: [
