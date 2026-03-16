@@ -9,9 +9,10 @@ import AddToCartSection from "@/components/shop/AddToCartSection";
 import ProductGallery from "@/components/shop/ProductGallery";
 import ProductFeatures from "@/components/shop/ProductFeatures";
 import RelatedProducts from "@/components/shop/RelatedProducts"; // Este precisará de ajuste leve
-import ProductDetailsBento from "@/components/shop/ProductDetailsBento"; // Este também
+import ProductDetailsBento from "@/components/shop/ProductDetailsBento";
 import KitPromoCard from "@/components/shop/KitPromoCard";
 import ShareButton from "@/components/ui/ShareButton";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 // Tipagem correta para Next.js 15+ (params como Promise)
 interface ProductPageProps {
@@ -41,6 +42,14 @@ function ProductView({ product }: { product: Product }) {
     <main className="w-full px-6 md:px-12 py-12 md:py-16 mb-20 animate-in fade-in duration-500">
       <ProductTracker product={product} />
 
+      {/* Breadcrumbs - Premium Hooke Navigation */}
+      <Breadcrumbs 
+        items={[
+          { label: product.category, href: "/colecao" }, // Mantendo integridade de links conforme solicitado
+          { label: product.name }
+        ]} 
+      />
+
       {/* Grid Assimétrico: 60% Foto (Esq) / 40% Texto (Dir) */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-12 lg:gap-24 items-start">
 
@@ -69,11 +78,11 @@ function ProductView({ product }: { product: Product }) {
               )}
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-bold text-hooke-900 uppercase tracking-tight mb-3 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-hooke-900 uppercase tracking-tighter mb-4 leading-[0.9] font-heading">
               {product.name}
             </h1>
             <div className="flex items-center justify-between">
-              <p className="text-xl md:text-2xl text-gray-500 font-medium">
+              <p className="text-2xl md:text-3xl text-gray-500 font-bold tracking-tight">
                 {formatter.format(product.price)}
               </p>
               <ShareButton

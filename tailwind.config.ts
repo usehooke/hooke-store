@@ -14,7 +14,7 @@ const config: Config = {
             // 1. Fontes Unificadas (Tudo Inter agora)
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],    
-                heading: ["var(--font-inter)", "sans-serif"],
+                heading: ["var(--font-outfit)", "sans-serif"], // MUDANÇA: Outfit agora é a fonte principal de títulos
                 outfit: ["var(--font-outfit)", "sans-serif"],
                 display: ["var(--font-playfair)", "serif"],
             },

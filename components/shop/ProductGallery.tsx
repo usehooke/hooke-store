@@ -1,23 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Product } from "@/data/catalogo";
-import { motion, AnimatePresence } from "framer-motion";
+import { Product } from "@/types";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 interface ProductGalleryProps {
   product: Product;
 }
 
 export default function ProductGallery({ product }: ProductGalleryProps) {
-  // Fallback seguro se não tiver galeria extra
   const images = product.images && product.images.length > 0
     ? product.images
-    : [product.imageUrl, product.imageUrl, product.imageUrl, product.imageUrl];
+    : [product.imageUrl];
 
   const [selectedImage, setSelectedImage] = useState(images[0]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // V4: Ouve eventos de mudança de cor disparados por outros componentes
+  // Hook para barra de progresso no mobile (Sinaliza que tem mais fotos)
+  const { scrollXProgress } = useScroll({ container: containerRef });
+  const scaleX = useSpring(scrollXProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // V4: Ouve eventos de mudança de cor
   useEffect(() => {
     const handleImageChange = (e: Event) => {
       const customEvent = e as CustomEvent<string>;
@@ -30,55 +38,59 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
   }, []);
 
   return (
-    <div className="flex flex-col-reverse md:flex-row gap-4 w-full h-full">
-
-      {/* THUMBNAILS */}
-      <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto scrollbar-hide py-2 md:py-0 px-1 md:px-0 justify-start md:w-24 md:h-[80vh] sticky top-24">
+    <div className="w-full flex flex-col gap-4">
+      
+      {/* 1. LAYOUT DESKTOP: LISTA VERTICAL (ESTILO LUXO ZARA/FARFETCH) */}
+      <div className="hidden md:flex flex-col gap-4">
         {images.map((img, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedImage(img)}
-            className={`
-              relative w-20 h-24 md:w-full md:h-32 flex-shrink-0 cursor-pointer transition-all duration-300
-              ${selectedImage === img
-                ? "opacity-100 ring-2 ring-hooke-900 ring-offset-2"
-                : "opacity-60 hover:opacity-100 border border-gray-100"
-              }
-            `}
+          <div 
+            key={index} 
+            className="relative w-full aspect-[4/5] bg-gray-50 overflow-hidden group cursor-zoom-in border border-gray-100"
           >
             <Image
               src={img}
-              alt={`Vista ${index + 1}`}
+              alt={`${product.name} - Vista ${index + 1}`}
               fill
-              className="object-cover object-center"
-              sizes="100px"
+              priority={index === 0}
+              className="object-cover object-center transition-all duration-1000 group-hover:scale-110 group-hover:contrast-[1.05] group-hover:brightness-[1.02]"
+              sizes="70vw"
             />
-          </button>
+          </div>
         ))}
       </div>
 
-      {/* MAIN IMAGE */}
-      <div className="relative flex-1 aspect-[4/5] md:aspect-auto md:h-[85vh] bg-gray-50 overflow-hidden group cursor-zoom-in">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedImage}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="relative w-full h-full"
-          >
-            <Image
-              src={selectedImage}
-              alt={product.seoAltText || product.name}
-              fill
-              priority
-              className="object-cover object-center transition-all duration-700 group-hover:scale-105 group-hover:contrast-[1.10] group-hover:brightness-[1.02]"
-              sizes="(max-width: 768px) 100vw, 70vw"
-            />
-          </motion.div>
-        </AnimatePresence>
+      {/* 2. LAYOUT MOBILE: CARROSSEL COM PROGRESS BAR */}
+      <div className="md:hidden relative w-full">
+        {/* Barra de Progresso Superior (Sutil) */}
+        <motion.div 
+          className="absolute top-0 left-0 right-0 h-1 bg-hooke-900 origin-left z-20"
+          style={{ scaleX }}
+        />
+
+        <div 
+          ref={containerRef}
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide h-[75vh]"
+        >
+          {images.map((img, index) => (
+            <div 
+              key={index} 
+              className="relative w-full flex-shrink-0 snap-center aspect-[4/5]"
+            >
+              <Image
+                src={img}
+                alt={`${product.name} - Vista ${index + 1}`}
+                fill
+                priority={index === 0}
+                className="object-cover object-center"
+                sizes="100vw"
+              />
+              <div className="absolute bottom-4 right-4 bg-black/20 backdrop-blur-md px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest">
+                {index + 1} / {images.length}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
-}
+}

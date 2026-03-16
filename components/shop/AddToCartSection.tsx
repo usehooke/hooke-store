@@ -1,7 +1,7 @@
 // components/shop/AddToCartSection.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { ShoppingBag, Check, Ruler } from "lucide-react";
@@ -22,9 +22,21 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
   const [isAdded, setIsAdded] = useState(false);
   const [isSizeQuizOpen, setIsSizeQuizOpen] = useState(false);
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
+  const [isStickyVisible, setIsStickyVisible] = useState(false);
 
   // Pegamos a função de adicionar da store
   const addItem = useCartStore((state) => state.addItem);
+
+  // Efeito para mostrar o botão sticky apenas quando sair da área inicial no mobile
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth < 768) {
+        setIsStickyVisible(window.scrollY > 600);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleAddToCart = () => {
     // 1. Validação: Obriga a escolher tamanho
@@ -229,6 +241,30 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
           </>
         )}
       </button>
+
+      {/* STICKY MOBILE CTA (V1.6) */}
+      <div className={`
+        fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] transition-all duration-500 md:hidden
+        ${isStickyVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
+      `}>
+        <div className="flex items-center gap-4 max-w-md mx-auto">
+          <div className="flex-1 min-w-0">
+            <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{product.name}</h4>
+            <p className="text-sm font-black text-hooke-900">R$ {product.price.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={!selectedSize || isAdded}
+            className={`
+              flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition-all
+              ${isAdded ? "bg-green-600 text-white" : !selectedSize ? "bg-hooke-100 text-hooke-400" : "bg-hooke-900 text-white active:scale-95"}
+            `}
+          >
+            {isAdded ? <Check size={14} /> : <ShoppingBag size={14} />}
+            {isAdded ? "Na Sacola" : selectedSize ? "Comprar" : "Selecione Tam"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
