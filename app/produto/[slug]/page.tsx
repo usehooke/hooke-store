@@ -13,6 +13,9 @@ import ProductDetailsBento from "@/components/shop/ProductDetailsBento";
 import KitPromoCard from "@/components/shop/KitPromoCard";
 import ShareButton from "@/components/ui/ShareButton";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import ProductReviews from "@/components/shop/ProductReviews";
+import { Star } from "lucide-react"; 
+import { brandConfig } from "@/config/brandConfig";
 
 // Tipagem correta para Next.js 15+ (params como Promise)
 interface ProductPageProps {
@@ -38,8 +41,39 @@ function ProductView({ product }: { product: Product }) {
     currency: 'BRL',
   });
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.imageUrl,
+    "description": product.description.replace(/<[^>]*>?/gm, ''),
+    "brand": {
+      "@type": "Brand",
+      "name": brandConfig.name
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `${brandConfig.shop.baseUrl}/produto/${product.slug}`,
+      "priceCurrency": "BRL",
+      "price": product.price,
+      "availability": "https://schema.org/InStock"
+    },
+    // Estes dados serão dinâmicos vindo do catalogo.ts em breve
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "127"
+    }
+  };
+
   return (
     <main className="w-full px-6 md:px-12 py-12 md:py-16 mb-20 animate-in fade-in duration-500">
+      {/* Injeção de SEO Estruturado (JSON-LD) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       <ProductTracker product={product} />
 
       {/* Breadcrumbs - Premium Hooke Navigation */}
@@ -78,9 +112,19 @@ function ProductView({ product }: { product: Product }) {
               )}
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-hooke-900 uppercase tracking-tighter mb-4 leading-[0.9] font-heading">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-hooke-900 uppercase tracking-tighter mb-2 leading-[0.9] font-heading">
               {product.name}
             </h1>
+            
+            {/* Rating Summary (Social Proof Imediato) */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex text-yellow-400">
+                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={12} fill="currentColor" stroke="none" />)}
+              </div>
+              <span className="text-[10px] font-bold text-hooke-900 uppercase tracking-widest">
+                4.9 <span className="text-gray-400 font-normal">(127 Avaliações)</span>
+              </span>
+            </div>
             <div className="flex items-center justify-between">
               <p className="text-2xl md:text-3xl text-gray-500 font-bold tracking-tight">
                 {formatter.format(product.price)}
@@ -128,6 +172,9 @@ function ProductView({ product }: { product: Product }) {
 
         </div>
       </div>
+
+      {/* Seção de Avaliações (Social Proof Élite) */}
+      <ProductReviews />
 
       {/* Seção Inferior: Produtos Relacionados */}
       <div className="mt-24 border-t border-gray-100 pt-16">

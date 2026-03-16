@@ -24,7 +24,7 @@ export default function ShareButton({ productName, productDescription }: ShareBu
       try {
         await navigator.share(shareData);
       } catch {
-        console.log("Compartilhamento cancelado pelo usuário");
+        // Silently fail if share is cancelled or fails
       }
     } else {
       // 2. Se estiver no PC, copia o link (Fallback)

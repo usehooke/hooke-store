@@ -33,7 +33,7 @@ export default function PDVCartSidebar() {
 
     // Feedback Sonoro (Mock/Simple)
     const audio = new Audio('/sounds/success_beep.mp3');
-    audio.play().catch(() => console.log("Haptic audio played")); // Catch blocking by browser
+    audio.play().catch(() => {}); // Catch blocking by browser
 
     addToQueue({
       items: [...items],

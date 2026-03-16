@@ -33,9 +33,6 @@ export const trackMetaEvent = async (event: EventName, data?: EventData) => {
   // 1. Browser Pixel
   if (typeof window !== 'undefined' && (window as unknown as { fbq: (t: string, e: string, d?: object, opt?: object) => void }).fbq) {
     (window as unknown as { fbq: (t: string, e: string, d?: object, opt?: object) => void }).fbq('track', event, data || {}, { eventID: eventId });
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Meta Pixel] Event: ${event} (ID: ${eventId})`, data);
-    }
   }
 
   // 2. Server Side (CAPI) - Chamada via proxy para proteger o token
@@ -63,9 +60,6 @@ export const trackMetaEvent = async (event: EventName, data?: EventData) => {
 export const trackGAEvent = (event: string, data?: EventData) => {
   if (typeof window !== 'undefined' && (window as unknown as { gtag: (t: string, e: string, d?: object) => void }).gtag) {
     (window as unknown as { gtag: (t: string, e: string, d?: object) => void }).gtag('event', event, data || {});
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[GA4] Event: ${event}`, data);
-    }
   }
 };
 

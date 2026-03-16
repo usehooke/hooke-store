@@ -26,10 +26,8 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
 
   // V4: Ouve eventos de mudança de cor
   useEffect(() => {
-    const handleImageChange = (e: Event) => {
-      const customEvent = e as CustomEvent<string>;
+    const handleImageChange = () => {
       // TODO: Implementar scroll automático para a imagem da cor selecionada no futuro
-      console.log("Mudar imagem para:", customEvent.detail);
     };
     window.addEventListener("change-product-image", handleImageChange);
     return () => window.removeEventListener("change-product-image", handleImageChange);

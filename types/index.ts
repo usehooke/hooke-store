@@ -29,6 +29,8 @@ export interface Product {
   isPremiumCollection?: boolean; // Flag para Sprint v1.5: Gatilho de Qualidade
   seoAltText: string;
   slug: string;
+  rating?: number;
+  reviewsCount?: number;
 }
 
 export interface MenuItem {
