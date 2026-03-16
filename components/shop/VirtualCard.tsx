@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 
 export default function VirtualCard() {
   const [isFlipped, setIsFlipped] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const qrUrl = `${brandConfig.shop.baseUrl}/contato?utm_source=cartao_virtual&utm_medium=physical`;
 

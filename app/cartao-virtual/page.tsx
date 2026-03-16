@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import VirtualCard from '@/components/shop/VirtualCard';
 import { brandConfig } from '@/config/brandConfig';
 import { Download, Share2, Printer, ChevronLeft, Check } from 'lucide-react';
