@@ -50,6 +50,7 @@ export default function Footer() {
             <ul className="space-y-4 text-xs font-medium tracking-wide">
               <li><Link href="/meus-pedidos" className="hover:text-gray-300 transition-colors">Minha Conta</Link></li>
               <li><Link href="/contato" className="hover:text-gray-300 transition-colors">Fale Conosco</Link></li>
+              <li><Link href="/cartao-virtual" className="hover:text-gray-300 transition-colors font-bold">Cartão VIP Hooke</Link></li>
               <li><Link href="/politica-de-trocas" className="hover:text-gray-300 transition-colors">Trocas e Devoluções</Link></li>
               <li><Link href="/guia-medidas" className="hover:text-gray-300 transition-colors">Guia de Medidas</Link></li>
             </ul>

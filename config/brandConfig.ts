@@ -13,14 +13,25 @@ export const brandConfig = {
   contact: {
     whatsapp: {
       number: "5511975902528",
-      message: "Olá! Vim pelo site da UseHooke e gostaria de tirar uma dúvida.",
+      message: "Olá! Vim pelo site da Hooke e gostaria de tirar uma dúvida.",
       getLink: (text?: string) => {
-        const msg = text || "Olá! Vim pelo site da UseHooke e gostaria de tirar uma dúvida.";
+        const msg = text || "Olá! Vim pelo site da Hooke e gostaria de tirar uma dúvida.";
         return `https://wa.me/5511975902528?text=${encodeURIComponent(msg)}`;
       }
     },
     email: "suporte@usehooke.com.br",
-    address: "São Paulo, SP - Brasil",
+    addresses: [
+      {
+        name: "Vautier Premium",
+        street: "Rua Thiers 184, Loja 148",
+        neighborhood: "Brás, São Paulo - SP"
+      },
+      {
+        name: "Shopping Porto",
+        street: "Rua Tiers 282, Loja 1598",
+        neighborhood: "Brás, São Paulo - SP"
+      }
+    ],
   },
 
   // Redes Sociais
