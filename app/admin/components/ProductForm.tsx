@@ -173,8 +173,8 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
         if (currentColors.length > 0) {
             currentColors.forEach(c => {
                 // Tenta encontrar a sigla da cor no dicionário pelo nome
-                const colorSiglaEntry = Object.entries(COLOR_DICTIONARY).find(([ , info]) => info.label.toLowerCase() === c.name.toLowerCase());
-                const colorSigla = colorSiglaEntry ? colorSiglaEntry[0] as ColorSigla : c.name.substring(0, 3).toUpperCase() as ColorSigla;
+                const colorSiglaFound = Object.entries(COLOR_DICTIONARY).find(([ , info]) => info.label.toLowerCase() === c.name.toLowerCase());
+                const colorSigla = colorSiglaFound ? colorSiglaFound[0] as ColorSigla : c.name.substring(0, 3).toUpperCase() as ColorSigla;
 
                 currentSizes.forEach(s => {
                     const combo = `${c.name}-${s}`;
@@ -581,8 +581,8 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                                                 onChange={(e) => setSkus({ ...skus, [comboKey]: e.target.value.toUpperCase() })}
                                                                 onFocus={() => {
                                                                     if (!skus[comboKey]) {
-                                                                        const colorSiglaEntry = Object.entries(COLOR_DICTIONARY).find(([ , info]) => info.label.toLowerCase() === color.name.toLowerCase());
-                                                                        const colorSigla = colorSiglaEntry ? colorSiglaEntry[0] as ColorSigla : color.name.substring(0, 3).toUpperCase() as ColorSigla;
+                                                                        const colorSiglaFound = Object.entries(COLOR_DICTIONARY).find(([ , info]) => info.label.toLowerCase() === color.name.toLowerCase());
+                                                                        const colorSigla = colorSiglaFound ? colorSiglaFound[0] as ColorSigla : color.name.substring(0, 3).toUpperCase() as ColorSigla;
                                                                         
                                                                         setSkus({ ...skus, [comboKey]: generateSKU({
                                                                             model: modelSigla,

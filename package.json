@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint --strict && tsc --noEmit --strict",
+    "lint-elite": "next lint --strict && tsc --noEmit --strict && node scripts/check-elite-standards.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

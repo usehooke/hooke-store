@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { brandConfig } from '@/config/brandConfig';
 import { Instagram, MessageCircle, Globe, MapPin, RefreshCcw } from 'lucide-react';
