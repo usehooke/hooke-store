@@ -8,12 +8,17 @@ const PROHIBITED_PATTERNS = [
   {
     regex: /<img\s/g,
     message: 'ERRO: Tag <img> detectada. Use next/image para otimização.',
-    exclude: ['docs/', 'node_modules/', 'components/ui/MetaPixel.tsx'] // MetaPixel is exception for noscript
+    exclude: ['docs/', 'node_modules/', 'components/ui/MetaPixel.tsx']
   },
   {
     regex: /: any[\s,;}>]/g,
     message: 'ERRO: Tipo "any" detectado. Use tipagem estrita.',
-    exclude: ['docs/', 'node_modules/', 'components/ui/MetaPixel.tsx'] // MetaPixel is exception for window.fbq
+    exclude: ['docs/', 'node_modules/', 'components/ui/MetaPixel.tsx']
+  },
+  {
+    regex: /console\.log\(/g,
+    message: 'AVISO: console.log detectado. Remova antes de enviar para produção.',
+    exclude: ['docs/', 'node_modules/', 'scripts/', 'app/api/']
   }
 ];
 
