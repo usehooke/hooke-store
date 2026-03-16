@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Product } from "@/types";
 import { motion, useScroll, useSpring } from "framer-motion";
@@ -14,7 +14,6 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
     ? product.images
     : [product.imageUrl];
 
-  const [selectedImage, setSelectedImage] = useState(images[0]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Hook para barra de progresso no mobile (Sinaliza que tem mais fotos)
@@ -29,9 +28,8 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
   useEffect(() => {
     const handleImageChange = (e: Event) => {
       const customEvent = e as CustomEvent<string>;
-      if (customEvent.detail) {
-        setSelectedImage(customEvent.detail);
-      }
+      // TODO: Implementar scroll automático para a imagem da cor selecionada no futuro
+      console.log("Mudar imagem para:", customEvent.detail);
     };
     window.addEventListener("change-product-image", handleImageChange);
     return () => window.removeEventListener("change-product-image", handleImageChange);
