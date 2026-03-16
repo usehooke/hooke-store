@@ -54,12 +54,20 @@ function ProductView({ product }: { product: Product }) {
 
           {/* Cabeçalho do Produto */}
           <div className="border-b border-gray-100 pb-6">
-            {/* Tag de Novo (se houver) */}
-            {product.isNew && (
-              <span className="bg-black text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 mb-3 inline-block">
-                Novo Lançamento
-              </span>
-            )}
+            {/* Gatilhos de Conversão (v1.5) */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {product.isNew && (
+                <span className="bg-black text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 inline-block">
+                  Novo Lançamento
+                </span>
+              )}
+              {product.isPremiumCollection && (
+                <span className="bg-hooke-100 text-hooke-900 text-[10px] font-bold uppercase tracking-widest px-2 py-1 inline-flex items-center gap-1.5 font-outfit border border-hooke-200 shadow-sm animate-in fade-in slide-in-from-left-2 duration-700">
+                  <span className="w-1.5 h-1.5 bg-hooke-900 rounded-full animate-pulse" />
+                  Qualidade Premium Hooke
+                </span>
+              )}
+            </div>
 
             <h1 className="text-2xl md:text-3xl font-bold text-hooke-900 uppercase tracking-tight mb-3 leading-tight">
               {product.name}

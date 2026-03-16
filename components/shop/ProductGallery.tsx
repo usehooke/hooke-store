@@ -73,7 +73,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
               alt={product.seoAltText || product.name}
               fill
               priority
-              className="object-cover object-center transition-all duration-700 group-hover:scale-105"
+              className="object-cover object-center transition-all duration-700 group-hover:scale-105 group-hover:contrast-[1.10] group-hover:brightness-[1.02]"
               sizes="(max-width: 768px) 100vw, 70vw"
             />
           </motion.div>

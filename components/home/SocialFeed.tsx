@@ -116,36 +116,41 @@ export default function SocialFeed() {
                 </motion.a>
             </div>
 
-            {/* Grid de Fotos */}
-            <div className="w-full relative px-2 md:px-6">
-                <div className="flex overflow-x-auto md:grid md:grid-cols-5 gap-4 pb-8 md:pb-0 snap-x snap-mandatory hide-scrollbar">
+            {/* Grid de Fotos / Carousel Imersivo (v1.5) */}
+            <div className="w-full relative px-0 md:px-6">
+                <div className="flex overflow-x-auto md:grid md:grid-cols-5 gap-0 md:gap-4 pb-0 md:pb-0 snap-x snap-mandatory hide-scrollbar">
                     {feedPhotos.map((post: SocialPost, index: number) => (
                         <motion.div
                             key={post.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
+                            className="min-w-full md:min-w-0"
                         >
                             <Link
                                 href={post.link}
-                                className="relative min-w-[280px] md:min-w-0 aspect-[4/5] bg-gray-100 block group overflow-hidden snap-center flex-shrink-0"
+                                className="relative w-full h-[100dvh] md:h-auto md:aspect-[4/5] bg-gray-100 block group overflow-hidden snap-center flex-shrink-0"
                             >
                                 <Image
                                     src={post.imageUrl}
                                     alt={post.alt}
                                     fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                    sizes="(max-width: 768px) 80vw, 20vw"
+                                    className="object-cover transition-transform duration-700 md:group-hover:scale-110"
+                                    sizes="(max-width: 768px) 100vw, 20vw"
+                                    priority={index === 0}
                                 />
 
-                                {/* Overlay On Hover */}
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 text-white flex flex-col items-center gap-2">
-                                        <Instagram size={32} strokeWidth={1.5} />
-                                        <span className="text-[10px] uppercase tracking-widest font-bold border-b border-white pb-1">
-                                            Comprar o Look
-                                        </span>
+                                {/* Overlay On Hover (Desktop Only) */}
+                                <div className="absolute inset-0 bg-black/40 md:bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end md:items-center justify-start md:justify-center p-8 md:p-0">
+                                    <div className="md:transform md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-300 text-white flex flex-col items-start md:items-center gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <Instagram size={24} strokeWidth={1.5} className="md:hidden" />
+                                            <Instagram size={32} strokeWidth={1.5} className="hidden md:block" />
+                                            <span className="text-[10px] md:text-[12px] uppercase tracking-[0.3em] font-black">
+                                                Comprar Look
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </Link>
