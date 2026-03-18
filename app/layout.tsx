@@ -18,6 +18,7 @@ import DynamicCart from "@/components/layout/DynamicCart";
 import { brandConfig } from "@/config/brandConfig";
 import TransitionProvider from "@/components/layout/TransitionProvider";
 import Providers from "@/components/layout/Providers";
+import ShopLayoutWrapper from "@/components/layout/ShopLayoutWrapper";
 
 // 1. Configurando as Fontes (Estilo Suíço + Luxury Retail)
 const inter = Inter({
@@ -91,19 +92,11 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${inter.variable} ${outfit.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased bg-hooke-50 text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
         <Providers>
-          <TopBar />
-          <Navbar />
-
-          <DynamicCart />
-
-          <main className="flex-grow w-full">
+          <ShopLayoutWrapper>
             <TransitionProvider>
               {children}
             </TransitionProvider>
-          </main>
-
-          <WhatsAppButton />
-          <Footer />
+          </ShopLayoutWrapper>
 
           <Toaster
             position="bottom-right"

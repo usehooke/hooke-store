@@ -67,7 +67,7 @@ function ProductView({ product }: { product: Product }) {
   };
 
   return (
-    <main className="w-full px-6 md:px-12 py-12 md:py-16 mb-20 animate-in fade-in duration-500">
+    <main className="w-full px-6 md:px-12 py-8 md:py-12 mb-20 animate-in fade-in duration-500">
       {/* Injeção de SEO Estruturado (JSON-LD) */}
       <script
         type="application/ld+json"
@@ -79,13 +79,13 @@ function ProductView({ product }: { product: Product }) {
       {/* Breadcrumbs - Premium Hooke Navigation */}
       <Breadcrumbs 
         items={[
-          { label: product.category, href: "/colecao" }, // Mantendo integridade de links conforme solicitado
+          { label: product.category, href: "/colecao" },
           { label: product.name }
         ]} 
       />
 
       {/* Grid Assimétrico: 60% Foto (Esq) / 40% Texto (Dir) */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-12 lg:gap-24 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-16 items-start mt-4">
 
         {/* Lado Esquerdo: Galeria (Maior destaque visual) */}
         <div className="w-full md:col-span-3">
@@ -93,82 +93,78 @@ function ProductView({ product }: { product: Product }) {
         </div>
 
         {/* Lado Direito: Informações e Compra (Sticky - Fixo na rolagem) */}
-        <div className="w-full md:col-span-2 flex flex-col gap-8 sticky top-24">
+        <div className="w-full md:col-span-2 flex flex-col gap-6 md:sticky md:top-28">
 
           {/* Cabeçalho do Produto */}
-          <div className="border-b border-gray-100 pb-6">
+          <div className="border-b border-gray-100 pb-4">
             {/* Gatilhos de Conversão (v1.5) */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-2">
               {product.isNew && (
-                <span className="bg-black text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 inline-block">
-                  Novo Lançamento
+                <span className="bg-black text-white text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 inline-block">
+                  Novo
                 </span>
               )}
               {product.isPremiumCollection && (
-                <span className="bg-hooke-100 text-hooke-900 text-[10px] font-bold uppercase tracking-widest px-2 py-1 inline-flex items-center gap-1.5 font-outfit border border-hooke-200 shadow-sm animate-in fade-in slide-in-from-left-2 duration-700">
-                  <span className="w-1.5 h-1.5 bg-hooke-900 rounded-full animate-pulse" />
-                  Qualidade Premium Hooke
+                <span className="bg-hooke-100 text-hooke-900 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 inline-flex items-center gap-1 font-outfit border border-hooke-200">
+                  Qualidade Premium
                 </span>
               )}
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-hooke-900 uppercase tracking-tighter mb-2 leading-[0.9] font-heading">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-hooke-900 uppercase tracking-tighter mb-1.5 leading-[0.9] font-heading">
               {product.name}
             </h1>
             
             {/* Rating Summary (Social Proof Imediato) */}
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3">
               <div className="flex text-yellow-400">
-                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={12} fill="currentColor" stroke="none" />)}
+                {[1, 2, 3].map(i => <Star key={i} size={10} fill="currentColor" stroke="none" />)}
               </div>
-              <span className="text-[10px] font-bold text-hooke-900 uppercase tracking-widest">
+              <span className="text-[9px] font-bold text-hooke-900 uppercase tracking-widest">
                 4.9 <span className="text-gray-400 font-normal">(127 Avaliações)</span>
               </span>
             </div>
+
             <div className="flex items-center justify-between">
-              <p className="text-2xl md:text-3xl text-gray-500 font-bold tracking-tight">
+              <p className="text-xl md:text-2xl text-gray-900 font-black tracking-tighter">
                 {formatter.format(product.price)}
               </p>
               <ShareButton
                 title={product.name}
                 text={`Saca só essa peça da Hooke Store: ${product.name}`}
                 url={`https://www.usehooke.com.br/produto/${product.slug}`}
-                className="border-none w-auto py-2 text-hooke-500 hover:text-black hover:bg-transparent"
+                className="border-none w-auto py-1 text-hooke-400 hover:text-black hover:bg-transparent"
               />
             </div>
           </div>
 
-          <div className="space-y-6">
-            {/* Descrição Rica */}
+          <div className="space-y-4">
+            {/* Descrição Curta/Rica */}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-hooke-900 mb-2">Detalhes</h3>
-              {product.description.includes('<') ? (
-                <div
-                  className="prose prose-sm prose-gray max-w-none text-gray-600 leading-relaxed font-sans prose-p:mb-2 prose-ul:my-2 prose-li:my-0.5"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              ) : (
-                <p className="text-gray-600 leading-relaxed text-sm">
-                  {product.description}
-                </p>
-              )}
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-hooke-400 mb-1.5">Descrição</h3>
+              <p className="text-gray-600 leading-relaxed text-[13px] line-clamp-3">
+                {product.description.replace(/<[^>]*>?/gm, '')}
+              </p>
             </div>
 
-            {/* Grid de Especificações Técnicas (Bento) */}
-            {/* Passando os detalhes do produto novo */}
+            {/* Grid de Especificações Técnicas (Bento Compacto) */}
             <ProductDetailsBento details={product.details} />
           </div>
 
-          {/* Seção de Escolha de Tamanho e Botão de Compra */}
-          <AddToCartSection product={product} />
+          {/* Seção de Escolha de Tamanho e Botão de Compra - O coração da conversão */}
+          <div className="mt-2">
+            <AddToCartSection product={product} />
+          </div>
 
-          {/* Card Promocional de Kit (Aparece se for elegível) */}
-          <div className="animate-in slide-in-from-bottom-2 duration-700 delay-300">
+          {/* Card Promocional de Kit (Compacto) */}
+          <div className="animate-in slide-in-from-bottom-2 duration-700">
             <KitPromoCard product={product} />
           </div>
 
-          {/* Ícones de Diferenciais (Frete, Troca, etc) */}
-          <ProductFeatures />
+          {/* Ícones de Diferenciais */}
+          <div className="hidden lg:block opacity-60">
+            <ProductFeatures />
+          </div>
 
         </div>
       </div>
