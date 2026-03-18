@@ -8,13 +8,8 @@ import { Analytics } from '@vercel/analytics/react';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 // Importações dos Componentes de Layout Globais
-import TopBar from "@/components/layout/TopBar";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import MetaPixel from "@/components/ui/MetaPixel";
 import { Toaster } from "react-hot-toast";
-import DynamicCart from "@/components/layout/DynamicCart";
 import { brandConfig } from "@/config/brandConfig";
 import TransitionProvider from "@/components/layout/TransitionProvider";
 import Providers from "@/components/layout/Providers";

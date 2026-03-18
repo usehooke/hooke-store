@@ -3,7 +3,7 @@
 import { Standard } from "@typebot.io/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Menu, X, LayoutDashboard, ShoppingBag, Store, User, Settings } from "lucide-react";
+import { ArrowLeft, Loader2, Menu, X, LayoutDashboard, ShoppingBag, Store } from "lucide-react";
 
 export default function PersonalHookePage() {
   const [isLoading, setIsLoading] = useState(true);
