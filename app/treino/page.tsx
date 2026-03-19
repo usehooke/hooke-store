@@ -26,9 +26,13 @@ export default function PersonalHookePage() {
   const [typebotKey, setTypebotKey] = useState(0);
   const [workoutHistory, setWorkoutHistory] = useState<string[]>([]);
   const [showMusic, setShowMusic] = useState(false);
+  const [musicService, setMusicService] = useState<'spotify' | 'ytmusic'>('ytmusic');
 
   // Carregar histórico do localStorage
   useEffect(() => {
+    const savedMusic = localStorage.getItem("hooke_music_service");
+    if (savedMusic) setMusicService(savedMusic as 'spotify' | 'ytmusic');
+
     const saved = localStorage.getItem("hooke_workout_history");
     if (saved) {
       setWorkoutHistory(JSON.parse(saved));
@@ -55,6 +59,11 @@ export default function PersonalHookePage() {
       localStorage.setItem("hooke_workout_history", JSON.stringify(newHistory));
     }
     // Feedback visual opcional pode ser adicionado aqui
+  };
+
+  const handleMusicServiceChange = (service: 'spotify' | 'ytmusic') => {
+    setMusicService(service);
+    localStorage.setItem("hooke_music_service", service);
   };
 
   const menuItems = [
@@ -117,17 +126,48 @@ export default function PersonalHookePage() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute top-24 right-6 z-[80] w-[300px] h-[160px] bg-black/40 backdrop-blur-2xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl"
+            className="absolute top-24 right-6 z-[80] w-[330px] h-[220px] bg-black/60 backdrop-blur-3xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col"
           >
-            <iframe 
-              src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76W9SrhLp9O?utm_source=generator&theme=0" 
-              width="100%" 
-              height="100%" 
-              frameBorder="0" 
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-              loading="lazy"
-              className="opacity-80 hover:opacity-100 transition-opacity"
-            />
+            {/* Music Service Selector */}
+            <div className="flex p-2 gap-2 bg-white/5 border-b border-white/5">
+              <button 
+                onClick={() => handleMusicServiceChange('ytmusic')}
+                className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${musicService === 'ytmusic' ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]' : 'hover:bg-white/5 text-white/40'}`}
+              >
+                YT Music
+              </button>
+              <button 
+                onClick={() => handleMusicServiceChange('spotify')}
+                className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${musicService === 'spotify' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'hover:bg-white/5 text-white/40'}`}
+              >
+                Spotify
+              </button>
+            </div>
+
+            <div className="flex-1">
+              {musicService === 'spotify' ? (
+                <iframe 
+                  src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76W9SrhLp9O?utm_source=generator&theme=0" 
+                  width="100%" 
+                  height="100%" 
+                  frameBorder="0" 
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                  loading="lazy"
+                  className="opacity-90 hover:opacity-100 transition-opacity"
+                />
+              ) : (
+                <iframe 
+                  src="https://www.youtube.com/embed/videoseries?list=RDCLAK5uy_n9F8ai_8yv8YOfX8L_dC7d995_9m9Srhw&mute=0" 
+                  width="100%" 
+                  height="100%" 
+                  title="YouTube Music"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="opacity-90 hover:opacity-100 transition-opacity"
+                />
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
