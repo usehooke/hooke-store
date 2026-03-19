@@ -93,7 +93,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
           {/* Full Body Frontal */}
           <div className="md:col-span-6 overflow-hidden relative group aspect-[3/4] bg-zinc-200">
             <Image 
-              src={fullBodyImage} 
+              priority src={fullBodyImage} 
               alt="Modelo Hooke Frontal" 
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -106,7 +106,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
           {/* Mid-Shot Upper Focus */}
           <div className="md:col-span-6 overflow-hidden relative group aspect-[3/4] bg-zinc-200">
             <Image 
-              src={midShotImage} 
+              priority src={midShotImage} 
               alt="Estudo de Silhueta" 
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -119,7 +119,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
           {/* Back/Rear Drape */}
           <div className="md:col-span-5 overflow-hidden relative group aspect-[4/5] bg-zinc-200">
             <Image 
-              src={backShotImage} 
+              priority src={backShotImage} 
               alt="Caimento Traseiro" 
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -133,7 +133,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
           <div className="md:col-span-7 overflow-hidden relative group bg-black">
             <div className="relative w-full h-full aspect-square md:aspect-auto min-h-[400px]">
               <Image 
-                src={macroImage} 
+                priority src={macroImage} 
                 alt="Textura do Tecido Macro" 
                 fill
                 className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
@@ -171,7 +171,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
             <div key={i} className="flex-none w-[300px] md:w-[500px] group">
               <div className="relative aspect-[3/4] mb-6 border border-white/10 overflow-hidden">
                 <Image 
-                  src={img} 
+                  priority src={img} 
                   alt={`Variação ${i+1}`} 
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -208,7 +208,7 @@ export default function LaunchTemplate({ product }: LaunchTemplateProps) {
         <div className="bg-white p-8 md:p-20 shadow-2xl inline-block w-full max-w-4xl border border-zinc-100">
             <div className="flex flex-col md:flex-row items-center gap-12">
                <div className="w-full md:w-1/2 aspect-square relative bg-zinc-100 overflow-hidden">
-                  <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                  <Image priority src={product.imageUrl} alt={product.name} fill className="object-cover" />
                </div>
                <div className="w-full md:w-1/2 text-left">
                   <span className="text-zinc-400 text-[10px] uppercase tracking-[0.3em] mb-2 block">Destaque de Lançamento</span>

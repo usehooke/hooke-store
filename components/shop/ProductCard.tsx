@@ -22,7 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* 1. IMAGEM */}
       <div className="absolute inset-0 h-full w-full">
         <Image
-          src={product.imageUrl}
+          priority src={product.imageUrl}
           alt={product.seoAltText || product.name}
           fill
           className="object-cover object-center transition-all duration-700 group-hover:scale-110"

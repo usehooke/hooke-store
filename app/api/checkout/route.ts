@@ -5,6 +5,19 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Order, OrderCustomer, OrderItem } from "@/types/order";
 
+// Minimal in-memory cache for simple idempotency to protect against network bounces
+const idempotencyCache = new Map<string, number>();
+
+// Helper to clean up old cache entries (older than 15 seconds)
+function cleanIdempotencyCache() {
+  const now = Date.now();
+  for (const [key, timestamp] of idempotencyCache.entries()) {
+    if (now - timestamp > 15000) {
+      idempotencyCache.delete(key);
+    }
+  }
+}
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -26,8 +39,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Dados do cliente incompletos (nome e telefone são obrigatórios)." }, { status: 400 });
         }
 
-        // Fallback para quem não preencheu o e-mail opcional
+        // --- IDEMPOTENCY CHECK ---
+        cleanIdempotencyCache();
         const safeEmail = customer.email || "cliente@usehooke.com.br";
+        // Create an idempotency key based on customer, items and total to prevent duplicate orders within a short window (15s)
+        const idempotencyKey = `${safeEmail}-${items.length}-${items.reduce((acc, i) => acc + i.quantity, 0)}`;
+        
+        if (idempotencyCache.has(idempotencyKey)) {
+             console.log(`[Idempotency] Duplicate request blocked for key: ${idempotencyKey}`);
+             return NextResponse.json({ message: "Processando seu pedido. Por favor, aguarde alguns segundos antes de tentar novamente." }, { status: 429 });
+        }
+        
+        // Add to cache
+        idempotencyCache.set(idempotencyKey, Date.now());
+        // -------------------------
+
+        // Fallback para quem não preencheu o e-mail opcional
+        // (Já declarado acima do bloco de idempotency cache)
 
         // 1. Gera o ID temporário (Reference do Pedido na Hooke)
         // Uma abordagem segura e leve para gerar IDs parecidos com chaves (ex: hooke-1708940...)

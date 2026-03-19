@@ -117,7 +117,7 @@ export default function CartSidebar() {
                 {/* Imagem (Quadrada/Sharp) */}
                 <div className="relative w-20 h-24 bg-gray-50 flex-shrink-0 border border-gray-100">
                   <Image
-                    src={item.imageUrl}
+                    priority src={item.imageUrl}
                     alt={item.name}
                     fill
                     className="object-cover"

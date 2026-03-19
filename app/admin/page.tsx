@@ -393,7 +393,7 @@ export default function AdminPage() {
                                         {product.imagem ? (
                                             <div className="flex flex-col gap-2 items-start">
                                                 <div className="relative w-12 h-12 border border-hooke-900">
-                                                    <Image src={product.imagem} alt={product.name} fill className="object-cover" />
+                                                    <Image priority src={product.imagem} alt={product.name} fill className="object-cover" />
                                                 </div>
                                                 <button onClick={() => handleChange(product.id, "imagem", "")} className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-left hover:underline">Remover</button>
                                             </div>

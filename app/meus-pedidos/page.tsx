@@ -240,7 +240,7 @@ function MyOrdersContent() {
                                         <li key={idx} className="flex gap-4">
                                             <div className="relative w-20 h-24 bg-gray-100 border border-gray-200 flex-shrink-0">
                                                 {item.imageUrl ? (
-                                                    <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
+                                                    <Image priority src={item.imageUrl} alt={item.title} fill className="object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                                                         <Package size={24} />

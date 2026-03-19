@@ -296,7 +296,7 @@ export default function CartSheet() {
               <li key={item.cartItemId} className="flex gap-4">
                 <div className="relative aspect-[4/5] w-24 flex-shrink-0 overflow-hidden rounded-sm bg-hooke-100 border border-hooke-200">
                   <Image
-                    src={item.imageUrl || (item.images && item.images.length > 0 ? item.images[0] : "/placeholder-produto.avif")}
+                    priority src={item.imageUrl || (item.images && item.images.length > 0 ? item.images[0] : "/placeholder-produto.avif")}
                     alt={item.name}
                     fill
                     className="object-cover object-center"

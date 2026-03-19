@@ -125,7 +125,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
                   className={`group relative flex flex-col items-center gap-1 ${isSelected ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
                 >
                   <div className={`w-10 h-10 rounded-full border overflow-hidden relative transition-all ${isSelected ? 'border-hooke-900 ring-2 ring-hooke-900 ring-offset-2' : 'border-gray-200'}`}>
-                    <Image src={color.imageUrl} alt={color.name} fill className="object-cover" sizes="40px" />
+                    <Image priority src={color.imageUrl} alt={color.name} fill className="object-cover" sizes="40px" />
                   </div>
                   <span className={`text-[10px] uppercase font-bold ${isSelected ? 'text-hooke-900' : 'text-gray-500'}`}>{color.name}</span>
                 </button>

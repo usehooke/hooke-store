@@ -77,7 +77,7 @@ function SortablePhoto({ id, url, onRemove }: { id: string; url: string; onRemov
 
     return (
         <div ref={setNodeRef} style={style} className="relative w-24 h-24 border border-hooke-900 group bg-gray-50 flex items-center justify-center shrink-0">
-            <Image src={url} alt="Gallery item" fill className="object-cover" />
+            <Image priority src={url} alt="Gallery item" fill className="object-cover" />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 <button
                     type="button"
@@ -324,7 +324,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                     <div key={idx} className="flex items-center justify-between border border-gray-200 p-2 bg-white">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 relative border border-gray-100">
-                                                <Image src={color.imageUrl} alt={color.name} fill className="object-cover" />
+                                                <Image priority src={color.imageUrl} alt={color.name} fill className="object-cover" />
                                             </div>
                                             <span className="text-xs font-bold uppercase tracking-widest">{color.name}</span>
                                         </div>
@@ -564,7 +564,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isSaving 
                                                     <div className="flex items-center gap-2">
                                                         {color.imageUrl && (
                                                             <div className="w-6 h-6 relative border border-gray-200">
-                                                                <Image src={color.imageUrl} alt={color.name} fill className="object-cover" />
+                                                                <Image priority src={color.imageUrl} alt={color.name} fill className="object-cover" />
                                                             </div>
                                                         )}
                                                         <span className="text-xs font-bold text-gray-700">

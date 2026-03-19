@@ -107,7 +107,7 @@ export default function PDVProductGrid() {
             <div className="relative aspect-square overflow-hidden mb-3 shadow-neumorph-inset">
               {product.imageUrl && (
                 <Image
-                  src={product.imageUrl}
+                  priority src={product.imageUrl}
                   alt={product.name || "Produto"}
                   fill
                   className="object-cover"

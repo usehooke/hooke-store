@@ -77,7 +77,7 @@ export default function PDVCartSidebar() {
             <div key={item.cartItemId} className="flex gap-3 p-3 shadow-neumorph-inset bg-hooke-50">
               <div className="relative h-16 w-16 shadow-neumorph">
                 <Image
-                  src={item.imageUrl}
+                  priority src={item.imageUrl}
                   alt={item.name}
                   fill
                   className="object-cover"

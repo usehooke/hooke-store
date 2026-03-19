@@ -78,7 +78,7 @@ export default async function AdminLancamentos() {
             {lancamentos.length > 0 ? lancamentos.map(p => (
               <div key={p.id} className="border border-zinc-100 p-6 flex flex-col md:flex-row items-center gap-6 group hover:border-black transition-all">
                 <div className="relative w-24 h-24 bg-zinc-100 flex-shrink-0">
-                  <Image src={p.imageUrl} alt={p.name} fill className="object-cover" />
+                  <Image priority src={p.imageUrl} alt={p.name} fill className="object-cover" />
                 </div>
                 <div className="flex-grow text-center md:text-left">
                   <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-1">{p.category}</h4>

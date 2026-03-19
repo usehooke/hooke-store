@@ -42,7 +42,7 @@ export default function SizeGuideModal() {
           <div className="w-full md:w-1/3 flex flex-col gap-4">
             <div className="relative aspect-[3/4] w-full rounded-sm overflow-hidden bg-hooke-50 border border-hooke-100">
               <Image
-                src={measurementDiagramUrl}
+                priority src={measurementDiagramUrl}
                 alt="Diagrama de como medir a camiseta"
                 fill
                 className="object-contain p-4"

@@ -261,7 +261,7 @@ export default async function LandingPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 h-64 md:h-80">
                     {CONFIG.processo.map((item, idx) => (
                         <div key={idx} className="relative group border-r border-white/10 overflow-hidden">
-                            <Image src={item.img} alt={item.titulo} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000" />
+                            <Image priority src={item.img} alt={item.titulo} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000" />
                             <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors flex flex-col items-center justify-center text-white text-center p-4">
                                 <span className="text-[10px] font-bold uppercase tracking-widest mb-2 border border-white/30 px-2 py-1">Step {item.passo}</span>
                                 <h3 className="text-lg md:text-xl font-black uppercase tracking-tight">{item.titulo}</h3>
@@ -294,7 +294,7 @@ export default async function LandingPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 h-[50vh] md:h-[60vh]">
                     {CONFIG.galeria.map((src, idx) => (
                         <div key={idx} className="relative border-r border-white/20 overflow-hidden group">
-                            <Image src={src} alt="Lifestyle" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                            <Image priority src={src} alt="Lifestyle" fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                         </div>
                     ))}

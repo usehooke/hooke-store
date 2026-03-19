@@ -52,7 +52,7 @@ export default async function BentoHero() {
         {secondaryProduct && (
           <div className="md:col-span-2 md:row-span-1 relative overflow-hidden group bg-gray-50 h-[400px] md:h-auto">
             <Image
-              src={secondaryProduct.imageUrl}
+              priority src={secondaryProduct.imageUrl}
               alt={secondaryProduct.name}
               fill
               className="object-cover object-center group-hover:scale-105 transition-transform duration-1000"
@@ -78,7 +78,7 @@ export default async function BentoHero() {
         {tertiaryProduct && (
           <div className="md:col-span-2 md:row-span-1 relative overflow-hidden group bg-black h-[400px] md:h-auto">
             <Image
-              src={tertiaryProduct.imageUrl}
+              priority src={tertiaryProduct.imageUrl}
               alt={tertiaryProduct.name}
               fill
               className="object-cover object-center opacity-80 group-hover:opacity-100 transition-all duration-1000"

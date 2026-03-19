@@ -22,7 +22,7 @@ export default function BrandBento() {
         {/* ITEM 1: Algodão (Grande - Esquerda) */}
         <div className="group relative overflow-hidden bg-black md:col-span-2 md:row-span-2 min-h-[300px] border border-gray-100">
           <Image
-            src="/banner-home.jpg" 
+            priority src="/banner-home.jpg" 
             alt="Tecido Premium"
             fill
             className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"

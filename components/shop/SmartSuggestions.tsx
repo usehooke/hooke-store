@@ -54,7 +54,7 @@ export default function SmartSuggestions() {
           <div key={product.id} className="flex items-center gap-4 group p-2 hover:bg-gray-50 transition-colors rounded-sm">
             <div className="relative w-14 h-18 bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
               <Image 
-                src={product.imageUrl} 
+                priority src={product.imageUrl} 
                 alt={product.name} 
                 fill 
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
