@@ -12,7 +12,11 @@ import {
   ShoppingBag, 
   Store, 
   RotateCcw,
-  Zap
+  Zap,
+  Music,
+  Calendar,
+  CheckCircle2,
+  Trophy
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,9 +24,16 @@ export default function PersonalHookePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [typebotKey, setTypebotKey] = useState(0);
+  const [workoutHistory, setWorkoutHistory] = useState<string[]>([]);
+  const [showMusic, setShowMusic] = useState(false);
 
-  // Efeito para simular o tempo de carregamento inicial do widget
+  // Carregar histórico do localStorage
   useEffect(() => {
+    const saved = localStorage.getItem("hooke_workout_history");
+    if (saved) {
+      setWorkoutHistory(JSON.parse(saved));
+    }
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1800);
@@ -34,6 +45,16 @@ export default function PersonalHookePage() {
     setTypebotKey(prev => prev + 1);
     setIsSidebarOpen(false);
     setTimeout(() => setIsLoading(false), 1200);
+  };
+
+  const handleFinishWorkout = () => {
+    const today = new Date().toLocaleDateString('pt-BR');
+    if (!workoutHistory.includes(today)) {
+      const newHistory = [today, ...workoutHistory].slice(0, 7); // Guarda os últimos 7 treinos
+      setWorkoutHistory(newHistory);
+      localStorage.setItem("hooke_workout_history", JSON.stringify(newHistory));
+    }
+    // Feedback visual opcional pode ser adicionado aqui
   };
 
   const menuItems = [
@@ -67,16 +88,49 @@ export default function PersonalHookePage() {
           </span>
         </div>
 
-        {/* Botão Rápido de Reiniciar (Opcional no Header) */}
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleRestart}
-          className="pointer-events-auto bg-white/5 backdrop-blur-xl p-3.5 rounded-2xl border border-white/5 text-white/40 hover:text-white"
-        >
-          <RotateCcw className="w-5 h-5" />
-        </motion.button>
+        {/* Botões Rápidos */}
+        <div className="flex gap-3 pointer-events-auto">
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowMusic(!showMusic)}
+            className={`bg-white/5 backdrop-blur-xl p-3.5 rounded-2xl border transition-all ${showMusic ? 'border-orange-500/50 text-orange-500' : 'border-white/5 text-white/40'}`}
+          >
+            <Music className="w-5 h-5" />
+          </motion.button>
+          
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleRestart}
+            className="bg-white/5 backdrop-blur-xl p-3.5 rounded-2xl border border-white/5 text-white/40 hover:text-white"
+          >
+            <RotateCcw className="w-5 h-5" />
+          </motion.button>
+        </div>
       </div>
+
+      {/* MUSIC PLAYER OVERLAY (PORTABLE) */}
+      <AnimatePresence>
+        {showMusic && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="absolute top-24 right-6 z-[80] w-[300px] h-[160px] bg-black/40 backdrop-blur-2xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl"
+          >
+            <iframe 
+              src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76W9SrhLp9O?utm_source=generator&theme=0" 
+              width="100%" 
+              height="100%" 
+              frameBorder="0" 
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+              loading="lazy"
+              className="opacity-80 hover:opacity-100 transition-opacity"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* SIDEBAR (ATALHOS DE ROTINA) COM FRAMER MOTION */}
       <AnimatePresence>
@@ -97,9 +151,9 @@ export default function PersonalHookePage() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-[300px] h-full bg-[#0a0a0a]/90 backdrop-blur-3xl border-r border-white/10 p-8 flex flex-col shadow-2xl"
+              className="relative w-[320px] h-full bg-[#0a0a0a]/90 backdrop-blur-3xl border-r border-white/10 p-8 flex flex-col shadow-2xl overflow-hidden"
             >
-              <div className="flex justify-between items-center mb-10">
+              <div className="flex justify-between items-center mb-8">
                 <div>
                   <h2 className="text-2xl font-black tracking-tighter text-white">Hooke CP</h2>
                   <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] mt-1 font-bold">Command Center</p>
@@ -112,37 +166,89 @@ export default function PersonalHookePage() {
                 </button>
               </div>
 
-              <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                {/* Seção Quick Actions */}
-                <div className="space-y-2">
-                  <p className="text-[10px] text-white/20 uppercase tracking-widest pl-1 mb-3">Atalhos Rápidos</p>
-                  {menuItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 transition-all hover:bg-white/10 group active:scale-[0.98]"
+              <div className="space-y-8 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                
+                {/* Seção Stats Local */}
+                <div className="bg-gradient-to-br from-white/[0.03] to-transparent p-5 rounded-3xl border border-white/5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Trophy className="w-4 h-4 text-orange-500" />
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Resumo da Semana</p>
+                  </div>
+                  <div className="flex gap-2 mb-4">
+                    {[1, 2, 3, 4, 5, 6, 7].map((day) => {
+                      const hasTrained = workoutHistory.length >= day;
+                      return (
+                        <div 
+                          key={day} 
+                          className={`flex-1 h-1.5 rounded-full ${hasTrained ? 'bg-orange-500' : 'bg-white/10'}`} 
+                        />
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-black text-white">{workoutHistory.length}</span>
+                      <span className="text-[10px] text-white/30 uppercase font-bold">Treinos</span>
+                    </div>
+                    <button 
+                      onClick={handleFinishWorkout}
+                      className="text-[9px] bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg border border-white/5 transition-colors font-bold uppercase tracking-tighter flex items-center gap-1.5"
                     >
-                      <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
-                        <item.icon className="w-5 h-5 text-white/50 group-hover:text-white" />
-                      </div>
-                      <span className="font-semibold text-sm text-white/80 group-hover:text-white">{item.label}</span>
-                    </Link>
-                  ))}
+                      <CheckCircle2 className="w-3 h-3" />
+                      Marcar Hoje
+                    </button>
+                  </div>
+                </div>
+
+                {/* Seção Quick Actions */}
+                <div className="space-y-3">
+                  <p className="text-[10px] text-white/20 uppercase tracking-widest pl-1">Atalhos de Sistema</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {menuItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="flex flex-col gap-3 bg-white/5 p-4 rounded-3xl border border-white/5 transition-all hover:bg-white/10 group active:scale-[0.95]"
+                      >
+                        <item.icon className="w-5 h-5 text-white/40 group-hover:text-orange-500 transition-colors" />
+                        <span className="font-bold text-[10px] uppercase text-white/70 group-hover:text-white leading-tight">{item.label}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Seção Ferramentas */}
-                <div className="space-y-2 pt-4">
-                  <p className="text-[10px] text-white/20 uppercase tracking-widest pl-1 mb-3">Assistente</p>
+                <div className="space-y-3">
+                  <p className="text-[10px] text-white/20 uppercase tracking-widest pl-1">Assistente</p>
                   <button
                     onClick={handleRestart}
-                    className="w-full flex items-center gap-4 bg-orange-500/10 p-4 rounded-2xl border border-orange-500/20 transition-all hover:bg-orange-500/20 group active:scale-[0.98]"
+                    className="w-full flex items-center justify-between bg-orange-500/10 p-5 rounded-3xl border border-orange-500/20 transition-all hover:bg-orange-500/20 group active:scale-[0.98]"
                   >
-                    <div className="p-2 bg-orange-500/20 rounded-lg group-hover:bg-orange-500/30">
-                      <RotateCcw className="w-5 h-5 text-orange-500" />
+                    <div className="flex items-center gap-4">
+                      <div className="p-2.5 bg-orange-500/20 rounded-xl group-hover:bg-orange-500/30">
+                        <RotateCcw className="w-5 h-5 text-orange-500" />
+                      </div>
+                      <span className="font-bold text-sm text-orange-200">Reiniciar Treino</span>
                     </div>
-                    <span className="font-semibold text-sm text-orange-200">Reiniciar Treino</span>
+                    <Zap className="w-4 h-4 text-orange-500/30" />
                   </button>
                 </div>
+
+                {/* Histórico Recente */}
+                {workoutHistory.length > 0 && (
+                  <div className="space-y-3">
+                    <p className="text-[10px] text-white/20 uppercase tracking-widest pl-1">Últimos Registros</p>
+                    <div className="space-y-2">
+                       {workoutHistory.map((date, idx) => (
+                         <div key={idx} className="flex items-center gap-3 bg-white/[0.02] p-3 rounded-2xl border border-white/5">
+                           <Calendar className="w-3.5 h-3.5 text-white/20" />
+                           <span className="text-[11px] font-medium text-white/40">{date}</span>
+                           <div className="ml-auto w-1 h-1 rounded-full bg-orange-500/40" />
+                         </div>
+                       ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Footer Sidebar */}
@@ -152,7 +258,7 @@ export default function PersonalHookePage() {
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-white/60">Privado & Seguro</p>
-                  <p className="text-[9px] text-white/30 truncate">hooke-assistant-v2.0</p>
+                  <p className="text-[9px] text-white/30 truncate">hooke-assistant-v2.1</p>
                 </div>
               </div>
             </motion.div>
@@ -212,7 +318,6 @@ export default function PersonalHookePage() {
           font-family: var(--font-inter), sans-serif;
         }
 
-        /* Hack sutil para tentar empurrar o branding do Typebot para fora ou reduzir visibilidade */
         .typebot-standard iframe {
           border: none !important;
           background-color: transparent !important;
