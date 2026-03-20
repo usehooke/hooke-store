@@ -34,7 +34,7 @@ export default function ReceiptTemplate({ saleId, items, total, paymentMethod, o
 
         {/* Content */}
         <div className="text-center font-mono text-[12px] uppercase">
-          <h1 className="text-xl font-medium tracking-[0.2em] mb-1 mt-4 ml-[0.2em]">HOOKE</h1>
+          <h1 className="text-2xl font-black lowercase tracking-tighter mb-1 mt-4">hooke</h1>
           <p className="text-[10px] mb-4 opacity-70">Brás - São Paulo, SP</p>
           
           <div className="border-t border-dashed border-gray-300 my-4"></div>

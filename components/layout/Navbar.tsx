@@ -71,8 +71,8 @@ export default function Navbar() {
 
             <div className="flex-1 flex justify-center">
               <Link href="/" className="group text-center relative z-10 inline-block cursor-pointer">
-                <h1 className="font-sans text-2xl md:text-3xl font-medium tracking-[0.25em] text-hooke-900 uppercase group-hover:opacity-80 transition-opacity ml-[0.25em]">
-                  HOOKE
+                <h1 className="font-sans text-3xl md:text-4xl font-black tracking-tighter text-hooke-900 lowercase group-hover:opacity-80 transition-opacity">
+                  hooke
                 </h1>
               </Link>
             </div>

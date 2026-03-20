@@ -29,8 +29,8 @@ export default function VirtualCard() {
           
           {/* Logo Hooke */}
           <div className="relative z-10 text-center pt-4">
-            <h2 className="font-sans text-3xl font-medium tracking-[0.25em] ml-[0.25em] uppercase leading-none">
-              HOOKE
+            <h2 className="font-sans text-4xl font-black tracking-tighter lowercase leading-none">
+              hooke
             </h2>
           </div>
 
@@ -99,7 +99,7 @@ export default function VirtualCard() {
 
           {/* Espaço em Branco (Post-it Style) */}
           <div className="flex-grow my-4 flex items-center justify-center opacity-[0.03] select-none">
-             <h2 className="text-7xl font-medium uppercase tracking-[0.25em] ml-[0.25em] rotate-[-15deg]">HOOKE</h2>
+             <h2 className="text-8xl font-black lowercase tracking-tighter rotate-[-15deg]">hooke</h2>
           </div>
 
           {/* Rodapé do Verso */}
