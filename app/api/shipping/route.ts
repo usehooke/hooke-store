@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 import { calcularPrecoPrazo } from "correios-brasil";
+import { get } from "@vercel/edge-config";
+import { TinyClient } from "../../../lib/tiny/client";
+
+// Função para simular fallback estrutural
+async function getFallbackShipping(cepDestino: string, pesoFinal: string): Promise<{ nome: string; valor: string; prazo: string }[]> {
+    console.log(`Tentando fallback Melhor Envio/Frenet para o CEP: ${cepDestino} com peso ${pesoFinal}`);
+    // Simular chamada Melhor Envio/Frenet
+    // Em produção real, você faria um fetch para a API de fallback
+    throw new Error("Melhor Envio / Frenet Indisponível (Mock)");
+}
 
 export async function POST(req: Request) {
     try {
@@ -19,6 +29,18 @@ export async function POST(req: Request) {
         // Dados base da loja Hooke (Caixa Genérica de 1 Camiseta)
         const cepOrigemLoja = "03031000"; // CEP da Loja no Brás (Tiers, 184)
 
+        // 1. CHECAR CACHE NAS ÚLTIMAS 24H VIA VERCEL EDGE CONFIG
+        try {
+            const cacheKey = `shipping_${sCepDestino}_${pesoFinal}`;
+            const cachedValue = await get(cacheKey);
+            if (cachedValue && Array.isArray(cachedValue)) {
+                console.log(`[Cache] Retornando frete em cache do Edge Config para ${sCepDestino}`);
+                return NextResponse.json({ fretes: cachedValue }, { status: 200 });
+            }
+        } catch (edgeError) {
+            console.warn("Aviso: Falha ao ler do Edge Config:", edgeError);
+        }
+
         // 03298 = PAC | 04014 = SEDEX
         const args = {
             sCepOrigem: cepOrigemLoja,
@@ -35,25 +57,52 @@ export async function POST(req: Request) {
         let fretes = [];
 
         try {
-            const response = await calcularPrecoPrazo(args);
+            // 2. CORREIOS COM TIMEOUT DE 8 SEGUNDOS
+            const timeoutPromise = new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error("Timeout de 8 segundos nos Correios")), 8000)
+            );
+
+            const response = await Promise.race([
+                calcularPrecoPrazo(args),
+                timeoutPromise
+            ]) as { Codigo: string; Valor: string; PrazoEntrega: string }[];
+
             if (!response || response.length === 0) {
                 throw new Error("Serviço dos Correios vazio.");
             }
 
             // Retorna formatado para o Frontend (PAC e Sedex num array)
-            fretes = response.map(item => ({
+            fretes = response.map((item: { Codigo: string; Valor: string; PrazoEntrega: string }) => ({
                 nome: item.Codigo === "03298" ? "PAC" : "SEDEX",
                 valor: item.Valor.replace(",", "."),
                 prazo: item.PrazoEntrega
             }));
         } catch (correiosError) {
-            console.warn("Correios indisponíveis, informando frontend para acionar fallback:", correiosError);
+            console.warn("Correios indisponíveis ou timeout, partindo para Fallback Melhor Envio:", correiosError);
 
-            // Falha Crítica dos Correios: Devolvermos 503 com flag de fallback pro frontend lidar
-            return NextResponse.json(
-                { message: "Serviço dos Correios indisponível temporariamente.", fallbackWhatsApp: true },
-                { status: 503 }
-            );
+            // 3. FALLBACK INTELIGENTE (MELHOR ENVIO API / FRENET)
+            try {
+                fretes = await getFallbackShipping(sCepDestino, pesoFinal);
+            } catch (fallbackError) {
+                console.warn("Fallback (Melhor Envio/Frenet) também falhou, analisando Tiny ERP offline:", fallbackError);
+                
+                // 4. VERIFICAÇÃO DE CONTINGÊNCIA CORREIOS NO TINY ERP OFFLINE
+                try {
+                    const offlineRates = await TinyClient.getOfflineShippingRates(sCepDestino, pesoFinal);
+                    if (offlineRates && offlineRates.length > 0) {
+                        return NextResponse.json({ fretes: offlineRates }, { status: 200 });
+                    }
+                    throw new Error("Sem tabelas de contingência offline disponíveis.");
+                } catch (tinyError) {
+                    console.error("Falha Absoluta de Frete! Devolvendo erro de Fallback_Whatsapp.", tinyError);
+                    
+                    // Falha Crítica de Todos os Serviços: Devolvermos 503 com flag de fallback pro frontend lidar
+                    return NextResponse.json(
+                        { message: "Serviço dos Correios, Melhor Envio e tabelas offline indisponíveis temporariamente.", fallbackWhatsApp: true },
+                        { status: 503 }
+                    );
+                }
+            }
         }
 
         return NextResponse.json({ fretes }, { status: 200 });
