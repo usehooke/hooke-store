@@ -22,7 +22,7 @@ interface ProductPageProps {
  params: Promise<{ slug: string }>;
 }
 
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export default async function ProductPage({ params }: ProductPageProps) {
  const { slug } = await params;

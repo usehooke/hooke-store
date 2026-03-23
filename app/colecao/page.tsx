@@ -9,7 +9,7 @@ export const metadata: Metadata = {
  description: "Descubra a coleção completa de camisetas oversized, regatas e kits premium.",
 };
 
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export default async function CollectionPage() {
  // Pega os dados do Firestore através do Serviço Centralizado
@@ -64,8 +64,8 @@ export default async function CollectionPage() {
  {/* 3. GRADE DE PRODUTOS (Full Width) */}
  <div className="w-full px-6 md:px-12 py-12">
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-8">
- {collectionProducts.map((product) => (
- <ProductCard key={product.id} product={product} />
+ {collectionProducts.map((product, index) => (
+ <ProductCard key={product.id} product={product} priority={index < 4} />
  ))}
  </div>
  </div>

@@ -5,9 +5,10 @@ import { ShoppingBag, Star } from "lucide-react";
 
 interface ProductCardProps {
  product: Product;
+ priority?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, priority = false }: ProductCardProps) {
  // Lógica de Parcelamento Global
  const parcelas = SITE_CONFIG.max_parcelas;
  const valorParcela = (product.price / parcelas).toFixed(2).replace('.', ',');
@@ -22,7 +23,8 @@ export default function ProductCard({ product }: ProductCardProps) {
  {/* 1. IMAGEM */}
  <div className="absolute inset-0 h-full w-full">
  <Image
- priority src={product.imageUrl}
+ priority={priority}
+ src={product.imageUrl}
  alt={product.seoAltText || product.name}
  fill
  className="object-cover object-center transition-all duration-700 group-hover:scale-110"
