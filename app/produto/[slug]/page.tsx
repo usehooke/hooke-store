@@ -46,7 +46,7 @@ function ProductView({ product }: { product: Product }) {
  "@type": "Product",
  "name": product.name,
  "image": product.imageUrl,
- "description": product.description.replace(/<[^>]*>?/gm, ''),
+ "description": product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' '),
  "brand": {
  "@type": "Brand",
  "name": brandConfig.name
@@ -143,7 +143,7 @@ function ProductView({ product }: { product: Product }) {
  <div>
  <h3 className="text-[10px] font-bold tracking-widest text-hooke-400 mb-1.5">Descrição</h3>
  <p className="text-gray-600 leading-relaxed text-[13px] line-clamp-3">
- {product.description.replace(/<[^>]*>?/gm, '')}
+ {product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')}
  </p>
  </div>
 
@@ -193,11 +193,11 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
  return {
  title: `${product.name} | Hooke Moda Masculina`,
- description: product.seo?.metaDescription || `Compre ${product.name} online. ${product.description.replace(/<[^>]*>?/gm, '').substring(0, 100)}... Frete para todo o Brasil.`,
+ description: product.seo?.metaDescription || `Compre ${product.name} online. ${product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').substring(0, 100)}... Frete para todo o Brasil.`,
  openGraph: {
  images: [product.imageUrl],
  title: product.name,
- description: product.seo?.metaDescription || `Compre ${product.name} online. ${product.description.replace(/<[^>]*>?/gm, '').substring(0, 100)}...`,
+ description: product.seo?.metaDescription || `Compre ${product.name} online. ${product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').substring(0, 100)}...`,
  type: 'website',
  }
  };
