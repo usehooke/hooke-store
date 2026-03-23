@@ -55,7 +55,7 @@ export default function Navbar() {
                    <Link 
                      key={item.name}
                      href={item.href}
-                     className={`text-xs font-bold uppercase tracking-widest transition-colors font-sans flex items-center gap-1 ${
+                     className={`text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] transition-colors font-heading flex items-center gap-1 ${
                        item.highlight 
                          ? "text-hooke-900 border-b-2 border-hooke-900 pb-0.5" // Destaque Desktop
                          : "text-hooke-900 hover:text-gray-500"
@@ -71,7 +71,7 @@ export default function Navbar() {
 
             <div className="flex-1 flex justify-center">
               <Link href="/" className="group text-center relative z-10 inline-block cursor-pointer">
-                <h1 className="font-sans text-3xl md:text-4xl font-black tracking-tighter text-hooke-900 lowercase group-hover:opacity-80 transition-opacity">
+                <h1 className="font-heading text-4xl md:text-[2.75rem] font-bold tracking-tight text-hooke-900 lowercase group-hover:opacity-80 transition-opacity">
                   hooke
                 </h1>
               </Link>
@@ -113,7 +113,7 @@ export default function Navbar() {
         />
         <div className={`relative w-4/5 max-w-xs bg-white h-full shadow-2xl transition-transform duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="p-6 flex justify-between items-center border-b border-gray-100">
-            <h2 className="font-sans text-xl font-bold uppercase tracking-tight text-hooke-900">Menu</h2>
+            <h2 className="font-heading text-xl font-bold uppercase tracking-widest text-hooke-900">Menu</h2>
             <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-500">
               <X strokeWidth={1.5} size={24} />
             </button>
@@ -126,7 +126,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href} 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className={`text-sm font-bold uppercase tracking-widest flex items-center gap-2 ${
+                className={`text-xs font-bold uppercase tracking-[0.2em] font-heading flex items-center gap-2 ${
                   item.highlight ? "text-hooke-900 bg-gray-50 p-2 -ml-2 pl-4 border-l-2 border-hooke-900" : "text-hooke-900"
                 }`}
               >
@@ -136,9 +136,9 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <Link href="/contato" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold uppercase tracking-widest text-hooke-900">Fale Conosco</Link>
+            <Link href="/contato" onClick={() => setIsMobileMenuOpen(false)} className="text-xs font-bold uppercase tracking-[0.2em] font-heading text-hooke-900">Fale Conosco</Link>
             <div className="h-px bg-gray-100 my-2" />
-            <Link href="/meus-pedidos" className="flex items-center gap-3 text-sm font-medium text-gray-600"><User size={18} /> Minha Conta</Link>
+            <Link href="/meus-pedidos" className="flex items-center gap-3 text-sm font-medium text-gray-600 font-heading tracking-wide"><User size={18} /> Minha Conta</Link>
           </div>
         </div>
       </div>

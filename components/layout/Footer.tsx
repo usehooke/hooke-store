@@ -15,7 +15,7 @@ export default function Footer() {
           {/* Coluna 1: Marca */}
           <div className="space-y-6">
             <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
-              <h2 className="text-2xl font-black lowercase tracking-tighter">{brandConfig.name.toLowerCase()}</h2>
+              <h2 className="font-heading text-[2rem] font-bold lowercase tracking-tight leading-none">{brandConfig.name.toLowerCase()}</h2>
             </Link>
             <p className="text-xs text-gray-400 leading-relaxed max-w-xs">
               {brandConfig.description}
@@ -35,7 +35,7 @@ export default function Footer() {
 
           {/* Coluna 2: Shop */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">Shop</h3>
+            <h3 className="font-heading text-xs font-bold uppercase tracking-[0.2em] mb-6 text-gray-500">Shop</h3>
             <ul className="space-y-4 text-xs font-medium tracking-wide">
               <li><Link href="/colecao" className="hover:text-gray-300 transition-colors">Ver Tudo</Link></li>
               <li><Link href="/lancamento" className="hover:text-gray-300 transition-colors">Lançamentos</Link></li>
@@ -46,7 +46,7 @@ export default function Footer() {
 
           {/* Coluna 3: Suporte */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">Suporte</h3>
+            <h3 className="font-heading text-xs font-bold uppercase tracking-[0.2em] mb-6 text-gray-500">Suporte</h3>
             <ul className="space-y-4 text-xs font-medium tracking-wide">
               <li><Link href="/meus-pedidos" className="hover:text-gray-300 transition-colors">Minha Conta</Link></li>
               <li><Link href="/contato" className="hover:text-gray-300 transition-colors">Fale Conosco</Link></li>
@@ -56,9 +56,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Coluna 4: Newsletter (Correção de Acessibilidade Aplicada) */}
+          {/* Coluna 4: Newsletter */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest mb-6 text-gray-500">Fique por dentro</h3>
+            <h3 className="font-heading text-xs font-bold uppercase tracking-[0.2em] mb-6 text-gray-500">Fique por dentro</h3>
             <p className="text-xs text-gray-400 mb-4">
               Cadastre-se para receber acesso antecipado aos lançamentos.
             </p>
@@ -67,7 +67,7 @@ export default function Footer() {
                 <input
                   type="email"
                   placeholder="SEU E-MAIL"
-                  className="w-full bg-transparent border-b border-gray-700 py-3 text-xs font-bold uppercase tracking-wide placeholder:text-gray-600 focus:outline-none focus:border-white transition-colors text-white"
+                  className="w-full bg-transparent font-heading border-b border-gray-700 py-3 text-xs font-bold uppercase tracking-wide placeholder:text-gray-600 focus:outline-none focus:border-white transition-colors text-white"
                 />
                 <button
                   type="submit"

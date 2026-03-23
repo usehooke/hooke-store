@@ -11,12 +11,11 @@ const config: Config = {
     ],
     theme: {
         extend: {
-            // 1. Fontes Unificadas (Tudo Inter agora)
+            // 1. Fontes Unificadas (Jost para Títulos/Logos, Inter para Textos)
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],    
-                heading: ["var(--font-outfit)", "sans-serif"], // MUDANÇA: Outfit agora é a fonte principal de títulos
-                outfit: ["var(--font-outfit)", "sans-serif"],
-                display: ["var(--font-playfair)", "serif"],
+                heading: ["var(--font-jost)", "sans-serif"], 
+                jost: ["var(--font-jost)", "sans-serif"],
             },
             // 2. Cores: Hooke 900 agora é PRETO PURO (#000)
             colors: {

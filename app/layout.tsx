@@ -22,18 +22,11 @@ const inter = Inter({
   display: "swap",
 });
 
-import { Outfit, Playfair_Display } from "next/font/google";
+import { Jost } from "next/font/google";
 
-const outfit = Outfit({
+const jost = Jost({
   subsets: ["latin"],
-  variable: "--font-outfit",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  style: ["normal", "italic"],
+  variable: "--font-jost",
   display: "swap",
 });
 
@@ -84,7 +77,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${outfit.variable} ${playfair.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
       <body className="font-sans antialiased bg-hooke-50 text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
         <Providers>
           <ShopLayoutWrapper>
