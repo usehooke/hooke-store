@@ -9,7 +9,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Zap, Rocket } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Zap, Rocket, Copy } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import ProductForm from "./components/ProductForm";
 
@@ -451,6 +451,30 @@ export default function AdminPage() {
  className="bg-hooke-900 hover:bg-black text-white px-4 py-2 rounded-none text-[10px] font-bold tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
  >
  {savingId === product.id ? "Salvando" : "Salvar Rápido"}
+ </button>
+
+ <button
+ onClick={() => {
+ const duplicatedProduct = {
+ ...product,
+ id: "",
+ name: `${product.name} (Nova Cor)`,
+ imagem: "",
+ imageUrl: "",
+ images: [],
+ skus: {},
+ stock: {},
+ colors: [],
+ syncStatus: 'pending' as const
+ };
+ setEditingProduct(duplicatedProduct);
+ setShowForm(false);
+ window.scrollTo({ top: 0, behavior: 'smooth' });
+ }}
+ className="bg-zinc-800 hover:bg-black text-white px-4 py-2 rounded-none text-[10px] font-bold tracking-widest transition-colors flex items-center gap-1"
+ title="Copiar todos os dados para cadastrar uma nova cor (sem copiar galeria/skus)"
+ >
+ <Copy size={14} /> CLONAR
  </button>
 
  <button
