@@ -21,6 +21,7 @@ interface AdminProduct {
  isActive?: boolean;
  sizes?: string[];
  syncStatus?: 'pending' | 'synced' | 'failed';
+ launchExpiry?: number;
  [key: string]: unknown;
 }
 
@@ -158,6 +159,7 @@ export default function AdminPage() {
  comboPrice: Number(data.comboPrice),
  featured: data.featured,
  isNew: isEditing ? (editingProduct.isNew || false) : true,
+ launchExpiry: isEditing ? editingProduct.launchExpiry : Date.now() + (30 * 24 * 60 * 60 * 1000),
  description: data.description,
  imagem: data.imagem,
  imageUrl: data.imagem,

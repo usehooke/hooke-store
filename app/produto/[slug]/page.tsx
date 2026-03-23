@@ -99,7 +99,7 @@ function ProductView({ product }: { product: Product }) {
  <div className="border-b border-gray-100 pb-4">
  {/* Gatilhos de Conversão (v1.5) */}
  <div className="flex flex-wrap gap-2 mb-2">
- {product.isNew && (
+ {product.isNew && (!product.launchExpiry || product.launchExpiry > Date.now()) && (
  <span className="bg-black text-white text-[9px] font-bold tracking-widest px-2 py-0.5 inline-block">
  Novo
  </span>

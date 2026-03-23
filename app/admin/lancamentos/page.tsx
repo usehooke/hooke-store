@@ -5,7 +5,7 @@ import { getProducts } from "@/lib/productService";
 
 export default async function AdminLancamentos() {
  const products = await getProducts();
- const lancamentos = products.filter(p => p.isNew);
+ const lancamentos = products.filter(p => p.isNew && (!p.launchExpiry || p.launchExpiry > Date.now()));
 
  return (
  <div className="min-h-screen bg-white font-sans p-6 md:p-12">
@@ -104,7 +104,7 @@ export default async function AdminLancamentos() {
  )) : (
  <div className="col-span-2 py-20 border border-dashed border-zinc-200 text-center">
  <p className="text-zinc-400 text-xs font-bold tracking-widest">Nenhum lançamento ativo no momento.</p>
- <p className="text-zinc-300 text-[10px] mt-2">Marque um produto como `isNew: true` para vê-lo aqui.</p>
+ <p className="text-zinc-300 text-[10px] mt-2">Marque um produto como `isNew: true` para vê-lo aqui por 30 dias.</p>
  </div>
  )}
  </div>

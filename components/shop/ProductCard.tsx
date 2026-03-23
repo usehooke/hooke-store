@@ -33,7 +33,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
  {/* 2. BADGES */}
  <div className="absolute top-3 left-3 z-20 flex flex-col gap-1">
- {product.isNew && (
+ {product.isNew && (!product.launchExpiry || product.launchExpiry > Date.now()) && (
  <span className="bg-hooke-900 text-white text-[10px] font-bold px-2 py-1 tracking-widest shadow-lg rounded-sm">
  Novo
  </span>
