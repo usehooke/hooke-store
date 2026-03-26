@@ -1,0 +1,11 @@
+
+> hooke-store@0.1.1 lint
+> next lint --strict && tsc --noEmit --strict
+
+
+./app/bazar-vip-hooke/page.tsx
+13:54  Error: 'i' is defined but never used.  @typescript-eslint/no-unused-vars
+39:174  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+39:183  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

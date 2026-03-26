@@ -29,8 +29,9 @@ const config: Config = {
                     '600': '#4b5563',
                     '700': '#374151',
                     '800': '#1f2937',
-                    '900': '#000000', // MUDANÇA: Preto Puro para contraste máximo
-                    DEFAULT: '#000000'
+                    '900': '#000000', 
+                    DEFAULT: '#000000',
+                    'paper': '#F9F9F9', // NOVO: Fundo Editorial
                 },
                 background: 'hsl(var(--background))',
                 foreground: 'hsl(var(--foreground))',

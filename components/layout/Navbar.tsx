@@ -55,10 +55,10 @@ export default function Navbar() {
  <Link 
  key={item.name}
  href={item.href}
- className={`text-[11px] md:text-xs font-bold tracking-[0.2em] transition-colors font-heading flex items-center gap-1 ${
+ className={`text-[11px] md:text-xs font-medium tracking-[0.2em] transition-colors flex items-center gap-1 ${
  item.highlight 
- ? "text-hooke-900 border-b-2 border-hooke-900 pb-0.5" // Destaque Desktop
- : "text-hooke-900 hover:text-gray-500"
+ ? "text-hooke-900 border-b-2 border-hooke-900 pb-0.5 font-heading" // Destaque Desktop (Sans-Semibold)
+ : "text-hooke-900 hover:text-gray-500 font-heading"
  }`}
  >
  {/* Ícone de Raio só no destaque */}
@@ -71,9 +71,10 @@ export default function Navbar() {
 
  <div className="flex-1 flex justify-center">
  <Link href="/" className="group text-center relative z-10 inline-block cursor-pointer">
- <h1 className="font-heading text-4xl md:text-[2.75rem] font-bold tracking-tight text-hooke-900 lowercase group-hover:opacity-80 transition-opacity">
+ <h1 className="font-heading text-4xl md:text-[2.75rem] font-bold tracking-[-0.05em] text-hooke-900 lowercase group-hover:tracking-[-0.02em] transition-all duration-500">
  hooke
  </h1>
+ <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-hooke-900 group-hover:w-full transition-all duration-500" />
  </Link>
  </div>
 

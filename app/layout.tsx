@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Jost } from "next/font/google";
 import "@/app/globals.css"; // Importação absoluta para garantir carregamento
 
 // Importações para Análise de Dados e Performance
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from '@vercel/analytics/react';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import ConditionalTracking from "@/components/layout/ConditionalTracking";
 
 // Importações dos Componentes de Layout Globais
-import MetaPixel from "@/components/ui/MetaPixel";
 import { Toaster } from "react-hot-toast";
 import { brandConfig } from "@/config/brandConfig";
 import TransitionProvider from "@/components/layout/TransitionProvider";
@@ -22,11 +19,10 @@ const inter = Inter({
   display: "swap",
 });
 
-import { Jost } from "next/font/google";
-
 const jost = Jost({
   subsets: ["latin"],
   variable: "--font-jost",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -78,7 +74,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
-      <body className="font-sans antialiased bg-hooke-50 text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
+      <body className="font-sans antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
         <Providers>
           <ShopLayoutWrapper>
             <TransitionProvider>
@@ -101,10 +97,7 @@ export default function RootLayout({
             }}
           />
 
-          <MetaPixel />
-          <SpeedInsights />
-          <Analytics />
-          {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
+          <ConditionalTracking gaId={GA_MEASUREMENT_ID} />
         </Providers>
       </body>
     </html>
