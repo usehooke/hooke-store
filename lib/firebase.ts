@@ -4,22 +4,21 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth, FacebookAuthProvider } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+// Hooke Elite: Firebase Configuration using Protected Environment Variables
 const firebaseConfig = {
-    apiKey: "AIzaSyC4G4-PK-IsgMWHipcozSXKk5StrvW9XhU", // 'H' is uppercase now
-    authDomain: "hooke-site.firebaseapp.com",
-    projectId: "hooke-site",
-    storageBucket: "hooke-site.firebasestorage.app",
-    messagingSenderId: "441360492840",
-    appId: "1:441360492840:web:5d20cf0c63a27f1b04481d",
-    measurementId: "G-JRRNTWZCLW"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase (Singleton pattern to prevent memory leaks and build errors)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+// Exports for the application
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);

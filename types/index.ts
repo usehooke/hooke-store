@@ -14,7 +14,7 @@ export interface Product {
   sizes: string[];
   stock?: Record<string, number>; // Controle de estoque em formato MAP. Chave: 'Cor-Tamanho' (ex: 'Branca-P') ou 'Tamanho' ('P')
   skus?: Record<string, string>; // Mapeia SKUs (ex: {'Preta-M': 'OVR-PRT-M-1X9A'})
-  category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle";
+  category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle" | "Conjuntos" | "Camisetas";
   modelSigla?: string;
   printSigla?: string;
   weight?: number;

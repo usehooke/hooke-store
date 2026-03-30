@@ -111,7 +111,7 @@ function ProductView({ product }: { product: Product }) {
  )}
  </div>
 
- <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-hooke-900 tracking-tighter mb-1.5 leading-[0.9] font-heading">
+ <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-hooke-900 tracking-[-0.04em] mb-2 leading-[0.85] font-heading uppercase">
  {product.name}
  </h1>
  
@@ -126,7 +126,7 @@ function ProductView({ product }: { product: Product }) {
  </div>
 
  <div className="flex items-center justify-between">
- <p className="text-xl md:text-2xl text-gray-900 font-black tracking-tighter">
+ <p className="text-2xl md:text-3xl text-gray-900 font-medium tracking-tighter">
  {formatter.format(product.price)}
  </p>
  <ShareButton
@@ -174,7 +174,7 @@ function ProductView({ product }: { product: Product }) {
 
  {/* Seção Inferior: Produtos Relacionados */}
  <div className="mt-24 border-t border-gray-100 pt-16">
- <h2 className="text-2xl font-bold tracking-tight mb-12 text-center md:text-left">
+ <h2 className="text-3xl font-light tracking-[-0.03em] mb-12 text-center md:text-left font-heading uppercase">
  Você também pode gostar
  </h2>
  <RelatedProducts currentSlug={product.slug} category={product.category} />

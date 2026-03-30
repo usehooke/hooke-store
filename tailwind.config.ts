@@ -92,10 +92,9 @@ const config: Config = {
                 },
             },
             boxShadow: {
-                'neumorph-sm': '6px 6px 12px #e1e1e1, -6px -6px 12px #ffffff',
-                'neumorph': '10px 10px 20px #e1e1e1, -10px -10px 20px #ffffff',
-                'neumorph-lg': '15px 15px 30px #e1e1e1, -15px -15px 30px #ffffff',
-                'neumorph-inset': 'inset 6px 6px 12px #e1e1e1, inset -6px -6px 12px #ffffff',
+                'none': '0 0 #0000',
+                'subtle': '0 2px 10px rgba(0,0,0,0.05)',
+                'editorial': '0 10px 30px rgba(0,0,0,0.08)',
             },
         }
     },

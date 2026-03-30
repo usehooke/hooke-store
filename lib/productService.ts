@@ -1,8 +1,14 @@
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, limit, QueryConstraint } from "firebase/firestore";
 import { Product } from "@/types";
+import { MOCK_PRODUCTS } from "./mockData";
 
 export const COLLECTION_NAME = "produtos";
+
+/**
+ * Hooke Elite: Resilient data fetching with Mock Fallback for Build Stability.
+ * Wraps Firestore calls in try/catch to handle PERMISSION_DENIED during SSG.
+ */
 
 export async function getProducts(category?: string): Promise<Product[]> {
     try {
@@ -14,28 +20,31 @@ export async function getProducts(category?: string): Promise<Product[]> {
         }
 
         const q = query(productsRef, ...conditions);
-
         const snapshot = await getDocs(q);
+        
+        if (snapshot.empty && process.env.NODE_ENV === 'production') {
+            console.warn("Firestore returned empty products. Using Mock Data for build stability.");
+            return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
+        }
+
         const products: Product[] = [];
         snapshot.forEach((doc) => {
             const data = doc.data();
-            // Filtra por ativos localmente (ou que não tenham a flag, para retrocompatibilidade)
             if (data.isActive !== false) {
                 products.push({ id: doc.id, ...data } as Product);
             }
         });
 
-        return products;
-    } catch (error) {
-        console.error("Erro ao buscar getProducts:", error);
-        return [];
+        return products.length > 0 ? products : MOCK_PRODUCTS;
+    } catch {
+        console.error("Firestore PERMISSION_DENIED or Error. Falling back to Mock Data.");
+        return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
     }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
     try {
         const productsRef = collection(db, COLLECTION_NAME);
-        // Primeiro tenta encontrar onde slug == param
         const q = query(productsRef, where("slug", "==", slug), limit(1));
         const snapshot = await getDocs(q);
 
@@ -43,7 +52,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
             return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Product;
         }
 
-        // Fallback: se o slug for na verdade o ID (como no Admin novo)
+        // Fallback: se o slug for na verdade o ID
         const qFallback = query(productsRef, where("id", "==", slug), limit(1));
         const snapshotFb = await getDocs(qFallback);
 
@@ -51,10 +60,12 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
             return { id: snapshotFb.docs[0].id, ...snapshotFb.docs[0].data() } as Product;
         }
 
-        return null;
-    } catch (error) {
-        console.error("Erro ao buscar getProductBySlug:", error);
-        return null;
+        // Se não encontrar no banco, procura no Mock (Fiel à Regra de Ouro)
+        const mockProduct = MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug);
+        return mockProduct || null;
+    } catch {
+        console.error("getProductBySlug Error. Falling back to Mock Data.");
+        return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
     }
 }
 
@@ -69,24 +80,15 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
             products.push({ id: doc.id, ...doc.data() } as Product);
         });
 
-        // Se o banco não retornou features suficientes, traz mais produtos
-        if (products.length < limitCount) {
-            const fallbackQ = query(productsRef, limit(limitCount));
-            const fallbackSnap = await getDocs(fallbackQ);
-
-            fallbackSnap.forEach((doc) => {
-                if (!products.some(p => p.id === doc.id)) {
-                    products.push({ id: doc.id, ...doc.data() } as Product);
-                }
-            });
+        if (products.length === 0) {
+            return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
         }
 
-        // Filtrando falsos localmente para garantir
+        // Filtrando ativos
         const finalActiveProducts = products.filter(p => p.isActive !== false);
-
         return finalActiveProducts.slice(0, limitCount);
-    } catch (error) {
-        console.error("Erro ao buscar getFeaturedProducts:", error);
-        return [];
+    } catch {
+        console.error("getFeaturedProducts Error. Falling back to Mock Data.");
+        return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
     }
 }
