@@ -113,7 +113,7 @@ export default function WaferElitePage() {
                             <div>
                                 <h3 className="text-xs uppercase font-medium mb-1">Estrutura True Potential</h3>
                                 <p className="text-xs text-zinc-500 font-light leading-normal">
-                                    O tecido de 320g garante que a camiseta não amasse e mantenha o volume 'boxy' característico do streetwear de luxo.
+                                    O tecido de 320g garante que a camiseta não amasse e mantenha o volume &apos;boxy&apos; característico do streetwear de luxo.
                                 </p>
                             </div>
                         </motion.div>

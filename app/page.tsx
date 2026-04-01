@@ -11,7 +11,6 @@ import BrandBento from "@/components/home/BrandBento";
 import SocialFeed from "@/components/home/SocialFeed";
 import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
-import RetroFuscaHero from "@/components/home/RetroFuscaHero";
 import { motion } from "framer-motion";
 
 export default function Home() {
