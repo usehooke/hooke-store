@@ -38,6 +38,30 @@ export const MOCK_PRODUCTS: Product[] = [
     featured: true,
     isActive: true,
     seoAltText: "Fernando vestindo Camiseta Heavy Black Hooke"
+  },
+  {
+    id: "retro-beetle-areia",
+    name: "Retro Beetle Areia",
+    slug: "retro-beetle-areia",
+    price: 179.90,
+    description: "Inspirada na nostalgia automobilística de 1972. Malha premium Sandstone com textura flocada e corte editorial boxy.",
+    category: "Vintage",
+    imageUrl: "/produtos/hk_prod_vi_fusca_areia_01.png",
+    images: [
+      "/produtos/hk_prod_vi_fusca_areia_01.png",
+      "/produtos/hk_prod_vi_fusca_areia_02.png",
+      "/produtos/hk_prod_vi_fusca_areia_03.png"
+    ],
+    sizes: ["P", "M", "G", "GG"],
+    details: {
+      fabric: "100% Heavy Cotton 280g",
+      model: "Boxy Editorial",
+      wash: "Acabamento Flocado"
+    },
+    featured: true,
+    isNew: true,
+    isActive: true,
+    seoAltText: "Camiseta Hooke Retro Beetle Areia em algodão pesado"
   }
 ];
 

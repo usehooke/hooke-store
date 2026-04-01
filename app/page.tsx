@@ -11,6 +11,7 @@ import BrandBento from "@/components/home/BrandBento";
 import SocialFeed from "@/components/home/SocialFeed";
 import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
+import RetroFuscaHero from "@/components/home/RetroFuscaHero";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -46,7 +47,7 @@ export default function Home() {
           className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4"
         >
           <div className="max-w-xl">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 mb-4 block uppercase">
+            <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 mb-4 block">
               Curadoria Hooke
             </span>
             <h2 className="text-4xl md:text-6xl font-heading font-light text-hooke-900 leading-[1.1] mb-2">

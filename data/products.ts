@@ -14,12 +14,12 @@ export const products: Product[] = [
     isNew: true,    // Tag "Lançamento"
     description: "O melhor custo-benefício. Leve 3 peças da nossa modelagem Oversized exclusiva. Tecido encorpado, gola estruturada e caimento streetwear perfeito.",
     // Capa: Preta
-    imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
+    imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
-      "/produtos/camiseta-oversized-preta-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-verde-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-azul-premium-hooke-1.avif"
+      "/produtos/HK_PROD_OV_BLACK_01.avif",
+      "/produtos/HK_PROD_OV_OFFWHITE_01.avif",
+      "/produtos/HK_PROD_OV_GREEN_01.avif",
+      "/produtos/HK_PROD_OV_BLUE_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Kits",
@@ -35,10 +35,10 @@ export const products: Product[] = [
     price: 99.90,
     featured: true,
     description: "Estilo militar urbano. Fresca, leve e com caimento impecável para o verão.",
-    imageUrl: "/produtos/camiseta-Regata-canelada-verde-1.jpg",
+    imageUrl: "/produtos/HK_PROD_RE_MILITARY_01.jpg",
     images: [
-      "/produtos/camiseta-Regata-canelada-verde-1.jpg",
-      "/produtos/camiseta-Regata-canelada-verde-2.jpg"
+      "/produtos/HK_PROD_RE_MILITARY_01.jpg",
+      "/produtos/HK_PROD_RE_MILITARY_02.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
     category: "Regatas",
@@ -55,11 +55,11 @@ export const products: Product[] = [
     price: 159.90,
     featured: true,
     description: "O clássico absoluto. Estampa do Fusca em silk screen de alta definição sobre algodão preto profundo.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-preta-1.jpg",
+    imageUrl: "/produtos/HK_PROD_VI_FUSCA_BLACK_01.jpg",
     images: [
-      "/produtos/camiseta-vintage-fusca-preta-1.jpg",
-      "/produtos/camiseta-vintage-fusca-preta-2.png",
-      "/produtos/camiseta-vintage-fusca-preta-3.png",
+      "/produtos/HK_PROD_VI_FUSCA_BLACK_01.jpg",
+      "/produtos/HK_PROD_VI_FUSCA_BLACK_02.png",
+      "/produtos/HK_PROD_VI_FUSCA_BLACK_03.png",
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Vintage",
@@ -77,10 +77,10 @@ export const products: Product[] = [
     featured: false,
     isNew: true,
     description: "A peça chave do estilo urbano. Modelagem ampla e estruturada. Caimento perfeito no corpo.",
-    imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
+    imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
-      "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
-      "/produtos/camiseta-oversized-preta-premium-hooke-1.avif"
+      "/produtos/HK_PROD_OV_BLACK_03.avif",
+      "/produtos/HK_PROD_OV_BLACK_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Oversized",
@@ -95,8 +95,8 @@ export const products: Product[] = [
     featured: false,
     isNew: true,
     description: "Tonalidade natural que traz sofisticação para o streetwear.",
-    imageUrl: "/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif",
-    images: ["/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif"],
+    imageUrl: "/produtos/HK_PROD_OV_OFFWHITE_01.avif",
+    images: ["/produtos/HK_PROD_OV_OFFWHITE_01.avif"],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Oversized",
     details: { fabric: "Algodão Premium", model: "Oversized", wash: "Amaciada" }
@@ -109,11 +109,11 @@ export const products: Product[] = [
     price: 99.90,
     featured: false,
     description: "Textura que diferencia. Malha canelada que se ajusta ao corpo sem apertar.",
-    imageUrl: "/produtos/camiseta-Regata-canelada-marrom-1.jpg",
+    imageUrl: "/produtos/HK_PROD_RE_COFFEE_01.jpg",
     images: [
-      "/produtos/camiseta-Regata-canelada-marrom-1.jpg",
-      "/produtos/camiseta-Regata-canelada-marrom-2.jpg",
-      "/produtos/camiseta-Regata-canelada-marrom-3.jpg"
+      "/produtos/HK_PROD_RE_COFFEE_01.jpg",
+      "/produtos/HK_PROD_RE_COFFEE_02.jpg",
+      "/produtos/HK_PROD_RE_COFFEE_03.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
     category: "Regatas",
@@ -127,8 +127,8 @@ export const products: Product[] = [
     price: 159.90,
     featured: false,
     description: "Velocidade e história. Homenagem ao lendário V8. Cor vibrante com estampa desgastada.",
-    imageUrl: "/produtos/camiseta-vintage-maverik-vermelha-1.jpg",
-    images: ["/produtos/camiseta-vintage-maverik-vermelha-1.jpg"],
+    imageUrl: "/produtos/HK_PROD_VI_MAVERICK_RED_01.jpg",
+    images: ["/produtos/HK_PROD_VI_MAVERICK_RED_01.jpg"],
     sizes: ["M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
@@ -141,8 +141,8 @@ export const products: Product[] = [
     price: 159.90,
     featured: false,
     description: "Um visual limpo e clássico. A cor off-white destaca a estampa do Beetle com suavidade.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-offwhite-1.jpg",
-    images: ["/produtos/camiseta-vintage-fusca-offwhite-1.jpg", "/produtos/camiseta-vintage-fusca-offwhite-4.jpg"],
+    imageUrl: "/produtos/HK_PROD_VI_FUSCA_OFFWHITE_01.jpg",
+    images: ["/produtos/HK_PROD_VI_FUSCA_OFFWHITE_01.jpg", "/produtos/HK_PROD_VI_FUSCA_OFFWHITE_04.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Regular Fit", wash: "Pré-Encolhida" }
@@ -155,8 +155,8 @@ export const products: Product[] = [
     price: 89.90,
     featured: false,
     description: "Básica, mas nunca simples. Corte a fio na gola e mangas para um visual despojado.",
-    imageUrl: "/produtos/regata-lifestyle-bege.jpg",
-    images: ["/produtos/regata-lifestyle-bege.jpg"],
+    imageUrl: "/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg",
+    images: ["/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Lifestyle",
     details: { fabric: "Algodão BCI", model: "Oversized", wash: "Tingimento Ecológico" }
@@ -169,8 +169,8 @@ export const products: Product[] = [
     price: 159.90,
     featured: false,
     description: "Elegância e atitude. O tom bordô traz sofisticação para o visual casual.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-bordo-1.jpg",
-    images: ["/produtos/camiseta-vintage-fusca-bordo-1.jpg"],
+    imageUrl: "/produtos/HK_PROD_VI_FUSCA_BORDO_01.jpg",
+    images: ["/produtos/HK_PROD_VI_FUSCA_BORDO_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Amaciada" }
@@ -183,10 +183,10 @@ export const products: Product[] = [
     price: 99.90,
     featured: false,
     description: "Tons terrosos são essenciais. Uma peça neutra que combina com bermudas de qualquer cor.",
-    imageUrl: "/produtos/camiseta-Regata-canelada-areia-1.jpg",
+    imageUrl: "/produtos/HK_PROD_RE_SAND_01.jpg",
     images: [
-      "/produtos/camiseta-Regata-canelada-areia-1.jpg",
-      "/produtos/camiseta-Regata-canelada-areia-2.jpg"
+      "/produtos/HK_PROD_RE_SAND_01.jpg",
+      "/produtos/HK_PROD_RE_SAND_02.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
     category: "Regatas",
@@ -200,8 +200,8 @@ export const products: Product[] = [
     price: 159.90,
     featured: false,
     description: "Para espíritos livres. A Kombi representa a viagem, não o destino.",
-    imageUrl: "/produtos/camiseta-vintage-kombi-offwhite-1.jpg",
-    images: ["/produtos/camiseta-vintage-kombi-offwhite-1.jpg"],
+    imageUrl: "/produtos/HK_PROD_VI_KOMBI_OFFWHITE_01.jpg",
+    images: ["/produtos/HK_PROD_VI_KOMBI_OFFWHITE_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim", wash: "Pré-Encolhida" }

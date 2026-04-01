@@ -20,18 +20,18 @@ const config: Config = {
             // 2. Cores: Hooke 900 agora é PRETO PURO (#000)
             colors: {
                 hooke: {
-                    '50': '#f9fafb',
-                    '100': '#f3f4f6',
-                    '200': '#e5e7eb',
-                    '300': '#d1d5db',
-                    '400': '#9ca3af',
-                    '500': '#6b7280',
-                    '600': '#4b5563',
-                    '700': '#374151',
-                    '800': '#1f2937',
-                    '900': '#000000', 
-                    DEFAULT: '#000000',
-                    'paper': '#F9F9F9', // NOVO: Fundo Editorial
+                    '50': 'hsl(var(--hooke-100))',
+                    '100': 'hsl(var(--hooke-100))',
+                    '200': 'hsl(var(--hooke-200))',
+                    '300': 'hsl(var(--border))',
+                    '400': 'hsl(var(--hooke-400))',
+                    '500': 'hsl(var(--muted-foreground))',
+                    '600': 'hsl(var(--hooke-700))',
+                    '700': 'hsl(var(--hooke-700))',
+                    '800': 'hsl(var(--hooke-800))',
+                    '900': 'hsl(var(--hooke-900))', 
+                    DEFAULT: 'hsl(var(--hooke-900))',
+                    'paper': 'hsl(var(--hooke-paper))',
                 },
                 background: 'hsl(var(--background))',
                 foreground: 'hsl(var(--foreground))',
@@ -66,19 +66,12 @@ const config: Config = {
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
                 ring: 'hsl(var(--ring))',
-                chart: {
-                    '1': 'hsl(var(--chart-1))',
-                    '2': 'hsl(var(--chart-2))',
-                    '3': 'hsl(var(--chart-3))',
-                    '4': 'hsl(var(--chart-4))',
-                    '5': 'hsl(var(--chart-5))'
-                }
             },
             // 3. Bordas Zero (Sharp / Brutalista)
             borderRadius: {
-                lg: '0px',
-                md: '0px',
-                sm: '0px',
+                lg: 'var(--radius)',
+                md: 'calc(var(--radius) - 2px)',
+                sm: 'calc(var(--radius) - 4px)',
                 DEFAULT: '0px', 
             },
             // 4. Animações
@@ -93,8 +86,9 @@ const config: Config = {
             },
             boxShadow: {
                 'none': '0 0 #0000',
-                'subtle': '0 2px 10px rgba(0,0,0,0.05)',
-                'editorial': '0 10px 30px rgba(0,0,0,0.08)',
+                'subtle': '0 2px 10px rgba(0,0,0,0.02)',
+                'editorial': '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
+                'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
             },
         }
     },

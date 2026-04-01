@@ -39,7 +39,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           {/* Badge Minimalista */}
           {product.isNew && (
             <div className="absolute top-4 left-4 z-10">
-              <span className="bg-hooke-900 text-white text-[9px] font-bold px-2 py-1 tracking-[0.2em] uppercase">
+              <span className="bg-hooke-900 text-white text-[9px] font-bold px-2 py-1 tracking-[0.2em]">
                 Novo
               </span>
             </div>
@@ -50,9 +50,9 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           
           {/* Quick Add Button (Visual only) */}
           <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-            <div className="w-full bg-white text-hooke-900 p-3 text-[10px] font-bold tracking-[0.2em] flex items-center justify-center gap-2 shadow-sm uppercase">
+            <div className="w-full bg-white text-hooke-900 p-3 text-[10px] font-bold tracking-[0.2em] flex items-center justify-center gap-2 shadow-sm">
               <ShoppingBag size={12} />
-              Adicionar
+              Adicionar ao carrinho
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             <span className="text-sm font-semibold text-hooke-900 tracking-tight">
               R$ {precoFormatado}
             </span>
-            <span className="text-[10px] text-hooke-400 font-medium uppercase tracking-widest">
+            <span className="text-[10px] text-hooke-400 font-medium tracking-widest">
               {parcelas}x R$ {valorParcela}
             </span>
           </div>
