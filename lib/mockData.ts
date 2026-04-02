@@ -15,11 +15,11 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     price: 449.90,
     description: "Algodão Egípcio de gramatura pesada. O ápice do minimalismo Hooke Elite.",
     category: "Conjuntos",
-    imageUrl: "/produtos/HK_ELITE_WAFER_OW.png",
-    images: ["/produtos/HK_ELITE_WAFER_OW.png"],
+    imageUrl: "/produtos/HK_ELITE_WAFER_OW_V2.png",
+    images: ["/produtos/HK_ELITE_WAFER_OW_V2.png"],
     sizes: ["P", "M", "G", "GG"],
     colors: [
-      { name: "Off-White", imageUrl: "/produtos/HK_ELITE_WAFER_OW.png" }
+      { name: "Off-White", imageUrl: "/produtos/HK_ELITE_WAFER_OW_V2.png" }
     ],
     featured: true,
     isActive: true,
@@ -33,8 +33,8 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     price: 189.90,
     description: "Modelagem boxy, gola 3cm e costuras reforçadas. 100% Algodão Premium.",
     category: "Camisetas",
-    imageUrl: "/produtos/HK_ELITE_HEAVY_BLACK.png",
-    images: ["/produtos/HK_ELITE_HEAVY_BLACK.png"],
+    imageUrl: "/produtos/HK_ELITE_HEAVY_BLACK_V2.png",
+    images: ["/produtos/HK_ELITE_HEAVY_BLACK_V2.png"],
     sizes: ["P", "M", "G", "GG"],
     featured: true,
     isActive: true,
@@ -76,7 +76,7 @@ export const MOCK_PRODUCTS: Product[] = [
 export const MOCK_LOOKBOOK = {
   title: "Conjunto\nOff-white",
   subtitle: "Coleção Resort 2026",
-  imageSrc: "/produtos/HK_ELITE_WAFER_OW.png",
+  imageSrc: "/produtos/HK_ELITE_WAFER_OW_V2.png",
   price: "R$ 449,90",
   description: "Algodão Egípcio de gramatura pesada. Menos excesso, mais qualidade em cada fibra.",
   tag: "HOOKE ELITE FOUNDER"
