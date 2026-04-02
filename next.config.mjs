@@ -34,7 +34,6 @@ const nextConfig = {
 
   // Performance e Segurança
   reactStrictMode: true, 
-  swcMinify: true, 
   poweredByHeader: false, // Remove o aviso "X-Powered-By" (Segurança)
 
   // Limpeza para Produção
