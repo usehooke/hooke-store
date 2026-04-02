@@ -47,9 +47,13 @@ function MyOrdersContent() {
  setOrder(null);
 
  try {
- if (!db) return;
- const docRef = doc(db, "pedidos", orderId);
- const docSnap = await getDoc(docRef);
+    const firestore = db;
+    if (!firestore) {
+        setError("Serviço temporariamente indisponível. Tente novamente mais tarde.");
+        return;
+    }
+    const docRef = doc(firestore, "pedidos", orderId);
+    const docSnap = await getDoc(docRef);
 
  if (docSnap.exists()) {
  const data = docSnap.data() as Order;
@@ -79,9 +83,10 @@ function MyOrdersContent() {
  setLoading(true);
  setError("");
  try {
- if (!db) return;
- const docRef = doc(db, "pedidos", rawId);
- const docSnap = await getDoc(docRef);
+    const firestore = db;
+    if (!firestore) return;
+    const docRef = doc(firestore, "pedidos", rawId);
+    const docSnap = await getDoc(docRef);
  if (docSnap.exists()) {
  const data = docSnap.data() as Order;
  // Na busca inicial pela URL, só temos email e id

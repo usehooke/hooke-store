@@ -67,6 +67,15 @@ export async function POST(req: Request) {
         const totalAmount = subtotal + (shippingValue || 0) - (discountValue || 0);
 
         // 2. Prepara o Documento Inicial (Pending) no Firestore
+        // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos.
+        if (!db) {
+            console.error("❌ [Hooke System] Checkout abortado: Servidor sem conexão com Firestore.");
+            return NextResponse.json({ 
+                error: "[Hooke System] Service Unavailable", 
+                message: "Não foi possível persistir o pedido. Banco de dados offline." 
+            }, { status: 503 });
+        }
+
         const orderData: Order = {
             id: orderId,
             customer,
@@ -82,12 +91,7 @@ export async function POST(req: Request) {
             updatedAt: Date.now()
         };
 
-        // Salva silenciosamente o esqueleto do pedido ou pula se DB estiver offline (Short-Circuit)
-        if (db) {
-            await setDoc(doc(db, "pedidos", orderId), orderData);
-        } else {
-            console.warn("⚠️ [Checkout] Firestore offline. O pedido não será persistido, mas o checkout MP continuará.");
-        }
+        await setDoc(doc(db, "pedidos", orderId), orderData);
 
         // 3. Monta o Payload para a Preference do Mercado Pago
         // Essa URLBase ajuda no redirecionamento local ou de prod

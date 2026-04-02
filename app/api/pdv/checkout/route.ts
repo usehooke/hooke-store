@@ -14,7 +14,14 @@ export async function POST(request: Request) {
     const { db } = await import("@/lib/firebase");
     const { doc, getDoc, setDoc } = await import("firebase/firestore");
     
-    const syncDocRef = doc(db, "pdv_syncs", saleId);
+    // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos.
+    const firestore = db;
+    if (!firestore) {
+        console.error("❌ [Hooke System] PDV Checkout abortado: Firestore offline.");
+        return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
+    }
+
+    const syncDocRef = doc(firestore, "pdv_syncs", saleId);
     const syncDoc = await getDoc(syncDocRef);
 
     if (syncDoc.exists()) {

@@ -66,9 +66,15 @@ export function useOfflineSync() {
         const unsynced = buffer.filter(a => !a.synced);
         if (unsynced.length === 0) return;
 
+        // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, não tentamos sincronizar.
+        if (!db) {
+            console.warn("⚠️ [Hooke System] Sincronização em buffer ignorada: Firestore offline.");
+            return;
+        }
+
         try {
             const syncRef = collection(db, 'user_interactions');
-            const userId = auth.currentUser?.uid || 'anonymous';
+            const userId = auth?.currentUser?.uid || 'anonymous';
 
             for (const action of unsynced) {
                 await addDoc(syncRef, {

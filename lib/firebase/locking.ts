@@ -20,7 +20,11 @@ interface LockResult {
  */
 export async function acquireStockLock(sku: string, requestedQty: number): Promise<LockResult> {
   const firestore = db;
-  if (!firestore) return { success: false, message: "Banco de dados offline." };
+  // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos o lock.
+  if (!firestore) {
+    console.warn("⚠️ [Hooke System] Tentativa de lock com Firestore offline. Operação abortada segura.");
+    return { success: false, message: "Banco de dados offline ou em modo de Build." };
+  }
 
   try {
     return await runTransaction(firestore, async (transaction) => {

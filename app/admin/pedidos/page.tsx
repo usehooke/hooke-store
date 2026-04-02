@@ -18,31 +18,34 @@ export default function AdminOrdersPage() {
  const [savingId, setSavingId] = useState<string | null>(null);
  const router = useRouter();
 
- useEffect(() => {
- // Blindagem de Auth
- if (!auth) return;
+  useEffect(() => {
+    // Blindagem de Auth
+    const fireauth = auth;
+    if (!fireauth) return;
 
- const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
- if (!currentUser) router.push("/login");
- else {
- setUser(currentUser);
- fetchOrders();
- }
- });
- return () => unsubscribe();
- }, [router]);
+    const unsubscribe = onAuthStateChanged(fireauth, (currentUser) => {
+      if (!currentUser) router.push("/login");
+      else {
+        setUser(currentUser);
+        fetchOrders();
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
- async function fetchOrders() {
- // Blindagem de DB (Short-Circuit)
- if (!db) {
-    setLoading(false);
-    return;
- }
+  async function fetchOrders() {
+    // Blindagem de DB (Short-Circuit)
+    const firestore = db;
+    // ⚡ A TRAVA DO TECH LEAD
+    if (!firestore) {
+        setLoading(false);
+        return;
+    }
 
- try {
-  const ordersRef = collection(db, "pedidos");
-  const q = query(ordersRef, orderBy("createdAt", "desc"));
-  const querySnapshot = await getDocs(q);
+  try {
+   const ordersRef = collection(firestore, "pedidos");
+   const q = query(ordersRef, orderBy("createdAt", "desc"));
+   const querySnapshot = await getDocs(q);
   const ordersData: Order[] = [];
 
   querySnapshot.forEach((doc) => {
@@ -58,12 +61,17 @@ export default function AdminOrdersPage() {
  }
  }
 
- const handleUpdateOrder = async (orderId: string, novoStatus: OrderStatus, novoRastreio: string) => {
-  if (!db) return;
+  const handleUpdateOrder = async (orderId: string, novoStatus: OrderStatus, novoRastreio: string) => {
+    const firestore = db;
+    // ⚡ A TRAVA DO TECH LEAD
+    if (!firestore) {
+        toast.error("Erro: Banco de dados offline.");
+        return;
+    }
 
-  setSavingId(orderId);
-  try {
-  const orderRef = doc(db, "pedidos", orderId);
+   setSavingId(orderId);
+   try {
+   const orderRef = doc(firestore, "pedidos", orderId);
   await updateDoc(orderRef, {
   status: novoStatus,
   trackingCode: novoRastreio,

@@ -19,8 +19,12 @@ export default function LoginPage() {
  setLoading(true);
 
  try {
- if (!auth) return;
- await signInWithEmailAndPassword(auth, email, password);
+ const fireauth = auth;
+ if (!fireauth) {
+ setError("Serviço de autenticação offline.");
+ return;
+ }
+ await signInWithEmailAndPassword(fireauth, email, password);
  router.push("/admin");
  } catch (err: unknown) {
  console.error("Erro no login:", err);
@@ -36,11 +40,15 @@ export default function LoginPage() {
  };
 
  const handleFacebookLogin = async () => {
- if (!auth) return;
+ const fireauth = auth;
+ if (!fireauth) {
+ setError("Serviço de autenticação offline.");
+ return;
+ }
  setError("");
  setLoading(true);
  try {
- await signInWithPopup(auth, facebookProvider);
+ await signInWithPopup(fireauth, facebookProvider);
  router.push("/admin");
  } catch (err: unknown) {
  console.error("Erro no login com Facebook:", err);

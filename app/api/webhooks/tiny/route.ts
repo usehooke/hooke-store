@@ -16,8 +16,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payload inválido. SKU ou Saldo ausentes.' }, { status: 400 });
     }
 
+    // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, o Webhook não pode atualizar o estoque.
+    const firestore = db;
+    if (!firestore) {
+      console.error("❌ [Hooke System] Webhook Tiny abortado: Firestore offline.");
+      return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
+    }
+
     // Varredura cirúrgica no Firebase para encontrar a qual produto esse SKU pertence
-    const produtosRef = collection(db, 'produtos');
+    const produtosRef = collection(firestore, 'produtos');
     const snapshot = await getDocs(produtosRef);
     
     let updated = false;
@@ -34,7 +41,7 @@ export async function POST(req: Request) {
               // Atualiza de forma atômica apenas a grade específica
               currentStockObj[tamanhoCor] = Number(newStock);
               
-              updateDoc(doc(db, 'produtos', document.id), {
+              updateDoc(doc(firestore, 'produtos', document.id), {
                  stock: currentStockObj
               });
               updated = true;

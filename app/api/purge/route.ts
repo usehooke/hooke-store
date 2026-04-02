@@ -14,11 +14,15 @@ export async function GET(req: Request) {
   let deletedPedidos = 0;
   let updatedProdutos = 0;
 
+  // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos.
+  const firestore = db;
+  if (!firestore) {
+      console.error("❌ [Hooke System] Purge abortado: Firestore offline.");
+      return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
+  }
+
   try {
-    if (!db) {
-        return NextResponse.json({ error: "Database offline" }, { status: 500 });
-    }
-    const pedidosRef = collection(db, "pedidos");
+    const pedidosRef = collection(firestore, "pedidos");
     const pedidosSnapshot = await getDocs(pedidosRef);
 
     for (const docSnapshot of pedidosSnapshot.docs) {
@@ -38,7 +42,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const produtosRef = collection(db, "produtos");
+    const produtosRef = collection(firestore, "produtos");
     const produtosSnapshot = await getDocs(produtosRef);
 
     for (const docSnapshot of produtosSnapshot.docs) {

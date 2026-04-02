@@ -39,10 +39,12 @@ export async function POST(req: Request) {
                         orderStatus = 'pending';
                 }
 
+                // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, o Webhook não pode persistir a aprovação.
                 if (!db) {
-                    console.error("[Webhook Error] Firestore indisponível para atualização de pedido.");
-                    return NextResponse.json({ error: "Database offline" }, { status: 500 });
+                    console.error("❌ [Hooke System] Webhook abortado: Firestore offline.");
+                    return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
                 }
+
                 const orderRef = doc(db, "pedidos", externalReference);
 
                 await updateDoc(orderRef, {

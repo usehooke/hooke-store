@@ -7,10 +7,14 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
-        if (!db) {
-            return new NextResponse("Database offline", { status: 500 });
+        // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos.
+        const firestore = db;
+        if (!firestore) {
+            console.error("❌ [Hooke System] Feed XML abortado: Firestore offline.");
+            return new NextResponse("[Hooke System] Service Unavailable", { status: 503 });
         }
-        const productsRef = collection(db, "produtos");
+
+        const productsRef = collection(firestore, "produtos");
         // Buscamos apenas os que não estão ocultos
         const q = query(productsRef, where("isActive", "==", true));
         const querySnapshot = await getDocs(q);

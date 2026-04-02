@@ -51,26 +51,28 @@ export default function CartSheet() {
  const [checkoutError, setCheckoutError] = useState("");
  const [isFacebookLoading, setIsFacebookLoading] = useState(false);
 
- const handleFacebookCheckoutFill = async () => {
- if (!auth) return;
- setIsFacebookLoading(true);
- try {
- const result = await signInWithPopup(auth, facebookProvider);
- const user = result.user;
- setCustomer(prev => ({
- ...prev,
- name: user.displayName || prev.name,
- email: user.email || prev.email,
- // Telefones via Firebase Auth Meta normalmente são nulos, mas passamos caso tenha.
- phone: user.phoneNumber || prev.phone,
- }));
- } catch (error) {
- console.error("Erro ao puxar dados da Meta", error);
- // Opcional: Avisar falha
- } finally {
- setIsFacebookLoading(false);
- }
- };
+  const handleFacebookCheckoutFill = async () => {
+    const fireauth = auth;
+    if (!fireauth) {
+        setCheckoutError("Serviço de autenticação temporariamente indisponível.");
+        return;
+    }
+    setIsFacebookLoading(true);
+    try {
+        const result = await signInWithPopup(fireauth, facebookProvider);
+        const user = result.user;
+        setCustomer(prev => ({
+            ...prev,
+            name: user.displayName || prev.name,
+            email: user.email || prev.email,
+            phone: user.phoneNumber || prev.phone,
+        }));
+    } catch (error) {
+        console.error("Erro ao puxar dados da Meta", error);
+    } finally {
+        setIsFacebookLoading(false);
+    }
+  };
 
  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
  let value = e.target.value.replace(/\D/g, "");

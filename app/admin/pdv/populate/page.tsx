@@ -13,52 +13,54 @@ export default function PopulateDictionaryPage() {
  const [results, setResults] = useState<{ type: string; count: number }[]>([]);
 
  const handlePopulate = async () => {
- if (!db) {
- toast.error("Banco de dados indisponível.");
- return;
- }
- setIsPopulating(true);
- setResults([]);
- 
- try {
- // 1. Modelagens
- let modelCount = 0;
- for (const [sigla, info] of Object.entries(MODEL_DICTIONARY)) {
- await setDoc(doc(db, "modelagens", sigla), {
- ...info,
- sigla,
- updatedAt: new Date().toISOString()
- });
- modelCount++;
- }
+    // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos a carga.
+    const firestore = db;
+    if (!firestore) {
+        toast.error("❌ [Hooke System] Operação abortada: Firestore offline.");
+        return;
+    }
+    setIsPopulating(true);
+    setResults([]);
+    
+    try {
+    // 1. Modelagens
+    let modelCount = 0;
+    for (const [sigla, info] of Object.entries(MODEL_DICTIONARY)) {
+    await setDoc(doc(firestore, "modelagens", sigla), {
+    ...info,
+    sigla,
+    updatedAt: new Date().toISOString()
+    });
+    modelCount++;
+    }
 
- // 2. Estampas/Tecidos
- let printCount = 0;
- for (const [sigla, info] of Object.entries(PRINT_DICTIONARY)) {
- await setDoc(doc(db, "estampas_tecidos", sigla), {
- ...info,
- sigla,
- updatedAt: new Date().toISOString()
- });
- printCount++;
- }
+    // 2. Estampas/Tecidos
+    let printCount = 0;
+    for (const [sigla, info] of Object.entries(PRINT_DICTIONARY)) {
+    await setDoc(doc(firestore, "estampas_tecidos", sigla), {
+    ...info,
+    sigla,
+    updatedAt: new Date().toISOString()
+    });
+    printCount++;
+    }
 
- // 3. Cores
- let colorCount = 0;
- for (const [sigla, info] of Object.entries(COLOR_DICTIONARY)) {
- await setDoc(doc(db, "cores", sigla), {
- ...info,
- sigla,
- updatedAt: new Date().toISOString()
- });
- colorCount++;
- }
+    // 3. Cores
+    let colorCount = 0;
+    for (const [sigla, info] of Object.entries(COLOR_DICTIONARY)) {
+    await setDoc(doc(firestore, "cores", sigla), {
+    ...info,
+    sigla,
+    updatedAt: new Date().toISOString()
+    });
+    colorCount++;
+    }
 
- setResults([
- { type: "Modelagens", count: modelCount },
- { type: "Estampas/Tecidos", count: printCount },
- { type: "Cores", count: colorCount },
- ]);
+    setResults([
+    { type: "Modelagens", count: modelCount },
+    { type: "Estampas/Tecidos", count: printCount },
+    { type: "Cores", count: colorCount },
+    ]);
  
  toast.success("Banco de dados populado com sucesso!");
  } catch (error) {

@@ -16,27 +16,30 @@ export default function EtiquetasPage() {
  // O valor será a quantidade de etiquetas daquele SKU a serem impressas
  const [selectedSkus, setSelectedSkus] = useState<Record<string, number>>({});
 
- useEffect(() => {
- const fetchProducts = async () => {
- if (!db) {
-    console.warn("⚡ [Admin] Firestore indisponível no build.");
-    setLoading(false);
-    return;
-  }
- try {
- const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
- const querySnapshot = await getDocs(q);
- const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
- setProducts(productsData);
- } catch (error) {
- console.error("Erro ao buscar produtos:", error);
- } finally {
- setLoading(false);
- }
- };
+  useEffect(() => {
+    const fetchProducts = async () => {
+      // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos a busca.
+      const firestore = db;
+      if (!firestore) {
+        console.warn("🚀 [Hooke System] Build short-circuit: Etiquetas offline.");
+        setLoading(false);
+        return;
+      }
 
- fetchProducts();
- }, []);
+      try {
+        const q = query(collection(firestore, "produtos"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
  const filteredProducts = products.filter(p =>
  p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

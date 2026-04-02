@@ -40,26 +40,29 @@ export default function AdminPage() {
  const AVAILABLE_SIZES = ["P", "M", "G", "GG", "XG"];
 
  useEffect(() => {
-  if (!auth) return;
- const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
- if (!currentUser) {
- router.push("/login");
- } else {
- setUser(currentUser);
- fetchProducts();
- }
- });
+  const fireauth = auth;
+  if (!fireauth) return;
+  const unsubscribe = onAuthStateChanged(fireauth, (currentUser) => {
+    if (!currentUser) {
+      router.push("/login");
+    } else {
+      setUser(currentUser);
+      fetchProducts();
+    }
+  });
 
- return () => unsubscribe();
+  return () => unsubscribe();
  }, [router]);
 
  async function fetchProducts() {
-  if (!db) {
+  const firestore = db;
+  // ⚡ A TRAVA DO TECH LEAD
+  if (!firestore) {
       setLoading(false);
       return;
   }
  try {
- const querySnapshot = await getDocs(collection(db, "produtos"));
+ const querySnapshot = await getDocs(collection(firestore, "produtos"));
  const productsData: AdminProduct[] = [];
  querySnapshot.forEach((doc) => {
  const data = doc.data();
@@ -82,10 +85,15 @@ export default function AdminPage() {
  }
 
  const handleUpdate = async (id: string, newName: string, newPrice: number, newImagem?: string, newIsActive?: boolean, newSizes?: string[]) => {
-  if (!db) return;
+  const firestore = db;
+  // ⚡ A TRAVA DO TECH LEAD
+  if (!firestore) {
+      toast.error("Erro: Banco de dados offline.");
+      return;
+  }
  setSavingId(id);
  try {
- const productRef = doc(db, "produtos", id);
+ const productRef = doc(firestore, "produtos", id);
  await updateDoc(productRef, {
  name: newName,
  price: Number(newPrice),
@@ -107,9 +115,15 @@ export default function AdminPage() {
  return;
  }
 
+ const firestore = db;
+ // ⚡ A TRAVA DO TECH LEAD
+ if (!firestore) {
+     toast.error("Erro: Banco de dados offline.");
+     return;
+ }
+
  try {
-  if (!db) return;
- const productRef = doc(db, "produtos", id);
+ const productRef = doc(firestore, "produtos", id);
  // import { deleteDoc } from "firebase/firestore"; <-- vou garantir isso no top
  // Usando abordagem segura de exclusão real
  const { deleteDoc } = await import("firebase/firestore");
@@ -139,9 +153,10 @@ export default function AdminPage() {
  };
 
  const handleLogout = async () => {
-  if (!auth) return;
+  const fireauth = auth;
+  if (!fireauth) return;
  try {
- await signOut(auth);
+ await signOut(fireauth);
  router.push("/login");
  } catch (error) {
  console.error("Erro ao deslogar:", error);
@@ -182,8 +197,13 @@ export default function AdminPage() {
  details: isEditing ? (editingProduct.details || { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }) : { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
  };
 
- if (!db) return;
- await setDoc(doc(db, "produtos", id), finalProduct);
+ const firestore = db;
+ // ⚡ A TRAVA DO TECH LEAD
+ if (!firestore) {
+     toast.error("Erro: Banco de dados offline.");
+     return;
+ }
+ await setDoc(doc(firestore, "produtos", id), finalProduct);
  
  // Orquestrar Sincronização com Tiny (Sem travar o usuário)
  const syncWithTiny = async () => {
@@ -194,16 +214,18 @@ export default function AdminPage() {
  });
  
  if (response.ok) {
-  if (!db) return;
- await updateDoc(doc(db, "produtos", id), { syncStatus: 'synced' });
- toast.success("Sincronizado com Tiny ERP!");
+  const firestoreSync = db;
+  if (!firestoreSync) return;
+  await updateDoc(doc(firestoreSync, "produtos", id), { syncStatus: 'synced' });
+  toast.success("Sincronizado com Tiny ERP!");
  } else {
  throw new Error("Tiny fail");
  }
  } catch (err) {
  console.error("Erro sync tiny:", err);
- if (!db) return;
- await updateDoc(doc(db, "produtos", id), { syncStatus: 'failed' });
+ const firestoreFail = db;
+ if (!firestoreFail) return;
+ await updateDoc(doc(firestoreFail, "produtos", id), { syncStatus: 'failed' });
  toast.error("Salvo no site, mas falhou ao enviar para o Tiny. Tente novamente mais tarde.", { duration: 5000 });
  }
  };
