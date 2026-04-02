@@ -5,6 +5,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Order, OrderCustomer, OrderItem } from "@/types/order";
 
+export const dynamic = 'force-dynamic';
+
 // Minimal in-memory cache for simple idempotency to protect against network bounces
 const idempotencyCache = new Map<string, number>();
 
@@ -80,9 +82,12 @@ export async function POST(req: Request) {
             updatedAt: Date.now()
         };
 
-        // Salva silenciosamente o esqueleto do pedido.
-        // Assim conseguimos gerenciar até os "abertos e não convertidos" (abandono de carrinho)
-        await setDoc(doc(db, "pedidos", orderId), orderData);
+        // Salva silenciosamente o esqueleto do pedido ou pula se DB estiver offline (Short-Circuit)
+        if (db) {
+            await setDoc(doc(db, "pedidos", orderId), orderData);
+        } else {
+            console.warn("⚠️ [Checkout] Firestore offline. O pedido não será persistido, mas o checkout MP continuará.");
+        }
 
         // 3. Monta o Payload para a Preference do Mercado Pago
         // Essa URLBase ajuda no redirecionamento local ou de prod

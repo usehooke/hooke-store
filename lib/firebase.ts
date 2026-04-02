@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth, FacebookAuthProvider } from "firebase/auth";
-import { getStorage } from "firebase/storage";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getAuth, Auth, FacebookAuthProvider } from "firebase/auth";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 
 // Hooke Elite: Firebase Configuration using Protected Environment Variables
 const firebaseConfig = {
@@ -15,13 +15,32 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase (Singleton pattern to prevent memory leaks and build errors)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// --- A BLINDAGEM DE BUILD (CURTO-CIRCUITO) ---
+// Checa se a chave existe antes de acionar o SDK para evitar erros fatais no Vercel.
+export const isConfigValid = !!firebaseConfig.apiKey;
 
-// Exports for the application
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+let app: FirebaseApp | null = null;
+let db: Firestore | null = null;
+let auth: Auth | null = null;
+let storage: FirebaseStorage | null = null;
 const facebookProvider = new FacebookAuthProvider();
 
+if (isConfigValid) {
+    try {
+        app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+        db = getFirestore(app);
+        auth = getAuth(app);
+        storage = getStorage(app);
+    } catch (error) {
+        console.warn("⚠️ [Hooke System] Falha silenciosa ao inicializar Firebase:", error);
+    }
+} else {
+    // Durante o Next.js build-time (SSG), as chaves podem estar ausentes.
+    // Ignoramos o Firebase para que o Build passe liso com Mock Data.
+    if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
+        console.warn("🚀 [Hooke System] Chaves ausentes no Build (SSG). Ativando modo Short-Circuit...");
+    }
+}
+
+// Exportamos os serviços. Se não houver chaves, eles serão 'null'.
 export { app, db, auth, storage, facebookProvider };

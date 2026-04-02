@@ -7,10 +7,19 @@ export const COLLECTION_NAME = "produtos";
 
 /**
  * Hooke Elite: Resilient data fetching with Mock Fallback for Build Stability.
- * Wraps Firestore calls in try/catch to handle PERMISSION_DENIED during SSG.
+ * --- O CURTO-CIRCUITO (SHORT-CIRCUIT) ---
+ * Se o banco é null (build SSG sem chaves), devolve o Mock IMEDIATAMENTE.
  */
 
 export async function getProducts(category?: string): Promise<Product[]> {
+    // ⚡ BYPASS IMEDIATO: Se o banco não inicializou (Build-time ou falta de chave), usamos Mock Data.
+    if (!db) {
+        if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
+            console.log("⚡ [Hooke System] Servidor sem banco (Build). Usando Mock Data.");
+        }
+        return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
+    }
+
     try {
         const productsRef = collection(db, COLLECTION_NAME);
         const conditions: QueryConstraint[] = [];
@@ -23,7 +32,6 @@ export async function getProducts(category?: string): Promise<Product[]> {
         const snapshot = await getDocs(q);
         
         if (snapshot.empty && process.env.NODE_ENV === 'production') {
-            console.warn("Firestore returned empty products. Using Mock Data for build stability.");
             return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
         }
 
@@ -36,13 +44,18 @@ export async function getProducts(category?: string): Promise<Product[]> {
         });
 
         return products.length > 0 ? products : MOCK_PRODUCTS;
-    } catch {
-        console.error("Firestore PERMISSION_DENIED or Error. Falling back to Mock Data.");
+    } catch (error) {
+        console.warn("⚠️ [Hooke System] Erro na nuvem, acionando redundância Mock.", error);
         return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
     }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+    // ⚡ BYPASS IMEDIATO
+    if (!db) {
+        return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
+    }
+
     try {
         const productsRef = collection(db, COLLECTION_NAME);
         const q = query(productsRef, where("slug", "==", slug), limit(1));
@@ -63,13 +76,18 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         // Se não encontrar no banco, procura no Mock (Fiel à Regra de Ouro)
         const mockProduct = MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug);
         return mockProduct || null;
-    } catch {
-        console.error("getProductBySlug Error. Falling back to Mock Data.");
+    } catch (error) {
+        console.warn("⚠️ [Hooke System] Erro no getProductBySlug, usando Mocks.", error);
         return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
     }
 }
 
 export async function getFeaturedProducts(limitCount: number = 8): Promise<Product[]> {
+    // ⚡ BYPASS IMEDIATO
+    if (!db) {
+        return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
+    }
+
     try {
         const productsRef = collection(db, COLLECTION_NAME);
         const q = query(productsRef, where("featured", "==", true));
@@ -87,8 +105,8 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
         // Filtrando ativos
         const finalActiveProducts = products.filter(p => p.isActive !== false);
         return finalActiveProducts.slice(0, limitCount);
-    } catch {
-        console.error("getFeaturedProducts Error. Falling back to Mock Data.");
+    } catch (error) {
+        console.warn("⚠️ [Hooke System] Erro no getFeaturedProducts, usando Mocks.", error);
         return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
     }
 }
