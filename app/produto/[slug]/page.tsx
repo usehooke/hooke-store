@@ -3,27 +3,29 @@
 import { getProductBySlug } from "@/lib/productService";
 import { notFound } from "next/navigation";
 import SsenseProductView from "@/components/shop/SsenseProductView";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Product } from "@/data/catalogo";
 
-// Interface para os parâmetros da página
+// Interface para os parâmetros da página (Promise no Next 15)
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
+  // Unwrap params using React 19 'use' hook
+  const { slug } = use(params);
+  
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Hook para carregar o produto com base no slug dos params (Promise no Next 15)
+  // Hook para carregar o produto com base no slug
   useEffect(() => {
-    params.then(({ slug }) => {
-      getProductBySlug(slug).then(res => {
-        setProduct(res);
-        setLoading(false);
-      });
+    setLoading(true);
+    getProductBySlug(slug).then(res => {
+      setProduct(res);
+      setLoading(false);
     });
-  }, [params]);
+  }, [slug]);
 
   if (loading) {
     return (

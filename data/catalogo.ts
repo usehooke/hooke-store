@@ -246,9 +246,8 @@ export const PRODUTOS: Product[] = [
     description: "O clássico absoluto. Estampa do Fusca em silk screen de alta definição sobre algodão preto profundo.",
     imageUrl: "/produtos/camiseta-vintage-fusca-preta-1.jpg",
     images: [
+      "/produtos/HK_PROD_VI_FUSCA_EDITORIAL_01.png",
       "/produtos/camiseta-vintage-fusca-preta-1.jpg",
-      "/produtos/camiseta-vintage-fusca-preta-2.png",
-      "/produtos/camiseta-vintage-fusca-preta-3.png",
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Vintage",
