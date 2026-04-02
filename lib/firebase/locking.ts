@@ -19,9 +19,12 @@ interface LockResult {
  * Invalida imediatamente carrinhos online que contenham o mesmo SKU.
  */
 export async function acquireStockLock(sku: string, requestedQty: number): Promise<LockResult> {
+  const firestore = db;
+  if (!firestore) return { success: false, message: "Banco de dados offline." };
+
   try {
-    return await runTransaction(db, async (transaction) => {
-      const stockDocRef = doc(db, "stock", sku);
+    return await runTransaction(firestore, async (transaction) => {
+      const stockDocRef = doc(firestore, "stock", sku);
       const stockDoc = await transaction.get(stockDocRef);
 
       if (!stockDoc.exists()) {
@@ -44,7 +47,7 @@ export async function acquireStockLock(sku: string, requestedQty: number): Promi
       // 2. Invalida carrinhos online (Checkouts pendentes)
       // Nota: Em uma arquitetura Firebase, poderíamos ter uma coleção 'active_checkouts'
       const checkoutsQuery = query(
-        collection(db, "active_checkouts"), 
+        collection(firestore, "active_checkouts"), 
         where("items", "array-contains", sku)
       );
       

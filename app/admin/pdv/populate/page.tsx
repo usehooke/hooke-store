@@ -13,6 +13,10 @@ export default function PopulateDictionaryPage() {
  const [results, setResults] = useState<{ type: string; count: number }[]>([]);
 
  const handlePopulate = async () => {
+ if (!db) {
+ toast.error("Banco de dados indisponível.");
+ return;
+ }
  setIsPopulating(true);
  setResults([]);
  

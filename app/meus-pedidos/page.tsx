@@ -47,6 +47,7 @@ function MyOrdersContent() {
  setOrder(null);
 
  try {
+ if (!db) return;
  const docRef = doc(db, "pedidos", orderId);
  const docSnap = await getDoc(docRef);
 
@@ -78,6 +79,7 @@ function MyOrdersContent() {
  setLoading(true);
  setError("");
  try {
+ if (!db) return;
  const docRef = doc(db, "pedidos", rawId);
  const docSnap = await getDoc(docRef);
  if (docSnap.exists()) {

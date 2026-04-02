@@ -18,6 +18,11 @@ export default function EtiquetasPage() {
 
  useEffect(() => {
  const fetchProducts = async () => {
+ if (!db) {
+    console.warn("⚡ [Admin] Firestore indisponível no build.");
+    setLoading(false);
+    return;
+  }
  try {
  const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
  const querySnapshot = await getDocs(q);

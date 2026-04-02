@@ -40,6 +40,7 @@ export default function AdminPage() {
  const AVAILABLE_SIZES = ["P", "M", "G", "GG", "XG"];
 
  useEffect(() => {
+  if (!auth) return;
  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
  if (!currentUser) {
  router.push("/login");
@@ -53,6 +54,10 @@ export default function AdminPage() {
  }, [router]);
 
  async function fetchProducts() {
+  if (!db) {
+      setLoading(false);
+      return;
+  }
  try {
  const querySnapshot = await getDocs(collection(db, "produtos"));
  const productsData: AdminProduct[] = [];
@@ -77,6 +82,7 @@ export default function AdminPage() {
  }
 
  const handleUpdate = async (id: string, newName: string, newPrice: number, newImagem?: string, newIsActive?: boolean, newSizes?: string[]) => {
+  if (!db) return;
  setSavingId(id);
  try {
  const productRef = doc(db, "produtos", id);
@@ -102,6 +108,7 @@ export default function AdminPage() {
  }
 
  try {
+  if (!db) return;
  const productRef = doc(db, "produtos", id);
  // import { deleteDoc } from "firebase/firestore"; <-- vou garantir isso no top
  // Usando abordagem segura de exclusão real
@@ -132,6 +139,7 @@ export default function AdminPage() {
  };
 
  const handleLogout = async () => {
+  if (!auth) return;
  try {
  await signOut(auth);
  router.push("/login");
@@ -174,6 +182,7 @@ export default function AdminPage() {
  details: isEditing ? (editingProduct.details || { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }) : { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
  };
 
+ if (!db) return;
  await setDoc(doc(db, "produtos", id), finalProduct);
  
  // Orquestrar Sincronização com Tiny (Sem travar o usuário)
@@ -185,6 +194,7 @@ export default function AdminPage() {
  });
  
  if (response.ok) {
+  if (!db) return;
  await updateDoc(doc(db, "produtos", id), { syncStatus: 'synced' });
  toast.success("Sincronizado com Tiny ERP!");
  } else {
@@ -192,6 +202,7 @@ export default function AdminPage() {
  }
  } catch (err) {
  console.error("Erro sync tiny:", err);
+ if (!db) return;
  await updateDoc(doc(db, "produtos", id), { syncStatus: 'failed' });
  toast.error("Salvo no site, mas falhou ao enviar para o Tiny. Tente novamente mais tarde.", { duration: 5000 });
  }

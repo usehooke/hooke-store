@@ -52,6 +52,7 @@ export default function CartSheet() {
  const [isFacebookLoading, setIsFacebookLoading] = useState(false);
 
  const handleFacebookCheckoutFill = async () => {
+ if (!auth) return;
  setIsFacebookLoading(true);
  try {
  const result = await signInWithPopup(auth, facebookProvider);

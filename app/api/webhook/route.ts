@@ -39,6 +39,10 @@ export async function POST(req: Request) {
                         orderStatus = 'pending';
                 }
 
+                if (!db) {
+                    console.error("[Webhook Error] Firestore indisponível para atualização de pedido.");
+                    return NextResponse.json({ error: "Database offline" }, { status: 500 });
+                }
                 const orderRef = doc(db, "pedidos", externalReference);
 
                 await updateDoc(orderRef, {

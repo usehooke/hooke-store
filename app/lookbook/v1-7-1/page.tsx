@@ -29,7 +29,7 @@ export default function LookbookV171() {
             src={images.kombi}
             alt="Hooke Cover"
             fill
-            className="object-cover transition-transform duration-[2s] group-hover:scale-105"
+            className="object-cover transition-transform duration-&lsqb;2s&rsqb; group-hover:scale-105"
             priority
           />
           {/* Badge flutuante minimalist */}

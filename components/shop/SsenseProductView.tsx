@@ -69,7 +69,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                 src={img}
                 alt={`${product.name} - Vista ${idx + 1}`}
                 fill
-                className="object-contain p-4 transition-transform duration-[2s] group-hover:scale-105"
+                className="object-contain p-4 transition-transform duration-&lsqb;2s&rsqb; group-hover:scale-105"
                 priority={idx === 0}
               />
             </motion.div>

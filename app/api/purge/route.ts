@@ -15,6 +15,9 @@ export async function GET(req: Request) {
   let updatedProdutos = 0;
 
   try {
+    if (!db) {
+        return NextResponse.json({ error: "Database offline" }, { status: 500 });
+    }
     const pedidosRef = collection(db, "pedidos");
     const pedidosSnapshot = await getDocs(pedidosRef);
 

@@ -66,10 +66,11 @@ export default function BentoHero() {
         {secondaryProduct && (
           <div className="md:col-span-2 md:row-span-1 relative overflow-hidden group bg-hooke-paper h-[400px] md:h-auto border-l border-white/10">
             <Image
-              priority src={secondaryProduct.imageUrl}
+              src={secondaryProduct.imageUrl}
               alt={secondaryProduct.name}
               fill
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
+              className="object-cover object-center transition-transform duration-[2s] group-hover:scale-105"
+              priority
               sizes="25vw"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />

@@ -19,6 +19,7 @@ export default function LoginPage() {
  setLoading(true);
 
  try {
+ if (!auth) return;
  await signInWithEmailAndPassword(auth, email, password);
  router.push("/admin");
  } catch (err: unknown) {
@@ -35,6 +36,7 @@ export default function LoginPage() {
  };
 
  const handleFacebookLogin = async () => {
+ if (!auth) return;
  setError("");
  setLoading(true);
  try {

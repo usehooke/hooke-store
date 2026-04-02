@@ -7,6 +7,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
+        if (!db) {
+            return new NextResponse("Database offline", { status: 500 });
+        }
         const productsRef = collection(db, "produtos");
         // Buscamos apenas os que não estão ocultos
         const q = query(productsRef, where("isActive", "==", true));
