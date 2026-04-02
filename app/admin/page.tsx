@@ -41,7 +41,10 @@ export default function AdminPage() {
 
  useEffect(() => {
   const fireauth = auth;
-  if (!fireauth) return;
+  if (!fireauth) {
+    setLoading(false);
+    return;
+  }
   const unsubscribe = onAuthStateChanged(fireauth, (currentUser) => {
     if (!currentUser) {
       router.push("/login");
@@ -246,13 +249,28 @@ export default function AdminPage() {
  }
  };
 
- if (loading || !user) {
- return (
- <div className="min-h-screen flex items-center justify-center bg-white font-sans">
- <p className="text-hooke-900 font-bold tracking-widest text-xs">Acessando painel...</p>
- </div>
- );
- }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white font-sans">
+        <p className="text-hooke-900 font-bold tracking-widest text-xs animate-pulse">Acessando painel...</p>
+      </div>
+    );
+  }
+
+  if (!auth || !db) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white font-sans p-8 text-center">
+        <h1 className="text-2xl font-black text-red-600 mb-4 uppercase">Erro de Conexão</h1>
+        <p className="text-sm text-gray-600 max-w-md">O painel administrativo requer as chaves do Firebase ativas. O sistema está em modo de segurança (Short-Circuit) e o acesso ao banco de dados está bloqueado.</p>
+        <button onClick={() => window.location.reload()} className="mt-8 px-8 py-4 bg-hooke-900 text-white font-bold tracking-widest uppercase">Tentar Reconectar</button>
+      </div>
+    );
+  }
+
+  if (!user) {
+    // Isso deve ser resolvido pelo push do router, mas serve como fallback
+    return null;
+  }
 
  return (
  <div className="min-h-screen bg-white p-8 font-sans pb-24">

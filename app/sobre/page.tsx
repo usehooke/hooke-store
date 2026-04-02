@@ -17,8 +17,8 @@ export default function AboutPage() {
  {/* Lado da Imagem (Fixo em Desktop - Metade da Tela) */}
  <div className="w-full md:w-1/2 h-[60vh] md:h-screen relative bg-gray-100">
  <Image
- src="/produtos/sobre-image.jpg" // Corrigido provisoriamente
- alt="Bastidores da Hooke"
+ src="/lookbook/HK_ELITE_FOUNDER_CAFE.png"
+ alt="Founder Hooke - Cafe Lifestyle"
  fill
  className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
  priority

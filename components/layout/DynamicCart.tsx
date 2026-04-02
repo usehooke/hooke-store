@@ -11,6 +11,8 @@ export default function DynamicCart() {
   const closeCart = useCartStore((state) => state.closeCart);
 
   useEffect(() => {
+    // ⚡ HIDRATAÇÃO MANUAL (Requisito Next 15 + Zustand skipHydration)
+    useCartStore.persist.rehydrate();
     setMounted(true);
   }, []);
 

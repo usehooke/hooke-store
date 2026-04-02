@@ -1,4 +1,5 @@
 import { Product } from "@/types";
+import { PRODUTOS } from "@/data/catalogo";
 
 /**
  * HOOKE ELITE: MOCK DATA - GOLDEN RULE EDITION
@@ -6,7 +7,7 @@ import { Product } from "@/types";
  * Types strictly aligned with src/types/index.ts
  */
 
-export const MOCK_PRODUCTS: Product[] = [
+const HOOKE_ELITE_SPECIALS: Product[] = [
   {
     id: "conjunto-wafer-offwhite",
     name: "Conjunto Wafer Off-White",
@@ -14,11 +15,11 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 449.90,
     description: "Algodão Egípcio de gramatura pesada. O ápice do minimalismo Hooke Elite.",
     category: "Conjuntos",
-    imageUrl: "/lookbook/founder-1.png",
-    images: ["/lookbook/founder-1.png", "/lookbook/founder-6.png"],
+    imageUrl: "/produtos/HK_ELITE_WAFER_OW.png",
+    images: ["/produtos/HK_ELITE_WAFER_OW.png"],
     sizes: ["P", "M", "G", "GG"],
     colors: [
-      { name: "Off-White", imageUrl: "/lookbook/founder-1.png" }
+      { name: "Off-White", imageUrl: "/produtos/HK_ELITE_WAFER_OW.png" }
     ],
     featured: true,
     isActive: true,
@@ -32,8 +33,8 @@ export const MOCK_PRODUCTS: Product[] = [
     price: 189.90,
     description: "Modelagem boxy, gola 3cm e costuras reforçadas. 100% Algodão Premium.",
     category: "Camisetas",
-    imageUrl: "/lookbook/founder-2.jpg",
-    images: ["/lookbook/founder-2.jpg", "/lookbook/founder-3.jpg"],
+    imageUrl: "/produtos/HK_ELITE_HEAVY_BLACK.png",
+    images: ["/produtos/HK_ELITE_HEAVY_BLACK.png"],
     sizes: ["P", "M", "G", "GG"],
     featured: true,
     isActive: true,
@@ -65,10 +66,17 @@ export const MOCK_PRODUCTS: Product[] = [
   }
 ];
 
+// ⚡ A JUNÇÃO ELITE: Unifica os produtos do Catalogo Hardcoded com os Especiais do Lookbook
+// Isso evita 404s em qualquer produto que exista em pelo menos uma das listas.
+export const MOCK_PRODUCTS: Product[] = [
+  ...HOOKE_ELITE_SPECIALS,
+  ...PRODUTOS.filter(p => !HOOKE_ELITE_SPECIALS.some(h => h.id === p.id || h.slug === p.slug))
+];
+
 export const MOCK_LOOKBOOK = {
   title: "Conjunto\nOff-white",
   subtitle: "Coleção Resort 2026",
-  imageSrc: "/lookbook/founder-1.png",
+  imageSrc: "/produtos/HK_ELITE_WAFER_OW.png",
   price: "R$ 449,90",
   description: "Algodão Egípcio de gramatura pesada. Menos excesso, mais qualidade em cada fibra.",
   tag: "HOOKE ELITE FOUNDER"
