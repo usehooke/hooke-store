@@ -34,12 +34,12 @@ export const PRODUTOS: Product[] = [
     isNew: true,
     isPremiumCollection: true,
     description: "O melhor custo-benefício. Leve 3 peças da nossa modelagem Oversized exclusiva. Suedine 240g, gola de 2,5cm e caimento streetwear.",
-    imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
+    imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
-      "/produtos/camiseta-oversized-preta-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-verde-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-azul-premium-hooke-1.avif"
+      "/produtos/HK_PROD_OV_BLACK_01.avif",
+      "/produtos/HK_PROD_OV_OFF_01.avif",
+      "/produtos/HK_PROD_OV_GREEN_01.avif",
+      "/produtos/HK_PROD_OV_BLUE_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Kits",
@@ -54,10 +54,10 @@ export const PRODUTOS: Product[] = [
     featured: false,
     isNew: true,
     description: "O guarda-roupa completo. 5 peças da nossa modelagem Oversized exclusiva. Suedine 240g.",
-    imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
+    imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
-      "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
-      "/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif"
+      "/produtos/HK_PROD_OV_BLACK_03.avif",
+      "/produtos/HK_PROD_OV_OFF_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Kits",
@@ -141,11 +141,11 @@ export const PRODUTOS: Product[] = [
     featured: false,
     isNew: true,
     description: "A peça chave do estilo urbano. Malha Suedine 240g encorpada. Modelagem ampla e estruturada.",
-    imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
+    imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
-      "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
-      "/produtos/camiseta-oversized-preta-premium-hooke-1.avif",
-      "/produtos/camiseta-oversized-preta-premium-hooke-4.avif"
+      "/produtos/HK_PROD_OV_BLACK_03.avif",
+      "/produtos/HK_PROD_OV_BLACK_01.avif",
+      "/produtos/HK_PROD_OV_BLACK_04.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Oversized",
@@ -160,8 +160,8 @@ export const PRODUTOS: Product[] = [
     featured: false,
     isNew: true,
     description: "Tonalidade natural que traz sofisticação para o streetwear. Suedine 240g que não fica transparente.",
-    imageUrl: "/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif",
-    images: ["/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif"],
+    imageUrl: "/produtos/HK_PROD_OV_OFF_01.avif",
+    images: ["/produtos/HK_PROD_OV_OFF_01.avif"],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Oversized",
     details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada" }
@@ -176,10 +176,9 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: true, // Destaque Secundário
     description: "Estilo militar urbano. Fresca, leve e com caimento impecável para o verão.",
-    imageUrl: "/produtos/camiseta-Regata-canelada-verde-1.jpg",
+    imageUrl: "/produtos/HK_PROD_RE_MILITARY_HERO.avif",
     images: [
-      "/produtos/camiseta-Regata-canelada-verde-1.jpg",
-      "/produtos/camiseta-Regata-canelada-verde-2.jpg"
+      "/produtos/HK_PROD_RE_MILITARY_HERO.avif"
     ],
     sizes: ["P", "M", "G", "GG"],
     category: "Regatas",
@@ -193,11 +192,9 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: false,
     description: "Textura que diferencia. Malha canelada que se ajusta ao corpo sem apertar.",
-    imageUrl: "/produtos/camiseta-Regata-canelada-marrom-1.jpg",
+    imageUrl: "/produtos/HK_PROD_RE_COFFEE_HERO.avif",
     images: [
-      "/produtos/camiseta-Regata-canelada-marrom-1.jpg",
-      "/produtos/camiseta-Regata-canelada-marrom-2.jpg",
-      "/produtos/camiseta-Regata-canelada-marrom-3.jpg"
+      "/produtos/HK_PROD_RE_COFFEE_HERO.avif"
     ],
     sizes: ["P", "M", "G", "GG"],
     category: "Regatas",
@@ -211,10 +208,9 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: false,
     description: "Tons terrosos são essenciais. Uma peça neutra que combina com bermudas de qualquer cor.",
-    imageUrl: "/produtos/camiseta-Regata-canelada-areia-1.jpg",
+    imageUrl: "/produtos/HK_PROD_RE_SAND_HERO.avif",
     images: [
-      "/produtos/camiseta-Regata-canelada-areia-1.jpg",
-      "/produtos/camiseta-Regata-canelada-areia-2.jpg"
+      "/produtos/HK_PROD_RE_SAND_HERO.avif"
     ],
     sizes: ["P", "M", "G", "GG"],
     category: "Regatas",
@@ -244,10 +240,9 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: true, // Destaque "Clássico"
     description: "O clássico absoluto. Estampa do Fusca em silk screen de alta definição sobre algodão preto profundo.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-preta-1.jpg",
+    imageUrl: "/produtos/HK_PROD_VI_FUSCA_EDITORIAL_01.png",
     images: [
-      "/produtos/HK_PROD_VI_FUSCA_EDITORIAL_01.png",
-      "/produtos/camiseta-vintage-fusca-preta-1.jpg",
+      "/produtos/HK_PROD_VI_FUSCA_EDITORIAL_01.png"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Vintage",
