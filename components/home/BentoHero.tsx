@@ -37,7 +37,7 @@ export default function BentoHero() {
             alt={mainProduct.name}
             fill
             priority
-            className="object-cover object-top opacity-90 group-hover:scale-105 transition-transform duration-[2000ms] ease-out"
+            className="object-cover object-top opacity-90 group-hover:scale-105 transition-transform duration-[length:2000ms] ease-out"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
@@ -69,7 +69,7 @@ export default function BentoHero() {
               src={secondaryProduct.imageUrl}
               alt={secondaryProduct.name}
               fill
-              className="object-cover object-center transition-transform duration-[2s] group-hover:scale-105"
+              className="object-cover object-center transition-transform duration-[length:2s] group-hover:scale-105"
               priority
               sizes="25vw"
             />
@@ -96,7 +96,7 @@ export default function BentoHero() {
               priority src={tertiaryProduct.imageUrl}
               alt={tertiaryProduct.name}
               fill
-              className="object-cover object-center opacity-70 group-hover:opacity-95 transition-all duration-[2000ms] ease-out"
+              className="object-cover object-center opacity-70 group-hover:opacity-95 transition-all duration-[length:2000ms] ease-out"
               sizes="25vw"
             />
             <div className="absolute inset-0 bg-black/30 z-10" />

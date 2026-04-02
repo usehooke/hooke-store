@@ -46,7 +46,7 @@ const RetroFuscaHero = () => {
                 src="/produtos/hk_prod_vi_fusca_areia_01.png"
                 alt="Fotografia de estúdio da Camiseta Hooke Retro Beetle Sandstone - Estética SSENSE"
                 fill
-                className="object-contain mix-blend-multiply transition-all duration-&lsqb;1.5s&rsqb; scale-[0.95] group-hover:scale-100"
+                className="object-contain mix-blend-multiply transition-all duration-[length:1.5s] scale-[0.95] group-hover:scale-100"
                 priority
               />
             </div>
