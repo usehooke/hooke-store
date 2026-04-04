@@ -259,10 +259,30 @@ export default function AdminPage() {
 
   if (!auth || !db) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white font-sans p-8 text-center">
-        <h1 className="text-2xl font-black text-red-600 mb-4 uppercase">Erro de Conexão</h1>
-        <p className="text-sm text-gray-600 max-w-md">O painel administrativo requer as chaves do Firebase ativas. O sistema está em modo de segurança (Short-Circuit) e o acesso ao banco de dados está bloqueado.</p>
-        <button onClick={() => window.location.reload()} className="mt-8 px-8 py-4 bg-hooke-900 text-white font-bold tracking-widest uppercase">Tentar Reconectar</button>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white font-sans p-8  max-w-xl mx-auto text-center">
+        <h1 className="text-3xl font-black text-red-600 mb-6 uppercase tracking-tighter italic">Erro de Conexão Crítico</h1>
+        <div className="bg-red-50 border border-red-100 p-8 text-left space-y-4 mb-8">
+          <p className="text-sm font-bold text-red-900">O Painel Administrativo está bloqueado pelo modo de segurança (Short-Circuit).</p>
+          <hr className="border-red-200" />
+          <p className="text-xs text-red-800 leading-relaxed font-medium">
+            <span className="font-black">Motivo:</span> As credenciais do Firebase não foram detectadas no ambiente.
+          </p>
+          <p className="text-xs text-red-800 leading-relaxed">
+            <span className="font-black">Como resolver:</span>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Se estiver Local: Certifique-se de que o arquivo <code className="bg-white px-1">.env.local</code> existe e <span className="font-bold underline">reinicie o servidor dev</span> (Ctrl+C e npm run dev).</li>
+              <li>Se estiver na Vercel: Verifique se as Environment Variables foram adicionadas no Dashboard e faça um re-deploy.</li>
+            </ul>
+          </p>
+        </div>
+        <div className="flex gap-4 w-full">
+          <button onClick={() => window.location.reload()} className="flex-1 px-8 py-4 bg-hooke-900 text-white font-black tracking-widest uppercase hover:bg-black transition-all">
+            Tentar Reconetar
+          </button>
+          <Link href="/" className="flex-1 px-8 py-4 border border-black text-black font-black tracking-widest uppercase hover:bg-gray-50 transition-all">
+            Voltar ao Site
+          </Link>
+        </div>
       </div>
     );
   }

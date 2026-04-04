@@ -17,7 +17,7 @@ const firebaseConfig = {
 
 // --- A BLINDAGEM DE BUILD (CURTO-CIRCUITO) ---
 // Checa se a chave existe antes de acionar o SDK para evitar erros fatais no Vercel.
-export const isConfigValid = !!firebaseConfig.apiKey;
+export const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
 
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
@@ -31,12 +31,21 @@ if (isConfigValid) {
         db = getFirestore(app);
         auth = getAuth(app);
         storage = getStorage(app);
+        console.log("✅ [Hooke System] Firebase inicializado com sucesso.");
     } catch (error) {
-        console.warn("⚠️ [Hooke System] Falha silenciosa ao inicializar Firebase:", error);
+        console.error("❌ [Hooke System] Erro Crático ao inicializar Firebase:", error);
     }
 } else {
-    // Durante o Next.js build-time (SSG), as chaves podem estar ausentes.
-    // Ignoramos o Firebase para que o Build passe liso com Mock Data.
+    // Diagnóstico para o desenvolvedor
+    if (typeof window !== "undefined") {
+        console.error("⚠️ [Hooke System] Firebase Keys ausentes. Verifique seu .env.local ou as configurações da Vercel.");
+        console.log("Chaves detectadas:", {
+            apiKey: !!firebaseConfig.apiKey,
+            projectId: !!firebaseConfig.projectId,
+            authDomain: !!firebaseConfig.authDomain
+        });
+    }
+    
     if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
         console.warn("🚀 [Hooke System] Chaves ausentes no Build (SSG). Ativando modo Short-Circuit...");
     }

@@ -18,14 +18,14 @@ import Link from "next/link";
 const agents = [
   {
     id: "ux-guardian",
-    name: "UX/UI Guardian",
-    role: "Guardião do Hooke Style",
-    status: "Active",
-    statusColor: "bg-green-500",
-    focus: "Refining 'Ultra-Light' spacing and enforcing Sharp Corners (rounded-none).",
+    name: "UX/UI Designer Lead",
+    role: "Estrategista de Experiência Hooke",
+    status: "Analyzing",
+    statusColor: "bg-blue-500",
+    focus: "Strategic audit of Design Tokens, Accessibility (a11y), and Long-term UX Roadmap.",
     icon: Layout,
-    skills: ["Framer Motion", "Typography", "Minimalism"],
-    action: "Polishing transition curves"
+    skills: ["Design Systems", "CRO", "Acessibilidade"],
+    action: "Generating Strategic Audit 2026"
   },
   {
     id: "eng-mobile",
@@ -59,6 +59,17 @@ const agents = [
     icon: ShieldCheck,
     skills: ["CI/CD", "Firestore", "Build Security"],
     action: "Auditing catalog.ts"
+  },
+  {
+    id: "fullstack-dev",
+    name: "Fullstack Dev Senior",
+    role: "Admin Architect",
+    status: "Optimizing",
+    statusColor: "bg-orange-500",
+    focus: "Scaling Admin infrastructure, Inventory/Tiny sync and LGPD Audit Logs.",
+    icon: Zap,
+    skills: ["Node.js", "Firebase", "API Sync"],
+    action: "Refining Tiny API Sync"
   },
   {
     id: "antigravity",
