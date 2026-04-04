@@ -9,7 +9,7 @@ import { UploadButton } from "@/utils/uploadthing";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Zap, Rocket, Copy } from "lucide-react";
+import { Trash2, Eye, EyeOff, Edit3, Barcode, RefreshCw, CheckCircle2, Monitor, Tags, FileText, Zap, Rocket, Copy, Orbit } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import ProductForm from "./components/ProductForm";
 
@@ -364,19 +364,30 @@ export default function AdminPage() {
  </div>
  </Link>
 
- <Link 
- href="/admin/lancamentos" 
- className="bg-zinc-900 border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
- >
- <div>
- <Rocket className="h-6 w-6 mb-4 text-white group-hover:scale-110 transition-transform" />
- <h3 className="text-lg font-black tracking-tighter text-white">Lançamentos</h3>
- <p className="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">Lookbooks & Anúncios</p>
- </div>
- <Zap className="h-4 w-4 text-yellow-500 mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
- </Link>
- </div>
- </div>
+  <Link 
+  href="/admin/lancamentos" 
+  className="bg-zinc-900 border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+  >
+  <div>
+  <Rocket className="h-6 w-6 mb-4 text-white group-hover:scale-110 transition-transform" />
+  <h3 className="text-lg font-black tracking-tighter text-white">Lançamentos</h3>
+  <p className="text-[10px] font-bold tracking-widest text-zinc-500 mt-1">Lookbooks & Anúncios</p>
+  </div>
+  <Zap className="h-4 w-4 text-yellow-500 mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+  </Link>
+ 
+  <Link 
+  href="/admin/office" 
+  className="bg-white border border-hooke-900 p-6 shadow-neumorph hover:shadow-neumorph-inset transition-all group flex flex-col justify-between"
+  >
+  <div>
+  <Orbit className="h-6 w-6 mb-4 text-hooke-900 group-hover:scale-110 transition-transform" />
+  <h3 className="text-lg font-black tracking-tighter text-hooke-900">Escritório Virtual</h3>
+  <p className="text-[10px] font-bold tracking-widest text-gray-400 mt-1">Status do Time de Agentes</p>
+  </div>
+  </Link>
+  </div>
+  </div>
 
  {/* Formulário de Criação Condicional V4 */}
  {(showForm || editingProduct) && (
