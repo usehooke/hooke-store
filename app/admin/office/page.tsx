@@ -29,25 +29,25 @@ const agents = [
   },
   {
     id: "eng-mobile",
-    name: "Engineering Mobile",
-    role: "O Motor Offline-First",
-    status: "Syncing",
+    name: "E-Commerce Mobile Architect",
+    role: "Architect & Performance Lead",
+    status: "Analyzing",
     statusColor: "bg-blue-500",
-    focus: "Optimizing LocalStorage hydration and Next.js 15 performance.",
+    focus: "Omnichannel Sync, AI-driven UX, and Edge Performance (Next.js 15).",
     icon: Smartphone,
-    skills: ["Next.js 15", "Zustand", "PWA"],
-    action: "Syncing cart state"
+    skills: ["Next.js 15", "Edge Functions", "PWA", "Omnichannel"],
+    action: "Performing System Checkup"
   },
   {
     id: "art-director",
-    name: "Art Director",
-    role: "Diretor de Arte de Moda",
-    status: "Active",
+    name: "AI Art Director / Visual Experience Lead",
+    role: "Estrategista de Moda Generativa",
+    status: "Analyzing",
     statusColor: "bg-green-500",
-    focus: "Validating 'Golden Rule' (100% Founder fidelity) in new editorial prompts.",
+    focus: "Creative Automation, AI Curation, and Data-driven Visual UX.",
     icon: Aperture,
-    skills: ["AI Prompting", "Visual ID", "Editorial"],
-    action: "Generating lookbook"
+    skills: ["Generative AI", "Visual Systems", "A/B Testing", "Framer Motion"],
+    action: "Visual System Checkup"
   },
   {
     id: "tech-auditor",

@@ -90,8 +90,6 @@ export function useOfflineSync() {
             const finalBuffer = buffer.filter(a => !a.synced);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(finalBuffer));
             setPendingActions(finalBuffer);
-            
-            console.log(`[OfflineSync] ${unsynced.length} ações sincronizadas com sucesso.`);
         } catch (error) {
             console.error('[OfflineSync] Falha ao sincronizar:', error);
         }

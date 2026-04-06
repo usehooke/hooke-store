@@ -31,7 +31,6 @@ if (isConfigValid) {
         db = getFirestore(app);
         auth = getAuth(app);
         storage = getStorage(app);
-        console.log("✅ [Hooke System] Firebase inicializado com sucesso.");
     } catch (error) {
         console.error("❌ [Hooke System] Erro Crático ao inicializar Firebase:", error);
     }
@@ -39,11 +38,6 @@ if (isConfigValid) {
     // Diagnóstico para o desenvolvedor
     if (typeof window !== "undefined") {
         console.error("⚠️ [Hooke System] Firebase Keys ausentes. Verifique seu .env.local ou as configurações da Vercel.");
-        console.log("Chaves detectadas:", {
-            apiKey: !!firebaseConfig.apiKey,
-            projectId: !!firebaseConfig.projectId,
-            authDomain: !!firebaseConfig.authDomain
-        });
     }
     
     if (process.env.NODE_ENV === "production" && typeof window === "undefined") {

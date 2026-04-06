@@ -14,9 +14,6 @@ export const COLLECTION_NAME = "produtos";
 export async function getProducts(category?: string): Promise<Product[]> {
     // ⚡ A TRAVA DO TECH LEAD: Se o banco não inicializou (Build-time ou falta de chave), usamos Mock Data.
     if (!db) {
-        if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
-            console.log("🚀 [Hooke System] Build short-circuit: Firestore offline. Usando Mocks.");
-        }
         return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
     }
 

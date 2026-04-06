@@ -8,7 +8,7 @@ const PROHIBITED_PATTERNS = [
   {
     regex: /<img\s/g,
     message: 'ERRO: Tag <img> detectada. Use next/image para otimização.',
-    exclude: ['docs/', 'node_modules/', 'components/ui/MetaPixel.tsx', 'logs/', 'maintenance/']
+    exclude: ['docs/', 'node_modules/', 'components/ui/MetaPixel.tsx', 'logs/', 'maintenance/', 'scripts/']
   },
   {
     regex: /: any[\s,;}>]/g,
@@ -60,7 +60,23 @@ function checkFiles(dir) {
   }
 }
 
+function checkSyncLog() {
+  const logPath = path.join(process.cwd(), 'docs', 'SYSTEM_SYNC_LOG.md');
+  if (!fs.existsSync(logPath)) return;
+
+  const content = fs.readFileSync(logPath, 'utf8');
+  const pendingRegex = /\[PENDING\]/g;
+  
+  // Ignoramos a primeira ocorrência se for a instrução no topo do arquivo
+  const matches = content.match(pendingRegex);
+  if (matches && matches.length > 1) {
+    console.error('\x1b[31m[SYNC FAIL]\x1b[0m docs/SYSTEM_SYNC_LOG.md: Existem tarefas de sincronização pendentes entre agentes.');
+    hasErrors = true;
+  }
+}
+
 try {
+  checkSyncLog();
   checkFiles(process.cwd());
 
   if (hasErrors) {

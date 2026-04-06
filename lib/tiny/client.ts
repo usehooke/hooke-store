@@ -51,7 +51,6 @@ export class TinyClient {
   // Sincronizar Tabelas de Frete Offline
   // Verificação de fallback (offline)
   static async getOfflineShippingRates(cepDestino: string, pesoFinal: string): Promise<{ nome: string; valor: string; prazo: string }[]> {
-    console.log(`Lendo envio offline do Tiny para CEP: ${cepDestino} com peso ${pesoFinal}`);
     // Simula a injeção da tabela de fretes sincronizada do Tiny ERP em caso de queda
     return [];
   }
