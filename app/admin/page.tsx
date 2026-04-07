@@ -2,12 +2,21 @@
 
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, onSnapshot, Timestamp, limit, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot, Timestamp, limit } from 'firebase/firestore';
 import { ShoppingBag, CupSoda, TrendingUp, Users, ArrowUpRight, Zap } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+
+interface ConciergeSession {
+    id: string;
+    startTime: any;
+    hasLink: boolean;
+    customerName?: string;
+    lastProduct?: string;
+    status: string;
+}
 
 // Componente Status Pulse para o Concierge
-const StatusPulse = ({ session }: { session: any }) => {
+const StatusPulse = ({ session }: { session: ConciergeSession }) => {
     const startTime = session.startTime?.toDate?.() || new Date(session.startTime);
     const elapsedMinutes = (Date.now() - startTime.getTime()) / 60000;
     const isStagnated = elapsedMinutes > 2 && !session.hasLink;
@@ -40,8 +49,7 @@ const StatusPulse = ({ session }: { session: any }) => {
 
 export default function AdminDashboard() {
     const [ordersToday, setOrdersToday] = useState(0);
-    const [conciergeSessions, setConciergeSessions] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [conciergeSessions, setConciergeSessions] = useState<ConciergeSession[]>([]);
 
     useEffect(() => {
         // 1. Buscar Pedidos de Hoje
@@ -59,9 +67,8 @@ export default function AdminDashboard() {
         const unsubscribeConcierge = onSnapshot(
             query(collection(db!, 'concierge_sessions'), where('status', '==', 'active'), limit(10)),
             (snapshot) => {
-                const sessions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const sessions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ConciergeSession));
                 setConciergeSessions(sessions);
-                setLoading(false);
             }
         );
 
@@ -178,7 +185,7 @@ export default function AdminDashboard() {
                             <Zap size={20} className="text-yellow-500 flex-shrink-0" />
                             <div className="space-y-1">
                                 <p className="text-[11px] text-[#FAFAFA] font-bold uppercase tracking-widest">Oportunidade Detectada</p>
-                                <p className="text-[10px] text-zinc-400 leading-relaxed font-light">"3 clientes visualizaram o Kit 'Elite Essentials' nos últimos 15 min. Considere rodar um gatilho de escassez no Instagram Shopping."</p>
+                                <p className="text-[10px] text-zinc-400 leading-relaxed font-light">&quot;3 clientes visualizaram o Kit &apos;Elite Essentials&apos; nos últimos 15 min. Considere rodar um gatilho de escassez no Instagram Shopping.&quot;</p>
                             </div>
                         </div>
                     </div>

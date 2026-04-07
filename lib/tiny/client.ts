@@ -52,6 +52,8 @@ export class TinyClient {
   // Verificação de fallback (offline)
   static async getOfflineShippingRates(_cepDestino: string, _pesoFinal: string): Promise<{ nome: string; valor: string; prazo: string }[]> {
     // Simula a injeção da tabela de fretes sincronizada do Tiny ERP em caso de queda
+    void _cepDestino;
+    void _pesoFinal;
     return [];
   }
 }

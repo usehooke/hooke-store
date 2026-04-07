@@ -7,7 +7,7 @@ import { CupSoda, MessageCircle, Lock, ArrowRight, Sparkles } from 'lucide-react
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
-import { doc, setDoc, updateDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 // Gerador de ID Inteligente Hooke: HK-YYMMDD-XXXX
 const generateHookeId = () => {
