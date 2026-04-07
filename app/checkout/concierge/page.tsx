@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CupSoda, MessageCircle, Lock, ArrowRight, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, updateDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 
 // Gerador de ID Inteligente Hooke: HK-YYMMDD-XXXX
 const generateHookeId = () => {
@@ -40,8 +42,32 @@ export default function ConciergeLounge() {
     // Efeito Palate Cleanser (Transição de 1.5s do Branco para Hooke-50)
     useEffect(() => {
         const timer = setTimeout(() => setIsTransitioning(false), 1500);
-        return () => clearTimeout(timer);
-    }, []);
+        
+        // Criar Sessão no Firestore para Monitoramento do Admin
+        const sessionRef = doc(db!, 'concierge_sessions', orderId);
+        setDoc(sessionRef, {
+            orderId,
+            status: 'active',
+            startTime: serverTimestamp(),
+            lastProduct: mainProduct?.name || 'Curadoria',
+            customerName: '',
+            hasLink: false
+        });
+
+        return () => {
+            clearTimeout(timer);
+            // Marcar como inativo ao sair (ou deletar para economizar espaço)
+            updateDoc(sessionRef, { status: 'inactive', endTime: serverTimestamp() });
+        };
+    }, [orderId, mainProduct]);
+
+    // Sincronizar nome do cliente com o Firestore
+    useEffect(() => {
+        if (customerName.length > 2) {
+            const sessionRef = doc(db!, 'concierge_sessions', orderId);
+            updateDoc(sessionRef, { customerName });
+        }
+    }, [customerName, orderId]);
 
     // Geração do Checkout (Só inicia quando o nome estiver disponível ou se decidir pular)
     const handleStartExperience = useCallback(async () => {
@@ -67,6 +93,10 @@ export default function ConciergeLounge() {
             
             if (data.init_point) {
                 setCheckoutUrl(data.init_point);
+                // Atualizar Firestore: Link Gerado
+                const sessionRef = doc(db!, 'concierge_sessions', orderId);
+                updateDoc(sessionRef, { hasLink: true });
+
                 // Simulação de tempo de "preparação de luxo" (Chá)
                 setTimeout(() => setStage('ready'), 3500);
             } else {

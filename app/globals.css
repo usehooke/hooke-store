@@ -30,6 +30,14 @@
     --ring: 0 0% 3.9%;
     
     --radius: 0px; /* Estilo Hooke Elite: Totalmente quadrado */
+
+    /* HOOKE COMMAND CENTER (HCC) - DARK ELITE TOKENS */
+    --admin-bg: #050505;
+    --admin-card: #0D0D0D;
+    --admin-border: rgba(255, 255, 255, 0.05);
+    --admin-accent: #FAFAFA;
+    --admin-success: #10B981;
+    --admin-alert: #F59E0B;
   }
 
   .dark {
