@@ -2,7 +2,8 @@
 "use client";
 
 import { useCartStore, selectCartSubTotal, selectCartPromoDiscount, selectCartFinalTotal } from "@/store/cart-store";
-import { X, Trash2, ShoppingBag, MessageCircle, ArrowRight, Tag } from "lucide-react";
+import { X, Trash2, ShoppingBag, MessageCircle, ArrowRight, Tag, CupSoda } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -20,6 +21,7 @@ const formatter = new Intl.NumberFormat("pt-BR", {
 
 export default function CartSidebar() {
  const [mounted, setMounted] = useState(false);
+ const router = useRouter();
 
  // Pegar o estado do Zustand
  const items = useCartStore((state) => state.items);
@@ -36,34 +38,17 @@ export default function CartSidebar() {
  }, []);
 
  const handleCheckout = () => {
- const phoneNumber = brandConfig.contact.whatsapp.number;
- const currentItems = useCartStore.getState().items;
+    // Analytics
+    trackEvent('InitiateCheckout', {
+      value: finalTotal,
+      currency: 'BRL',
+      content_ids: items.map(i => i.id),
+      content_type: 'product'
+    });
 
- // Analytics
- trackEvent('InitiateCheckout', {
- value: finalTotal,
- currency: 'BRL',
- content_ids: currentItems.map(i => i.id),
- content_type: 'product'
- });
-
- let message = "*NOVO PEDIDO HOOKE* 🛒\n\n";
- currentItems.forEach((item) => {
- message += `▪️ ${item.quantity}x ${item.name} | Tam: ${item.selectedSize}\n`;
- message += ` Ref: R$ ${item.price} cada\n`;
- });
- 
- if (promoDiscount > 0) {
- message += `\nSubtotal: ${formatter.format(subTotal)}`;
- message += `\n*Desconto Kit: -${formatter.format(promoDiscount)}* 🏷️`;
- }
- 
- message += `\n*TOTAL DO PEDIDO: ${formatter.format(finalTotal)}*`;
- message += `\n\nOlá! Gostaria de finalizar a compra e combinar o pagamento/entrega.`;
-
- const link = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
- window.open(link, "_blank");
- };
+    closeCart();
+    router.push('/checkout/concierge');
+  };
 
  // Só renderizar no cliente
  if (!mounted) return null;
@@ -177,12 +162,12 @@ export default function CartSidebar() {
  <span className="text-xl font-black tracking-tight">{formatter.format(finalTotal)}</span>
  </div>
 
- <button
- onClick={handleCheckout}
- className="w-full bg-hooke-900 text-white py-4 font-bold tracking-[0.15em] text-xs hover:bg-black transition-all flex items-center justify-center gap-3 group"
- >
- <MessageCircle size={16} /> Finalizar no WhatsApp <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
- </button>
+  <button
+  onClick={handleCheckout}
+  className="w-full bg-hooke-900 text-white py-5 font-bold tracking-[0.2em] text-[10px] uppercase hover:bg-black transition-all flex items-center justify-center gap-3 group"
+  >
+  <CupSoda size={14} className="group-hover:rotate-12 transition-transform" /> Acessar Concierge Hooke <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+  </button>
 
  <p className="text-[10px] text-center text-gray-400 leading-tight">
  Frete e pagamento combinados diretamente com nosso time.

@@ -69,4 +69,20 @@ Se um build falhar na Vercel:
 2. O `antigravity` deve orquestrar a correção imediata antes de qualquer nova feature.
 
 ---
+
+## 🛰️ 7. Mandamentos de Estratégia e Marca (Agent-Growth)
+
+### 7.1 Regra de Ouro da Escassez
+- **PROIBIDO:** Textos longos, clichês de vendas ("não perca", "garanta já"), promoções genéricas ou descontos agressivos.
+- **FOCO:** A Hooke trabalha com escassez, qualidade extrema e desejo. O produto deve ser desejado pelo que é, não pelo preço.
+
+### 7.2 Tom de Voz Hooke
+- **ESTILO:** Seco, direto, escasso e focado em engenharia de tecido.
+- **KEYWORDS:** Heavyweight, 320g, Puff Print, Caimento Estruturado, Boxy Fit.
+
+### 7.3 Data-Driven Veto
+- O Agent-Growth tem autoridade para vetar assets visuais se os dados de A/B testing indicarem baixa conversão. 
+- **Obrigação:** Sempre informar o "PORQUÊ" técnico/numérico por trás de qualquer veto.
+
+---
 **Assinado:** *Antigravity - Supreme Orchestrator*

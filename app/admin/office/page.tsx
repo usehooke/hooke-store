@@ -11,11 +11,23 @@ import {
   Activity,
   Zap,
   CheckCircle2,
-  Clock
+  Clock,
+  TrendingUp
 } from "lucide-react";
 import Link from "next/link";
 
 const agents = [
+  {
+    id: "agent-growth",
+    name: "Agent-Growth",
+    role: "Director of Strategy & Brand",
+    status: "Active",
+    statusColor: "bg-black",
+    focus: "Data-driven UX, Premium Copywriting, SEO Dominance, and Community Success.",
+    icon: TrendingUp,
+    skills: ["Data Analysis", "Premium Copy", "SEO", "CRM"],
+    action: "Auditing Brand Narrative"
+  },
   {
     id: "ux-guardian",
     name: "UX/UI Designer Lead",
