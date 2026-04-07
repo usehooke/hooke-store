@@ -34,8 +34,10 @@ export default function Sidebar({ user }: { user: User }) {
     const [isCollapsed, setIsCollapsed] = React.useState(false);
 
     const handleLogout = async () => {
-        await signOut(auth);
-        router.push('/login');
+        if (auth) {
+            await signOut(auth);
+            router.push('/login');
+        }
     };
 
     return (
