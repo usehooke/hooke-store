@@ -29,8 +29,8 @@ export const PRODUTOS: Product[] = [
     name: "Kit 3 Camisetas Oversized Premium",
     seoAltText: "Conjunto Kit 3 Camisetas Oversized Masculinas Premium em Algodão 30.1 Penteado cores básicas - Hooke Store",
     slug: "kit-3-camisetas-oversized-premium",
-    price: 150.90, // Atualizado conforme seu pedido anterior
-    featured: true, // Hero Principal
+    price: 150.90,
+    featured: true,
     isNew: true,
     isPremiumCollection: true,
     description: "O melhor custo-benefício. Leve 3 peças da nossa modelagem Oversized exclusiva. Suedine 240g, gola de 2,5cm e caimento streetwear.",
@@ -124,8 +124,8 @@ export const PRODUTOS: Product[] = [
     featured: false,
     isNew: true,
     description: "Coleção completa. 5 camisetas vintage para quem tem personalidade.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-offwhite-1.jpg",
-    images: ["/produtos/camiseta-vintage-fusca-offwhite-1.jpg"],
+    imageUrl: "/produtos/hk_prod_vi_fusca_offwhite_01.jpg",
+    images: ["/produtos/hk_prod_vi_fusca_offwhite_01.jpg"],
     sizes: ["P", "M", "G", "GG", "XG"],
     category: "Kits",
     details: { fabric: "Algodão Egípcio", model: "Regular", wash: "Pré-Encolhida" }
@@ -174,7 +174,7 @@ export const PRODUTOS: Product[] = [
     seoAltText: "Regata Canelada Masculina Verde Militar em Algodão com elastano e modelagem ajustada ao corpo - Hooke Store",
     slug: "regata-canelada-verde",
     price: 50.90,
-    featured: true, // Destaque Secundário
+    featured: true,
     description: "Estilo militar urbano. Fresca, leve e com caimento impecável para o verão.",
     imageUrl: "/produtos/hk_prod_re_military_hero.avif",
     images: [
@@ -224,8 +224,8 @@ export const PRODUTOS: Product[] = [
     price: 89.90,
     featured: false,
     description: "Básica, mas nunca simples. Corte a fio na gola e mangas para um visual despojado.",
-    imageUrl: "/produtos/regata-lifestyle-bege.jpg",
-    images: ["/produtos/regata-lifestyle-bege.jpg"],
+    imageUrl: "/produtos/hk_prod_re_lifestyle_bege_01.jpg",
+    images: ["/produtos/hk_prod_re_lifestyle_bege_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Lifestyle",
     details: { fabric: "Algodão BCI", model: "Oversized", wash: "Tingimento Ecológico" }
@@ -238,7 +238,7 @@ export const PRODUTOS: Product[] = [
     seoAltText: "Camiseta Masculina Vintage Fusca Clássico em Algodão Premium Preta com estampa retrô automotiva - Hooke Store",
     slug: "camiseta-vintage-fusca-preta",
     price: 50.90,
-    featured: true, // Destaque "Clássico"
+    featured: true,
     description: "O clássico absoluto. Estampa do Fusca em silk screen de alta definition sobre algodão preto profundo.",
     imageUrl: "/produtos/hk_prod_vi_fusca_editorial_01.png",
     images: [
@@ -256,8 +256,8 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: false,
     description: "Velocidade e história. Homenagem ao lendário V8. Cor vibrante com estampa desgastada.",
-    imageUrl: "/produtos/camiseta-vintage-maverik-vermelha-1.jpg",
-    images: ["/produtos/camiseta-vintage-maverik-vermelha-1.jpg"],
+    imageUrl: "/produtos/hk_prod_vi_maverick_red_01.jpg",
+    images: ["/produtos/hk_prod_vi_maverick_red_01.jpg"],
     sizes: ["M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
@@ -270,8 +270,8 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: false,
     description: "Um visual limpo e clássico. A cor off-white destaca a estampa do Beetle com suavidade.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-offwhite-1.jpg",
-    images: ["/produtos/camiseta-vintage-fusca-offwhite-1.jpg", "/produtos/camiseta-vintage-fusca-offwhite-4.jpg"],
+    imageUrl: "/produtos/hk_prod_vi_fusca_offwhite_01.jpg",
+    images: ["/produtos/hk_prod_vi_fusca_offwhite_01.jpg", "/produtos/hk_prod_vi_fusca_offwhite_04.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Regular Fit", wash: "Pré-Encolhida" }
@@ -284,8 +284,8 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: false,
     description: "Elegância e atitude. O tom bordô traz sofisticação para o visual casual.",
-    imageUrl: "/produtos/camiseta-vintage-fusca-bordo-1.jpg",
-    images: ["/produtos/camiseta-vintage-fusca-bordo-1.jpg"],
+    imageUrl: "/produtos/hk_prod_vi_fusca_bordo_01.jpg",
+    images: ["/produtos/hk_prod_vi_fusca_bordo_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Amaciada" }
@@ -298,8 +298,8 @@ export const PRODUTOS: Product[] = [
     price: 50.90,
     featured: false,
     description: "Para espíritos livres. A Kombi representa a viagem, não o destino.",
-    imageUrl: "/produtos/camiseta-vintage-kombi-offwhite-1.jpg",
-    images: ["/produtos/camiseta-vintage-kombi-offwhite-1.jpg"],
+    imageUrl: "/produtos/hk_prod_vi_kombi_offwhite_01.jpg",
+    images: ["/produtos/hk_prod_vi_kombi_offwhite_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim", wash: "Pré-Encolhida" }
@@ -318,7 +318,7 @@ export const GUIA_MEDIDAS = {
     { size: "M", chest: "55-57", length: "71-73", sleeve: "21-22" },
     { size: "G", chest: "58-60", length: "74-76", sleeve: "22-23" },
     { size: "GG", chest: "61-63", length: "77-79", sleeve: "23-24" },
-    { size: "XG", chest: "64-66", length: "80-82", sleeve: "24-25" } // Adicionei XG pois tem nos produtos
+    { size: "XG", chest: "64-66", length: "80-82", sleeve: "24-25" }
   ]
 };
 
@@ -329,7 +329,7 @@ export const GUIA_MEDIDAS = {
 export const MENU_LINKS = [
   { name: 'Shop', href: '/' },
   { name: 'Coleção', href: '/colecao' },
-  { name: 'Lançamento', href: '/lancamento', highlight: true }, // Link Destaque
+  { name: 'Lançamento', href: '/lancamento', highlight: true },
   { name: 'Sobre', href: '/sobre' },
 ];
 

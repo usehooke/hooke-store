@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "correios-brasil": "^3.0.6",
     "firebase": "^12.9.0",
+    "firebase-admin": "^13.7.0",
     "framer-motion": "^12.35.2",
     "idb-keyval": "^6.2.2",
     "lucide-react": "^0.555.0",

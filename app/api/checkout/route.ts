@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { Preference } from "mercadopago";
 import { client } from "@/lib/mercadopago";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { Order, OrderCustomer, OrderItem } from "@/types/order";
 
 export const dynamic = 'force-dynamic';
@@ -68,11 +67,11 @@ export async function POST(req: Request) {
 
         // 2. Prepara o Documento Inicial (Pending) no Firestore
         // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline (Build/No Keys), abortamos.
-        if (!db) {
-            console.error("❌ [Hooke System] Checkout abortado: Servidor sem conexão com Firestore.");
+        if (!adminDb) {
+            console.error("❌ [Hooke System] Checkout abortado: Servidor sem conexão privilegiada com Firestore.");
             return NextResponse.json({ 
                 error: "[Hooke System] Service Unavailable", 
-                message: "Não foi possível persistir o pedido. Banco de dados offline." 
+                message: "Não foi possível persistir o pedido via Admin SDK." 
             }, { status: 503 });
         }
 
@@ -91,7 +90,7 @@ export async function POST(req: Request) {
             updatedAt: Date.now()
         };
 
-        await setDoc(doc(db, "pedidos", orderId), orderData);
+        await adminDb.collection("pedidos").doc(orderId).set(orderData);
 
         // 3. Monta o Payload para a Preference do Mercado Pago
         // Essa URLBase ajuda no redirecionamento local ou de prod

@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Minus, Plus, ShoppingBag, Trash2, X, CreditCard, Loader2, Facebook } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Trash2, X, CreditCard, Loader2, Facebook, Truck } from "lucide-react";
 import { signInWithPopup } from "firebase/auth";
 import { auth, facebookProvider } from "@/lib/firebase";
 import { brandConfig } from "@/config/brandConfig";
@@ -411,6 +411,47 @@ export default function CartSheet() {
  placeholder="(11) 90000-0000"
  />
  </div>
+
+  {/* BLIDAGEM DE FRETE CASO FALTE */}
+  {(!shippingMethod || !shippingCost) && (
+      <div className="bg-hooke-50 p-4 border border-hooke-100 space-y-3 mt-4 animate-in fade-in slide-in-from-top-2">
+          <label className="text-[10px] font-bold tracking-widest text-hooke-900 flex items-center gap-2">
+              <Truck size={12} /> Cálculo de Frete Necessário
+          </label>
+          <div className="flex gap-2">
+              <input
+              type="text"
+              placeholder="00000-000"
+              value={zipInput}
+              onChange={handleZipChange}
+              className="flex-1 border-b border-hooke-300 px-0 py-1 text-xs focus:outline-none focus:border-hooke-900 transition-colors bg-transparent rounded-none"
+              />
+              <button
+              type="button"
+              onClick={calculateShipping}
+              disabled={isCalculatingShipping || zipInput.length < 9}
+              className="text-white bg-hooke-900 px-3 py-1 text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-50"
+              >
+              {isCalculatingShipping ? "..." : "Calcular"}
+              </button>
+          </div>
+          {shippingError && <p className="text-[10px] text-red-500 font-bold">{shippingError}</p>}
+          {shippingOptions.length > 0 && (
+              <select 
+                  onChange={(e) => {
+                      const opt = shippingOptions[Number(e.target.value)];
+                      handleSelectShipping(opt.nome, opt.valor);
+                  } }
+                  className="w-full text-[10px] bg-white border border-gray-200 p-2 font-bold text-hooke-900 focus:outline-none cursor-pointer"
+              >
+                  <option value="">Selecione o Frete...</option>
+                  {shippingOptions.map((opt, i) => (
+                      <option key={i} value={i}>{opt.nome} - {formatter.format(Number(opt.valor))} ({opt.prazo} dias)</option>
+                  ))}
+              </select>
+          )}
+      </div>
+  )}
 
  <div className="flex items-start gap-3 mt-6">
  <input
