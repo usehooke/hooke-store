@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, onSnapshot, Timestamp, limit } from 'firebase/firestore';
-import Link from 'next/link';
 import { ShoppingBag, CupSoda, TrendingUp, Users, ArrowUpRight, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -51,7 +50,7 @@ const StatusPulse = ({ session }: { session: ConciergeSession }) => {
     );
 };
 
-export default function AdminDashboard() {
+export default function ConciergeMonitorPage() {
     const [ordersToday, setOrdersToday] = useState(0);
     const [conciergeSessions, setConciergeSessions] = useState<ConciergeSession[]>([]);
 
@@ -158,28 +157,24 @@ export default function AdminDashboard() {
             {/* Central Intelligence Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-8">
                 
-                {/* STATUS SUMMARY */}
+                {/* MONITOR CONCIERGE REAL-TIME */}
                 <div className="space-y-6">
                     <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
                         <h2 className="text-xs font-black tracking-[0.3em] uppercase text-[#FAFAFA] flex items-center gap-3">
-                             Operação de Hoje
+                             Concierge Status Monitor
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                         </h2>
+                        <span className="text-[9px] text-zinc-500 uppercase tracking-widest">Atualização Live</span>
                     </div>
-                    <div className="bg-white/5 border border-white/[0.05] p-8 space-y-6">
-                        <div className="flex justify-between items-center">
-                            <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Sessões Concierge</span>
-                            <span className="text-[#FAFAFA] font-mono">{conciergeSessions.length} Ativas</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Ticket Médio Est.</span>
-                            <span className="text-[#FAFAFA] font-mono">R$ 185,00</span>
-                        </div>
-                        <Link 
-                            href="/admin/concierge"
-                            className="block w-full py-4 bg-white/5 border border-white/10 text-center text-[9px] font-black uppercase tracking-[0.3em] text-[#FAFAFA] hover:bg-white/10 transition-all"
-                        >
-                            Abrir Monitor Completo
-                        </Link>
+
+                    <div className="min-h-[300px] border-l border-white/[0.05] pl-6">
+                        {conciergeSessions.length === 0 ? (
+                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest italic py-4">Nenhum cliente ativo no lounge no momento.</p>
+                        ) : (
+                            conciergeSessions.map(session => (
+                                <StatusPulse key={session.id} session={session} />
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -187,7 +182,7 @@ export default function AdminDashboard() {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
                         <h2 className="text-xs font-black tracking-[0.3em] uppercase text-[#FAFAFA] flex items-center gap-3">
-                            <TrendingUp size={16} className="text-zinc-500" /> Agent-Growth Insights
+                            <Orbit size={16} className="text-zinc-500" /> Agent-Growth Insights
                         </h2>
                     </div>
                     <div className="bg-white/5 border border-white/[0.05] p-8 space-y-4">
@@ -195,7 +190,7 @@ export default function AdminDashboard() {
                             <Zap size={20} className="text-yellow-500 flex-shrink-0" />
                             <div className="space-y-1">
                                 <p className="text-[11px] text-[#FAFAFA] font-bold uppercase tracking-widest">Oportunidade Detectada</p>
-                                <p className="text-[10px] text-zinc-400 leading-relaxed font-light">&quot;O fluxo no Lounge está alto. Recomendo ativar o Agente Comercial para fechamento de pedidos manuais.&quot;</p>
+                                <p className="text-[10px] text-zinc-400 leading-relaxed font-light">&quot;3 clientes visualizaram o Kit &apos;Elite Essentials&apos; nos últimos 15 min. Considere rodar um gatilho de escassez no Instagram Shopping.&quot;</p>
                             </div>
                         </div>
                     </div>
@@ -206,3 +201,6 @@ export default function AdminDashboard() {
         </div>
     );
 }
+
+// Mock icon Orbit since I don't have it imported correctly above for the demo
+const Orbit = ({ size, className }: { size: number, className: string }) => <TrendingUp size={size} className={className} />;

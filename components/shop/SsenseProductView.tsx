@@ -1,19 +1,49 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Product } from '@/data/catalogo';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCartStore } from '@/store/cart-store';
+import { toast } from 'sonner';
+import { ShoppingCart, Check, ArrowRight } from 'lucide-react';
 
 interface SsenseProductViewProps {
   product: Product;
 }
 
 const SsenseProductView = ({ product }: SsenseProductViewProps) => {
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const addItem = useCartStore((state) => state.addItem);
+
   const formatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   });
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      toast.error('Por favor, selecione um tamanho para sua curadoria.', {
+        style: { borderRadius: 0, background: '#000', color: '#fff', border: 'none' }
+      });
+      return;
+    }
+
+    setIsAdding(true);
+    
+    // Simulação de "Elite Feel" (Atraso sutil para dar peso à ação)
+    setTimeout(() => {
+      addItem(product, selectedSize);
+
+      toast.success(`${product.name} reservado com sucesso no seu Lounge.`, {
+        icon: <Check size={14} />,
+        style: { borderRadius: 0, background: '#000', color: '#fff', border: 'none' }
+      });
+      
+      setIsAdding(false);
+    }, 800);
+  };
 
   return (
     <div className="bg-hooke-paper min-h-screen pt-24 px-6 lg:px-12 pb-24 selection:bg-black selection:text-white">
@@ -98,7 +128,12 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                   {(product.sizes || ['P', 'M', 'G', 'GG']).map(size => (
                     <button 
                       key={size}
-                      className="w-12 h-12 border border-black/10 text-[11px] font-bold flex items-center justify-center font-sans hover:bg-black hover:text-white transition-all duration-300"
+                      onClick={() => setSelectedSize(size)}
+                      className={`w-12 h-12 border text-[11px] font-bold flex items-center justify-center font-sans transition-all duration-300 ${
+                        selectedSize === size 
+                        ? 'bg-black text-white border-black' 
+                        : 'border-black/10 hover:border-black'
+                      }`}
                     >
                       {size}
                     </button>
@@ -106,8 +141,21 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                 </div>
               </div>
 
-              <button className="btn-hooke-elite w-full mt-10 py-6 text-[11px] font-bold tracking-[0.2em] group relative shadow-premium">
-                <span className="relative z-10">Reservar Drop</span>
+              <button 
+                onClick={handleAddToCart}
+                disabled={isAdding}
+                className="btn-hooke-elite w-full mt-10 py-6 text-[11px] font-bold tracking-[0.2em] group relative shadow-premium disabled:opacity-50"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {isAdding ? (
+                    <span className="animate-pulse">Reservando...</span>
+                  ) : (
+                    <>
+                      Finalizar Reserva no Lounge
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </span>
               </button>
 
               <div className="mt-6 flex flex-col space-y-2 opacity-40">
