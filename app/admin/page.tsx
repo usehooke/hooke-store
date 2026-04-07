@@ -55,6 +55,8 @@ export default function AdminDashboard() {
     const [conciergeSessions, setConciergeSessions] = useState<ConciergeSession[]>([]);
 
     useEffect(() => {
+        if (!db) return;
+
         // 1. Buscar Pedidos de Hoje
         const fetchOrders = async () => {
             const startOfDay = new Date();
