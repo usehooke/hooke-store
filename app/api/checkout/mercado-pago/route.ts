@@ -6,10 +6,19 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN || '' 
 });
 
+interface MarketPagoItem {
+  id: string;
+  name: string;
+  selectedSize: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { items, orderId, customerName } = body;
+    const { items, orderId, customerName } = body as { items: MarketPagoItem[], orderId: string, customerName: string };
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Carrinho vazio' }, { status: 400 });
@@ -20,7 +29,7 @@ export async function POST(req: NextRequest) {
     // Criação da preferência no Mercado Pago
     const response = await preference.create({
       body: {
-        items: items.map((item: any) => ({
+        items: items.map((item) => ({
           id: item.id,
           title: `${item.name} (${item.selectedSize}) - Hooke Elite`,
           unit_price: Number(item.price),
@@ -53,11 +62,12 @@ export async function POST(req: NextRequest) {
       init_point: response.init_point 
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
     console.error('Erro Mercado Pago:', error);
     return NextResponse.json({ 
       error: 'Erro ao gerar link de pagamento',
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 });
   }
 }

@@ -2,13 +2,12 @@
 "use client";
 
 import { useCartStore, selectCartSubTotal, selectCartPromoDiscount, selectCartFinalTotal } from "@/store/cart-store";
-import { X, Trash2, ShoppingBag, MessageCircle, ArrowRight, Tag, CupSoda } from "lucide-react";
+import { X, Trash2, ShoppingBag, ArrowRight, Tag, CupSoda } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { brandConfig } from "@/config/brandConfig";
 import { trackEvent } from "@/lib/analytics";
 import FreeShippingBar from "./FreeShippingBar";
 import SmartSuggestions from "./SmartSuggestions";
