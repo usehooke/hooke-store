@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 interface ConciergeSession {
     id: string;
-    startTime: any;
+    startTime: Timestamp;
     hasLink: boolean;
     customerName?: string;
     lastProduct?: string;
@@ -17,7 +17,10 @@ interface ConciergeSession {
 
 // Componente Status Pulse para o Concierge
 const StatusPulse = ({ session }: { session: ConciergeSession }) => {
-    const startTime = session.startTime?.toDate?.() || new Date(session.startTime);
+    // Conversão segura de Timestamp para Date
+    const startTime = session.startTime && 'toDate' in session.startTime 
+        ? session.startTime.toDate() 
+        : new Date();
     const elapsedMinutes = (Date.now() - startTime.getTime()) / 60000;
     const isStagnated = elapsedMinutes > 2 && !session.hasLink;
 
