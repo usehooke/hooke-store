@@ -70,7 +70,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
 
   const [stock, setStock] = useState<Record<string, number>>(initialData?.stock || {});
   const [skus, setSkus] = useState<Record<string, string>>(initialData?.skus || {});
-  const [images, setImages] = useState<string[]>(initialData?.images || (initialData?.imagem ? [initialData?.imagem] : []));
+  const [images, setImages] = useState<string[]>(initialData?.images || (initialData?.imageUrl ? [initialData?.imageUrl] : []));
   const [metaDescription, setMetaDescription] = useState(initialData?.seo?.metaDescription || "");
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -88,7 +88,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
     onSubmit({
       ...initialData,
       name, department, category, price, comboPrice, description, featured, isActive,
-      sizes, images, imagem: images[0], colors, stock, skus, modelSigla, printSigla, weight,
+      sizes, images, imageUrl: images[0], colors, stock, skus, modelSigla, printSigla, weight,
       seo: { ...initialData?.seo, metaDescription }
     });
   };
