@@ -24,7 +24,8 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     featured: true,
     isActive: true,
     seoAltText: "Fernando vestindo Conjunto Wafer Off-White Hooke",
-    stock: { "Off-White-P": 2, "Off-White-M": 5, "Off-White-G": 3, "Off-White-GG": 1 }
+    stock: { "Off-White-P": 2, "Off-White-M": 5, "Off-White-G": 3, "Off-White-GG": 1 },
+    department: "masculino"
   },
   {
     id: "camiseta-heavy-black",
@@ -38,7 +39,8 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     sizes: ["P", "M", "G", "GG"],
     featured: true,
     isActive: true,
-    seoAltText: "Fernando vestindo Camiseta Heavy Black Hooke"
+    seoAltText: "Fernando vestindo Camiseta Heavy Black Hooke",
+    department: "masculino"
   },
   {
     id: "retro-beetle-areia",
@@ -62,7 +64,8 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     featured: true,
     isNew: true,
     isActive: true,
-    seoAltText: "Camiseta Hooke Retro Beetle Areia em algodão pesado"
+    seoAltText: "Camiseta Hooke Retro Beetle Areia em algodão pesado",
+    department: "masculino"
   }
 ];
 
@@ -79,5 +82,6 @@ export const MOCK_LOOKBOOK = {
   imageSrc: "/produtos/HK_ELITE_WAFER_OW_V2.png",
   price: "R$ 449,90",
   description: "Algodão Egípcio de gramatura pesada. Menos excesso, mais qualidade em cada fibra.",
-  tag: "HOOKE ELITE FOUNDER"
+  tag: "HOOKE ELITE FOUNDER",
+  department: "masculino",
 };

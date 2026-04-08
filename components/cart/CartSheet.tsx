@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Minus, Plus, ShoppingBag, Trash2, X, CreditCard, Loader2, Facebook, Truck } from "lucide-react";
 import { signInWithPopup } from "firebase/auth";
 import { auth, facebookProvider } from "@/lib/firebase";
@@ -136,26 +136,65 @@ export default function CartSheet() {
  // --- ESTADOS DO CUPOM ---
  const [couponInput, setCouponInput] = useState("");
  const [couponError, setCouponError] = useState("");
+ const [isCouponLoading, setIsCouponLoading] = useState(false);
+ const [activeDiscountValue, setActiveDiscountValue] = useState(0.1); // default from old MAVERICK10 if carried over
 
- const applyCoupon = () => {
- if (!couponInput) return;
- if (couponInput.trim().toUpperCase() === "MAVERICK10") {
- setCoupon("MAVERICK10");
- setCouponError("");
- } else {
- setCoupon(null);
- setCouponError("Cupom inválido ou expirado.");
- }
+ const applyCoupon = async () => {
+   if (!couponInput) return;
+   setIsCouponLoading(true);
+   setCouponError("");
+
+   try {
+     const res = await fetch("/api/coupon/validate", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ code: couponInput })
+     });
+     const data = await res.json();
+     if (res.ok && data.valid) {
+       setCoupon(couponInput.toUpperCase());
+       setActiveDiscountValue(data.discount);
+     } else {
+       setCouponError(data.message || "Cupom inválido ou expirado.");
+       setCoupon(null);
+       setActiveDiscountValue(0);
+     }
+   } catch {
+     setCouponError("Erro ao validar cupom.");
+     setCoupon(null);
+     setActiveDiscountValue(0);
+   } finally {
+     setIsCouponLoading(false);
+   }
  };
 
  const removeCoupon = () => {
- setCoupon(null);
- setCouponInput("");
- setCouponError("");
+   setCoupon(null);
+   setCouponInput("");
+   setCouponError("");
+   setActiveDiscountValue(0);
  };
 
- const couponDiscount = appliedCoupon === "MAVERICK10" ? (subtotal - promoDiscount) * 0.1 : 0;
+ const couponDiscount = appliedCoupon ? (subtotal - promoDiscount) * activeDiscountValue : 0;
  const totalGeral = subtotal - promoDiscount - couponDiscount + (shippingCost || 0);
+
+ // --- PING DE ABANDONO DE CARRINHO VIA WHATSAPP ---
+ useEffect(() => {
+   if (customer.phone.length >= 14 && items.length > 0) {
+      const timer = setTimeout(() => {
+         fetch("/api/analytics/capi", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              eventName: "InitiateCheckout",
+              userData: { phone: customer.phone.replace(/\D/g, ''), em: customer.email, fn: customer.name },
+              customData: { value: totalGeral, currency: "BRL", content_ids: items.map(i => i.id) }
+            })
+         }).catch(() => {}); // silent fail, fire and forget
+      }, 2500); // 2.5s debounce 
+      return () => clearTimeout(timer);
+   }
+ }, [customer.phone, items, totalGeral, customer.name, customer.email]);
 
  // --- CONFIGURAÇÃO DO WHATSAPP ---
  const whatsappNumber = brandConfig.contact.whatsapp.number;
@@ -552,10 +591,10 @@ export default function CartSheet() {
  />
  <button
  onClick={applyCoupon}
- disabled={!couponInput}
+ disabled={!couponInput || isCouponLoading}
  className="bg-hooke-900 text-white px-4 py-2 text-xs font-bold tracking-widest hover:bg-black transition-colors rounded-none disabled:opacity-50"
  >
- Aplicar
+ {isCouponLoading ? <Loader2 size={16} className="animate-spin" /> : "Aplicar"}
  </button>
  </div>
  {couponError && <p className="text-[10px] text-red-500 font-bold mt-2">{couponError}</p>}
@@ -567,7 +606,7 @@ export default function CartSheet() {
  <span className="text-xs font-bold text-green-800 flex items-center gap-1">
  🎉 {appliedCoupon}
  </span>
- <span className="text-[10px] text-green-700 bg-green-200 px-1.5 py-0.5 font-bold rounded-sm shadow-sm border border-green-300">10% OFF</span>
+ <span className="text-[10px] text-green-700 bg-green-200 px-1.5 py-0.5 font-bold rounded-sm shadow-sm border border-green-300">{(activeDiscountValue * 100).toFixed(0)}% OFF</span>
  </div>
  <button onClick={removeCoupon} className="text-gray-400 hover:text-red-500 transition-colors relative z-10">
  <X size={14} />

@@ -29,10 +29,9 @@ export default function Navbar() {
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   const navLinks = [
-    { name: 'Shop', href: '/' },
-    { name: 'Coleção', href: '/colecao' },
+    { name: 'Masculino', href: '/masculino' },
+    { name: 'Feminino', href: '/feminino' },
     { name: 'Lançamento', href: '/lancamento', highlight: true },
-    { name: 'Sobre', href: '/sobre' },
   ];
 
   return (

@@ -7,6 +7,7 @@ import Footer from "./Footer";
 import WhatsAppButton from "../ui/WhatsAppButton";
 import DynamicCart from "./DynamicCart";
 import BottomNav from "./BottomNav";
+import DepartmentFAB from "./DepartmentFAB";
 
 interface ShopLayoutWrapperProps {
   children: React.ReactNode;
@@ -33,6 +34,7 @@ export default function ShopLayoutWrapper({ children }: ShopLayoutWrapperProps) 
       </main>
 
       <WhatsAppButton />
+      <DepartmentFAB />
       <BottomNav />
       <Footer />
     </>

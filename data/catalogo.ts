@@ -42,8 +42,10 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_ov_blue_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Kits",
-    details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada com Silicone" }
+    details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada com Silicone" },
+    totalStock: 3
   },
   {
     id: "kit-5-oversized-premium",
@@ -60,6 +62,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_ov_offwhite_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Kits",
     details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada com Silicone" }
   },
@@ -79,6 +82,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/camiseta-regata-canelada-marrom-1.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Kits",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -97,6 +101,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_re_military_01.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Kits",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -112,6 +117,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_vi_fusca_black_01.jpg",
     images: ["/produtos/hk_prod_vi_fusca_black_01.jpg"],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Kits",
     details: { fabric: "Algodão Egípcio", model: "Regular", wash: "Pré-Encolhida" }
   },
@@ -127,6 +133,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_vi_fusca_offwhite_01.jpg",
     images: ["/produtos/hk_prod_vi_fusca_offwhite_01.jpg"],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Kits",
     details: { fabric: "Algodão Egípcio", model: "Regular", wash: "Pré-Encolhida" }
   },
@@ -148,8 +155,10 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_ov_black_04.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Oversized",
-    details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada" }
+    details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada" },
+    totalStock: 2
   },
   {
     id: "oversized-offwhite",
@@ -163,6 +172,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_ov_offwhite_01.avif",
     images: ["/produtos/hk_prod_ov_offwhite_01.avif"],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Oversized",
     details: { fabric: "Suedine 240g", model: "Oversized Boxy", wash: "Amaciada" }
   },
@@ -181,6 +191,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_re_military_hero.avif"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -197,6 +208,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_re_coffee_01.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -213,6 +225,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_re_sand_01.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -227,6 +240,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_re_lifestyle_bege_01.jpg",
     images: ["/produtos/hk_prod_re_lifestyle_bege_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Lifestyle",
     details: { fabric: "Algodão BCI", model: "Oversized", wash: "Tingimento Ecológico" }
   },
@@ -245,6 +259,7 @@ export const PRODUTOS: Product[] = [
       "/produtos/hk_prod_vi_fusca_editorial_01.png"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Pré-Encolhida" }
   },
@@ -259,6 +274,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_vi_maverick_red_01.jpg",
     images: ["/produtos/hk_prod_vi_maverick_red_01.jpg"],
     sizes: ["M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
   },
@@ -273,6 +289,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_vi_fusca_offwhite_01.jpg",
     images: ["/produtos/hk_prod_vi_fusca_offwhite_01.jpg", "/produtos/hk_prod_vi_fusca_offwhite_04.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Regular Fit", wash: "Pré-Encolhida" }
   },
@@ -287,6 +304,7 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_vi_fusca_bordo_01.jpg",
     images: ["/produtos/hk_prod_vi_fusca_bordo_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Amaciada" }
   },
@@ -301,8 +319,44 @@ export const PRODUTOS: Product[] = [
     imageUrl: "/produtos/hk_prod_vi_kombi_offwhite_01.jpg",
     images: ["/produtos/hk_prod_vi_kombi_offwhite_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim", wash: "Pré-Encolhida" }
+  },
+  // --- FEMININO (Coleção Cápsula Oficial) ---
+  {
+    id: "fem-conjunto-viscose-verde",
+    name: "Conjunto Minimalista Forest",
+    seoAltText: "Modelo feminina elegante vestindo conjunto verde de camiseta e calça pantalona em viscose - Hooke Store",
+    slug: "conjunto-feminino-viscose-verde",
+    price: 189.90,
+    featured: true,
+    isPremiumCollection: true,
+    isNew: true,
+    description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída com ajuste na cintura metálico. Conforto absoluto sem perder a imponência.",
+    imageUrl: "/produtos/hk_fem_conjunto_verde.png",
+    images: ["/produtos/hk_fem_conjunto_verde.png"],
+    sizes: ["PP", "P", "M", "G"],
+    department: "feminino",
+    category: "Conjuntos",
+    details: { fabric: "96% Viscose, 4% Elastano", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
+  },
+  {
+    id: "fem-conjunto-viscose-azul",
+    name: "Conjunto Minimalista Navy",
+    seoAltText: "Modelo feminina elegante vestindo conjunto azul marinho profundo de camiseta e calça pantalona em viscose - Hooke Store",
+    slug: "conjunto-feminino-viscose-azul",
+    price: 189.90,
+    featured: false,
+    isPremiumCollection: true,
+    isNew: true,
+    description: "Para os dias em que a discrição se torna a maior de todas as presenças. O caimento Hooke em Viscose Navy Blue.",
+    imageUrl: "/produtos/hk_fem_conjunto_azul.png",
+    images: ["/produtos/hk_fem_conjunto_azul.png"],
+    sizes: ["PP", "P", "M", "G"],
+    department: "feminino",
+    category: "Conjuntos",
+    details: { fabric: "96% Viscose, 4% Elastano", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
   }
 ];
 

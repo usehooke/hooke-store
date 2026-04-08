@@ -22,6 +22,7 @@ export const products: Product[] = [
       "/produtos/HK_PROD_OV_BLUE_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Kits",
     details: { fabric: "Algodão Premium Encorpado", model: "Oversized Streetwear", wash: "Amaciada com Silicone" }
   },
@@ -41,6 +42,7 @@ export const products: Product[] = [
       "/produtos/HK_PROD_RE_MILITARY_02.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -62,6 +64,7 @@ export const products: Product[] = [
       "/produtos/HK_PROD_VI_FUSCA_BLACK_03.png",
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Pré-Encolhida" }
   },
@@ -83,6 +86,7 @@ export const products: Product[] = [
       "/produtos/HK_PROD_OV_BLACK_01.avif"
     ],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Oversized",
     details: { fabric: "Algodão Premium", model: "Oversized", wash: "Amaciada" }
   },
@@ -98,6 +102,7 @@ export const products: Product[] = [
     imageUrl: "/produtos/HK_PROD_OV_OFFWHITE_01.avif",
     images: ["/produtos/HK_PROD_OV_OFFWHITE_01.avif"],
     sizes: ["P", "M", "G", "GG", "XG"],
+    department: "masculino",
     category: "Oversized",
     details: { fabric: "Algodão Premium", model: "Oversized", wash: "Amaciada" }
   },
@@ -116,6 +121,7 @@ export const products: Product[] = [
       "/produtos/HK_PROD_RE_COFFEE_03.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -130,6 +136,7 @@ export const products: Product[] = [
     imageUrl: "/produtos/HK_PROD_VI_MAVERICK_RED_01.jpg",
     images: ["/produtos/HK_PROD_VI_MAVERICK_RED_01.jpg"],
     sizes: ["M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
   },
@@ -144,6 +151,7 @@ export const products: Product[] = [
     imageUrl: "/produtos/HK_PROD_VI_FUSCA_OFFWHITE_01.jpg",
     images: ["/produtos/HK_PROD_VI_FUSCA_OFFWHITE_01.jpg", "/produtos/HK_PROD_VI_FUSCA_OFFWHITE_04.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Regular Fit", wash: "Pré-Encolhida" }
   },
@@ -158,6 +166,7 @@ export const products: Product[] = [
     imageUrl: "/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg",
     images: ["/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Lifestyle",
     details: { fabric: "Algodão BCI", model: "Oversized", wash: "Tingimento Ecológico" }
   },
@@ -172,6 +181,7 @@ export const products: Product[] = [
     imageUrl: "/produtos/HK_PROD_VI_FUSCA_BORDO_01.jpg",
     images: ["/produtos/HK_PROD_VI_FUSCA_BORDO_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Amaciada" }
   },
@@ -189,6 +199,7 @@ export const products: Product[] = [
       "/produtos/HK_PROD_RE_SAND_02.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -203,6 +214,7 @@ export const products: Product[] = [
     imageUrl: "/produtos/HK_PROD_VI_KOMBI_OFFWHITE_01.jpg",
     images: ["/produtos/HK_PROD_VI_KOMBI_OFFWHITE_01.jpg"],
     sizes: ["P", "M", "G", "GG"],
+    department: "masculino",
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim", wash: "Pré-Encolhida" }
   }

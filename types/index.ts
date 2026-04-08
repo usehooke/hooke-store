@@ -14,7 +14,8 @@ export interface Product {
   sizes: string[];
   stock?: Record<string, number>; // Controle de estoque em formato MAP. Chave: 'Cor-Tamanho' (ex: 'Branca-P') ou 'Tamanho' ('P')
   skus?: Record<string, string>; // Mapeia SKUs (ex: {'Preta-M': 'OVR-PRT-M-1X9A'})
-  category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle" | "Conjuntos" | "Camisetas";
+  department: "masculino" | "feminino" | "unissex";
+  category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle" | "Conjuntos" | "Camisetas" | "Cropped" | "Top";
   modelSigla?: string;
   printSigla?: string;
   weight?: number;
@@ -32,6 +33,7 @@ export interface Product {
   slug: string;
   rating?: number;
   reviewsCount?: number;
+  totalStock?: number; // Gatilho de escassez
 }
 
 export interface MenuItem {

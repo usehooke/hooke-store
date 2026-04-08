@@ -37,12 +37,27 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           />
           
           {/* Badge Minimalista */}
-          {product.isNew && (
+          {product.isNew && (!product.totalStock || product.totalStock > 3) && (
             <div className="absolute top-4 left-4 z-10">
               <span className="bg-hooke-900 text-white text-[9px] font-bold px-2 py-1 tracking-[0.2em]">
                 Novo
               </span>
             </div>
+          )}
+
+          {/* Gatilho de Escassez Elegante */}
+          {product.totalStock !== undefined && product.totalStock <= 3 && (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-hooke-200 px-2 py-1 shadow-sm"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
+              <span className="text-hooke-900 text-[8px] font-bold uppercase tracking-[0.2em]">
+                {product.totalStock === 1 ? 'Última Peça' : `Apenas ${product.totalStock} No Atelier`}
+              </span>
+            </motion.div>
           )}
 
           {/* Overlay suave no Hover */}
