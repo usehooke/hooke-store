@@ -76,8 +76,8 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [featured, setFeatured] = useState(initialData?.featured || false);
   const [isActive, setIsActive] = useState(initialData?.isActive !== false);
-  const [modelSigla, setModelSigla] = useState<ModelSigla>(initialData?.modelSigla || "TSH");
-  const [printSigla, setPrintSigla] = useState<PrintSigla>(initialData?.printSigla || "HK1");
+  const [modelSigla, setModelSigla] = useState<ModelSigla>((initialData?.modelSigla as ModelSigla) || "TSH");
+  const [printSigla, setPrintSigla] = useState<PrintSigla>((initialData?.printSigla as PrintSigla) || "HK1");
   const [weight, setWeight] = useState<number>(initialData?.weight || 300);
   const [colors, setColors] = useState<{ name: string; imageUrl: string }[]>(initialData?.colors || []);
   /* eslint-enable @typescript-eslint/no-unused-vars */

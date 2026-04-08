@@ -1,4 +1,5 @@
 // src/types/index.ts
+import { ModelSigla, PrintSigla } from "@/utils/sku-generator";
 
 export interface Product {
   id: string;
@@ -16,8 +17,8 @@ export interface Product {
   skus?: Record<string, string>; // Mapeia SKUs (ex: {'Preta-M': 'OVR-PRT-M-1X9A'})
   department: "masculino" | "feminino" | "unissex";
   category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle" | "Conjuntos" | "Camisetas" | "Cropped" | "Top";
-  modelSigla?: string;
-  printSigla?: string;
+  modelSigla?: ModelSigla;
+  printSigla?: PrintSigla;
   weight?: number;
   details?: {
     fabric: string;
