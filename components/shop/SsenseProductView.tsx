@@ -93,13 +93,13 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: idx * 0.1 }}
-              className="relative aspect-[4/5] w-full bg-white group overflow-hidden border border-black/5"
+              className="relative aspect-[2/3] w-full bg-white group overflow-hidden border border-black/5"
             >
               <Image
                 src={img}
                 alt={`${product.name} - Vista ${idx + 1}`}
                 fill
-                className="object-contain p-4 transition-transform duration-[length:2s] group-hover:scale-105"
+                className="object-cover object-top transition-transform duration-[length:2s] group-hover:scale-105"
                 priority={idx === 0}
               />
             </motion.div>

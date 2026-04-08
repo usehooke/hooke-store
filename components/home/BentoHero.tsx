@@ -54,11 +54,11 @@ export default function BentoHero() {
           className="flex-1 relative group overflow-hidden bg-hooke-100 h-[500px] md:h-auto"
         >
           <Image
-            src="/produtos/hk_fem_conjunto_verde.png" 
+            src="/produtos/hk_fem_verde_1.png" 
             alt="Hooke Womenswear"
             fill
             priority
-            className="object-cover object-center opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:2000ms] ease-out"
+            className="object-cover object-top opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:2000ms] ease-out"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />

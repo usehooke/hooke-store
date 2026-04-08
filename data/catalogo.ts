@@ -323,19 +323,22 @@ export const PRODUTOS: Product[] = [
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim", wash: "Pré-Encolhida" }
   },
-  // --- FEMININO (Coleção Cápsula Oficial) ---
+  // --- FEMININO (Ensaio Profissional v4 - Hooke Elite) ---
   {
     id: "fem-conjunto-viscose-verde",
     name: "Conjunto Minimalista Forest",
-    seoAltText: "Modelo feminina elegante vestindo conjunto verde de camiseta e calça pantalona em viscose - Hooke Store",
+    seoAltText: "Modelo oficial Hooke vestindo conjunto verde de camiseta e calça pantalona em viscose - Ensaio Profissional",
     slug: "conjunto-feminino-viscose-verde",
     price: 189.90,
     featured: true,
     isPremiumCollection: true,
     isNew: true,
-    description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída com ajuste na cintura metálico. Conforto absoluto sem perder a imponência.",
-    imageUrl: "/produtos/hk_fem_conjunto_verde.png",
-    images: ["/produtos/hk_fem_conjunto_verde.png"],
+    description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Conforto absoluto sem perder a imponência. Ensaio com modelo oficial da marca.",
+    imageUrl: "/produtos/hk_fem_verde_1.png",
+    images: [
+      "/produtos/hk_fem_verde_1.png",
+      "/produtos/hk_fem_verde_2.png"
+    ],
     sizes: ["PP", "P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
@@ -344,15 +347,18 @@ export const PRODUTOS: Product[] = [
   {
     id: "fem-conjunto-viscose-azul",
     name: "Conjunto Minimalista Navy",
-    seoAltText: "Modelo feminina elegante vestindo conjunto azul marinho profundo de camiseta e calça pantalona em viscose - Hooke Store",
+    seoAltText: "Modelo oficial Hooke vestindo conjunto azul marinho profundo de camiseta e calça pantalona em viscose - Ensaio Profissional",
     slug: "conjunto-feminino-viscose-azul",
     price: 189.90,
     featured: false,
     isPremiumCollection: true,
     isNew: true,
     description: "Para os dias em que a discrição se torna a maior de todas as presenças. O caimento Hooke em Viscose Navy Blue.",
-    imageUrl: "/produtos/hk_fem_conjunto_azul.png",
-    images: ["/produtos/hk_fem_conjunto_azul.png"],
+    imageUrl: "/produtos/hk_fem_azul_1.png",
+    images: [
+      "/produtos/hk_fem_azul_1.png",
+      "/produtos/hk_fem_azul_2.png"
+    ],
     sizes: ["PP", "P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
