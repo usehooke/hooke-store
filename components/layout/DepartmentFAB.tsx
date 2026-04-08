@@ -10,7 +10,6 @@ export default function DepartmentFAB() {
 
   // O botão só faz sentido aparecer dentro das rotas de loja principal, 
   // mas como os departamentos são a base, aparecerá em "masculino", "feminino".
-  const isMasculino = pathname.includes("/masculino") || pathname === "/";
   const isFeminino = pathname.includes("/feminino");
 
   // Se não estiver em nenhuma das vitrines principais, pode ocultar (ex: checkout, painel do admin)
@@ -37,7 +36,7 @@ export default function DepartmentFAB() {
         <Link 
           href="/masculino" 
           className="relative z-10 w-28 text-center py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
-          style={{ color: !isFeminino ? "white" : "black" }} // Reverse logic because isMasculino might be / as well
+          style={{ color: !isFeminino ? "white" : "black" }}
         >
           Masculino
         </Link>

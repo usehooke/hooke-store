@@ -16,40 +16,7 @@ interface ConciergeSession {
     status: string;
 }
 
-// Componente Status Pulse para o Concierge
-const StatusPulse = ({ session }: { session: ConciergeSession }) => {
-    // Conversão segura de Timestamp para Date
-    const startTime = session.startTime && 'toDate' in session.startTime 
-        ? session.startTime.toDate() 
-        : new Date();
-    const elapsedMinutes = (Date.now() - startTime.getTime()) / 60000;
-    const isStagnated = elapsedMinutes > 2 && !session.hasLink;
 
-    return (
-        <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/[0.05] mb-2 group hover:bg-white/[0.08] transition-all">
-            <div className="relative">
-                <div className={`w-3 h-3 rounded-full ${isStagnated ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
-                {isStagnated && (
-                    <div className="absolute inset-0 bg-amber-500 rounded-full animate-ping opacity-75" />
-                )}
-            </div>
-            <div className="flex-1">
-                <p className="text-[11px] font-bold tracking-widest text-[#FAFAFA] uppercase">
-                    {session.customerName || 'Cliente Anônimo'}
-                </p>
-                <p className="text-[9px] text-zinc-500 uppercase tracking-widest">
-                    {session.lastProduct || 'Explorando Curadoria'} • {Math.floor(elapsedMinutes)} min ativo
-                </p>
-            </div>
-            {isStagnated && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20">
-                    <Zap size={10} className="text-amber-500" />
-                    <span className="text-[8px] font-black text-amber-500 uppercase italic">Intervir via WhatsApp</span>
-                </div>
-            )}
-        </div>
-    );
-};
 
 export default function AdminDashboard() {
     const [ordersToday, setOrdersToday] = useState(0);

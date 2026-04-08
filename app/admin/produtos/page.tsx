@@ -51,7 +51,7 @@ export default function AdminPage() {
         } as Product);
       });
       setProducts(productsData);
-    } catch (_error) {
+    } catch {
       console.error("Erro ao buscar produtos");
       toast.error("Erro ao carregar catálogo.");
     } finally {
@@ -66,7 +66,7 @@ export default function AdminPage() {
       await updateDoc(productRef, { isActive: !currentStatus });
       setProducts(prev => prev.map(p => p.id === id ? { ...p, isActive: !currentStatus } : p));
       toast.success(currentStatus ? "Produto ocultado" : "Produto visível");
-    } catch (_error) {
+    } catch {
       toast.error("Erro ao alterar visibilidade.");
     }
   };
@@ -79,7 +79,7 @@ export default function AdminPage() {
       await deleteDoc(doc(db, "produtos", id));
       setProducts(prev => prev.filter(p => p.id !== id));
       toast.success("Produto excluído.");
-    } catch (_error) {
+    } catch {
       toast.error("Erro ao excluir.");
     }
   };
@@ -99,7 +99,7 @@ export default function AdminPage() {
       setIsDrawerOpen(false);
       setEditingProduct(null);
       fetchProducts();
-    } catch (error) {
+    } catch {
       toast.error("Erro ao salvar dados.");
     } finally {
       setIsSaving(false);
@@ -119,7 +119,7 @@ export default function AdminPage() {
       } else {
         throw new Error();
       }
-    } catch (err) {
+    } catch {
       toast.error("Falha na sincronização.");
     }
   };

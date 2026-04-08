@@ -35,7 +35,7 @@ import { Product } from "@/types";
 const AVAILABLE_SIZES_MASCO = ["P", "M", "G", "GG", "XG", "G1", "G2"];
 const AVAILABLE_SIZES_FEMIN = ["PP", "P", "M", "G", "GG"];
 
-interface FormProductData extends Partial<Product> {}
+type FormProductData = Partial<Product>;
 
 interface ProductFormProps {
   initialData?: FormProductData | null;
