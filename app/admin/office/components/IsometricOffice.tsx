@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   TrendingUp, Layout, Smartphone, 
   Aperture, ShieldCheck, Zap, Orbit,
-  Activity, Monitor
+  Monitor
 } from "lucide-react";
 import { AgentThought } from "./AgentThought";
 

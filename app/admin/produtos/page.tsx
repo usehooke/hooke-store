@@ -12,7 +12,7 @@ import { Toaster, toast } from "sonner";
 import { AdminProductList } from "../components/elite/AdminProductList";
 import { AdminProductDrawer } from "../components/elite/AdminProductDrawer";
 import { Product } from "@/types";
-import { LayoutDashboard, Barcode, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Barcode, LogOut, ExternalLink, Plus } from "lucide-react";
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -88,7 +88,6 @@ export default function AdminPage() {
     setIsSaving(true);
     if (!db) return;
     try {
-      const id = data.id || data.slug || `prod-${Date.now()}`;
       await setDoc(doc(db, "produtos", id), {
         ...data,
         id,

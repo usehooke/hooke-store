@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, AlertCircle, HelpCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 import { Product } from "@/types";
 
 interface QualityBadgeProps {

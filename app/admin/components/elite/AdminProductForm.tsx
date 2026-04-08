@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { UploadButton } from "@/utils/uploadthing";
-import { toast } from "sonner";
 import { Trash2, GripVertical, Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
@@ -16,12 +15,10 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   rectSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
@@ -30,13 +27,8 @@ import { CSS } from "@dnd-kit/utilities";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 import { 
-  generateSKU, 
-  MODEL_DICTIONARY, 
-  PRINT_DICTIONARY, 
-  COLOR_DICTIONARY,
   ModelSigla,
-  PrintSigla,
-  ColorSigla
+  PrintSigla
 } from "@/utils/sku-generator";
 
 const AVAILABLE_SIZES_MASCO = ["P", "M", "G", "GG", "XG", "G1", "G2"];
@@ -66,7 +58,7 @@ interface FormProductData {
 
 interface ProductFormProps {
   initialData?: FormProductData | null;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: FormProductData) => void;
   onCancel: () => void;
   isSaving: boolean;
 }

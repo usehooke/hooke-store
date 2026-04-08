@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { 
   Eye, EyeOff, Edit3, Trash2, 
-  Search, Filter, Plus, 
-  CheckCircle2, RefreshCw, AlertCircle 
+  Search, Plus, 
+  CheckCircle2, RefreshCw 
 } from "lucide-react";
 import { Product } from "@/types";
 import { QualityBadge } from "./QualityBadge";
@@ -132,13 +132,13 @@ export function AdminProductList({
                     onClick={() => onSync(p)}
                     className="flex flex-col items-center gap-0.5 hover:scale-105 transition-transform"
                    >
-                     {(p as any).syncStatus === 'synced' ? (
+                     {(p as Product & { syncStatus?: string }).syncStatus === 'synced' ? (
                        <CheckCircle2 size={16} className="text-green-500" />
                      ) : (
-                       <RefreshCw size={16} className={`text-amber-500 ${(p as any).syncStatus === 'pending' ? 'animate-spin' : ''}`} />
+                       <RefreshCw size={16} className={`text-amber-500 ${(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''}`} />
                      )}
                      <span className="text-[8px] font-black text-gray-400 uppercase">
-                       { (p as any).syncStatus === 'synced' ? 'Sincronizado' : ((p as any).syncStatus === 'failed' ? 'Falhou' : 'Pendente') }
+                       { (p as Product & { syncStatus?: string }).syncStatus === 'synced' ? 'Sincronizado' : ((p as Product & { syncStatus?: string }).syncStatus === 'failed' ? 'Falhou' : 'Pendente') }
                      </span>
                    </button>
                 </td>

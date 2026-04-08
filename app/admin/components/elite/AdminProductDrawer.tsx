@@ -54,7 +54,7 @@ export function AdminProductDrawer({ isOpen, onClose, product, onSubmit, isSavin
 
             <div className="p-0">
               <AdminProductForm
-                initialData={product ? (product as any) : null}
+                initialData={product ? (product as Product) : null}
                 onSubmit={onSubmit}
                 onCancel={onClose}
                 isSaving={isSaving}
