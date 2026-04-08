@@ -33,11 +33,11 @@ export default function BentoHero() {
             </span>
 
             <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter mb-4">
-              Menswear
+              Engineering Basics
             </h1>
 
-            <p className="text-gray-300 text-xs tracking-widest max-w-xs mb-8 leading-relaxed">
-              O BÁSICO ELEVADO À PERFEIÇÃO. SILHUETAS BOXY E HEAVY COTTON.
+            <p className="text-gray-300 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium">
+              A engenharia por trás do essencial. Silhuetas arquitetônicas e tecidos de alta gramatura.
             </p>
 
             <Link href="/masculino" className="group/link flex items-center gap-3 text-[10px] font-bold tracking-[0.2em] uppercase bg-white text-black px-6 py-4 hover:bg-gray-200 transition-all w-max inline-flex">
@@ -54,7 +54,7 @@ export default function BentoHero() {
           className="flex-1 relative group overflow-hidden bg-hooke-100 h-[500px] md:h-auto"
         >
           <Image
-            src="/produtos/hk_prod_ov_black_03.avif" // Protótipo, a IA vai gerar fotos depois
+            src="/produtos/hk_fem_conjunto_verde.png" 
             alt="Hooke Womenswear"
             fill
             priority
@@ -69,11 +69,11 @@ export default function BentoHero() {
             </span>
 
             <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter mb-4">
-              Womenswear
+              Raw Minimalism
             </h1>
 
-            <p className="text-gray-300 text-xs tracking-widest max-w-xs mb-8 leading-relaxed">
-              A ESSÊNCIA RAW PARA ELAS. LUZ DURA, TEXTURAS DENSAS E MINIMALISMO.
+            <p className="text-gray-300 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium">
+              A essência crua da Hooke, agora para elas. O encontro entre a dureza da forma e a fluidez do impacto.
             </p>
 
             <Link href="/feminino" className="group/link flex items-center gap-3 text-[10px] font-bold tracking-[0.2em] uppercase border-b-2 border-white pb-2 hover:text-gray-300 hover:border-gray-300 transition-all w-max inline-flex">
