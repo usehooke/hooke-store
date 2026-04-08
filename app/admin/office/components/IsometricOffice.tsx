@@ -14,74 +14,13 @@ const agents = [
     name: "Agent-Growth",
     role: "Director of Strategy",
     icon: TrendingUp,
-    pos: { x: 0, y: 0 },
-    sector: "Strategic Tower",
+    pos: { x: 1, y: 1 }, // Ilha 1 Superior
     color: "bg-black",
     thoughts: [
       "Auditando narrativa da marca...",
       "Conversão do carrinho subiu 12%.",
       "Projetando campanha de Verão 26.",
-      "SEO: Hooke em 1º lugar para 'Minimalismo Industrial'."
-    ]
-  },
-  {
-    id: "ux-guardian",
-    name: "UX Guardian",
-    role: "Experiência de Luxo",
-    icon: Layout,
-    pos: { x: 1, y: 0 },
-    sector: "Strategic Tower",
-    color: "bg-blue-600",
-    thoughts: [
-      "Refinando espaçamentos do catálogo.",
-      "Acessibilidade garantida (A11y).",
-      "Mapa de calor analisado.",
-      "Otimizando Drawer de edição."
-    ]
-  },
-  {
-    id: "art-director",
-    name: "Art Director",
-    role: "Visual & IA Lead",
-    icon: Aperture,
-    pos: { x: 0, y: 1 },
-    sector: "Visual Hub",
-    color: "bg-green-500",
-    thoughts: [
-      "Processando Musa 001 v2...",
-      "Curadoria de cores concluída.",
-      "Geração de texturas em 4K.",
-      "Ajustando iluminação do Bento Hero."
-    ]
-  },
-  {
-    id: "eng-mobile",
-    name: "Mobile Architect",
-    role: "Performance Lead",
-    icon: Smartphone,
-    pos: { x: 1, y: 1 },
-    sector: "Core Lab",
-    color: "bg-cyan-500",
-    thoughts: [
-      "Next.js 15: Edge Runtime estável.",
-      "PWA offline mode verificado.",
-      "LCP reduzido para 0.8s.",
-      "Sync Omnichannel ativo."
-    ]
-  },
-  {
-    id: "fullstack-dev",
-    name: "Admin Architect",
-    role: "Fullstack Senior",
-    icon: Zap,
-    pos: { x: 2, y: 1 },
-    sector: "Core Lab",
-    color: "bg-orange-500",
-    thoughts: [
-      "Tiny ERP sync ok.",
-      "Refatorando backend do Stripe.",
-      "Webhook de pedidos ativo.",
-      "LGPD Audit completo."
+      "SEO: Hooke em 1º lugar."
     ]
   },
   {
@@ -89,14 +28,69 @@ const agents = [
     name: "Tech Auditor",
     role: "Security & QA",
     icon: ShieldCheck,
-    pos: { x: 2, y: 0 },
-    sector: "Security Bunker",
+    pos: { x: 1, y: 2 }, // Ilha 1 Inferior (Frente a frente com Growth)
     color: "bg-amber-500",
     thoughts: [
-      "Nenhum vazamento de dado hardcoded.",
+      "Nenhum vazamento detectado.",
       "Build em Washington estável.",
-      "Segurança da API Firebase reforçada.",
+      "Segurança Firebase reforçada.",
       "Linting Elite passivo."
+    ]
+  },
+  {
+    id: "ux-guardian",
+    name: "UX Guardian",
+    role: "Experiência de Luxo",
+    icon: Layout,
+    pos: { x: 3, y: 1 }, // Ilha 2 Superior
+    color: "bg-blue-600",
+    thoughts: [
+      "Refinando espaçamentos.",
+      "Acessibilidade garantida.",
+      "Mapa de calor analisado.",
+      "Otimizando Drawer."
+    ]
+  },
+  {
+    id: "fullstack-dev",
+    name: "Admin Architect",
+    role: "Fullstack Senior",
+    icon: Zap,
+    pos: { x: 3, y: 2 }, // Ilha 2 Inferior
+    color: "bg-orange-500",
+    thoughts: [
+      "Tiny ERP sync ok.",
+      "Refatorando backend Stripe.",
+      "Webhook de pedidos ativo.",
+      "LGPD Audit completo."
+    ]
+  },
+  {
+    id: "art-director",
+    name: "Art Director",
+    role: "Visual & IA Lead",
+    icon: Aperture,
+    pos: { x: 5, y: 1 }, // Ilha 3 Superior
+    color: "bg-green-500",
+    thoughts: [
+      "Processando Musa 001 v2...",
+      "Curadoria de cores concluída.",
+      "Geração 4K ativa.",
+      "Ajustando iluminação."
+    ]
+  },
+  {
+    id: "eng-mobile",
+    name: "Mobile Architect",
+    role: "Performance Lead",
+    icon: Smartphone,
+    pos: { x: 5, y: 2 }, // Ilha 3 Inferior
+    color: "bg-cyan-500",
+    thoughts: [
+      "Next.js 15: Edge Runtime ok.",
+      "PWA offline mode verificado.",
+      "LCP em 0.8s.",
+      "Sync Omnichannel ativo."
     ]
   },
   {
@@ -104,81 +98,86 @@ const agents = [
     name: "Antigravity",
     role: "Supreme Orchestrator",
     icon: Orbit,
-    pos: { x: 1, y: 2 },
-    sector: "Nexus",
+    pos: { x: 3, y: 4 }, // Mesa Central / Comando
     color: "bg-purple-600",
     thoughts: [
-      "Orquestrando fluxos de agentes.",
-      "Requisição do Fernando processada.",
-      "Sistema em harmonia total.",
-      "Próximo passo: Fase 9 (Growth)."
+      "Orquestrando fluxos.",
+      "Requisição processada.",
+      "Sistema em harmonia.",
+      "Fase 9: Growth iniciada."
     ]
   }
 ];
 
 export function IsometricOffice() {
   return (
-    <div className="relative w-full h-[600px] md:h-[800px] flex items-center justify-center overflow-hidden bg-white">
-      {/* Background Grid Layer */}
-      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+    <div className="relative w-full h-[600px] md:h-[800px] flex items-center justify-center overflow-hidden bg-[#F8F8F8] font-sans">
+      {/* Background Grid Layer (Flat) */}
+      <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" 
+           style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '100px 100px' }} />
 
-      {/* Main Isometric Container */}
-      <div className="relative flex items-center justify-center" 
-           style={{ transform: 'perspective(1000px) rotateX(60deg) rotateZ(-45deg)', transformStyle: 'preserve-3d' }}>
+      {/* Main 2D Container */}
+      <div className="relative w-full max-w-[1000px] h-full flex items-center justify-center">
         
-        {/* Floor Plane */}
-        <div className="absolute w-[600px] h-[600px] border-[1px] border-black/10 bg-gray-50/50" 
-             style={{ transform: 'translateZ(-1px)' }} />
+        {/* Sector Labels (Floor) */}
+        <div className="absolute top-[20%] left-[10%] opacity-20 text-[60px] font-black text-gray-200 pointer-events-none uppercase tracking-tighter">Strategic</div>
+        <div className="absolute top-[20%] left-[50%] opacity-20 text-[60px] font-black text-gray-200 pointer-events-none uppercase tracking-tighter">Visual Hub</div>
+        <div className="absolute bottom-[20%] left-[30%] opacity-20 text-[60px] font-black text-gray-200 pointer-events-none uppercase tracking-tighter">Core Lab</div>
 
-        {/* Sectors / Ghost Rooms */}
-        <div className="absolute w-[200px] h-[200px] border border-black/5 left-0 top-0 bg-black/[0.02]" />
-        <div className="absolute w-[200px] h-[200px] border border-black/5 left-[200px] top-0 bg-blue-500/[0.02]" />
-        <div className="absolute w-[200px] h-[200px] border border-black/5 left-[400px] top-0 bg-amber-500/[0.02]" />
-        <div className="absolute w-[200px] h-full border border-black/5 left-[200px] top-[200px] bg-purple-500/[0.02]" />
-
-        {/* Agents Grid */}
-        <div className="grid grid-cols-3 grid-rows-3 w-[600px] h-[600px]">
+        {/* Agents Grid (Flat 2D) */}
+        <div className="relative grid grid-cols-6 grid-rows-5 gap-0 w-[900px] h-[750px]">
           {agents.map((agent) => (
             <div 
               key={agent.id}
-              className="relative w-[200px] h-[200px] flex items-center justify-center"
+              className="relative flex items-center justify-center"
               style={{ gridColumnStart: agent.pos.x + 1, gridRowStart: agent.pos.y + 1 }}
             >
+              {/* Desk (Mesa de TI) - Estilo Tibia / Isométrico Top-Down */}
+              <div className="absolute w-[160px] h-[100px] translate-y-4 -z-10 group">
+                 {/* Mesa Top */}
+                 <div className="absolute inset-0 bg-white border-2 border-gray-100 shadow-[4px_4px_0px_rgba(0,0,0,0.05)] rounded-sm flex flex-col items-center justify-center gap-2 p-2">
+                    {/* Keyboard / Laptop Mockup */}
+                    <div className="w-12 h-8 bg-gray-50 border border-gray-100 rounded-[2px]" />
+                 </div>
+                 {/* Desk Legs (Simulated 2D) */}
+                 <div className="absolute -bottom-2 left-2 w-1 h-3 bg-gray-200" />
+                 <div className="absolute -bottom-2 right-2 w-1 h-3 bg-gray-200" />
+              </div>
+
               {/* Agent Entity */}
               <motion.div
-                initial={{ opacity: 0, z: 50 }}
-                animate={{ opacity: 1, z: 20 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
                 className="relative cursor-pointer group"
-                style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* Counter-transform to make labels readable */}
-                <div style={{ transform: 'rotateZ(45deg) rotateX(-60deg)', transformStyle: 'preserve-3d' }}>
-                  
                   {/* Thought Balloon */}
                   <AgentThought thoughts={agent.thoughts} isActive={true} />
 
-                  {/* Visual Node */}
-                  <div className={`w-16 h-16 ${agent.color} text-white flex items-center justify-center shadow-2xl relative group-hover:scale-110 transition-transform`}>
-                    <agent.icon size={32} strokeWidth={1.5} />
-                    
-                    {/* Shadow underneath (on the floor) */}
-                    <div className="absolute top-20 left-1/2 -translate-x-1/2 w-12 h-4 bg-black/10 blur-md -z-10" />
-                  </div>
+                  {/* Visual Node with Idle Animation */}
+                  <motion.div 
+                    animate={{ 
+                      y: [0, -4, 0],
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 3 + Math.random() * 2,
+                      ease: "easeInOut" 
+                    }}
+                    className={`w-14 h-14 ${agent.color} text-white flex items-center justify-center shadow-lg relative rounded-full group-hover:shadow-2xl transition-all border-4 border-white`}
+                  >
+                    <agent.icon size={24} strokeWidth={1.5} />
+                  </motion.div>
 
                   {/* Label */}
-                  <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center w-32 whitespace-nowrap">
-                    <p className="text-[10px] font-black tracking-tighter text-hooke-900 uppercase bg-white/80 backdrop-blur-sm px-2 py-0.5 inline-block">
+                  <div className="absolute top-16 left-1/2 -translate-x-1/2 text-center w-32">
+                    <p className="text-[9px] font-black tracking-tighter text-hooke-900 uppercase bg-white/90 px-2 py-0.5 inline-block border border-gray-100">
                       {agent.name}
                     </p>
-                    <p className="text-[8px] font-bold text-gray-400 uppercase mt-0.5 tracking-widest leading-none">
+                    <p className="text-[7px] font-bold text-gray-400 uppercase mt-0.5 tracking-[0.2em] leading-none">
                       {agent.role}
                     </p>
                   </div>
-                </div>
-
-                {/* Vertical Indicator Line */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1px] h-32 bg-gradient-to-t from-black/0 via-black/10 to-transparent -z-20" />
               </motion.div>
             </div>
           ))}
@@ -186,17 +185,17 @@ export function IsometricOffice() {
       </div>
 
       {/* Legend / Overlay UI */}
-      <div className="absolute bottom-8 left-8 p-6 border border-hooke-900/10 bg-white/80 backdrop-blur-md z-50 max-w-xs transition-all hover:border-hooke-900">
+      <div className="absolute top-8 right-8 p-6 border border-hooke-900 bg-white z-50 max-w-xs shadow-2xl">
         <h4 className="text-[10px] font-black tracking-[0.3em] text-hooke-900 uppercase flex items-center gap-2 mb-3">
-          <Monitor size={12} /> Live HQ Status
+          <Monitor size={12} /> HQ Virtual Command
         </h4>
         <div className="space-y-2">
            <div className="flex items-center gap-2">
              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-             <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest italic">Processando Vibe Industrial...</span>
+             <span className="text-[9px] font-bold text-gray-900 uppercase tracking-widest italic">Operação 2D Ativa</span>
            </div>
-           <p className="text-[10px] font-medium text-gray-400">
-             Agentes estão sincronizados com o repositório principal em Washington via Vercel Edge.
+           <p className="text-[9px] font-medium text-gray-500 leading-relaxed uppercase">
+             Ambiente otimizado para monitoramento em tempo real dos agentes.
            </p>
         </div>
       </div>
