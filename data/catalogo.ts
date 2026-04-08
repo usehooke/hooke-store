@@ -334,11 +334,8 @@ export const PRODUTOS: Product[] = [
     isPremiumCollection: true,
     isNew: true,
     description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Conforto absoluto sem perder a imponência. Ensaio com modelo oficial da marca.",
-    imageUrl: "/produtos/hk_fem_verde_1.png",
-    images: [
-      "/produtos/hk_fem_verde_1.png",
-      "/produtos/hk_fem_verde_2.png"
-    ],
+    imageUrl: "", // Aguardando Ensaio Musa 001
+    images: [],
     sizes: ["PP", "P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
@@ -354,11 +351,8 @@ export const PRODUTOS: Product[] = [
     isPremiumCollection: true,
     isNew: true,
     description: "Para os dias em que a discrição se torna a maior de todas as presenças. O caimento Hooke em Viscose Navy Blue.",
-    imageUrl: "/produtos/hk_fem_azul_1.png",
-    images: [
-      "/produtos/hk_fem_azul_1.png",
-      "/produtos/hk_fem_azul_2.png"
-    ],
+    imageUrl: "", // Aguardando Ensaio Musa 001
+    images: [],
     sizes: ["PP", "P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
