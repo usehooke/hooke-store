@@ -1,6 +1,8 @@
 // src/types/index.ts
 import { ModelSigla, PrintSigla } from "@/utils/sku-generator";
 
+export type ProductCategory = "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle" | "Conjuntos" | "Camisetas" | "Cropped" | "Top";
+
 export interface Product {
   id: string;
   name: string;
@@ -16,7 +18,7 @@ export interface Product {
   stock?: Record<string, number>; // Controle de estoque em formato MAP. Chave: 'Cor-Tamanho' (ex: 'Branca-P') ou 'Tamanho' ('P')
   skus?: Record<string, string>; // Mapeia SKUs (ex: {'Preta-M': 'OVR-PRT-M-1X9A'})
   department: "masculino" | "feminino" | "unissex";
-  category: "Kits" | "Oversized" | "Regatas" | "Vintage" | "Lifestyle" | "Conjuntos" | "Camisetas" | "Cropped" | "Top";
+  category: ProductCategory;
   modelSigla?: ModelSigla;
   printSigla?: PrintSigla;
   weight?: number;

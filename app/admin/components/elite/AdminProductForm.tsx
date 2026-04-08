@@ -30,7 +30,7 @@ import {
   ModelSigla,
   PrintSigla
 } from "@/utils/sku-generator";
-import { Product } from "@/types";
+import { Product, ProductCategory } from "@/types";
 
 const AVAILABLE_SIZES_MASCO = ["P", "M", "G", "GG", "XG", "G1", "G2"];
 const AVAILABLE_SIZES_FEMIN = ["PP", "P", "M", "G", "GG"];
@@ -62,7 +62,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
   
   const [name, setName] = useState(initialData?.name || "");
   const [department, setDepartment] = useState<"masculino" | "feminino" | "unissex">(initialData?.department || "masculino");
-  const [category, setCategory] = useState(initialData?.category || (department === "feminino" ? "Conjuntos" : "Oversized"));
+  const [category, setCategory] = useState<ProductCategory>(initialData?.category || (department === "feminino" ? "Conjuntos" : "Oversized"));
   const [price, setPrice] = useState(initialData?.price || 0);
   const [comboPrice, setComboPrice] = useState(initialData?.comboPrice || 0);
   const [description, setDescription] = useState(initialData?.description || "");
@@ -128,7 +128,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
                </div>
                <div className="space-y-2">
                  <label className="text-[10px] font-black tracking-widest text-hooke-900 uppercase">Categoria</label>
-                 <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-200 p-3 text-xs font-bold bg-white outline-none">
+                  <select value={category} onChange={(e) => setCategory(e.target.value as ProductCategory)} className="w-full border border-gray-200 p-3 text-xs font-bold bg-white outline-none">
                     {department === 'feminino' ? (
                       <><option value="Conjuntos">Conjuntos</option><option value="Cropped">Cropped</option><option value="Top">Top</option></>
                     ) : (
