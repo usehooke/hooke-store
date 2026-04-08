@@ -52,6 +52,7 @@ export default function BentoHero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 0.2 }}
           className="flex-1 relative group overflow-hidden bg-hooke-100 h-[500px] md:h-auto"
+        >
           <div className="hidden lg:block">
             {/* <Image
               src="/produtos/hk_fem_verde_1.png" 
