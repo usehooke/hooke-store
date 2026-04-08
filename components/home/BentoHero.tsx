@@ -33,7 +33,7 @@ export default function BentoHero() {
             </span>
 
             <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter mb-4">
-              Engineering Basics
+              Arquitetura Básica
             </h1>
 
             <p className="text-gray-300 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium">
@@ -70,11 +70,11 @@ export default function BentoHero() {
             </span>
 
             <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter mb-4">
-              Raw Minimalism
+              Minimalismo Puro
             </h1>
 
             <p className="text-gray-300 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium">
-              A essência crua da Hooke, agora para elas. O encontro entre a dureza da forma e a fluidez do impacto.
+              A essência pura da Hooke, agora para elas. O encontro entre a dureza da forma e a fluidez do impacto.
             </p>
 
             <Link href="/feminino" className="group/link flex items-center gap-3 text-[10px] font-bold tracking-[0.2em] uppercase border-b-2 border-white pb-2 hover:text-gray-300 hover:border-gray-300 transition-all w-max inline-flex">

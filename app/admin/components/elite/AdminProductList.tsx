@@ -126,7 +126,7 @@ export function AdminProductList({
                   </span>
                 </td>
 
-                {/* Sync Status */}
+                {/* Status de Sincronização */}
                 <td className="px-4 py-4 border-y border-gray-100">
                    <button 
                     onClick={() => onSync(p)}
@@ -138,7 +138,7 @@ export function AdminProductList({
                        <RefreshCw size={16} className={`text-amber-500 ${(p as any).syncStatus === 'pending' ? 'animate-spin' : ''}`} />
                      )}
                      <span className="text-[8px] font-black text-gray-400 uppercase">
-                       {(p as any).syncStatus || 'Pendente'}
+                       { (p as any).syncStatus === 'synced' ? 'Sincronizado' : ((p as any).syncStatus === 'failed' ? 'Falhou' : 'Pendente') }
                      </span>
                    </button>
                 </td>

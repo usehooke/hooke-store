@@ -22,7 +22,7 @@ export function QualityBadge({ product }: QualityBadgeProps) {
     return (
       <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-100">
         <CheckCircle2 size={12} />
-        <span className="text-[10px] font-black tracking-widest uppercase">Elite Standard</span>
+        <span className="text-[10px] font-black tracking-widest uppercase">Padrão Elite</span>
       </div>
     );
   }
@@ -33,7 +33,7 @@ export function QualityBadge({ product }: QualityBadgeProps) {
       title={issues.join(" | ")}
     >
       <AlertCircle size={12} />
-      <span className="text-[10px] font-black tracking-widest uppercase">Needs Update</span>
+      <span className="text-[10px] font-black tracking-widest uppercase">Requer Atualização</span>
       
       {/* Tooltip customizado simples */}
       <div className="absolute bottom-full mb-2 left-0 hidden group-hover:block z-50 bg-white border border-gray-200 p-3 shadow-xl w-64 pointer-events-none">
