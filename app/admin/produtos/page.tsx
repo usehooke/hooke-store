@@ -51,8 +51,8 @@ export default function AdminPage() {
         } as Product);
       });
       setProducts(productsData);
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
+    } catch (_error) {
+      console.error("Erro ao buscar produtos");
       toast.error("Erro ao carregar catálogo.");
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ export default function AdminPage() {
       await updateDoc(productRef, { isActive: !currentStatus });
       setProducts(prev => prev.map(p => p.id === id ? { ...p, isActive: !currentStatus } : p));
       toast.success(currentStatus ? "Produto ocultado" : "Produto visível");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Erro ao alterar visibilidade.");
     }
   };
@@ -79,15 +79,16 @@ export default function AdminPage() {
       await deleteDoc(doc(db, "produtos", id));
       setProducts(prev => prev.filter(p => p.id !== id));
       toast.success("Produto excluído.");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Erro ao excluir.");
     }
   };
 
-  const handleSaveProduct = async (data: any) => {
+  const handleSaveProduct = async (data: Partial<Product>) => {
     setIsSaving(true);
     if (!db) return;
     try {
+      const id = data.id || doc(collection(db, "produtos")).id;
       await setDoc(doc(db, "produtos", id), {
         ...data,
         id,

@@ -9,7 +9,7 @@ interface AdminProductDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   product: Product | null;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Partial<Product>) => void;
   isSaving: boolean;
 }
 
