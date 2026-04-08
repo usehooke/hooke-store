@@ -89,7 +89,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
       ...initialData,
       name, department, category, price, comboPrice, description, featured, isActive,
       sizes, images, imageUrl: images[0], colors, stock, skus, modelSigla, printSigla, weight,
-      seo: { ...initialData?.seo, metaDescription }
+      seo: { altText: initialData?.seo?.altText || name, metaDescription }
     });
   };
 
