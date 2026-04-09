@@ -22,7 +22,7 @@ export default function BentoHero() {
             alt="Hooke Menswear"
             fill
             priority
-            className="md:object-cover object-contain object-top opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:2000ms] ease-out"
+            className="object-contain object-top opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-[length:3000ms] ease-out"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
@@ -51,32 +51,32 @@ export default function BentoHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 0.2 }}
-          className="flex-1 relative group overflow-hidden bg-hooke-100 h-[500px] md:h-auto"
+          className="flex-1 relative group overflow-hidden bg-[#b0b0b0] h-[500px] md:h-auto"
         >
           <Image
             src="/assets/femme/musas_001_forest_1.png" 
             alt="Hooke Womenswear - Musa 001"
             fill
             priority
-            className="md:object-cover object-contain object-center opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:2000ms] ease-out"
+            className="object-contain object-center opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:2000ms] ease-out"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
 
           <div className="absolute bottom-12 left-8 md:bottom-16 md:left-12 text-white z-20 max-w-md">
             <span className="inline-block mb-3 text-[9px] font-bold tracking-[0.3em] uppercase bg-black text-white px-3 py-1">
               Pré-venda : Lote 001
             </span>
 
-            <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter mb-4">
+            <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tighter mb-4 drop-shadow-lg">
               Minimalismo Puro
             </h1>
 
-            <div className="inline-block bg-white text-black text-[10px] font-bold px-3 py-1 mb-6 tracking-widest uppercase">
+            <div className="inline-block bg-white text-black text-[9px] font-bold px-3 py-1 mb-6 tracking-widest uppercase shadow-xl">
               R$ 100 — Reserva Exclusiva
             </div>
 
-            <p className="text-gray-300 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium">
+            <p className="text-white/80 text-[9px] tracking-[0.2em] max-w-xs mb-8 leading-relaxed uppercase font-medium drop-shadow-sm">
               A essência pura da Hooke, agora para elas. Musa 001 | Coleção Lore 230g.
             </p>
 
