@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { brandConfig } from '@/config/brandConfig';
-import { Instagram, MessageCircle, Globe, MapPin, RefreshCcw, Check } from 'lucide-react';
+import { Instagram, MessageCircle, Globe, MapPin, RefreshCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 export default function VirtualCard() {
  const [isFlipped, setIsFlipped] = useState(false);

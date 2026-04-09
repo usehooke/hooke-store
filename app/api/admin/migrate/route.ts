@@ -54,11 +54,11 @@ export async function GET() {
             status: "Database Synced (Admin SDK)" 
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('💥 [Hooke Admin] Erro Crático na Sincronização:', error);
         return NextResponse.json({ 
             success: false, 
-            error: error.message 
+            error: error instanceof Error ? error.message : String(error) 
         }, { status: 500 });
     }
 }
