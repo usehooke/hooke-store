@@ -48,12 +48,12 @@ export function OfficeMap() {
         mapRef.current.scrollTop = scrollTop - walkY;
     };
 
-    // Ajuste de posições de acordo com a perspectiva do render gerado
+    // Ajuste de posições: Compacto HQ v3 (10.8m x 11.2m)
     const agents = [
-        { id: "1", name: "Alpha", role: "Tech Lead", avatar: "/assets/hq/agents/techlead.png", position: { top: 560, left: 420 }, meetingPosition: { top: 320, left: 630 } },
-        { id: "2", name: "Beta", role: "Growth", avatar: "/assets/hq/agents/growth.png", position: { top: 560, left: 780 }, meetingPosition: { top: 320, left: 720 } },
-        { id: "3", name: "Gamma", role: "Concierge", avatar: "/assets/hq/agents/concierge.png", position: { top: 760, left: 420 }, meetingPosition: { top: 400, left: 630 } },
-        { id: "4", name: "Delta", role: "SEO", avatar: "/assets/hq/agents/seo.png", position: { top: 760, left: 780 }, meetingPosition: { top: 400, left: 720 } }
+        { id: "1", name: "Alpha", role: "Tech Lead", avatar: "/assets/hq/agents/techlead.png", position: { top: 620, left: 330 }, meetingPosition: { top: 220, left: 580 } },
+        { id: "2", name: "Beta", role: "Growth", avatar: "/assets/hq/agents/growth.png", position: { top: 900, left: 850 }, meetingPosition: { top: 220, left: 720 } },
+        { id: "3", name: "Gamma", role: "Concierge", avatar: "/assets/hq/agents/concierge.png", position: { top: 620, left: 450 }, meetingPosition: { top: 380, left: 580 } },
+        { id: "4", name: "Delta", role: "SEO", avatar: "/assets/hq/agents/seo.png", position: { top: 780, left: 330 }, meetingPosition: { top: 380, left: 720 } }
     ];
 
     return (
@@ -69,8 +69,8 @@ export function OfficeMap() {
            <div className="relative w-[1200px] h-[1200px] bg-stone-100 mx-auto overflow-hidden shadow-2xl">
               
               <Image 
-                src="/assets/hq/map.png"
-                alt="Hooke Elite Virtual HQ"
+                src="/assets/hq/map_v3.png"
+                alt="Hooke Elite Virtual HQ v3 - Studio Garage"
                 fill
                 className="object-cover pointer-events-none select-none opacity-95"
                 priority
