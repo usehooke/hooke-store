@@ -79,7 +79,7 @@ export function OfficeMap() {
               {/* Botão de reunião no novo mapa */}
               <button 
                  onClick={(e) => { e.stopPropagation(); setIsMeeting(!isMeeting); }}
-                 className="absolute top-20 right-20 text-[10px] bg-white/90 backdrop-blur text-stone-700 px-4 py-2 border border-stone-200/50 shadow-lg hover:shadow-xl rounded-lg uppercase tracking-widest font-bold hover:bg-stone-50 transition-all z-30 flex items-center gap-2 pointer-events-auto"
+                 className="absolute top-20 right-20 text-[10px] bg-white/90 backdrop-blur text-stone-700 px-4 py-2 border border-stone-200/50 shadow-lg hover:shadow-xl rounded-none uppercase tracking-widest font-bold hover:bg-stone-50 transition-all z-30 flex items-center gap-2 pointer-events-auto"
               >
                  <span className={`w-2 h-2 rounded-full \${isMeeting ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
                  {isMeeting ? "Encerrar Reunião" : "Convocar Reunião"}

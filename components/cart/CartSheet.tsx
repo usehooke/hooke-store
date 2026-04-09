@@ -137,7 +137,7 @@ export default function CartSheet() {
  const [couponInput, setCouponInput] = useState("");
  const [couponError, setCouponError] = useState("");
  const [isCouponLoading, setIsCouponLoading] = useState(false);
- const [activeDiscountValue, setActiveDiscountValue] = useState(0.1); // default from old MAVERICK10 if carried over
+ const [activeDiscountValue, setActiveDiscountValue] = useState(0);
 
  const applyCoupon = async () => {
    if (!couponInput) return;
@@ -308,7 +308,7 @@ export default function CartSheet() {
  <SheetHeader className="border-b border-hooke-100 flex-shrink-0 px-6 py-6 pb-4 flex flex-row items-center justify-between">
  <SheetTitle className="text-xl font-bold text-hooke-900">Seu Carrinho</SheetTitle>
  <SheetDescription className="sr-only">Sacola de compras com os seus itens selecionados.</SheetDescription>
- <SheetClose className="rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-hooke-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-hooke-100 data-[state=open]:text-hooke-500">
+ <SheetClose className="rounded-none opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-hooke-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-hooke-100 data-[state=open]:text-hooke-500">
  <X className="h-6 w-6" />
  <span className="sr-only">Fechar</span>
  </SheetClose>
@@ -327,7 +327,7 @@ export default function CartSheet() {
  Que tal dar uma olhada nas novidades da coleção?
  </p>
  <SheetClose asChild>
- <Link href="/" className="mt-4 bg-hooke-900 text-white px-6 py-2 rounded-sm text-sm font-bold tracking-wider hover:bg-hooke-800 transition-colors">
+ <Link href="/" className="mt-4 bg-hooke-900 text-white px-6 py-2 rounded-none text-sm font-bold tracking-wider hover:bg-hooke-800 transition-colors">
  Continuar Comprando
  </Link>
  </SheetClose>
@@ -336,7 +336,7 @@ export default function CartSheet() {
  <ul className="space-y-8">
  {items.map((item) => (
  <li key={item.cartItemId} className="flex gap-4">
- <div className="relative aspect-[4/5] w-24 flex-shrink-0 overflow-hidden rounded-sm bg-hooke-100 border border-hooke-200">
+ <div className="relative aspect-[4/5] w-24 flex-shrink-0 overflow-hidden rounded-none bg-hooke-100 border border-hooke-200">
  <Image
  priority src={item.imageUrl || (item.images && item.images.length > 0 ? item.images[0] : "/placeholder-produto.avif")}
  alt={item.name}
@@ -358,7 +358,7 @@ export default function CartSheet() {
  </p>
  </div>
  <div className="flex items-end justify-between text-sm">
- <div className="flex items-center border border-hooke-200 rounded-sm">
+ <div className="flex items-center border border-hooke-200 rounded-none">
  <button
  onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
  disabled={item.quantity <= 1}
@@ -410,7 +410,7 @@ export default function CartSheet() {
  type="button"
  onClick={handleFacebookCheckoutFill}
  disabled={isFacebookLoading}
- className="w-full flex items-center justify-center gap-2 bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/20 font-bold tracking-widest py-3 mb-6 text-[10px] hover:bg-[#1877F2]/20 transition-colors disabled:opacity-50 rounded-sm"
+ className="w-full flex items-center justify-center gap-2 bg-[#1877F2]/10 text-[#1877F2] border border-[#1877F2]/20 font-bold tracking-widest py-3 mb-6 text-[10px] hover:bg-[#1877F2]/20 transition-colors disabled:opacity-50 rounded-none"
  >
  <Facebook size={16} fill="currentColor" stroke="none" />
  {isFacebookLoading ? "Puxando seus dados..." : "Preenchimento 1-Clique (Meta)"}
@@ -584,7 +584,7 @@ export default function CartSheet() {
  <div className="flex gap-2">
  <input
  type="text"
- placeholder="MAVERICK10"
+ placeholder="CÓDIGO"
  value={couponInput}
  onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
  className="flex-1 border border-hooke-200 px-3 py-2 text-sm focus:outline-none focus:border-hooke-900 focus:ring-1 focus:ring-hooke-900 rounded-none bg-white font-bold placeholder:font-normal placeholder:lowercase"
@@ -606,7 +606,7 @@ export default function CartSheet() {
  <span className="text-xs font-bold text-green-800 flex items-center gap-1">
  🎉 {appliedCoupon}
  </span>
- <span className="text-[10px] text-green-700 bg-green-200 px-1.5 py-0.5 font-bold rounded-sm shadow-sm border border-green-300">{(activeDiscountValue * 100).toFixed(0)}% OFF</span>
+ <span className="text-[10px] text-green-700 bg-green-200 px-1.5 py-0.5 font-bold rounded-none shadow-sm border border-green-300">{(activeDiscountValue * 100).toFixed(0)}% OFF</span>
  </div>
  <button onClick={removeCoupon} className="text-gray-400 hover:text-red-500 transition-colors relative z-10">
  <X size={14} />

@@ -16,7 +16,7 @@ export default function VirtualCard() {
  {/* Container do Cartão com Animação de Giro */}
  <div 
  className={cn(
- "relative w-full aspect-[1/1.58] transition-all duration-700 select-none preserve-3d cursor-pointer shadow-2xl rounded-2xl overflow-hidden",
+ "relative w-full aspect-[1/1.58] transition-all duration-700 select-none preserve-3d cursor-pointer shadow-2xl rounded-none overflow-hidden",
  isFlipped ? "rotate-y-180" : ""
  )}
  onClick={() => setIsFlipped(!isFlipped)}
@@ -36,7 +36,7 @@ export default function VirtualCard() {
 
  {/* QR Code */}
  <div className="relative z-10 flex flex-col items-center justify-center gap-4">
- <div className="bg-white p-4 rounded-xl shadow-lg">
+ <div className="bg-white p-4 rounded-none shadow-lg">
  <QRCodeSVG 
  value={qrUrl} 
  size={160}
@@ -69,6 +69,14 @@ export default function VirtualCard() {
  <MessageCircle size={12} className="text-gray-500" />
  <p className="text-[9px] text-gray-300 font-medium">(11) 97590-2528</p>
  </div>
+ <motion.div 
+  initial={{ scale: 0 }}
+  animate={{ scale: 1 }}
+  transition={{ delay: 0.3, type: 'spring' }}
+  className="absolute -top-2 -right-6 bg-green-500 text-white p-2 rounded-none"
+  >
+  <Check size={20} />
+  </motion.div>
  <div className="flex items-center gap-2">
  <Instagram size={12} className="text-gray-500" />
  <p className="text-[9px] text-gray-300 font-medium">@use.hooke</p>
@@ -104,7 +112,7 @@ export default function VirtualCard() {
 
  {/* Rodapé do Verso */}
  <div className="relative z-10 pt-4 border-t border-black/5 flex flex-col items-center gap-2">
- <p className="text-[10px] font-black tracking-[0.3em] text-hooke-900 border border-black/10 px-4 py-1.5 rounded-full">
+ <p className="text-[10px] font-black tracking-[0.3em] text-hooke-900 border border-black/10 px-4 py-1.5 rounded-none">
  Anotações
  </p>
  <p className="text-[8px] font-medium text-black/40 tracking-widest mt-2">

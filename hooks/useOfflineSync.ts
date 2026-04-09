@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db, auth } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { get, set, del } from 'idb-keyval';
 
 /**
  * useOfflineSync - O Motor de Resiliência Hooke.
@@ -21,7 +22,7 @@ export function useOfflineSync() {
     const [isOnline, setIsOnline] = useState(true);
     const [pendingActions, setPendingActions] = useState<SyncAction[]>([]);
 
-    // 1. Monitorar Status da Rede
+    // 1. Monitorar Status da Rede e Carregar Buffer
     useEffect(() => {
         setIsOnline(navigator.onLine);
         const handleOnline = () => setIsOnline(true);
@@ -30,9 +31,17 @@ export function useOfflineSync() {
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
 
-        // Carregar buffer inicial
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) setPendingActions(JSON.parse(saved));
+        // Carregar buffer inicial via IndexedDB (Elite Async)
+        const loadBuffer = async () => {
+          try {
+            const saved = await get(STORAGE_KEY);
+            if (saved) setPendingActions(JSON.parse(saved));
+          } catch (e) {
+            console.error("IDB Keyval Error:", e);
+          }
+        };
+        
+        loadBuffer();
 
         return () => {
             window.removeEventListener('online', handleOnline);
@@ -49,10 +58,11 @@ export function useOfflineSync() {
             synced: false
         };
 
-        // Adiciona ao buffer local
-        const currentBuffer = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        // Adiciona ao buffer local (Async IndexedDB)
+        const currentBufferString = await get(STORAGE_KEY);
+        const currentBuffer = JSON.parse(currentBufferString || '[]');
         const updatedBuffer = [...currentBuffer, newAction];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedBuffer));
+        await set(STORAGE_KEY, JSON.stringify(updatedBuffer));
         setPendingActions(updatedBuffer);
 
         // Se online, tenta sincronizar imediatamente
@@ -88,7 +98,7 @@ export function useOfflineSync() {
 
             // Limpa o que já foi sincronizado
             const finalBuffer = buffer.filter(a => !a.synced);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(finalBuffer));
+            await set(STORAGE_KEY, JSON.stringify(finalBuffer));
             setPendingActions(finalBuffer);
         } catch (error) {
             console.error('[OfflineSync] Falha ao sincronizar:', error);

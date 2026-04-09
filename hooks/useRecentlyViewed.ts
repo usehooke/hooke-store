@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { get, set } from 'idb-keyval';
 import { Product } from '@/data/catalogo';
 
 const RECENTLY_VIEWED_KEY = 'hooke_recently_viewed';
@@ -10,18 +11,21 @@ export function useRecentlyViewed() {
   const [items, setItems] = useState<Product[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(RECENTLY_VIEWED_KEY);
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch (e) {
-        console.error("Error parsing recently viewed", e);
+    const loadItems = async () => {
+      const saved = await get(RECENTLY_VIEWED_KEY);
+      if (saved) {
+        try {
+          setItems(JSON.parse(saved));
+        } catch (e) {
+          console.error("Error parsing recently viewed", e);
+        }
       }
-    }
+    };
+    loadItems();
   }, []);
 
-  const addViewedProduct = useCallback((product: Product) => {
-    const saved = localStorage.getItem(RECENTLY_VIEWED_KEY);
+  const addViewedProduct = useCallback(async (product: Product) => {
+    const saved = await get(RECENTLY_VIEWED_KEY);
     let current: Product[] = saved ? JSON.parse(saved) : [];
 
     // Remove se já existir (para mover para o topo)
@@ -33,7 +37,7 @@ export function useRecentlyViewed() {
     // Limita o tamanho
     const trimmed = current.slice(0, MAX_ITEMS);
     
-    localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(trimmed));
+    await set(RECENTLY_VIEWED_KEY, JSON.stringify(trimmed));
     setItems(trimmed);
   }, []);
 

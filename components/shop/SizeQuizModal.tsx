@@ -78,7 +78,7 @@ export default function SizeQuizModal({ isOpen, onClose, onComplete }: SizeQuizM
  max="210" 
  value={height} 
  onChange={(e) => setHeight(Number(e.target.value))}
- className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-hooke-900"
+ className="w-full h-2 bg-gray-100 rounded-none appearance-none cursor-pointer accent-hooke-900"
  />
 
  <button 
@@ -115,7 +115,7 @@ export default function SizeQuizModal({ isOpen, onClose, onComplete }: SizeQuizM
  max="150" 
  value={weight} 
  onChange={(e) => setWeight(Number(e.target.value))}
- className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-hooke-900"
+ className="w-full h-2 bg-gray-100 rounded-none appearance-none cursor-pointer accent-hooke-900"
  />
 
  <div className="flex gap-4">
@@ -184,7 +184,7 @@ export default function SizeQuizModal({ isOpen, onClose, onComplete }: SizeQuizM
  initial={{ scale: 0 }}
  animate={{ scale: 1 }}
  transition={{ delay: 0.3, type: 'spring' }}
- className="absolute -top-2 -right-6 bg-green-500 text-white p-2 rounded-full"
+ className="absolute -top-2 -right-6 bg-green-500 text-white p-2 rounded-none"
  >
  <Check size={20} />
  </motion.div>

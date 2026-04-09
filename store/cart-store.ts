@@ -1,6 +1,20 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
+import { get, set, del } from 'idb-keyval';
 import { Product } from '@/types';
+
+// Custom IDB Storage para Zustand (Offline-First Real, non-blocking OS thread)
+const idbStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return (await get(name)) || null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await set(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name);
+  },
+};
 
 // Definimos o item do carrinho
 export interface CartItem extends Product {
@@ -107,17 +121,8 @@ export const useCartStore = create<CartState>()(
     {
       name: 'hooke-cart-storage',
 
-      // Configuração segura para Next.js (evita erro no servidor)
-      storage: createJSONStorage(() => {
-        if (typeof window !== 'undefined') {
-          return localStorage;
-        }
-        return {
-          getItem: () => null,
-          setItem: () => { },
-          removeItem: () => { },
-        };
-      }),
+      // Configuração assíncrona Elite via idb-keyval (protege performance Mobile e Client Components)
+      storage: createJSONStorage(() => idbStorage),
 
       skipHydration: true, // IMPORTANTE: Evita conflito inicial de hidratação
 

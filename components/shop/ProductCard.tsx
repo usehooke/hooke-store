@@ -26,7 +26,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     >
       <Link href={`/produto/${product.slug}`} className="block w-full">
         {/* 1. IMAGEM CONTAINER */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-hooke-paper mb-4">
+        <div className="relative aspect-[3/4] overflow-hidden bg-hooke-paper skeleton-shimmer mb-4">
           <Image
             priority={priority}
             src={product.imageUrl}

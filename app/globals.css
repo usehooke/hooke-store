@@ -79,6 +79,18 @@
     @apply backdrop-blur-[8px] bg-white/40 border border-white/30 shadow-subtle;
   }
 
+  /* SKELETON LOADING */
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+  .skeleton-shimmer {
+    @apply relative overflow-hidden;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/50 to-transparent;
+  }
+
   /* HOOKE ELITE: INK LIQUID REVEAL */
   .btn-hooke-elite {
     @apply relative overflow-hidden bg-black text-white hover:text-black transition-colors duration-500 z-10;

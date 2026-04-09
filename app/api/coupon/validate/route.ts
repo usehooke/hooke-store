@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-
-const VALID_COUPONS = {
-  "MAVERICK10": { discount: 0.1, type: "percent" },
-  "VIP15": { discount: 0.15, type: "percent" },
-};
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export async function POST(request: Request) {
   try {
@@ -13,21 +10,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ valid: false, message: "Cupom não fornecido" }, { status: 400 });
     }
 
-    const upperCode = code.toUpperCase();
-    const couponData = VALID_COUPONS[upperCode as keyof typeof VALID_COUPONS];
+    // ⚡ A TRAVA DO TECH LEAD: Blindagem para build e ambiente sem env vars
+    const firestore = db;
+    if (!firestore) {
+      console.warn("🚀 [Hooke System] Coupon validation short-circuit: DB offline.");
+      return NextResponse.json({ valid: false, message: "Serviço de cupons temporariamente indisponível" }, { status: 503 });
+    }
 
-    if (couponData) {
+    const upperCode = code.toUpperCase().trim();
+    
+    // Tentativa de buscar o cupom no banco de dados (Single Source of Truth)
+    const couponRef = doc(firestore, "cupons", upperCode);
+    const couponSnap = await getDoc(couponRef);
+
+    if (couponSnap.exists()) {
+      const couponData = couponSnap.data();
+      
+      // Validação de Status Ativo
+      if (couponData.isActive === false) {
+        return NextResponse.json({ valid: false, message: "Este cupom não está mais ativo" }, { status: 404 });
+      }
+
       return NextResponse.json({ 
         valid: true, 
-        discount: couponData.discount, 
-        type: couponData.type,
+        discount: couponData.discount || 0, 
+        type: couponData.type || "percent",
         message: "Cupom aplicado com sucesso"
       }, { status: 200 });
     }
 
     return NextResponse.json({ valid: false, message: "Cupom inválido ou expirado" }, { status: 404 });
     
-  } catch {
+  } catch (error) {
+    console.error("Erro na Máquina de Cupons:", error);
     return NextResponse.json({ valid: false, message: "Erro ao processar cupom" }, { status: 500 });
   }
 }

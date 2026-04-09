@@ -41,7 +41,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
  {images.map((img, index) => (
  <div 
  key={index} 
- className="relative w-full aspect-[4/5] bg-gray-50 overflow-hidden group cursor-zoom-in border border-gray-100"
+ className="relative w-full aspect-[4/5] skeleton-shimmer overflow-hidden group cursor-zoom-in border border-gray-100"
  >
  <Image
  src={img}

@@ -2,6 +2,7 @@
 
 import { Standard } from "@typebot.io/react";
 import { useState, useEffect } from "react";
+import { get, set } from "idb-keyval";
 import Link from "next/link";
 import { 
  ArrowLeft, 

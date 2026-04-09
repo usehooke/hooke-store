@@ -57,7 +57,7 @@ export function AgentCharacter({ name, role, avatar, position, isMeeting, meetin
     >
        {/* Speech Bubble */}
        <div className={cn(
-          "absolute -top-14 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-stone-200/50 text-[10px] font-bold text-stone-700 whitespace-nowrap transition-all duration-300 pointer-events-none z-50",
+          "absolute -top-14 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-none shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-stone-200/50 text-[10px] font-bold text-stone-700 whitespace-nowrap transition-all duration-300 pointer-events-none z-50",
           bubbleText ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2"
        )}>
           {bubbleText}
