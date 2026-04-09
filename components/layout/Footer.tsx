@@ -53,6 +53,12 @@ export default function Footer() {
  <li><Link href="/cartao-virtual" className="hover:text-gray-300 transition-colors font-bold">Cartão VIP Hooke</Link></li>
  <li><Link href="/politica-de-trocas" className="hover:text-gray-300 transition-colors">Trocas e Devoluções</Link></li>
  <li><Link href="/guia-medidas" className="hover:text-gray-300 transition-colors">Guia de Medidas</Link></li>
+ <li className="pt-2">
+ <Link href="/hq" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-[10px] uppercase font-bold tracking-widest">
+ <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse blur-[1px] group-hover:blur-none transition-all" />
+ Conheça o QG Virtual da Hooke, onde tudo acontece!
+ </Link>
+ </li>
  </ul>
  </div>
 
