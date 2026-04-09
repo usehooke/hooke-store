@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { get, set } from "idb-keyval";
 import Image from "next/image";
 import Link from "next/link";
 import { Instagram } from "lucide-react";

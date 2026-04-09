@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { brandConfig } from '@/config/brandConfig';
-import { Instagram, MessageCircle, Globe, MapPin, RefreshCcw } from 'lucide-react';
+import { Instagram, MessageCircle, Globe, MapPin, RefreshCcw, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 export default function VirtualCard() {
  const [isFlipped, setIsFlipped] = useState(false);
@@ -69,14 +70,7 @@ export default function VirtualCard() {
  <MessageCircle size={12} className="text-gray-500" />
  <p className="text-[9px] text-gray-300 font-medium">(11) 97590-2528</p>
  </div>
- <motion.div 
-  initial={{ scale: 0 }}
-  animate={{ scale: 1 }}
-  transition={{ delay: 0.3, type: 'spring' }}
-  className="absolute -top-2 -right-6 bg-green-500 text-white p-2 rounded-none"
-  >
-  <Check size={20} />
-  </motion.div>
+
  <div className="flex items-center gap-2">
  <Instagram size={12} className="text-gray-500" />
  <p className="text-[9px] text-gray-300 font-medium">@use.hooke</p>
