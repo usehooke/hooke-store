@@ -29,7 +29,7 @@ export default function ShopLayoutWrapper({ children }: ShopLayoutWrapperProps) 
       <Navbar />
       <DynamicCart />
       
-      <main className="flex-grow w-full">
+      <main className="flex-grow w-full pt-20">
         {children}
       </main>
 

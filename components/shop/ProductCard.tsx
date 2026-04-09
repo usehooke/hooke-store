@@ -32,10 +32,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             src={product.imageUrl}
             alt={product.seoAltText || product.name}
             fill
-            className={`object-cover object-center transition-all duration-1000 ${product.images && product.images.length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
+            className={`object-cover object-center transition-all duration-1000 ${product.images && (product.images as string[]).length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
-          {product.images && product.images.length > 1 && (
+          {product.images && (product.images as string[]).length > 1 && (
             <Image
               src={product.images[1]}
               alt={`${product.name} - Ângulo 2`}

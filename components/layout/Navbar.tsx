@@ -139,9 +139,21 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <Link href="/contato" onClick={() => setIsMobileMenuOpen(false)} className="text-xs font-bold tracking-[0.2em] font-heading text-hooke-900">Fale Conosco</Link>
+            <Link 
+              href="/contato" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="text-xs font-bold tracking-[0.2em] font-heading text-hooke-900"
+            >
+              Fale Conosco
+            </Link>
             <div className="h-px bg-gray-100 my-2" />
-            <Link href="/meus-pedidos" className="flex items-center gap-3 text-sm font-medium text-gray-600 font-heading tracking-wide"><User size={18} /> Minha Conta</Link>
+            <Link 
+              href="/meus-pedidos" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="flex items-center gap-3 text-sm font-medium text-gray-600 font-heading tracking-wide"
+            >
+              <User size={18} /> Minha Conta
+            </Link>
           </div>
         </div>
       </div>
