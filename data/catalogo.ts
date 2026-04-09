@@ -327,36 +327,53 @@ export const PRODUTOS: Product[] = [
   {
     id: "fem-conjunto-viscose-verde",
     name: "Conjunto Minimalista Forest",
-    seoAltText: "Modelo oficial Hooke vestindo conjunto verde de camiseta e calça pantalona em viscose - Ensaio Profissional",
+    seoAltText: "Musa 001 vestindo conjunto verde Forest em viscose Lore Liso 230g - Hooke Femme",
     slug: "conjunto-feminino-viscose-verde",
-    price: 189.90,
+    price: 249.90,
     featured: true,
     isPremiumCollection: true,
     isNew: true,
-    description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Conforto absoluto sem perder a imponência. Ensaio com modelo oficial da marca.",
-    imageUrl: "", // Aguardando Ensaio Musa 001
-    images: [],
+    description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Desenvolvido em Viscose Lore Liso de alta gramatura (230g), garantindo um caimento imponente e toque frio.",
+    imageUrl: "/assets/femme/musas_001_forest.png",
+    images: ["/assets/femme/musas_001_forest.png"],
     sizes: ["PP", "P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
-    details: { fabric: "96% Viscose, 4% Elastano", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
+    details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
   },
   {
     id: "fem-conjunto-viscose-azul",
     name: "Conjunto Minimalista Navy",
-    seoAltText: "Modelo oficial Hooke vestindo conjunto azul marinho profundo de camiseta e calça pantalona em viscose - Ensaio Profissional",
+    seoAltText: "Musa 001 vestindo conjunto azul Navy em viscose Lore Liso 230g - Hooke Femme",
     slug: "conjunto-feminino-viscose-azul",
-    price: 189.90,
+    price: 249.90,
     featured: false,
     isPremiumCollection: true,
     isNew: true,
-    description: "Para os dias em que a discrição se torna a maior de todas as presenças. O caimento Hooke em Viscose Navy Blue.",
-    imageUrl: "", // Aguardando Ensaio Musa 001
-    images: [],
+    description: "Para os dias em que a discrição se torna a maior de todas as presenças. Tecido Lore Liso com elastano para máximo conforto e durabilidade.",
+    imageUrl: "/assets/femme/musas_001_navy.png",
+    images: ["/assets/femme/musas_001_navy.png"],
     sizes: ["PP", "P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
-    details: { fabric: "96% Viscose, 4% Elastano", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
+    details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
+  },
+  {
+    id: "fem-conjunto-viscose-chocolate",
+    name: "Conjunto Minimalista Chocolate",
+    seoAltText: "Musa 001 vestindo conjunto Marrom Chocolate em viscose Lore Liso 230g - Hooke Femme",
+    slug: "conjunto-feminino-viscose-chocolate",
+    price: 249.90,
+    featured: true,
+    isPremiumCollection: true,
+    isNew: true,
+    description: "A sofisticação do tom chocolate unida ao corte arquitetônico Hooke. O caimento fluído da viscose Lore Liso em sua melhor forma.",
+    imageUrl: "/assets/femme/musas_001_chocolate.png",
+    images: ["/assets/femme/musas_001_chocolate.png"],
+    sizes: ["PP", "P", "M", "G"],
+    department: "feminino",
+    category: "Conjuntos",
+    details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
   }
 ];
 
