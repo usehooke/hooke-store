@@ -32,12 +32,21 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             src={product.imageUrl}
             alt={product.seoAltText || product.name}
             fill
-            className="object-cover object-center transition-transform duration-1000 group-hover:scale-105"
+            className={`object-cover object-center transition-all duration-1000 ${product.images && product.images.length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
+          {product.images && product.images.length > 1 && (
+            <Image
+              src={product.images[1]}
+              alt={`${product.name} - Ângulo 2`}
+              fill
+              className="object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            />
+          )}
           
           {/* Badge Minimalista */}
-          {product.isNew && (!product.totalStock || product.totalStock > 3) && (
+          {product.isNew && (!product.totalStock || product.totalStock > 24) && (
             <div className="absolute top-4 left-4 z-10">
               <span className="bg-hooke-900 text-white text-[9px] font-bold px-2 py-1 tracking-[0.2em]">
                 Novo
@@ -45,17 +54,26 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             </div>
           )}
 
+          {/* Badge de Pré-venda Elite */}
+          {product.description?.includes('PRÉ-VENDA') && (
+            <div className="absolute top-4 right-4 z-20">
+              <span className="bg-white text-black text-[8px] font-black px-2 py-1 tracking-[0.1em] border border-black shadow-sm uppercase">
+                Pré-venda
+              </span>
+            </div>
+          )}
+
           {/* Gatilho de Escassez Elegante */}
-          {product.totalStock !== undefined && product.totalStock <= 3 && (
+          {product.totalStock !== undefined && product.totalStock <= 24 && (
             <motion.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-hooke-200 px-2 py-1 shadow-sm"
+              className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-sm border border-hooke-200 px-2 py-1 shadow-sm"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
               <span className="text-hooke-900 text-[8px] font-bold uppercase tracking-[0.2em]">
-                {product.totalStock === 1 ? 'Última Peça' : `Apenas ${product.totalStock} No Atelier`}
+                {product.totalStock <= 8 ? 'Lote Final' : `Lote 001 - ${product.totalStock} Unidades`}
               </span>
             </motion.div>
           )}

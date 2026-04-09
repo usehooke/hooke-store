@@ -329,14 +329,20 @@ export const PRODUTOS: Product[] = [
     name: "Conjunto Minimalista Forest",
     seoAltText: "Musa 001 vestindo conjunto verde Forest em viscose Lore Liso 230g - Hooke Femme",
     slug: "conjunto-feminino-viscose-verde",
-    price: 249.90,
+    price: 100.00,
     featured: true,
     isPremiumCollection: true,
     isNew: true,
-    description: "A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Desenvolvido em Viscose Lore Liso de alta gramatura (230g), garantindo um caimento imponente e toque frio.",
-    imageUrl: "/assets/femme/musas_001_forest.png",
-    images: ["/assets/femme/musas_001_forest.png"],
-    sizes: ["PP", "P", "M", "G"],
+    totalStock: 24, // 8 per size (P, M, G)
+    description: "PRÉ-VENDA LOTE 001. A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Desenvolvido em Viscose Lore Liso de alta gramatura (230g).",
+    imageUrl: "/assets/femme/musas_001_forest_1.png",
+    images: [
+      "/assets/femme/musas_001_forest_1.png",
+      "/assets/femme/musas_001_forest_2.png",
+      "/assets/femme/musas_001_forest_3.png",
+      "/assets/femme/musas_001_forest_4.png"
+    ],
+    sizes: ["P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
     details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
@@ -346,14 +352,20 @@ export const PRODUTOS: Product[] = [
     name: "Conjunto Minimalista Navy",
     seoAltText: "Musa 001 vestindo conjunto azul Navy em viscose Lore Liso 230g - Hooke Femme",
     slug: "conjunto-feminino-viscose-azul",
-    price: 249.90,
+    price: 100.00,
     featured: false,
     isPremiumCollection: true,
     isNew: true,
-    description: "Para os dias em que a discrição se torna a maior de todas as presenças. Tecido Lore Liso com elastano para máximo conforto e durabilidade.",
-    imageUrl: "/assets/femme/musas_001_navy.png",
-    images: ["/assets/femme/musas_001_navy.png"],
-    sizes: ["PP", "P", "M", "G"],
+    totalStock: 24, // 8 per size (P, M, G)
+    description: "PRÉ-VENDA LOTE 001. Para os dias em que a discrição se torna a maior de todas as presenças. Tecido Lore Liso com elastano para máximo conforto.",
+    imageUrl: "/assets/femme/musas_001_navy_1.png",
+    images: [
+      "/assets/femme/musas_001_navy_1.png",
+      "/assets/femme/musas_001_navy_2.png",
+      "/assets/femme/musas_001_navy_3.png",
+      "/assets/femme/musas_001_navy_4.png"
+    ],
+    sizes: ["P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
     details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
@@ -363,14 +375,20 @@ export const PRODUTOS: Product[] = [
     name: "Conjunto Minimalista Chocolate",
     seoAltText: "Musa 001 vestindo conjunto Marrom Chocolate em viscose Lore Liso 230g - Hooke Femme",
     slug: "conjunto-feminino-viscose-chocolate",
-    price: 249.90,
+    price: 100.00,
     featured: true,
     isPremiumCollection: true,
     isNew: true,
-    description: "A sofisticação do tom chocolate unida ao corte arquitetônico Hooke. O caimento fluído da viscose Lore Liso em sua melhor forma.",
-    imageUrl: "/assets/femme/musas_001_chocolate.png",
-    images: ["/assets/femme/musas_001_chocolate.png"],
-    sizes: ["PP", "P", "M", "G"],
+    totalStock: 24, // 8 per size (P, M, G)
+    description: "PRÉ-VENDA LOTE 001. A sofisticação do tom chocolate unida ao corte arquitetônico Hooke. O caimento fluído da viscose Lore Liso em sua melhor forma.",
+    imageUrl: "/assets/femme/musas_001_chocolate_1.png",
+    images: [
+      "/assets/femme/musas_001_chocolate_1.png",
+      "/assets/femme/musas_001_chocolate_2.png",
+      "/assets/femme/musas_001_chocolate_3.png",
+      "/assets/femme/musas_001_chocolate_4.png"
+    ],
+    sizes: ["P", "M", "G"],
     department: "feminino",
     category: "Conjuntos",
     details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
