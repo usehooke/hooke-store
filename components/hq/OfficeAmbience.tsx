@@ -25,7 +25,7 @@ export function OfficeAmbience() {
                 onClick={() => setIsMuted(!isMuted)}
                 className="w-10 h-10 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all group"
             >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} className="animate-pulse" />}
+                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 
                 <span className="absolute right-12 whitespace-nowrap bg-black text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none uppercase tracking-widest font-black">
                     {isMuted ? "Ativar Atmosfera" : "Silenciar QG"}

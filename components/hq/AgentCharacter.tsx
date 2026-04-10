@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface AgentProps {
@@ -22,38 +22,58 @@ export function AgentCharacter({ name, role, avatar, position, thought }: AgentP
           left: position.left,
       }}
       transition={{ 
-          duration: 5, // Movimento Zen e suave
+          duration: 8, // Zen movement
           ease: [0.4, 0, 0.2, 1] 
       }}
-      className="absolute flex flex-col items-center group cursor-pointer z-20 pointer-events-auto"
+      className="absolute flex flex-col items-center group cursor-default z-20 pointer-events-auto"
       style={{ transform: 'translate(-50%, -50%)' }}
     >
-       {/* Speech Bubble / Thought */}
-       <div className={cn(
-          "absolute -top-16 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-none shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-stone-200/50 text-[10px] font-bold text-stone-700 whitespace-nowrap transition-all duration-500 pointer-events-none z-50",
-          thought ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2"
-       )}>
-          {thought}
-          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-x-[6px] border-x-transparent border-t-[6px] border-t-white" />
-       </div>
+       {/* New Dynamic Thought Bubble */}
+       <AnimatePresence>
+         {thought && (
+           <motion.div
+             initial={{ opacity: 0, scale: 0.5, y: 20, x: "-50%" }}
+             animate={{ opacity: 1, scale: 1, y: 0, x: "-50%" }}
+             exit={{ opacity: 0, scale: 0.5, y: 10, x: "-50%" }}
+             className="absolute -top-16 left-1/2 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-stone-200/50 text-[11px] font-bold text-stone-800 whitespace-nowrap z-50"
+           >
+              {thought}
+              {/* Animated indicator for "thinking" - Slowed down for Zen experience */}
+              <motion.div 
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-r border-b border-stone-200 rotate-45" 
+              />
+           </motion.div>
+         )}
+       </AnimatePresence>
 
-       {/* High Fidelity Token Avatar */}
-       <div className="relative w-[75px] h-[75px] rounded-full overflow-hidden shadow-2xl border-[3px] border-white group-hover:scale-110 group-hover:border-stone-200 transition-all duration-300 bg-white">
+       {/* Thematic Avatar Container */}
+       <motion.div 
+         whileHover={{ scale: 1.05, y: -5 }}
+         className="relative w-[85px] h-[85px] rounded-[2rem] overflow-hidden shadow-2xl border-[3px] border-white/50 group-hover:border-white transition-all duration-500 bg-stone-800"
+       >
+          <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/50 to-transparent z-10" />
           <Image 
              src={avatar}
              alt={name}
              fill
-             className="object-cover scale-[1.3] origin-center" 
+             className="object-cover scale-[1.1] origin-center group-hover:scale-125 transition-transform duration-700" 
           />
+       </motion.div>
+
+       {/* Premium Elite Label */}
+       <div className="absolute -bottom-12 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 flex flex-col items-center">
+          <div className="bg-stone-900 text-white text-[8px] px-3 py-1 rounded-full shadow-2xl uppercase tracking-[0.2em] font-black whitespace-nowrap">
+             {name}
+          </div>
+          <div className="text-[7px] text-stone-400 font-bold uppercase tracking-widest mt-1">
+             {role.split('/')[0].trim()}
+          </div>
        </div>
 
-       {/* Label on hover - Elite Titles */}
-       <div className="absolute -bottom-10 opacity-0 group-hover:opacity-100 transition-opacity bg-stone-900/90 backdrop-blur text-white text-[9px] px-3 py-1.5 rounded-none shadow-xl uppercase tracking-widest font-black whitespace-nowrap z-50">
-          {name} <span className="opacity-50 mx-1 font-normal">•</span> {role}
-       </div>
-
-       {/* Pequena aura de atividade */}
-       <div className="absolute -inset-1 bg-emerald-500/10 rounded-full blur-md animate-pulse -z-10" />
+       {/* Subtle status aura */}
+       <div className="absolute -inset-4 bg-white/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
     </motion.div>
   );
 }

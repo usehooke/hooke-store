@@ -1,33 +1,49 @@
 "use client";
 import { useState, useEffect } from "react";
 
-// Definição dos pontos de interesse no mapa 1200x1200px
+// Definição dos pontos de interesse no mapa 1500x1500px refinado
 export const WAYPOINTS = {
     EXECUTIVE_DESK: [
-        { top: 620, left: 330 }, // Cadeira 1 (Alpha)
-        { top: 620, left: 450 }, // Cadeira 2 (Beta)
-        { top: 780, left: 330 }, // Cadeira 3 (Gamma)
-        { top: 780, left: 450 }, // Cadeira 4 (Delta)
+        { top: 720, left: 650 }, 
+        { top: 720, left: 850 }, 
+        { top: 820, left: 650 }, 
+        { top: 820, left: 850 },
     ],
     CREATIVE_WORKSHOP: [
-        { top: 350, left: 330 }, // Bancada Norte
-        { top: 450, left: 400 }, // Bancada Sul
-        { top: 380, left: 480 }, // Perto da arara
+        { top: 400, left: 200 },
+        { top: 550, left: 150 },
+        { top: 700, left: 250 },
     ],
     WAR_ROOM: [
-        { top: 150, left: 650 }, // Cadeira Norte
-        { top: 250, left: 580 }, // Cadeira Oeste
-        { top: 250, left: 720 }, // Cadeira Leste
-        { top: 350, left: 650 }, // Cadeira Sul
+        { top: 250, left: 750 },
+        { top: 320, left: 600 },
+        { top: 320, left: 900 },
     ],
     LOUNGE: [
-        { top: 730, left: 740 }, // Sofá S1
-        { top: 730, left: 860 }, // Sofá S2
-        { top: 900, left: 740 }, // Sofá Inferior
+        { top: 1150, left: 800 },
+        { top: 1250, left: 950 },
     ],
-    COFFEE: { top: 510, left: 810 },
-    SERVER: { top: 470, left: 850 },
+    ZEN_ZONE: [
+        { top: 1000, left: 1250 },
+        { top: 1100, left: 1200 },
+    ],
 };
+
+const RANDOM_THOUGHTS = [
+    "Refinando a voz da marca...",
+    "Analisando métricas de conversão...",
+    "Otimizando o funil Hooke...",
+    "Planejando o próximo drop...",
+    "Código limpo, alma limpa.",
+    "Café? Sempre uma boa ideia.",
+    "A estética é o nosso norte.",
+    "Pensando em novas texturas...",
+    "Ajustando o algoritmo de elite...",
+    "Sincronizando com o Vercel...",
+    "Explorando novas silhuetas...",
+    "O minimalismo é a sofisticação máxima.",
+    "Hora de criar algo extraordinário.",
+];
 
 interface AgentState {
     id: string;
@@ -45,16 +61,13 @@ export function useAgentLife(initialAgents: any[]) {
     );
 
     useEffect(() => {
-        // Intervalo Zen: 5 a 10 minutos (convertido em ms)
-        // Para testes, vamos usar um intervalo menor inicialmente ou um Math.random
-        const interval = setInterval(() => {
+        // Intervalo de Movimento Zen: 45 a 90 segundos
+        const moveInterval = setInterval(() => {
             setAgentStates(prev => {
                 const next = [...prev];
-                // Escolhe um agente aleatório para se mover
                 const targetIdx = Math.floor(Math.random() * next.length);
                 const agent = next[targetIdx];
 
-                // Escolhe um novo destino aleatório
                 const roomKeys = Object.keys(WAYPOINTS);
                 const randomRoomKey = roomKeys[Math.floor(Math.random() * roomKeys.length)];
                 //@ts-ignore
@@ -73,20 +86,46 @@ export function useAgentLife(initialAgents: any[]) {
                     thought: "Indo para " + randomRoomKey.replace("_", " ") + "..."
                 };
 
-                // Limpa o pensamento após 5 segundos
                 setTimeout(() => {
                     setAgentStates(current => {
                         const updated = [...current];
                         updated[targetIdx].thought = "";
                         return updated;
                     });
-                }, 5000);
+                }, 4000);
 
                 return next;
             });
-        }, 120000); // 2 minutos para um efeito mais visível para o diretor, mas ainda "Zen"
+        }, 50000);
 
-        return () => clearInterval(interval);
+        // Intervalo de Pensamentos Aleatórios (quando parados)
+        const thoughtInterval = setInterval(() => {
+            setAgentStates(prev => {
+                const next = [...prev];
+                // 30% de chance de alguém ter um pensamento aleatório
+                if (Math.random() > 0.7) {
+                    const targetIdx = Math.floor(Math.random() * next.length);
+                    // Só pensa se não estiver "indo para algum lugar"
+                    if (!next[targetIdx].thought.includes("Indo")) {
+                        next[targetIdx].thought = RANDOM_THOUGHTS[Math.floor(Math.random() * RANDOM_THOUGHTS.length)];
+                        
+                        setTimeout(() => {
+                            setAgentStates(current => {
+                                const updated = [...current];
+                                updated[targetIdx].thought = "";
+                                return updated;
+                            });
+                        }, 6000);
+                    }
+                }
+                return next;
+            });
+        }, 8000);
+
+        return () => {
+            clearInterval(moveInterval);
+            clearInterval(thoughtInterval);
+        };
     }, []);
 
     return agentStates;
