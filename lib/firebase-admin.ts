@@ -18,10 +18,9 @@ if (!admin.apps.length) {
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount),
             });
-            // console.log("🚀 [Hooke Admin] Firebase Admin inicializado com Service Account.");
+
         } else {
             // Fallback para quando estamos em build time ou sem chaves
-            console.warn("⚠️ [Hooke Admin] FIREBASE_SERVICE_ACCOUNT_KEY não encontrada. Operações de escrita falharão.");
         }
     } catch (error) {
         console.error("❌ [Hooke Admin] Erro ao inicializar Admin SDK:", error);

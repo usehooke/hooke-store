@@ -3,10 +3,11 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { AgentCharacter } from "./AgentCharacter";
 import { SuggestionBoxModal } from "./SuggestionBoxModal";
+import { OfficeAmbience } from "./OfficeAmbience";
+import { useAgentLife, WAYPOINTS } from "@/hooks/useAgentLife";
 import { Inbox } from "lucide-react";
 
 export function OfficeMap() {
-    const [isMeeting, setIsMeeting] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -16,7 +17,18 @@ export function OfficeMap() {
 
     const mapRef = useRef<HTMLDivElement>(null);
 
-    // Center map on load
+    // Definição inicial dos Agentes de Elite (Diretoria)
+    const initialAgents = [
+        { id: "1", name: "Alpha", role: "CTO", avatar: "/assets/hq/agents/techlead.png", position: WAYPOINTS.EXECUTIVE_DESK[0] },
+        { id: "2", name: "Beta", role: "CGO & Creative", avatar: "/assets/hq/agents/growth.png", position: WAYPOINTS.EXECUTIVE_DESK[1] },
+        { id: "3", name: "Gamma", role: "CXO & UX Guardian", avatar: "/assets/hq/agents/concierge.png", position: WAYPOINTS.EXECUTIVE_DESK[2] },
+        { id: "4", name: "Delta", role: "Head of AI Strategy", avatar: "/assets/hq/agents/seo.png", position: WAYPOINTS.EXECUTIVE_DESK[3] },
+        { id: "5", name: "The Voice", role: "Narrative Authority", avatar: "/assets/hq/agents/techlead.png", position: WAYPOINTS.CREATIVE_WORKSHOP[2] } // Placeholder avatar por enquanto
+    ];
+
+    const agentStates = useAgentLife(initialAgents);
+
+    // Centralizar mapa ao carregar
     useEffect(() => {
         if (mapRef.current) {
             const el = mapRef.current;
@@ -48,59 +60,68 @@ export function OfficeMap() {
         mapRef.current.scrollTop = scrollTop - walkY;
     };
 
-    // Ajuste de posições: Compacto HQ v3 (10.8m x 11.2m)
-    const agents = [
-        { id: "1", name: "Alpha", role: "Tech Lead", avatar: "/assets/hq/agents/techlead.png", position: { top: 620, left: 330 }, meetingPosition: { top: 220, left: 580 } },
-        { id: "2", name: "Beta", role: "Growth", avatar: "/assets/hq/agents/growth.png", position: { top: 900, left: 850 }, meetingPosition: { top: 220, left: 720 } },
-        { id: "3", name: "Gamma", role: "Concierge", avatar: "/assets/hq/agents/concierge.png", position: { top: 620, left: 450 }, meetingPosition: { top: 380, left: 580 } },
-        { id: "4", name: "Delta", role: "SEO", avatar: "/assets/hq/agents/seo.png", position: { top: 780, left: 330 }, meetingPosition: { top: 380, left: 720 } }
-    ];
-
     return (
         <div 
             ref={mapRef}
-            className="w-full h-full overflow-auto hide-scrollbar cursor-grab active:cursor-grabbing bg-stone-900"
+            className="w-full h-full overflow-auto hide-scrollbar cursor-grab active:cursor-grabbing bg-[#1a1a1a]"
             onMouseDown={onMouseDown}
             onMouseLeave={onMouseLeave}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
         >
-           {/* The Image fills this 1200x1200 container, which allows panning */}
-           <div className="relative w-[1200px] h-[1200px] bg-stone-100 mx-auto overflow-hidden shadow-2xl">
+           <div className="relative w-[1200px] h-[1200px] bg-[#f5f5f5] mx-auto overflow-hidden shadow-2xl border-[10px] border-stone-800/20">
               
               <Image 
                 src="/assets/hq/map_v3.png"
-                alt="Hooke Elite Virtual HQ v3 - Studio Garage"
+                alt="Hooke Elite Virtual HQ v4 - Living Studio Garage"
                 fill
-                className="object-cover pointer-events-none select-none opacity-95"
+                className="object-cover pointer-events-none select-none opacity-40 grayscale-[0.3]"
                 priority
               />
 
-              {/* Botão de reunião no novo mapa */}
-              <button 
-                 onClick={(e) => { e.stopPropagation(); setIsMeeting(!isMeeting); }}
-                 className="absolute top-20 right-20 text-[10px] bg-white/90 backdrop-blur text-stone-700 px-4 py-2 border border-stone-200/50 shadow-lg hover:shadow-xl rounded-none uppercase tracking-widest font-bold hover:bg-stone-50 transition-all z-30 flex items-center gap-2 pointer-events-auto"
-              >
-                 <span className={`w-2 h-2 rounded-full \${isMeeting ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
-                 {isMeeting ? "Encerrar Reunião" : "Convocar Reunião"}
-              </button>
+              {/* Camadas de Estrutura: Paredes e Sombras (Sensação de Portas e Salas) */}
+              <div className="absolute inset-0 pointer-events-none">
+                 {/* War Room Glass Walls Effect */}
+                 <div className="absolute top-[20px] left-[500px] w-[320px] h-[360px] border-[2px] border-emerald-500/10 bg-emerald-500/[0.02] backdrop-blur-[1px] shadow-inner" />
+                 
+                 {/* Creative Section Shadow */}
+                 <div className="absolute top-[120px] left-[130px] w-[350px] h-[350px] bg-stone-900/[0.03] border-b border-stone-300/30" />
 
-              {/* Caixinha de Ideias Minimalista no mapa texturizado */}
+                 {/* Portas Virtuais (Visual markers) */}
+                 <div className="absolute top-[380px] left-[180px] w-12 h-1 bg-stone-400/50" />
+                 <div className="absolute top-[320px] left-[500px] w-1 h-12 bg-emerald-400/30 shadow-[0_0_10px_rgba(52,211,153,0.3)]" />
+              </div>
+
+              {/* Botão de Feedback */}
               <div 
                  onClick={() => setIsModalOpen(true)}
-                 className="absolute bottom-20 right-20 w-[70px] h-[70px] bg-stone-900 border-[3px] border-stone-800 backdrop-blur text-white rounded-full shadow-2xl flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-all group z-30 pointer-events-auto"
+                 className="absolute bottom-20 left-20 w-[60px] h-[60px] bg-stone-900 border border-stone-800 text-white rounded-full shadow-2xl flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-all group z-30 pointer-events-auto"
               >
-                 <Inbox size={24} className="text-stone-300 group-hover:text-amber-400 transition-colors" />
-                 
-                 {/* Tooltip */}
-                 <div className="absolute -top-12 opacity-0 group-hover:opacity-100 bg-stone-900 text-white text-[10px] font-bold px-3 py-1.5 rounded shadow-xl whitespace-nowrap tracking-widest transition-all duration-300 pointer-events-none">
-                    DEIXAR FEEDBACK
+                 <Inbox size={20} className="text-stone-300 group-hover:text-emerald-400 transition-colors" />
+                 <div className="absolute -top-10 opacity-0 group-hover:opacity-100 bg-stone-900 text-white text-[8px] font-bold px-2 py-1 rounded shadow-xl whitespace-nowrap tracking-widest transition-all pointer-events-none uppercase">
+                    Feedback Direto
                  </div>
               </div>
 
-              {/* Renderização dos Avatares Premium */}
-              {agents.map(agent => (
-                 <AgentCharacter key={agent.id} {...agent} isMeeting={isMeeting} />
+              {/* Componente de Atmosfera Sonora */}
+              <OfficeAmbience />
+
+              {/* Status Global do QG */}
+              <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-none z-30 pointer-events-none">
+                 <p className="text-[9px] text-white/60 font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Hooke Elite Operations Room <span className="text-white/20">|</span> Zen Simulation Active
+                 </p>
+              </div>
+
+              {/* Renderização dos Agentes de Elite Dinâmicos */}
+              {initialAgents.map((agent, idx) => (
+                 <AgentCharacter 
+                    key={agent.id} 
+                    {...agent} 
+                    position={agentStates[idx].position}
+                    thought={agentStates[idx].thought}
+                 />
               ))}
 
            </div>
