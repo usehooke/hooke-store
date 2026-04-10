@@ -6,8 +6,8 @@
 
 export const brandConfig = {
   name: "Hooke",
-  tagline: "Moda Masculina Premium | Menos Excesso, Mais Qualidade",
-  description: "Redefinindo o básico masculino. Camisetas de algodão egípcio, modelagem precisa e durabilidade extrema.",
+  tagline: "Rigor Têxtil | Arquitetura Básica para a Permanência",
+  description: "A ciência do essencial. Engenharia de alta gramatura, silhuetas arquitetônicas e acabamento industrial de elite.",
   
   // Contatos
   contact: {

@@ -46,14 +46,14 @@ export default function Home() {
           className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4"
         >
           <div className="max-w-xl">
-            <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 mb-4 block">
-              Curadoria Hooke
+            <span className="text-[10px] font-black tracking-[0.4em] text-hooke-400 mb-4 block uppercase font-mono">
+              PROTOCOLO HOOKE
             </span>
-            <h2 className="text-4xl md:text-6xl font-heading font-light text-hooke-900 leading-[1.1] mb-2">
-              Coleção <span className="font-semibold tracking-tighter">Essencial</span>
+            <h2 className="text-4xl md:text-6xl font-heading font-black text-hooke-900 leading-[0.9] mb-4 uppercase tracking-[-0.03em]">
+              EQUIPAMENTO <br /> <span className="font-light opacity-50">BASE</span>
             </h2>
-            <p className="text-hooke-500 text-sm max-w-sm font-medium leading-relaxed">
-              Peças fundamentais desenhadas para durar. Minimalismo elevado através de tecidos nobres.
+            <p className="text-hooke-500 text-[11px] tracking-[0.1em] max-w-sm font-medium leading-relaxed uppercase">
+              A fundação do seu arsenal cotidiano. Geometria têxtil projetada para a permanência absoluta.
             </p>
           </div>
           <div className="h-px bg-hooke-200 flex-1 mx-8 hidden md:block"></div>

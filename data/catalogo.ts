@@ -33,7 +33,7 @@ export const PRODUTOS: Product[] = [
     featured: true,
     isNew: true,
     isPremiumCollection: true,
-    description: "O melhor custo-benefício. Leve 3 peças da nossa modelagem Oversized exclusiva. Suedine 240g, gola de 2,5cm e caimento streetwear.",
+    description: "Tríade de Densidade. A base estrutural do cotidiano em Suedine 240g. Modelagem boxy com gola de 2,5cm.",
     imageUrl: "/produtos/hk_prod_ov_black_03.avif",
     images: [
       "/produtos/hk_prod_ov_black_01.avif",
@@ -113,7 +113,7 @@ export const PRODUTOS: Product[] = [
     price: 120.90,
     featured: false,
     isNew: true,
-    description: "Clássicos atemporais. 3 camisetas com estampas vintage exclusivas.",
+    description: "Memória Mecânica. O rigor da herança industrial impresso em Algodão Egípcio.",
     imageUrl: "/produtos/hk_prod_vi_fusca_black_01.jpg",
     images: ["/produtos/hk_prod_vi_fusca_black_01.jpg"],
     sizes: ["P", "M", "G", "GG", "XG"],
@@ -147,7 +147,7 @@ export const PRODUTOS: Product[] = [
     price: 69.90,
     featured: false,
     isNew: true,
-    description: "A peça chave do estilo urbano. Malha Suedine 240g encorpada. Modelagem ampla e estruturada.",
+    description: "O cânone do streetwear Hooke. Suedine 240g de alta densidade com silhueta arquitetônica.",
     imageUrl: "/produtos/hk_prod_ov_black_03.avif",
     images: [
       "/produtos/hk_prod_ov_black_03.avif",
@@ -185,7 +185,7 @@ export const PRODUTOS: Product[] = [
     slug: "regata-canelada-verde",
     price: 50.90,
     featured: true,
-    description: "Estilo militar urbano. Fresca, leve e com caimento impecável para o verão.",
+    description: "Funcionalismo Tático. Malha canelada de alto gramado com tingimento seletivo Stone Wash.",
     imageUrl: "/produtos/hk_prod_re_military_hero.avif",
     images: [
       "/produtos/hk_prod_re_military_hero.avif"
@@ -334,7 +334,7 @@ export const PRODUTOS: Product[] = [
     isPremiumCollection: true,
     isNew: true,
     totalStock: 24, // 8 per size (P, M, G)
-    description: "PRÉ-VENDA LOTE 001. A essência do loungewear de luxo. T-shirt de caimento solto e pantalona fluída. Desenvolvido em Viscose Lore Liso de alta gramatura (230g).",
+    description: "PRÉ-VENDA LOTE 001. Viscose Lore Liso (230g). A geometria do repouso elevada ao máximo rigor técnico.",
     imageUrl: "/assets/femme/musas_001_forest_1.png",
     images: [
       "/assets/femme/musas_001_forest_1.png",
@@ -427,10 +427,10 @@ export const MENU_LINKS = [
 // ---------------------------------------------------------------------------------
 
 export const FAQ_GERAL = [
-  { q: "Qual o prazo de entrega?", a: "Enviamos em até 24h úteis. Para SP e região, a entrega costuma ser no dia seguinte." },
-  { q: "Se não servir, posso trocar?", a: "Sim! A primeira troca é totalmente grátis e por nossa conta. Você tem 7 dias para testar." },
-  { q: "A camiseta encolhe?", a: "Não. Nosso tecido passa por um processo de pré-encolhimento industrial. O tamanho que você compra é o que fica." },
-  { q: "Como escolher meu tamanho?", a: "Recomendamos pegar seu tamanho usual. Nossa modelagem Regular Fit é padrão brasileiro." }
+  { q: "Qual o prazo de logística?", a: "Operação rápida: despacho em até 24h úteis. Prioridade máxima para capitais." },
+  { q: "Protocolo de trocas?", a: "Garantia de ajuste perfeito. A primeira troca é cortesia da Hooke. 7 dias para avaliação de caimento." },
+  { q: "Estabilidade dimensional (encolhimento)?", a: "Zero. O tecido passa por estabilização industrial prévia. A geometria da peça é imutável." },
+  { q: "Cálculo de manuseio e tamanho?", a: "Padrão brasileiro de precisão. Recomendamos sua numeração habitual para o caimento projetado." }
 ];
 
 // ---------------------------------------------------------------------------------
