@@ -10,7 +10,7 @@ export function OfficeAmbience() {
         if (audioRef.current) {
             audioRef.current.volume = 0.3;
             if (!isMuted) {
-                audioRef.current.play().catch(_e => {
+                audioRef.current.play().catch(() => {
                     // Silently handle audio block
                 });
             } else {
