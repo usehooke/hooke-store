@@ -49,14 +49,18 @@ interface AgentState {
     id: string;
     position: { top: number; left: number };
     thought: string;
+    status: "online" | "busy" | "away";
 }
 
 export function useAgentLife(initialAgents: any[]) {
+    const statuses: ("online" | "busy" | "away")[] = ["online", "busy", "away"];
+
     const [agentStates, setAgentStates] = useState<AgentState[]>(
         initialAgents.map(a => ({
             id: a.id,
             position: a.position,
-            thought: ""
+            thought: "",
+            status: statuses[Math.floor(Math.random() * statuses.length)]
         }))
     );
 
