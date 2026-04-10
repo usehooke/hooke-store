@@ -11,7 +11,7 @@ export type Product = GlobalProduct;
 
 export const SITE_CONFIG = {
   nome: "Hooke",
-  descricao_site: "Redefinindo o básico masculino. Camisetas de algodão egípcio e Suedine 240g.",
+  descricao_site: "Design essencial para a permanência. Matéria-prima nacional moldada para o cotidiano tropical.",
   whatsapp_number: "5511975902528", // Número real atualizado
   whatsapp_message: "Olá! Vim pelo site da UseHooke e gostaria de tirar uma dúvida.",
   frete_gratis_minimo: 299.00, // Valor para ganhar frete grátis (lógica futura)
@@ -33,7 +33,7 @@ export const PRODUTOS: Product[] = [
     featured: true,
     isNew: true,
     isPremiumCollection: true,
-    description: "Tríade de Densidade. A base estrutural do cotidiano em Suedine 240g. Modelagem boxy com gola de 2,5cm.",
+    description: "O essencial elevado. Três peças em algodão de alta gramatura, projetadas para manter a estrutura e o frescor no dia a dia.",
     imageUrl: "/produtos/hk_prod_ov_black_03.avif",
     images: [
       "/produtos/hk_prod_ov_black_01.avif",
@@ -55,7 +55,7 @@ export const PRODUTOS: Product[] = [
     price: 225.90,
     featured: false,
     isNew: true,
-    description: "O guarda-roupa completo. 5 peças da nossa modelagem Oversized exclusiva. Suedine 240g.",
+    description: "O guarda-roupa completo. Cinco peças com modelagem exclusiva em algodão de alta densidade.",
     imageUrl: "/produtos/hk_prod_ov_black_03.avif",
     images: [
       "/produtos/hk_prod_ov_black_03.avif",
@@ -113,7 +113,7 @@ export const PRODUTOS: Product[] = [
     price: 120.90,
     featured: false,
     isNew: true,
-    description: "Memória Mecânica. O rigor da herança industrial impresso em Algodão Egípcio.",
+    description: "Herança e estilo. Algodão premium nacional com estampas que celebram a história clássica com suavidade.",
     imageUrl: "/produtos/hk_prod_vi_fusca_black_01.jpg",
     images: ["/produtos/hk_prod_vi_fusca_black_01.jpg"],
     sizes: ["P", "M", "G", "GG", "XG"],
@@ -147,7 +147,7 @@ export const PRODUTOS: Product[] = [
     price: 69.90,
     featured: false,
     isNew: true,
-    description: "O cânone do streetwear Hooke. Suedine 240g de alta densidade com silhueta arquitetônica.",
+    description: "A base do guarda-roupa contemporâneo. Algodão denso de toque macio, moldado para oferecer uma presença forte e confortável.",
     imageUrl: "/produtos/hk_prod_ov_black_03.avif",
     images: [
       "/produtos/hk_prod_ov_black_03.avif",
@@ -185,7 +185,7 @@ export const PRODUTOS: Product[] = [
     slug: "regata-canelada-verde",
     price: 50.90,
     featured: true,
-    description: "Funcionalismo Tático. Malha canelada de alto gramado com tingimento seletivo Stone Wash.",
+    description: "Desempenho e textura. Malha respirável com acabamento Stone Wash, ideal para o dinamismo do nosso clima.",
     imageUrl: "/produtos/hk_prod_re_military_hero.avif",
     images: [
       "/produtos/hk_prod_re_military_hero.avif"
@@ -334,7 +334,7 @@ export const PRODUTOS: Product[] = [
     isPremiumCollection: true,
     isNew: true,
     totalStock: 24, // 8 per size (P, M, G)
-    description: "PRÉ-VENDA LOTE 001. Viscose Lore Liso (230g). A geometria do repouso elevada ao máximo rigor técnico.",
+    description: "Lote 001. Viscose de toque gelado e caimento fluido. Um conjunto projetado para a leveza e elegância em qualquer estação brasileira.",
     imageUrl: "/assets/femme/musas_001_forest_1.png",
     images: [
       "/assets/femme/musas_001_forest_1.png",
@@ -429,8 +429,8 @@ export const MENU_LINKS = [
 export const FAQ_GERAL = [
   { q: "Qual o prazo de logística?", a: "Operação rápida: despacho em até 24h úteis. Prioridade máxima para capitais." },
   { q: "Protocolo de trocas?", a: "Garantia de ajuste perfeito. A primeira troca é cortesia da Hooke. 7 dias para avaliação de caimento." },
-  { q: "Estabilidade dimensional (encolhimento)?", a: "Zero. O tecido passa por estabilização industrial prévia. A geometria da peça é imutável." },
-  { q: "Cálculo de manuseio e tamanho?", a: "Padrão brasileiro de precisão. Recomendamos sua numeração habitual para o caimento projetado." }
+  { q: "Estabilidade dimensional (encolhimento)?", a: "Zero. O tecido passa por estabilização prévia. A forma da peça é preservada lavagem após lavagem." },
+  { q: "Cálculo de manuseio e tamanho?", a: "Padrão brasileiro de precisão. Recomendamos sua numeração habitual para o caimento planejado." }
 ];
 
 // ---------------------------------------------------------------------------------

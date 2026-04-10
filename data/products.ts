@@ -12,7 +12,7 @@ export const products: Product[] = [
     price: 135.00,
     featured: true, // TRUE = Hero Principal
     isNew: true,    // Tag "Lançamento"
-    description: "O melhor custo-benefício. Leve 3 peças da nossa modelagem Oversized exclusiva. Tecido encorpado, gola estruturada e caimento streetwear perfeito.",
+    description: "O essencial elevado. Três peças em algodão de alta gramatura, projetadas para manter a estrutura e o frescor no dia a dia.",
     // Capa: Preta
     imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
@@ -35,7 +35,7 @@ export const products: Product[] = [
     slug: "regata-canelada-verde",
     price: 99.90,
     featured: true,
-    description: "Estilo militar urbano. Fresca, leve e com caimento impecável para o verão.",
+    description: "Desempenho e textura. Malha respirável com acabamento Stone Wash, ideal para o dinamismo do nosso clima.",
     imageUrl: "/produtos/HK_PROD_RE_MILITARY_01.jpg",
     images: [
       "/produtos/HK_PROD_RE_MILITARY_01.jpg",
@@ -56,7 +56,7 @@ export const products: Product[] = [
     slug: "camiseta-vintage-fusca-preta",
     price: 159.90,
     featured: true,
-    description: "O clássico absoluto. Estampa do Fusca em silk screen de alta definição sobre algodão preto profundo.",
+    description: "Herança e estilo. Algodão premium nacional com estampas que celebram a história clássica com suavidade.",
     imageUrl: "/produtos/HK_PROD_VI_FUSCA_BLACK_01.jpg",
     images: [
       "/produtos/HK_PROD_VI_FUSCA_BLACK_01.jpg",
@@ -79,7 +79,7 @@ export const products: Product[] = [
     price: 69.90,
     featured: false,
     isNew: true,
-    description: "A peça chave do estilo urbano. Modelagem ampla e estruturada. Caimento perfeito no corpo.",
+    description: "A base do guarda-roupa contemporâneo. Algodão denso de toque macio, moldado para oferecer uma presença forte e confortável.",
     imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
     images: [
       "/produtos/HK_PROD_OV_BLACK_03.avif",
@@ -98,7 +98,7 @@ export const products: Product[] = [
     price: 69.90,
     featured: false,
     isNew: true,
-    description: "Tonalidade natural que traz sofisticação para o streetwear.",
+    description: "Tonalidade natural que traz sofisticação e leveza para o cotidiano.",
     imageUrl: "/produtos/HK_PROD_OV_OFFWHITE_01.avif",
     images: ["/produtos/HK_PROD_OV_OFFWHITE_01.avif"],
     sizes: ["P", "M", "G", "GG", "XG"],
@@ -113,7 +113,7 @@ export const products: Product[] = [
     slug: "regata-canelada-marrom",
     price: 99.90,
     featured: false,
-    description: "Textura que diferencia. Malha canelada que se ajusta ao corpo sem apertar.",
+    description: "Diferenciação pela textura. Malha canelada de toque macio que se ajusta ao corpo com liberdade.",
     imageUrl: "/produtos/HK_PROD_RE_COFFEE_01.jpg",
     images: [
       "/produtos/HK_PROD_RE_COFFEE_01.jpg",

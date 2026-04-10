@@ -6,8 +6,8 @@
 
 export const brandConfig = {
   name: "Hooke",
-  tagline: "Rigor Têxtil | Arquitetura Básica para a Permanência",
-  description: "A ciência do essencial. Engenharia de alta gramatura, silhuetas arquitetônicas e acabamento industrial de elite.",
+  tagline: "Essencialismo Brasileiro | Design para a Permanência",
+  description: "Matéria-prima nacional moldada para o cotidiano tropical. A união entre a densidade têxtil e o frescor necessário para a estrutura masculina.",
   
   // Contatos
   contact: {

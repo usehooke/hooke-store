@@ -33,15 +33,15 @@ export default function BentoHero() {
             </span>
 
             <h1 className="text-4xl md:text-5xl font-heading font-black tracking-[-0.04em] mb-4 uppercase leading-[0.9]">
-              Geometria <br /> <span className="text-hooke-400">Têxtil</span>
+              Estrutura <br /> <span className="text-hooke-400">Atemporal</span>
             </h1>
 
             <p className="text-gray-300 text-[10px] tracking-[0.3em] max-w-xs mb-8 leading-relaxed uppercase font-medium">
-              O rigor da construção em 350g. Silhuetas arquitetônicas projetadas para a permanência.
+              Densidade pensada para o clima brasileiro. Peças em algodão premium que mantêm a forma e o frescor.
             </p>
 
             <Link href="/masculino" className="group/link flex items-center gap-3 text-[10px] font-bold tracking-[0.3em] uppercase bg-white text-black px-8 py-5 hover:bg-gray-200 transition-all w-max inline-flex">
-              Explorar Engenharia <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+              Explorar Coleção <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.div>
@@ -69,7 +69,7 @@ export default function BentoHero() {
             </span>
 
             <h1 className="text-3xl md:text-5xl font-heading font-black tracking-[-0.04em] mb-4 drop-shadow-lg uppercase leading-[0.9]">
-              Lore V2: <br /> <span className="opacity-70">Densidade</span>
+              Lore V2: <br /> <span className="opacity-70">A Fluidez</span>
             </h1>
 
             <div className="inline-block border border-white/40 backdrop-blur-md text-white text-[9px] font-bold px-4 py-2 mb-6 tracking-[0.3em] uppercase">
@@ -77,7 +77,7 @@ export default function BentoHero() {
             </div>
 
             <p className="text-white/80 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium drop-shadow-sm">
-              A geometria do repouso em Viscose 230g. O feminino sob o prisma do rigor Hooke.
+              Viscose selada de toque gelado. O equilíbrio perfeito entre estrutura e movimento sob o sol do país.
             </p>
 
             <Link href="/feminino" className="group/link flex items-center gap-4 text-[10px] font-black tracking-[0.4em] uppercase border-b border-white/50 pb-2 hover:text-white hover:border-white transition-all w-max inline-flex">
