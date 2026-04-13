@@ -31,13 +31,22 @@ Este documento é a **Constituição da Agência Hooke**. Todos os agentes (Anti
 
 ## 🎨 3. Mandamentos Visuais (AI Art Director)
 
-### 3.1 Identidade Visual
-- **Fidelidade do Fundador:** 100% de precisão no rosto do modelo de referência.
+### 3.1 Identidade Visual & Biometria
+- **Biometria Oficial:** Consultar obrigatoriamente a pasta `docs/AGENCY_IA_FOTOGRAFIA/BRAND_IDENTITY/` para referências do **Fundador** e da **Musa 001**.
 - **Estética Hooke:** Minimalismo, concreto, luz dramática, tipografia `heading` e `sans` conforme Token System.
 
-### 3.2 Otimização Criativa
+### 3.2 Otimização Criativa & Pipeline
+- **Pipeline Determinístico:** Seguir o [TECHNICAL_SOP_V2.md](AGENCY_IA_FOTOGRAFIA/MASTER_DOCS/TECHNICAL_SOP_V2.md) para garantir fidelidade de produto 1:1 via ControlNet.
 - **Formato:** Priorizar AVIF (80% mais leve que JPEG).
 - **LCP Friendly:** Grandes heros devem ter `priority` e tamanhos responsivos.
+
+---
+
+## 📸 4. Hub de Fotografia IA (Squads Alpha & Beta)
+
+Todo o ecossistema de geração de assets está centralizado em `docs/AGENCY_IA_FOTOGRAFIA/`.
+- **Master Prompts:** [MASTER_PROMPTS_V2.md](AGENCY_IA_FOTOGRAFIA/MASTER_DOCS/MASTER_PROMPTS_V2.md)
+- **Regra de Unificação:** Masculino e Feminino devem compartilhar a mesma "Luz de Atelier" para consistência Unisex.
 
 ---
 

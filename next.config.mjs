@@ -48,6 +48,11 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+
+  // 🚀 NEXT-LEVEL PERFORMANCE (PPR)
+  experimental: {
+    ppr: 'incremental',
+  },
 };
 
 export default withPWA(nextConfig);

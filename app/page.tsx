@@ -1,9 +1,4 @@
-"use client";
-
 import { getFeaturedProducts } from "@/lib/productService";
-import { useEffect, useState } from "react";
-import { Product } from "@/data/catalogo";
-
 import BentoHero from "@/components/home/BentoHero";
 import BrandMarquee from "@/components/ui/BrandMarquee";
 import ProductCard from "@/components/shop/ProductCard";
@@ -11,40 +6,33 @@ import BrandBento from "@/components/home/BrandBento";
 import SocialFeed from "@/components/home/SocialFeed";
 import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
-import { motion } from "framer-motion";
+import React, { Suspense } from "react";
 
-export default function Home() {
-  const [showcaseProducts, setShowcaseProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    getFeaturedProducts(8).then(setShowcaseProducts);
-  }, []);
+/**
+ * Hooke V3: Home Page Otimizada com PPR.
+ * A casca (Hero, Marquee) é servida instantaneamente do cache estático.
+ * A lista de produtos e o saudoso VIP são carregados de forma asíncrona (Dynamic).
+ */
+export default async function Home() {
+  // Otimização: Buscamos os produtos em paralelo/servidor
+  const showcaseProducts = await getFeaturedProducts(8);
 
   return (
     <main className="bg-hooke-paper min-h-screen">
-      <VIPGreeting />
+      {/* 🚀 Dynamic Hole: Personalização via Suspense */}
+      <Suspense fallback={<div className="h-10" />}>
+        <VIPGreeting />
+      </Suspense>
 
-      {/* 1. HERO BENTO */}
-      <motion.section 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <BentoHero />
-      </motion.section>
+      {/* 1. HERO BENTO (Estático/Shell) */}
+      <BentoHero />
 
       {/* 2. BARRA */}
       <BrandMarquee />
 
       {/* 3. LISTA DE PRODUTOS */}
       <section id="colecao" className="py-24 px-6 md:px-12 w-full">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4"
-        >
+        <div className="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4">
           <div className="max-w-xl">
             <span className="text-[10px] font-black tracking-[0.4em] text-hooke-400 mb-4 block uppercase font-mono">
               PROTOCOLO HOOKE
@@ -57,8 +45,9 @@ export default function Home() {
             </p>
           </div>
           <div className="h-px bg-hooke-200 flex-1 mx-8 hidden md:block"></div>
-        </motion.div>
+        </div>
 
+        {/* 🚀 Dynamic Content Area */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
           {showcaseProducts.map(product => (
             <ProductCard key={product.id} product={product} />
@@ -66,15 +55,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. SEÇÕES ADICIONAIS COM REVEAL */}
-      <motion.div 
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
+      {/* 4. SEÇÕES ADICIONAIS */}
+      <Suspense fallback={<div className="h-40" />}>
         <RecentlyViewed />
-      </motion.div>
+      </Suspense>
 
       <SocialFeed />
 
