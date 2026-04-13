@@ -60,11 +60,17 @@ export function useAgentLife(initialAgents: any[]) {
             id: a.id,
             position: a.position,
             thought: "",
-            status: statuses[Math.floor(Math.random() * statuses.length)]
+            status: "online" // Valor determinístico para o build
         }))
     );
 
     useEffect(() => {
+        // Randomização inicial apenas no cliente para evitar erros de hydration/PPR
+        setAgentStates(prev => prev.map(a => ({
+            ...a,
+            status: statuses[Math.floor(Math.random() * statuses.length)]
+        })));
+
         // Intervalo de Movimento Zen: 45 a 90 segundos
         const moveInterval = setInterval(() => {
             setAgentStates(prev => {

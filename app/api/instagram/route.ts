@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-export const revalidate = 86400; // Cache de 24 horas para não estourar a API do Instagram
 
 const INSTAGRAM_ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN || '';
 const INSTAGRAM_API_URL = `https://graph.instagram.com/me/media?fields=id,caption,media_url,permalink,media_type,thumbnail_url&access_token=${INSTAGRAM_ACCESS_TOKEN}&limit=10`;

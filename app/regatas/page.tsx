@@ -8,7 +8,6 @@ export const metadata = {
  description: "A Regata Canelada Americana que se ajusta ao corpo sem apertar. Corte Machão que destaca os ombros.",
 };
 
-export const revalidate = 0;
 
 export default async function LandingPage() {
  const PRODUTOS = await getProducts();

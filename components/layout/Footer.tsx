@@ -3,7 +3,7 @@ import { Facebook, Instagram, Twitter, Send } from "lucide-react";
 import { brandConfig } from "@/config/brandConfig";
 
 export default function Footer() {
- const currentYear = new Date().getFullYear();
+  const currentYear = 2026; // Valor determinístico para o build PPR
 
  return (
  <footer className="w-full bg-hooke-900 text-white border-t border-gray-800">

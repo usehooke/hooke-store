@@ -3,7 +3,6 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { Product } from "@/types";
 
-export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {

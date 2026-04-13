@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter, Jost } from "next/font/google";
 import "@/app/globals.css"; // Importação absoluta para garantir carregamento
@@ -76,11 +77,13 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
       <body className="font-sans antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
         <Providers>
-          <ShopLayoutWrapper>
-            <TransitionProvider>
-              {children}
-            </TransitionProvider>
-          </ShopLayoutWrapper>
+          <Suspense fallback={<div className="min-h-screen bg-hooke-paper" />}>
+            <ShopLayoutWrapper>
+              <TransitionProvider>
+                {children}
+              </TransitionProvider>
+            </ShopLayoutWrapper>
+          </Suspense>
 
           <Toaster
             position="bottom-right"
@@ -97,7 +100,9 @@ export default function RootLayout({
             }}
           />
 
-          <ConditionalTracking gaId={GA_MEASUREMENT_ID} />
+          <Suspense fallback={null}>
+            <ConditionalTracking gaId={GA_MEASUREMENT_ID} />
+          </Suspense>
         </Providers>
       </body>
     </html>

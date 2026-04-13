@@ -64,6 +64,9 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
         ))}
       </div>
 
+      {/* 2. LAYOUT MOBILE: CARROSSEL NATIVO (HIGH-FIDELITY SWIPE) */}
+      <div className="md:hidden relative w-full overflow-hidden bg-white">
+        {/* Barra de Progresso Superior (Sutil - Estética iOS) */}
         <motion.div 
           className="absolute top-0 left-0 right-0 h-[3px] bg-hooke-900 origin-left z-20 shadow-[0_0_10px_rgba(0,0,0,0.1)]"
           style={{ scaleX }}

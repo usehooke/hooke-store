@@ -49,10 +49,11 @@ const nextConfig = {
     },
   },
 
-  // 🚀 NEXT-LEVEL PERFORMANCE (PPR)
-  experimental: {
-    ppr: 'incremental',
-  },
+  // 🚀 NEXT-LEVEL PERFORMANCE (PPR & Dynamic IO)
+  cacheComponents: true,
+
+  // Compatibilidade com Webpack (PWA)
+  turbopack: {},
 };
 
 export default withPWA(nextConfig);

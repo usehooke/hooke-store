@@ -15,9 +15,10 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// --- A BLINDAGEM DE BUILD (CURTO-CIRCUITO) ---
-// Checa se a chave existe antes de acionar o SDK para evitar erros fatais no Vercel.
-export const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
+// --- A BLINDAGEM DE BUILD (CURTO-CIRCUITO TOTAL) ---
+// Checa se a chave existe E se não estamos em fase de build SSG/PPR.
+export const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && typeof window === 'undefined';
+export const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined" && !isBuildTime;
 
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;

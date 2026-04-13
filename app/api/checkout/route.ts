@@ -4,7 +4,6 @@ import { client } from "@/lib/mercadopago";
 import { adminDb } from "@/lib/firebase-admin";
 import { Order, OrderCustomer, OrderItem } from "@/types/order";
 
-export const dynamic = 'force-dynamic';
 
 // Minimal in-memory cache for simple idempotency to protect against network bounces
 const idempotencyCache = new Map<string, number>();

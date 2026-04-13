@@ -12,8 +12,8 @@ export const COLLECTION_NAME = "produtos";
  */
 
 export async function getProducts(category?: string): Promise<Product[]> {
-    // ⚡ A TRAVA DO TECH LEAD: Se o banco não inicializou (Build-time ou falta de chave), usamos Mock Data.
-    if (!db) {
+    // ⚡ CURTO-CIRCUITO DE BUILD: Evita falhas de permissão no Firestore durante o deploy na Vercel
+    if (process.env.NEXT_PHASE === 'phase-production-build' || !db) {
         return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
     }
 
@@ -49,7 +49,7 @@ export async function getProducts(category?: string): Promise<Product[]> {
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
     // ⚡ BYPASS IMEDIATO
-    if (!db) {
+    if (process.env.NEXT_PHASE === 'phase-production-build' || !db) {
         return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
     }
 
@@ -83,7 +83,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 export async function getFeaturedProducts(limitCount: number = 8): Promise<Product[]> {
     // ⚡ BYPASS IMEDIATO
-    if (!db) {
+    if (process.env.NEXT_PHASE === 'phase-production-build' || !db) {
         return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
     }
 

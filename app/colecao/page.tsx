@@ -9,7 +9,6 @@ export const metadata: Metadata = {
  description: "Descubra a coleção completa de camisetas oversized, regatas e kits premium.",
 };
 
-export const revalidate = 3600;
 
 export default async function CollectionPage() {
  // Pega os dados do Firestore através do Serviço Centralizado

@@ -3,13 +3,13 @@ import ProductCard from "@/components/shop/ProductCard";
 import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
  title: "Masculino | Hooke Elite",
  description: "O básico masculino elevado à perfeição. Camisetas Oversized, Heavy Cotton e Wafer.",
 };
 
-export const revalidate = 3600;
 
 export default async function MasculinoPage() {
   return (
