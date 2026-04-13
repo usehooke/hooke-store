@@ -22,7 +22,7 @@ export default function BentoHero() {
             alt="Hooke Menswear"
             fill
             priority
-            className="object-contain object-top opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-[length:3000ms] ease-out"
+            className="md:object-contain object-cover object-top opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all duration-[length:3000ms] ease-out"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10" />
@@ -54,11 +54,11 @@ export default function BentoHero() {
           className="flex-1 relative group overflow-hidden bg-[#b0b0b0] h-[500px] md:h-auto"
         >
           <Image
-            src="/assets/femme/musas_001_forest_1.png" 
+            src="/assets/femme/musas_001_forest_fit.png" 
             alt="Hooke Womenswear - Musa 001"
             fill
             priority
-            className="object-contain object-center opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:3000ms] ease-out"
+            className="md:object-contain object-cover object-center opacity-90 group-hover:scale-105 group-hover:opacity-100 transition-all duration-[length:3000ms] ease-out"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
