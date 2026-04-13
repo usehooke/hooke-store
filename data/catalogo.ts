@@ -335,12 +335,10 @@ export const PRODUTOS: Product[] = [
     isNew: true,
     totalStock: 24, // 8 per size (P, M, G)
     description: "Lote 001. Viscose de toque gelado e caimento fluido. Um conjunto projetado para a leveza e elegância em qualquer estação brasileira.",
-    imageUrl: "/assets/femme/musas_001_forest_1.png",
+    imageUrl: "/assets/femme/musas_001_forest_fit.png",
     images: [
-      "/assets/femme/musas_001_forest_1.png",
-      "/assets/femme/musas_001_forest_2.png",
-      "/assets/femme/musas_001_forest_3.png",
-      "/assets/femme/musas_001_forest_4.png"
+      "/assets/femme/musas_001_forest_fit.png",
+      "/assets/femme/musas_001_forest_details.png"
     ],
     sizes: ["P", "M", "G"],
     department: "feminino",
@@ -358,12 +356,10 @@ export const PRODUTOS: Product[] = [
     isNew: true,
     totalStock: 24, // 8 per size (P, M, G)
     description: "PRÉ-VENDA LOTE 001. Para os dias em que a discrição se torna a maior de todas as presenças. Tecido Lore Liso com elastano para máximo conforto.",
-    imageUrl: "/assets/femme/musas_001_navy_1.png",
+    imageUrl: "/assets/femme/musas_001_navy_focus.png",
     images: [
-      "/assets/femme/musas_001_navy_1.png",
-      "/assets/femme/musas_001_navy_2.png",
-      "/assets/femme/musas_001_navy_3.png",
-      "/assets/femme/musas_001_navy_4.png"
+      "/assets/femme/musas_001_navy_focus.png",
+      "/assets/femme/musas_001_navy_construction.png"
     ],
     sizes: ["P", "M", "G"],
     department: "feminino",

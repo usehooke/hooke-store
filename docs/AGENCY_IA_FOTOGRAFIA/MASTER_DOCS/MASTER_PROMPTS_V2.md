@@ -39,14 +39,19 @@ Full body shot of the reference man. Standing confidently. Focus on the heavy dr
 
 **Modelo Padrão (Musa 001):** Mulher de 35 anos, confiante e serena, traços modernos, olhos marcantes, pele realista com marcas de vivência (Zero Plastic). Referência em [MUSA_001_OFFICIAL.png](../BRAND_IDENTITY/MUSA_001_OFFICIAL.png).
 
-### Foto 1 - Lifestyle Elegance (Viscose Lore Liso)
+### 🛠️ DIRETRIZES DE TAIOLORING (CRÍTICO)
+- **FIT:** O caimento é **Boxy Regular**, NUNCA oversized. A camiseta deve terminar na linha da cintura/elástico.
+- **DETALHES:** Conjuntos com cordão DEVEM exibir ponteiras metálicas douradas (gold aglets).
+- **FOCO:** Prioridade total na modelagem e caimento do tecido (Garment-First), rosto em segundo plano.
+
+### Foto 1 - Movimento e Modelagem (Musa 001)
 ```text
-Ultrarrealistic editorial photography of the reference female model (Musa 001). She is wearing the [DESCRIÇÃO_DO_CONJUNTO] in premium 230g Viscose Lore Liso. The fabric has a soft, cool glow and fluid drape that flows with movement. Minimalist neutral studio background. Softbox lighting creating a high-end atelier vibe. Natural skin texture.
+Ultrarrealistic editorial of Musa 001 wearing the [DESCRIÇÃO] set. FIT: Structured Boxy Regular (not oversized). POSE: Walking gracefully. Lighting: Soft cinematic studio light. Focus on the garment silhouette and the fluid drape of 230g Viscose. 8k.
 ```
 
-### Foto 2 - Detalhe de Textura (O Toque da Peça)
+### Foto 2 - Macro Técnico (Gold Details)
 ```text
-Macro shot focusing on the waist and hip area of the [DESCRIÇÃO_DO_CONJUNTO]. Show the intricate weave of the Lore Liso viscose. The fabric folds must be soft and organic, showing its lightweight but opaque quality. Include the characteristic cooling effect visual of the material. Zero artificial glow, matte premium finish.
+Macro fashion shot of the waist area. Show the elastic waistband and the drawstring with clearly visible gold-metallic tips. Fabric: Premium matte Viscose Lore Liso. High precision on textures and seams. 8k.
 ```
 
 ---
