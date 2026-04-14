@@ -148,6 +148,8 @@ export default function AdminOrdersPage() {
   'rejected': 'bg-red-100 text-red-800 border-red-200',
   'cancelled': 'bg-gray-100 text-gray-800 border-gray-200',
   'sent': 'bg-hooke-900 text-white border-hooke-900',
+  'paid': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  'shipped': 'bg-indigo-100 text-indigo-800 border-indigo-200',
   };
   const labels = {
   'pending': 'Pendente',
@@ -156,6 +158,8 @@ export default function AdminOrdersPage() {
   'rejected': 'Recusado',
   'cancelled': 'Cancelado',
   'sent': 'Enviado',
+  'paid': 'Pago',
+  'shipped': 'Postado',
   };
   return (
   <span className={`px-2 py-1 text-[10px] font-bold tracking-widest border rounded-none ${colors[status]}`}>
@@ -268,10 +272,12 @@ export default function AdminOrdersPage() {
   >
   <option value="pending">Pendente (MP)</option>
   <option value="approved">Aprovado (MP)</option>
+  <option value="paid">Pago (Confirmado)</option>
   <option value="rejected">Recusado (MP)</option>
   <option value="cancelled">Cancelado (MP)</option>
   <option value="in_process">Em Análise (MP)</option>
-  <option value="sent">Enviado (Manual)</option>
+  <option value="sent">Enviado (Logística)</option>
+  <option value="shipped">Postado (Rastreio)</option>
   </select>
   <div className="mt-2 text-left">
   <StatusBadge status={order.status} />

@@ -79,7 +79,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
 
           <div className="border-t border-black/5 pt-8">
             <p className="text-[13px] leading-relaxed text-hooke-900/70 font-sans font-medium italic">
-              &quot;{product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')}&quot;
+              {product.description ? `"${product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')}"` : 'Design essencial para a permanência.'}
             </p>
           </div>
         </div>

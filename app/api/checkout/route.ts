@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { Preference } from "mercadopago";
 import { client } from "@/lib/mercadopago";
 import { adminDb } from "@/lib/firebase-admin";
-import { Order, OrderCustomer, OrderItem } from "@/types/order";
+import { Order, OrderItem } from "@/types/order";
+import { CheckoutRequestSchema } from "@/lib/schemas";
 
 
 // Minimal in-memory cache for simple idempotency to protect against network bounces
@@ -21,23 +22,18 @@ function cleanIdempotencyCache() {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { items, customer, shippingValue, shippingMethod, shippingZipcode, discountValue, couponCode } = body as {
-            items: OrderItem[];
-            customer: OrderCustomer;
-            shippingValue?: number;
-            shippingMethod?: string;
-            shippingZipcode?: string;
-            discountValue?: number;
-            couponCode?: string;
-        };
+        
+        // 🔒 ARQUEOLOGIA: Blindagem Zod ativada
+        const validation = CheckoutRequestSchema.safeParse(body);
 
-        if (!items || items.length === 0) {
-            return NextResponse.json({ message: "Carrinho está vazio." }, { status: 400 });
+        if (!validation.success) {
+            return NextResponse.json({ 
+                message: "Dados de checkout inválidos.", 
+                errors: validation.error.format() 
+            }, { status: 400 });
         }
 
-        if (!customer || !customer.name || !customer.phone) {
-            return NextResponse.json({ message: "Dados do cliente incompletos (nome e telefone são obrigatórios)." }, { status: 400 });
-        }
+        const { items, customer, shippingValue, shippingMethod, shippingZipcode, discountValue, couponCode } = validation.data;
 
         // --- IDEMPOTENCY CHECK ---
         cleanIdempotencyCache();
@@ -124,10 +120,10 @@ export async function POST(req: Request) {
                 payer: {
                     name: customer.name,
                     email: safeEmail,
-                    phone: {
-                        area_code: customer.phone.substring(0, 2),
-                        number: customer.phone.substring(2)
-                    }
+                    phone: customer.phone ? {
+                        area_code: customer.phone.replace(/\D/g, "").substring(0, 2),
+                        number: customer.phone.replace(/\D/g, "").substring(2)
+                    } : undefined
                 },
                 external_reference: orderId, // Crucial: amarra o Webhook ao nosso Doc no FB
                 auto_return: "approved",

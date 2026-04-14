@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { CouponRequestSchema } from "@/lib/schemas";
 
 export async function POST(request: Request) {
   try {
-    const { code } = await request.json();
-    
-    if (!code) {
-      return NextResponse.json({ valid: false, message: "Cupom não fornecido" }, { status: 400 });
+    const body = await request.json();
+    const validation = CouponRequestSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json({ 
+        valid: false, 
+        message: "Código de cupom inválido." 
+      }, { status: 400 });
     }
+
+    const { code } = validation.data;
 
     // ⚡ A TRAVA DO TECH LEAD: Blindagem para build e ambiente sem env vars
     const firestore = db;

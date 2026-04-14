@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { calcularPrecoPrazo } from "correios-brasil";
 import { get } from "@vercel/edge-config";
 import { TinyClient } from "../../../lib/tiny/client";
+import { ShippingRequestSchema } from "@/lib/schemas";
 
 // Função para simular fallback funcional dinâmico
 async function getFallbackShipping(cepDestino: string, pesoFinal: string): Promise<{ nome: string; valor: string; prazo: string }[]> {
@@ -25,11 +26,16 @@ async function getFallbackShipping(cepDestino: string, pesoFinal: string): Promi
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { cepDestino, peso } = body as { cepDestino: string; peso?: string };
+        const validation = ShippingRequestSchema.safeParse(body);
 
-        if (!cepDestino) {
-            return NextResponse.json({ message: "CEP de destino não informado." }, { status: 400 });
+        if (!validation.success) {
+            return NextResponse.json({ 
+                message: "Dados de frete inválidos.", 
+                errors: validation.error.format() 
+            }, { status: 400 });
         }
+
+        const { cepDestino, peso } = validation.data;
 
         // Remover traços ou pontos do CEP
         const sCepDestino = cepDestino.replace(/\D/g, "");

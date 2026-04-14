@@ -25,6 +25,8 @@ export interface PDVItem extends Product {
 export interface OfflineSale {
   id: string;
   items: PDVItem[];
+  customerName: string;
+  customerPhone?: string;
   total: number;
   paymentMethod: 'dinheiro' | 'pix' | 'cartao';
   timestamp: number;

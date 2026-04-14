@@ -57,7 +57,7 @@ function MyOrdersContent() {
 
  if (docSnap.exists()) {
  const data = docSnap.data() as Order;
- const isEmailMatch = data.customer.email.toLowerCase().trim() === email.toLowerCase().trim();
+ const isEmailMatch = (data.customer.email || "").toLowerCase().trim() === email.toLowerCase().trim();
  const isPhoneMatch = digitsOnly(data.customer.phone) === digitsOnly(phone);
 
  if (isEmailMatch && isPhoneMatch) {
@@ -90,7 +90,7 @@ function MyOrdersContent() {
  if (docSnap.exists()) {
  const data = docSnap.data() as Order;
  // Na busca inicial pela URL, só temos email e id
- if (data.customer.email.toLowerCase().trim() === rawEmail.toLowerCase().trim()) {
+ if ((data.customer.email || "").toLowerCase().trim() === rawEmail.toLowerCase().trim()) {
  // Se acessou pela URL mas não preencheu Wpp, avisamos ou carregamos? 
  // O ideal é carregar para não quebrar o link de redirecionamento imediato do Mercado Pago.
  setOrder(data);
