@@ -113,10 +113,3 @@ export default function CartSheet() {
     </div>
   );
 }
-heetClose>
- </div>
- </SheetFooter>
- )}
- </div>
- );
-}
