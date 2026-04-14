@@ -1,3 +1,8 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { get, set } from "idb-keyval";
 
 /**
