@@ -1,10 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Instagram } from "lucide-react";
-import { motion } from "framer-motion";
+import { get, set } from "idb-keyval";
 
 interface SocialPost {
  id: string | number;
@@ -13,41 +9,42 @@ interface SocialPost {
  alt: string;
 }
 
-// Fallback Mock
+// Fallback Mock (Usando imagens reais do catalogo para evitar 404/400)
 const SOCIAL_POSTS: SocialPost[] = [
  {
  id: 1,
- imageUrl: "/produtos/camiseta-oversized-preta-premium-hooke-3.avif",
+ imageUrl: "/produtos/hk_prod_ov_black_03.avif",
  link: "/produto/camiseta-oversized-preta-premium",
  alt: "Homem usando camiseta oversized preta Hooke",
  },
  {
  id: 2,
- imageUrl: "/produtos/camiseta-Regata-canelada-verde-2.jpg",
+ imageUrl: "/produtos/hk_prod_re_military_hero.avif",
  link: "/produto/regata-canelada-verde",
  alt: "Homem usando regata canelada verde Hooke",
  },
  {
  id: 3,
- imageUrl: "/produtos/regata-lifestyle-bege.jpg",
+ imageUrl: "/produtos/hk_prod_re_lifestyle_bege_01.jpg",
  link: "/produto/regata-lifestyle-bege",
  alt: "Homem usando regata lifestyle bege Hooke",
  },
  {
  id: 4,
- imageUrl: "/produtos/camiseta-vintage-fusca-preta-1.jpg",
+ imageUrl: "/produtos/hk_prod_vi_fusca_editorial_01.png",
  link: "/produto/camiseta-vintage-fusca-preta",
  alt: "Homem usando camiseta vintage fusca preta",
  },
  {
  id: 5,
- imageUrl: "/produtos/camiseta-oversized-offwhite-premium-hooke-1.avif",
+ imageUrl: "/produtos/hk_prod_ov_offwhite_01.avif",
  link: "/produto/camiseta-oversized-offwhite-premium",
  alt: "Homem usando camiseta oversized off-white Hooke",
  },
 ];
 
-const CACHE_KEY = 'hooke_instagram_feed';
+const CACHE_KEY = 'hooke_instagram_feed_v2'; // Nova chave para IDB
+const OLD_CACHE_KEY = 'hooke_instagram_feed';
 const CACHE_DURATION = 1000 * 60 * 60 * 12; // 12 horas
 
 export default function SocialFeed() {
@@ -55,35 +52,43 @@ export default function SocialFeed() {
 
  useEffect(() => {
  const fetchFeed = async () => {
- // 1. Tenta carregar do cache primeiro (Instantâneo)
- const cached = localStorage.getItem(CACHE_KEY);
- if (cached) {
- const { data, timestamp } = JSON.parse(cached);
- if (Date.now() - timestamp < CACHE_DURATION) {
- setFeedPhotos(data);
- return; // Se estiver fresco, nem bate na API agora
- }
- }
+  // ⚡ ARQUEOLOGIA: Limpeza do localStorage antigo (Limpa tudo!)
+  if (typeof window !== 'undefined' && localStorage.getItem(OLD_CACHE_KEY)) {
+    localStorage.removeItem(OLD_CACHE_KEY);
+  }
 
- // 2. Busca da nossa API interna (que já tem ISR)
- try {
- const res = await fetch('/api/instagram');
- if (!res.ok) throw new Error("API Error");
- const json = await res.json();
- const data = json.feed;
- 
- if (data && data.length > 0) {
- setFeedPhotos(data);
- // 3. Salva no cache
- localStorage.setItem(CACHE_KEY, JSON.stringify({
- data,
- timestamp: Date.now()
- }));
- }
- } catch (error) {
- console.error("Instagram Feed Local Error:", error);
- // Se falhar e não tiver nada no cache, usa o mock já setado no estado inicial
- }
+  // 1. Tenta carregar do IndexedDB (Offline-First)
+  try {
+    const cached: any = await get(CACHE_KEY);
+    if (cached) {
+      const { data, timestamp } = cached;
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        setFeedPhotos(data);
+        return; 
+      }
+    }
+  } catch (e) {
+    console.warn("IDB fetch error:", e);
+  }
+
+  // 2. Busca da nossa API interna
+  try {
+  const res = await fetch('/api/instagram');
+  if (!res.ok) throw new Error("API Error");
+  const json = await res.json();
+  const data = json.feed;
+  
+  if (data && data.length > 0) {
+  setFeedPhotos(data);
+  // 3. Salva no IndexedDB
+  await set(CACHE_KEY, {
+    data,
+    timestamp: Date.now()
+  });
+  }
+  } catch (error) {
+  console.error("Instagram Feed Local Error:", error);
+  }
  };
 
  fetchFeed();

@@ -7,7 +7,7 @@ import PDVProductGrid from "@/components/pdv/ProductGrid";
 import PDVCartSidebar from "@/components/pdv/CartSidebar";
 
 export default function PDVPage() {
- const { isSyncing, pendingCount, isContingencyMode } = useSyncOfflineSales();
+  const { isSyncing, pendingCount, exhaustedCount, isContingencyMode } = useSyncOfflineSales();
 
  return (
  <div className="min-h-screen bg-hooke-50 text-hooke-900 font-sans">
@@ -41,6 +41,11 @@ export default function PDVPage() {
  <div className="flex items-center gap-2 text-[10px] font-black text-red-600 bg-hooke-50 px-3 py-2 shadow-neumorph-inset border border-red-200">
  <AlertTriangle className="h-3 w-3 animate-pulse" />
  MODO CONTINGÊNCIA (ERP OFFLINE)
+ </div>
+ ) : exhaustedCount > 0 ? (
+ <div className="flex items-center gap-2 text-xs font-bold text-white bg-red-600 px-3 py-2 shadow-neumorph-inset border border-red-700">
+ <AlertTriangle className="h-3 w-3 animate-bounce" />
+ {exhaustedCount} FALHA(S) CRÍTICA(S)
  </div>
  ) : pendingCount > 0 ? (
  <div className="flex items-center gap-2 text-xs font-bold text-yellow-600 bg-hooke-50 px-3 py-2 shadow-neumorph-inset">

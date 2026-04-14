@@ -75,11 +75,11 @@ export const PRODUTOS: Product[] = [
     featured: false,
     isNew: true,
     description: "As 3 cores essenciais para o seu treino. Malha canelada com elastano.",
-    imageUrl: "/produtos/camiseta-regata-canelada-verde-1.jpg",
+    imageUrl: "/produtos/hk_prod_re_military_hero.avif",
     images: [
-      "/produtos/camiseta-regata-canelada-verde-1.jpg",
-      "/produtos/camiseta-regata-canelada-areia-1.jpg",
-      "/produtos/camiseta-regata-canelada-marrom-1.jpg"
+      "/produtos/hk_prod_re_military_hero.avif",
+      "/produtos/hk_prod_re_sand_01.jpg",
+      "/produtos/hk_prod_re_coffee_01.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],
     department: "masculino",
@@ -95,9 +95,9 @@ export const PRODUTOS: Product[] = [
     featured: false,
     isNew: true,
     description: "Kit Semana. 5 Regatas para garantir o estilo em todos os treinos.",
-    imageUrl: "/produtos/camiseta-canelada-marrom-1.jpg",
+    imageUrl: "/produtos/hk_prod_re_coffee_01.jpg",
     images: [
-      "/produtos/camiseta-canelada-marrom-1.jpg",
+      "/produtos/hk_prod_re_coffee_01.jpg",
       "/produtos/hk_prod_re_military_01.jpg"
     ],
     sizes: ["P", "M", "G", "GG"],

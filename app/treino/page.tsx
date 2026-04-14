@@ -1,24 +1,4 @@
-"use client";
-
-import { Standard } from "@typebot.io/react";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { 
- ArrowLeft, 
- Loader2, 
- Menu, 
- X, 
- LayoutDashboard, 
- ShoppingBag, 
- Store, 
- RotateCcw,
- Zap,
- Music,
- Calendar,
- CheckCircle2,
- Trophy
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { get, set as idbSet } from "idb-keyval";
 
 export default function PersonalHookePage() {
  const [isLoading, setIsLoading] = useState(true);
@@ -28,20 +8,35 @@ export default function PersonalHookePage() {
  const [showMusic, setShowMusic] = useState(false);
  const [musicService, setMusicService] = useState<'spotify' | 'ytmusic'>('ytmusic');
 
- // Carregar histórico do localStorage
+ const HISTORY_KEY = "hooke_workout_history_v2";
+ const MUSIC_KEY = "hooke_music_service_v2";
+ const OLD_HISTORY_KEY = "hooke_workout_history";
+ const OLD_MUSIC_KEY = "hooke_music_service";
+
+ // Carregar histórico do IndexedDB (Offline-First)
  useEffect(() => {
- const savedMusic = localStorage.getItem("hooke_music_service");
- if (savedMusic) setMusicService(savedMusic as 'spotify' | 'ytmusic');
+  const syncState = async () => {
+   // ⚡ ARQUEOLOGIA: Limpeza do localStorage antigo
+   if (typeof window !== 'undefined') {
+     localStorage.removeItem(OLD_HISTORY_KEY);
+     localStorage.removeItem(OLD_MUSIC_KEY);
+   }
 
- const saved = localStorage.getItem("hooke_workout_history");
- if (saved) {
- setWorkoutHistory(JSON.parse(saved));
- }
+   const savedMusic = await get(MUSIC_KEY);
+   if (savedMusic) setMusicService(savedMusic as 'spotify' | 'ytmusic');
 
- const timer = setTimeout(() => {
- setIsLoading(false);
- }, 1800);
- return () => clearTimeout(timer);
+   const savedHistory = await get(HISTORY_KEY);
+   if (savedHistory) {
+     setWorkoutHistory(savedHistory as string[]);
+   }
+  };
+  
+  syncState();
+
+  const timer = setTimeout(() => {
+  setIsLoading(false);
+  }, 1800);
+  return () => clearTimeout(timer);
  }, []);
 
  const handleRestart = () => {
@@ -51,19 +46,18 @@ export default function PersonalHookePage() {
  setTimeout(() => setIsLoading(false), 1200);
  };
 
- const handleFinishWorkout = () => {
- const today = new Date().toLocaleDateString('pt-BR');
- if (!workoutHistory.includes(today)) {
- const newHistory = [today, ...workoutHistory].slice(0, 7); // Guarda os últimos 7 treinos
- setWorkoutHistory(newHistory);
- localStorage.setItem("hooke_workout_history", JSON.stringify(newHistory));
- }
- // Feedback visual opcional pode ser adicionado aqui
+ const handleFinishWorkout = async () => {
+  const today = new Date().toLocaleDateString('pt-BR');
+  if (!workoutHistory.includes(today)) {
+   const newHistory = [today, ...workoutHistory].slice(0, 7); 
+   setWorkoutHistory(newHistory);
+   await idbSet(HISTORY_KEY, newHistory);
+  }
  };
 
- const handleMusicServiceChange = (service: 'spotify' | 'ytmusic') => {
- setMusicService(service);
- localStorage.setItem("hooke_music_service", service);
+ const handleMusicServiceChange = async (service: 'spotify' | 'ytmusic') => {
+  setMusicService(service);
+  await idbSet(MUSIC_KEY, service);
  };
 
  const menuItems = [

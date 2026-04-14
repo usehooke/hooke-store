@@ -25,7 +25,7 @@ export default function BentoHero() {
           className="flex-1 relative group overflow-hidden bg-black h-[500px] md:h-auto"
         >
           <Image
-            src="/produtos/HK_ELITE_HEAVY_BLACK_V2.png" 
+            src="/produtos/hk_elite_heavy_black_v2.png" 
             alt="Hooke Menswear"
             fill
             priority

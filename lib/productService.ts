@@ -14,12 +14,23 @@ export const COLLECTION_NAME = "produtos";
 /** 1. Utilitário de Detecção de Ambiente */
 const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build' || !db;
 
-/** 2. Mapeamento Seguro de Documento */
-const mapToProduct = (docId: string, data: DocumentData): Product => {
-    return {
-        id: docId,
-        ...data
-    } as Product;
+import { ProductSchema } from "./schemas";
+
+/** 2. Mapeamento Seguro de Documento com Blindagem Zod */
+const mapToProduct = (docId: string, data: DocumentData): Product | null => {
+    try {
+        const rawBody = { id: docId, ...data };
+        const validation = ProductSchema.safeParse(rawBody);
+
+        if (!validation.success) {
+            console.error(`❌ [Hooke Blindagem] Falha de esquema no produto ${docId}:`, validation.error.format());
+            return null; // Força o motor resiliente a usar o fallback
+        }
+
+        return validation.data as Product;
+    } catch (err) {
+        return null;
+    }
 };
 
 /** 3. Motor de Execução Resiliente (The Core) */
@@ -65,7 +76,8 @@ export async function getProducts(category?: string): Promise<Product[]> {
             const products: Product[] = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                if (data.isActive !== false) products.push(mapToProduct(doc.id, data));
+                const p = mapToProduct(doc.id, data);
+                if (data.isActive !== false && p) products.push(p);
             });
             return products;
         },
@@ -105,7 +117,8 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
             const products: Product[] = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                if (data.isActive !== false) products.push(mapToProduct(doc.id, data));
+                const p = mapToProduct(doc.id, data);
+                if (data.isActive !== false && p) products.push(p);
             });
             return products;
         },

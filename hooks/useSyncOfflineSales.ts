@@ -21,36 +21,53 @@ export function useSyncOfflineSales() {
       setIsSyncing(true);
 
       for (const sale of pendingSales) {
+        // Pular vendas que já exauriram as tentativas
+        if (sale.status === 'exhausted') continue;
+
         try {
-          updateSaleStatus(sale.id, 'pending');
-          
           const response = await fetch("/api/pdv/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(sale),
+            body: JSON.stringify({ ...sale, syncAttempt: sale.retryCount + 1 }),
           });
+
+          const result = await response.json();
 
           if (response.ok) {
             removeFromQueue(sale.id);
-            setFailureCount(0); // Reset on success
-            toast.success(`Venda ${sale.id.slice(-4)} sincronizada!`);
+            setFailureCount(0);
+            toast.success(`Venda ${sale.id.slice(-4)} sincronizada com sucesso!`);
           } else {
-            throw new Error("ERP error");
+            const errorMsg = result.error || "Erro no servidor ERP";
+            throw new Error(errorMsg);
           }
-        } catch (error) {
-          console.error("Sync error:", error);
-          const newFailureCount = failureCount + 1;
-          setFailureCount(newFailureCount);
-          updateSaleStatus(sale.id, 'failed');
+        } catch (error: any) {
+          const errorMessage = error.message || "Erro de conexão";
+          console.error(`❌ [Sync Error] Venda ${sale.id}:`, errorMessage);
+          
+          const newRetryCount = sale.retryCount + 1;
+          const nextStatus = newRetryCount >= 5 ? 'exhausted' : 'failed';
+          
+          updateSaleStatus(sale.id, nextStatus, errorMessage);
 
-          // Circuit Breaker: 3 fails = 30s contingency
-          if (newFailureCount >= 3) {
+          if (nextStatus === 'exhausted') {
+             toast.error(`Venda ${sale.id.slice(-4)} marcada como EXAURIDA. Verifique manualmente.`, {
+                description: errorMessage,
+                duration: 5000
+             });
+          }
+
+          setFailureCount(prev => prev + 1);
+
+          // Circuit Breaker: 3 falhas consecutivas bloqueiam por 30s
+          if (failureCount >= 2) {
             setIsContingencyMode(true);
+            toast.warning("Modo Contingência Ativo", { description: "Múltiplas falhas de síncronia. Aguardando 30s." });
             setTimeout(() => {
               setIsContingencyMode(false);
               setFailureCount(0);
             }, 30000);
-            break; // Stop current loop
+            break;
           }
         }
       }
@@ -62,5 +79,13 @@ export function useSyncOfflineSales() {
     return () => clearInterval(interval);
   }, [pendingSales, isSyncing, updateSaleStatus, removeFromQueue, isContingencyMode, failureCount]);
 
-  return { isSyncing, pendingCount: pendingSales.length, isContingencyMode };
+  const exhaustedCount = pendingSales.filter(s => s.status === 'exhausted').length;
+  const actuallyPendingCount = pendingSales.length - exhaustedCount;
+
+  return { 
+    isSyncing, 
+    pendingCount: actuallyPendingCount, 
+    exhaustedCount,
+    isContingencyMode 
+  };
 }

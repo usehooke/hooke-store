@@ -1,30 +1,37 @@
-"use client";
-import React, { useState, useRef, useEffect } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { get, set } from "idb-keyval";
 
 /**
  * Componente OfficeAmbience:
  * Gerencia o áudio ambiental do HQ com transições suaves (fade-in/out)
- * e persistência offline-first via localStorage.
+ * e persistência offline-first via IndexedDB.
  */
 export function OfficeAmbience() {
     // Carregamento inicial persistente (Offline-First)
     const [isMuted, setIsMuted] = useState(true);
+    const CACHE_KEY = "hooke-ambience-muted-v2";
+    const OLD_CACHE_KEY = "hooke-ambience-muted";
     
     // Sincronização segura com o estado do cliente
     useEffect(() => {
-        const saved = localStorage.getItem("hooke-ambience-muted");
-        if (saved !== null) {
-            setIsMuted(saved === "true");
-        }
+        const syncState = async () => {
+             // ⚡ ARQUEOLOGIA: Limpeza do localStorage antigo
+             if (typeof window !== 'undefined' && localStorage.getItem(OLD_CACHE_KEY)) {
+                 localStorage.removeItem(OLD_CACHE_KEY);
+             }
+
+             const saved = await get(CACHE_KEY);
+             if (saved !== undefined) {
+                 setIsMuted(saved === true);
+             }
+        };
+        syncState();
     }, []);
     
     const audioRef = useRef<HTMLAudioElement>(null);
 
-    // Persistindo preferência do usuário
+    // Persistindo preferência do usuário (Async IDB)
     useEffect(() => {
-        localStorage.setItem("hooke-ambience-muted", String(isMuted));
+        set(CACHE_KEY, isMuted);
     }, [isMuted]);
 
     // Lógica Sênior de Fade-in / Fade-out

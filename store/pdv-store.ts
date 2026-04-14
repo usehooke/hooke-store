@@ -28,7 +28,9 @@ export interface OfflineSale {
   total: number;
   paymentMethod: 'dinheiro' | 'pix' | 'cartao';
   timestamp: number;
-  status: 'pending' | 'synced' | 'failed';
+  status: 'pending' | 'synced' | 'failed' | 'exhausted';
+  retryCount: number;
+  lastError?: string;
 }
 
 interface PDVState {
@@ -42,9 +44,9 @@ interface PDVState {
   clearCart: () => void;
   
   // Offline Sync Actions
-  addToQueue: (sale: Omit<OfflineSale, 'status' | 'id'>) => void;
+  addToQueue: (sale: Omit<OfflineSale, 'status' | 'id' | 'retryCount' | 'lastError'>) => void;
   removeFromQueue: (saleId: string) => void;
-  updateSaleStatus: (saleId: string, status: OfflineSale['status']) => void;
+  updateSaleStatus: (saleId: string, status: OfflineSale['status'], lastError?: string) => void;
 }
 
 export const usePDVStore = create<PDVState>()(
@@ -99,6 +101,7 @@ export const usePDVStore = create<PDVState>()(
           id: `sale-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           status: 'pending',
           paymentMethod: saleData.paymentMethod,
+          retryCount: 0,
         };
         set({ 
           offlineQueue: [...get().offlineQueue, newSale],
@@ -112,10 +115,15 @@ export const usePDVStore = create<PDVState>()(
         });
       },
 
-      updateSaleStatus: (saleId, status) => {
+      updateSaleStatus: (saleId, status, lastError) => {
         set({
           offlineQueue: get().offlineQueue.map((s) =>
-            s.id === saleId ? { ...s, status } : s
+            s.id === saleId ? { 
+                ...s, 
+                status, 
+                lastError: lastError || s.lastError,
+                retryCount: status === 'failed' ? s.retryCount + 1 : s.retryCount
+            } : s
           ),
         });
       },
