@@ -1,4 +1,25 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { 
+  LayoutDashboard, 
+  Store, 
+  ShoppingBag, 
+  ArrowLeft, 
+  Menu, 
+  Music, 
+  RotateCcw, 
+  CheckCircle2, 
+  X, 
+  Zap, 
+  Calendar, 
+  Trophy, 
+  Loader2 
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { get, set as idbSet } from "idb-keyval";
+import { Standard } from "@typebot.io/react";
 
 export default function PersonalHookePage() {
  const [isLoading, setIsLoading] = useState(true);
