@@ -1,7 +1,0 @@
-﻿
-> hooke-store@0.1.1 lint-elite
-> next lint --strict && tsc --noEmit --strict && node scripts/check-elite-standards.js
-
-✔ No ESLint warnings or errors
-maintenance/test_db.ts(1,29): error TS2307: Cannot find module './lib/productService' or its corresponding type declarations.
-maintenance/test_db2.ts(1,20): error TS2307: Cannot find module './lib/firebase' or its corresponding type declarations.
