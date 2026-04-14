@@ -16,6 +16,13 @@ const idbStorage: StateStorage = {
   },
 };
 
+export interface CartItem extends Product {
+  quantity: number;
+  selectedSize: string;
+  selectedColor?: string;
+  cartItemId: string;
+}
+
 export interface CustomerData {
   name: string;
   email: string;
