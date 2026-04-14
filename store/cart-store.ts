@@ -16,12 +16,11 @@ const idbStorage: StateStorage = {
   },
 };
 
-// Definimos o item do carrinho
-export interface CartItem extends Product {
-  quantity: number;
-  selectedSize: string;
-  selectedColor?: string;
-  cartItemId: string;
+export interface CustomerData {
+  name: string;
+  email: string;
+  phone: string;
+  isVip: boolean;
 }
 
 interface CartState {
@@ -46,6 +45,10 @@ interface CartState {
   // Coupon
   appliedCoupon: string | null;
   setCoupon: (code: string | null) => void;
+
+  // Checkout Data (Persistence 3.0)
+  customer: CustomerData;
+  setCustomer: (data: Partial<CustomerData>) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -57,6 +60,7 @@ export const useCartStore = create<CartState>()(
       shippingCost: null,
       shippingMethod: null,
       appliedCoupon: null,
+      customer: { name: "", email: "", phone: "", isVip: true },
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -67,6 +71,10 @@ export const useCartStore = create<CartState>()(
         set({ shippingZipCode: null, shippingCost: null, shippingMethod: null }),
 
       setCoupon: (code: string | null) => set({ appliedCoupon: code }),
+
+      setCustomer: (data) => set((state) => ({ 
+        customer: { ...state.customer, ...data } 
+      })),
 
       addItem: (product: Product, size: string, color?: string) => {
         const currentItems = get().items;
@@ -134,7 +142,8 @@ export const useCartStore = create<CartState>()(
         shippingZipCode: state.shippingZipCode,
         shippingCost: state.shippingCost,
         shippingMethod: state.shippingMethod,
-        appliedCoupon: state.appliedCoupon
+        appliedCoupon: state.appliedCoupon,
+        customer: state.customer
       }),
     }
   )
