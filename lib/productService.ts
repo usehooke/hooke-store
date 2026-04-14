@@ -1,111 +1,114 @@
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, limit, QueryConstraint } from "firebase/firestore";
+import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData } from "firebase/firestore";
 import { Product } from "@/types";
 import { MOCK_PRODUCTS } from "./mockData";
 
 export const COLLECTION_NAME = "produtos";
 
 /**
- * Hooke Elite: Resilient data fetching with Mock Fallback for Build Stability.
- * --- O CURTO-CIRCUITO (SHORT-CIRCUIT) ---
- * Se o banco é null (build SSG sem chaves), devolve o Mock IMEDIATAMENTE.
+ * @Agent-LegacyRescue Protocol: RESILIENCE ENGINE V1
+ * Centraliza a inteligência de Fallback para garantir "Zero Build Error" na Vercel
+ * e alta disponibilidade em produção.
+ */
+
+/** 1. Utilitário de Detecção de Ambiente */
+const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build' || !db;
+
+/** 2. Mapeamento Seguro de Documento */
+const mapToProduct = (docId: string, data: DocumentData): Product => {
+    return {
+        id: docId,
+        ...data
+    } as Product;
+};
+
+/** 3. Motor de Execução Resiliente (The Core) */
+async function executeResilient<T>(
+    operationName: string,
+    firestoreQuery: () => Promise<T>,
+    mockFallback: T
+): Promise<T> {
+    // A. Curto-circuito em tempo de Build
+    if (isBuildPhase()) {
+        return mockFallback;
+    }
+
+    try {
+        const result = await firestoreQuery();
+        // Se o resultado for vazio/falso, tentamos o Mock (Auto-cura)
+        if (!result || (Array.isArray(result) && result.length === 0)) {
+            return mockFallback;
+        }
+        return result;
+    } catch (error) {
+        console.warn(`⚠️ [Hooke Rescue] Falha em ${operationName}. Ativando Mock Fallback.`, error);
+        // TODO: Enviar telemetria via analytics.ts quando implementado server-side
+        return mockFallback;
+    }
+}
+
+/** 
+ * 🚀 EXPORTS DOS SERVIÇOS (Refatorados & Limpos)
  */
 
 export async function getProducts(category?: string): Promise<Product[]> {
-    // ⚡ CURTO-CIRCUITO DE BUILD: Evita falhas de permissão no Firestore durante o deploy na Vercel
-    if (process.env.NEXT_PHASE === 'phase-production-build' || !db) {
-        return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
-    }
-
-    try {
-        const productsRef = collection(db, COLLECTION_NAME);
-        const conditions: QueryConstraint[] = [];
-
-        if (category) {
-            conditions.push(where("category", "==", category));
-        }
-
-        const q = query(productsRef, ...conditions);
-        const snapshot = await getDocs(q);
-        
-        if (snapshot.empty && process.env.NODE_ENV === 'production') {
-            return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
-        }
-
-        const products: Product[] = [];
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.isActive !== false) {
-                products.push({ id: doc.id, ...data } as Product);
-            }
-        });
-
-        return products.length > 0 ? products : MOCK_PRODUCTS;
-    } catch (error) {
-        console.warn("⚠️ [Hooke System] Erro na nuvem, acionando redundância Mock.", error);
-        return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
-    }
+    return executeResilient(
+        "getProducts",
+        async () => {
+            const productsRef = collection(db!, COLLECTION_NAME);
+            const conditions: QueryConstraint[] = [];
+            if (category) conditions.push(where("category", "==", category));
+            
+            const q = query(productsRef, ...conditions);
+            const snapshot = await getDocs(q);
+            
+            const products: Product[] = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.isActive !== false) products.push(mapToProduct(doc.id, data));
+            });
+            return products;
+        },
+        category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS
+    );
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-    // ⚡ BYPASS IMEDIATO
-    if (process.env.NEXT_PHASE === 'phase-production-build' || !db) {
-        return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
-    }
+    return executeResilient(
+        "getProductBySlug",
+        async () => {
+            const productsRef = collection(db!, COLLECTION_NAME);
+            const q = query(productsRef, where("slug", "==", slug), limit(1));
+            const snapshot = await getDocs(q);
 
-    try {
-        const productsRef = collection(db, COLLECTION_NAME);
-        const q = query(productsRef, where("slug", "==", slug), limit(1));
-        const snapshot = await getDocs(q);
+            if (!snapshot.empty) return mapToProduct(snapshot.docs[0].id, snapshot.docs[0].data());
 
-        if (!snapshot.empty) {
-            return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Product;
-        }
+            // Fallback para ID
+            const qFb = query(productsRef, where("id", "==", slug), limit(1));
+            const snapshotFb = await getDocs(qFb);
+            if (!snapshotFb.empty) return mapToProduct(snapshotFb.docs[0].id, snapshotFb.docs[0].data());
 
-        // Fallback: se o slug for na verdade o ID
-        const qFallback = query(productsRef, where("id", "==", slug), limit(1));
-        const snapshotFb = await getDocs(qFallback);
-
-        if (!snapshotFb.empty) {
-            return { id: snapshotFb.docs[0].id, ...snapshotFb.docs[0].data() } as Product;
-        }
-
-        // Se não encontrar no banco, procura no Mock (Fiel à Regra de Ouro)
-        const mockProduct = MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug);
-        return mockProduct || null;
-    } catch (error) {
-        console.warn("⚠️ [Hooke System] Erro no getProductBySlug, usando Mocks.", error);
-        return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
-    }
+            return null;
+        },
+        MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null
+    );
 }
 
-
-
 export async function getFeaturedProducts(limitCount: number = 8): Promise<Product[]> {
-    // ⚡ BYPASS IMEDIATO
-    if (process.env.NEXT_PHASE === 'phase-production-build' || !db) {
-        return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
-    }
+    return executeResilient(
+        "getFeaturedProducts",
+        async () => {
+            const productsRef = collection(db!, COLLECTION_NAME);
+            const q = query(productsRef, where("featured", "==", true));
+            const snapshot = await getDocs(q);
 
-    try {
-        const productsRef = collection(db, COLLECTION_NAME);
-        const q = query(productsRef, where("featured", "==", true));
-        const snapshot = await getDocs(q);
-
-        const products: Product[] = [];
-        snapshot.forEach((doc) => {
-            products.push({ id: doc.id, ...doc.data() } as Product);
-        });
-
-        if (products.length === 0) {
-            return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
-        }
-
-        // Filtrando ativos
-        const finalActiveProducts = products.filter(p => p.isActive !== false);
-        return finalActiveProducts.slice(0, limitCount);
-    } catch (error) {
-        console.warn("⚠️ [Hooke System] Erro no getFeaturedProducts, usando Mocks.", error);
-        return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
-    }
+            const products: Product[] = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.isActive !== false) products.push(mapToProduct(doc.id, data));
+            });
+            return products;
+        },
+        MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount)
+    );
 }

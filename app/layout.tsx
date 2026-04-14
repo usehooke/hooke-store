@@ -7,12 +7,13 @@ import "@/app/globals.css"; // Importação absoluta para garantir carregamento
 import ConditionalTracking from "@/components/layout/ConditionalTracking";
 
 // Importações dos Componentes de Layout Globais
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 import { brandConfig } from "@/config/brandConfig";
 import TransitionProvider from "@/components/layout/TransitionProvider";
 import Providers from "@/components/layout/Providers";
 import ShopLayoutWrapper from "@/components/layout/ShopLayoutWrapper";
 
+// ... (fontes e metadata omitidos para brevidade se não mudarem, mas vou manter o padrão de substituição segura)
 // 1. Configurando as Fontes (Estilo Suíço + Luxury Retail)
 const inter = Inter({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ const jost = Jost({
 const baseUrl = brandConfig.shop.baseUrl;
 const GA_MEASUREMENT_ID = brandConfig.analytics.googleAnalyticsId;
 
+// 2. Metadata (Omitido para focar na substituição do Toaster)
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
@@ -75,7 +77,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
-      <body className="font-sans antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen" suppressHydrationWarning={true}>
+      <body className="font-sans antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
         <Providers>
           <Suspense fallback={<div className="min-h-screen bg-hooke-paper" />}>
             <ShopLayoutWrapper>
@@ -86,16 +88,22 @@ export default function RootLayout({
           </Suspense>
 
           <Toaster
-            position="bottom-right"
+            position="top-center"
+            visibleToasts={1}
+            theme="dark"
             toastOptions={{
+              className: "hooke-toast",
               style: {
-                background: '#000000',
+                background: '#0a0a0a',
                 color: '#fff',
                 borderRadius: '0px',
+                border: '1px solid rgba(255,255,255,0.1)',
                 fontFamily: 'var(--font-inter)',
-                fontSize: '13px',
-                fontWeight: 500,
-                padding: '16px 24px',
+                fontSize: '12px',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                fontWeight: 600,
+                padding: '12px 20px',
               }
             }}
           />

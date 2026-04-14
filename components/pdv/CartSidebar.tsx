@@ -5,7 +5,7 @@ import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
 import { useShallow } from 'zustand/react/shallow';
 import { Trash2, Minus, Plus, Zap, AlertCircle } from "lucide-react";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import ReceiptTemplate from "./ReceiptTemplate";
 
 export default function PDVCartSidebar() {

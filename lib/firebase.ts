@@ -1,10 +1,9 @@
-// Import the functions you need from the SDKs you need
+// Hooke Elite: Firebase Infrastructure Hub
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth, FacebookAuthProvider } from "firebase/auth";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 
-// Hooke Elite: Firebase Configuration using Protected Environment Variables
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -15,36 +14,35 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// --- A BLINDAGEM DE BUILD (CURTO-CIRCUITO TOTAL) ---
-// Checa se a chave existe E se não estamos em fase de build SSG/PPR.
-export const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && typeof window === 'undefined';
-export const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined" && !isBuildTime;
+/**
+ * @Agent-LegacyRescue: AMBIENT SHIELD V2
+ * Detecta se estamos na fase de Build da Vercel para evitar 
+ * conexões externas que quebram o pré-processamento.
+ */
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
+                     (typeof window === 'undefined' && !process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
 
+const isConfigPresent = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
+
+// Instâncias Globais (Singletons)
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
 let auth: Auth | null = null;
 let storage: FirebaseStorage | null = null;
 const facebookProvider = new FacebookAuthProvider();
 
-if (isConfigValid) {
+/** 📐 Inicialização Silenciosa & Resiliente */
+if (isConfigPresent && !isBuildPhase) {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         db = getFirestore(app);
         auth = getAuth(app);
         storage = getStorage(app);
     } catch (error) {
-        console.error("❌ [Hooke System] Erro Crático ao inicializar Firebase:", error);
+        console.error("❌ [Hooke Rescue] Falha crítica ao despertar o Firebase:", error);
     }
-} else {
-    // Diagnóstico para o desenvolvedor
-    if (typeof window !== "undefined") {
-        console.error("⚠️ [Hooke System] Firebase Keys ausentes. Verifique seu .env.local ou as configurações da Vercel.");
-    }
-    
-    if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
-        console.warn("🚀 [Hooke System] Chaves ausentes no Build (SSG). Ativando modo Short-Circuit...");
-    }
+} else if (!isBuildPhase && typeof window !== "undefined") {
+    console.warn("⚠️ [Hooke System] Rodando sem Firebase (Chaves ausentes).");
 }
 
-// Exportamos os serviços. Se não houver chaves, eles serão 'null'.
 export { app, db, auth, storage, facebookProvider };

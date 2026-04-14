@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePDVStore, selectPendingSales } from "@/store/pdv-store";
 import { useShallow } from 'zustand/react/shallow';
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 export function useSyncOfflineSales() {
   const pendingSales = usePDVStore(useShallow(selectPendingSales));

@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Check } from "lucide-react";
 import { getFeaturedProducts } from "@/lib/productService";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function SmartSuggestions() {
  const items = useCartStore(state => state.items);

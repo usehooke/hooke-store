@@ -8,7 +8,7 @@ import { ShoppingBag, Check, Ruler } from "lucide-react";
 import Image from "next/image";
 import SizeGuideModal from "./SizeGuideModal";
 import SizeQuizModal from "./SizeQuizModal";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { trackEvent } from "@/lib/analytics";
 import InventoryBadge from "./InventoryBadge";
 
@@ -38,16 +38,10 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast.error(
-        () => (
-          <div style={{ textAlign: 'center' }}>
-            <b>Ops! Escolha um tamanho.</b>
-            <br />
-            <span>Precisamos saber se serve em você! 😉</span>
-          </div>
-        ),
-        { duration: 3000 }
-      );
+      toast.error('Escolha um tamanho', {
+        description: 'Precisamos saber se serve em você! 😉',
+        duration: 3000,
+      });
       return;
     }
 
@@ -64,26 +58,14 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
 
     setIsAdded(true);
 
-    toast.success(
-      (t) => (
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div>
-            <b className="font-bold">Adicionado à sacola!</b>
-            <p className="text-sm">{`${product.name} (Tam: ${selectedSize}${selectedColor ? ` / Cor: ${selectedColor}` : ''})`}</p>
-          </div>
-          <button
-            onClick={() => {
-              useCartStore.getState().openCart();
-              toast.dismiss(t.id);
-            }}
-            className="mt-2 px-4 py-2 w-full text-center text-sm font-semibold text-white bg-slate-800 shadow-md"
-          >
-            Ver Sacola
-          </button>
-        </div>
-      ),
-      { duration: 4000 }
-    );
+    toast.success('Adicionado à sacola!', {
+      description: `${product.name} (Tam: ${selectedSize}${selectedColor ? ` / Cor: ${selectedColor}` : ''})`,
+      duration: 4000,
+      action: {
+        label: 'Ver Sacola',
+        onClick: () => useCartStore.getState().openCart(),
+      },
+    });
 
     setTimeout(() => {
       setIsAdded(false);

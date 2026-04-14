@@ -6,7 +6,7 @@ import { brandConfig } from '@/config/brandConfig';
 import { Download, Share2, Printer, ChevronLeft, Check } from 'lucide-react';
 import Link from 'next/link';
 import { toPng } from 'html-to-image';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export default function VirtualCardPage() {
  const [isExporting, setIsExporting] = useState(false);

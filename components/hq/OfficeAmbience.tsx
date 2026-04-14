@@ -10,13 +10,15 @@ import { cn } from "@/lib/utils";
  */
 export function OfficeAmbience() {
     // Carregamento inicial persistente (Offline-First)
-    const [isMuted, setIsMuted] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem("hooke-ambience-muted");
-            return saved !== null ? saved === "true" : true; // Default mudo
+    const [isMuted, setIsMuted] = useState(true);
+    
+    // Sincronização segura com o estado do cliente
+    useEffect(() => {
+        const saved = localStorage.getItem("hooke-ambience-muted");
+        if (saved !== null) {
+            setIsMuted(saved === "true");
         }
-        return true;
-    });
+    }, []);
     
     const audioRef = useRef<HTMLAudioElement>(null);
 

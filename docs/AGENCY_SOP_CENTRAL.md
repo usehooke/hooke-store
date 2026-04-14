@@ -94,4 +94,16 @@ Se um build falhar na Vercel:
 - **Obrigação:** Sempre informar o "PORQUÊ" técnico/numérico por trás de qualquer veto.
 
 ---
-**Assinado:** *Antigravity - Supreme Orchestrator*
+ 
+ ## 🔎 8. Mandamentos do Arqueólogo de Código (@Agent-LegacyRescue)
+ 
+ ### 8.1 Soberania de Limpeza
+ - O Arqueólogo tem autoridade para purgar qualquer código identificado como **Dead Code** após validação de AST.
+ - **REGRA DE OURO:** Nenhuma linha deve ser apagada sem o mapeamento de dependências no `docs/AGENCY_LEGACY_RESCUE/RESCUE_LOG.md`.
+ 
+ ### 8.2 Refatoração vs Rewrite
+ - Proibido sugerir reescrita do zero sem análise profunda da regra de negócio legada. 
+ - Toda refatoração deve ser **Type-Safe** (TypeScript Estrito).
+ 
+ ---
+ **Assinado:** *Antigravity - Supreme Orchestrator*

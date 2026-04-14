@@ -1,11 +1,18 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function BentoHero() {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <section className="w-full mb-1">
       <div className="flex flex-col md:flex-row gap-1 h-auto md:h-[85vh]">
