@@ -1,86 +1,99 @@
-"use client";
-
-import { TrendingUp, Zap, ArrowRight, ShieldCheck, ShoppingBag } from "lucide-react";
+import { TrendingUp, Zap, ArrowRight, ShieldCheck, ShoppingBag, MessageSquare, Printer, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 interface ActivityFeedProps {
   conciergeCount: number;
+  sessions: any[];
 }
 
-export default function ActivityFeed({ conciergeCount }: ActivityFeedProps) {
+export default function ActivityFeed({ conciergeCount, sessions }: ActivityFeedProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-8">
+    <div className="space-y-10">
       
-      {/* STATUS DA OPERAÇÃO */}
-      <div className="space-y-8">
-        <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
-          <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-[#FAFAFA] flex items-center gap-3 italic">
-             <ShieldCheck size={14} className="text-emerald-500" /> Protocolo Operacional
+      {/* SEÇÃO: CONCIERGE LIVE */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between border-b border-black/[0.05] pb-4">
+          <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-zinc-900 flex items-center gap-3 italic">
+             <MessageSquare size={14} className="text-black" /> Concierge Live Sync
           </h2>
         </div>
         
-        <div className="bg-white/[0.02] border border-white/[0.05] p-10 space-y-8 relative overflow-hidden group">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center group/item hover:translate-x-1 transition-transform cursor-default">
-              <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Sessões Concierge</span>
-              <span className="text-[#FAFAFA] font-mono text-xs">{conciergeCount} ATIVAS</span>
+        <div className="space-y-4">
+          {sessions.length > 0 ? (
+            sessions.map((session, idx) => (
+              <motion.div 
+                key={session.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white border border-black/[0.05] p-6 hover:shadow-lg hover:shadow-black/[0.01] transition-all group"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Cliente</p>
+                    <p className="text-sm font-serif text-zinc-900">{session.customerName || 'Visitante Anônimo'}</p>
+                  </div>
+                  <span className="text-[9px] font-black px-2 py-0.5 bg-zinc-50 border border-black/[0.05] text-emerald-500 uppercase tracking-tighter">Ativo</span>
+                </div>
+                <div className="flex items-center gap-2 text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
+                  <ShoppingBag size={10} />
+                  Interesse: {session.lastProduct || 'Navegando'}
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <div className="bg-zinc-50 border border-dashed border-black/[0.05] p-10 text-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-300 italic">Nenhuma sessão ativa no momento</p>
             </div>
-            <div className="flex justify-between items-center group/item hover:translate-x-1 transition-transform cursor-default">
-              <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Ticket Médio Est.</span>
-              <span className="text-[#FAFAFA] font-mono text-xs">R$ 185,00</span>
-            </div>
-            <div className="flex justify-between items-center group/item hover:translate-x-1 transition-transform cursor-default">
-              <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Integridade de Dados</span>
-              <span className="text-emerald-500 font-black text-[9px] uppercase italic tracking-tighter bg-emerald-500/10 px-2 py-0.5">Zod Shield Active</span>
-            </div>
-          </div>
-
-          <Link 
-            href="/admin/concierge"
-            className="group flex items-center justify-center w-full py-5 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-zinc-200 transition-all gap-3"
-          >
-            Monitor em Tempo Real
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-
-          {/* Sutil Background Graphic */}
-          <ShoppingBag size={120} className="absolute right-[-30px] bottom-[-30px] opacity-[0.02] -rotate-12 pointer-events-none" />
+          )}
         </div>
       </div>
 
-      {/* AGENT GROWTH INSIGHTS */}
-      <div className="space-y-8">
-        <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
-          <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-[#FAFAFA] flex items-center gap-3 italic">
-            <TrendingUp size={14} className="text-zinc-500" /> Growth Intelligence
+      {/* SEÇÃO: AÇÕES RÁPIDAS (LOGÍSTICA) */}
+      <div className="space-y-6 pt-4">
+        <div className="flex items-center justify-between border-b border-black/[0.05] pb-4">
+          <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-zinc-900 flex items-center gap-3 italic">
+            <Zap size={14} className="text-zinc-400" /> Ações Rápidas de Elite
           </h2>
         </div>
         
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="bg-zinc-900/50 border border-white/[0.05] p-10 relative overflow-hidden group"
-        >
-          <div className="flex gap-6 relative z-10">
-            <div className="h-10 w-10 bg-yellow-500 text-black flex items-center justify-center rounded-none flex-shrink-0">
-               <Zap size={20} fill="currentColor" />
-            </div>
-            <div className="space-y-3">
-              <p className="text-[11px] text-[#FAFAFA] font-black uppercase tracking-[0.2em] italic">Oportunidade Detectada</p>
-              <p className="text-[13px] text-zinc-400 leading-relaxed font-serif italic">
-                &quot;O fluxo de visitantes no carrinho modularizado subiu 24%. Recomendo monitorar o tempo de fechamento via Mercado Pago.&quot;
-              </p>
-              <div className="pt-4 flex gap-4">
-                <span className="text-[9px] text-zinc-600 uppercase font-bold tracking-widest transition-colors hover:text-white cursor-pointer">Seguir Sugestão</span>
-                <span className="text-[9px] text-zinc-600 uppercase font-bold tracking-widest transition-colors hover:text-white cursor-pointer">Ignorar</span>
-              </div>
-            </div>
-          </div>
+        <div className="bg-[#FDFDFD] border border-black/[0.05] p-8 space-y-6 relative overflow-hidden">
+          <p className="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em] mb-2 font-mono">Últimos Pedidos Requerendo Atenção</p>
           
-          {/* Scanline Effect */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent h-[200%] animate-[scanline_8s_linear_infinite] pointer-events-none" />
-        </motion.div>
+          <div className="space-y-4">
+            {/* Cards de Ação Rápida */}
+            {[1].map((_, i) => (
+               <div key={i} className="flex items-center justify-between p-4 bg-white border border-black/[0.03] group hover:border-black/10 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 bg-zinc-50 flex items-center justify-center border border-black/[0.05]">
+                      <ShoppingBag size={14} className="text-zinc-400" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-zinc-900">PEDIDO #2026-X</p>
+                      <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest">Aguardando Postagem</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="p-2 hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-black border border-transparent hover:border-black/5" title="Imprimir Etiqueta">
+                      <Printer size={14} />
+                    </button>
+                    <button className="p-2 hover:bg-emerald-50 transition-colors text-zinc-400 hover:text-emerald-500 border border-transparent hover:border-emerald-500/10" title="Marcar como Enviado">
+                      <CheckCircle2 size={14} />
+                    </button>
+                  </div>
+               </div>
+            ))}
+          </div>
+
+          <Link 
+            href="/admin/pedidos"
+            className="flex items-center justify-center w-full py-4 mt-6 border border-black bg-black text-white text-[9px] font-black uppercase tracking-[0.3em] hover:bg-zinc-800 transition-all gap-3"
+          >
+            Ver Todos os Pedidos
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </div>
 
     </div>

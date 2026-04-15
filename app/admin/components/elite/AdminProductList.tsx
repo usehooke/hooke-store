@@ -7,6 +7,7 @@ import {
   Search, Plus, 
   CheckCircle2, RefreshCw 
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Product } from "@/types";
 import { QualityBadge } from "./QualityBadge";
 
@@ -36,18 +37,18 @@ export function AdminProductList({
   });
 
   return (
-    <div className="space-y-6">
-      {/* Controles Superiores */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between pb-6 border-b border-gray-100">
-        <div className="flex bg-gray-100 p-1 rounded-none border border-gray-200">
+    <div className="space-y-10">
+      {/* Controles Superiores de Alta Precisão */}
+      <div className="flex flex-col md:flex-row gap-8 items-center justify-between pb-8">
+        <div className="flex bg-zinc-100 p-1 rounded-none border border-black/[0.05]">
           {(["todos", "masculino", "feminino"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 text-[10px] font-black tracking-widest uppercase transition-all ${
+              className={`px-8 py-3 text-[10px] font-black tracking-[0.2em] uppercase transition-all ${
                 activeTab === tab 
-                ? "bg-white text-hooke-900 shadow-sm" 
-                : "text-gray-400 hover:text-gray-600"
+                ? "bg-white text-black shadow-sm" 
+                : "text-zinc-400 hover:text-zinc-600"
               }`}
             >
               {tab}
@@ -55,131 +56,112 @@ export function AdminProductList({
           ))}
         </div>
 
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
           <input
             type="text"
-            placeholder="Buscar produto..."
+            placeholder="Buscar por nome ou SKU..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-hooke-900 focus:border-hooke-900 transition-all rounded-none"
+            className="w-full pl-12 pr-6 py-4 bg-zinc-50 border border-black/[0.05] text-xs font-bold focus:outline-none focus:ring-1 focus:ring-black transition-all rounded-none uppercase tracking-widest placeholder:text-zinc-300"
           />
         </div>
       </div>
 
-      {/* Tabela Ultra-Limpa */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-separate border-spacing-y-2">
-          <thead>
-            <tr className="text-[10px] font-black tracking-widest text-gray-400 uppercase">
-              <th className="px-4 py-2">Info</th>
-              <th className="px-4 py-2">Departamento</th>
-              <th className="px-4 py-2">Status Hooke</th>
-              <th className="px-4 py-2">Preço</th>
-              <th className="px-4 py-2">Sync Tiny</th>
-              <th className="px-4 py-2 text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.map((p) => (
-              <tr 
-                key={p.id} 
-                className={`group bg-white border border-gray-100 hover:shadow-md transition-all ${!p.isActive ? "opacity-50" : ""}`}
-              >
-                {/* Info Principal */}
-                <td className="px-4 py-4 border-y first:border-l border-gray-100">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-12 h-16 bg-gray-50 border border-gray-200 shrink-0 overflow-hidden">
-                      {p.imageUrl ? (
-                        <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
-                          <Plus size={16} />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-black text-hooke-900 tracking-tight leading-tight uppercase">{p.name}</h3>
-                      <p className="text-[9px] font-mono text-gray-400 mt-1 uppercase tracking-tighter">{p.id}</p>
-                    </div>
-                  </div>
-                </td>
+      {/* Visual Gallery Grid - Atelier Edition */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+        {filteredProducts.map((p) => (
+          <motion.div 
+            layout
+            key={p.id} 
+            className={`group bg-white border border-black/[0.05] flex flex-col hover:border-black/20 transition-all ${!p.isActive ? "opacity-40 grayscale" : ""}`}
+          >
+            {/* Image Section - Touch Target Primário */}
+            <div 
+              onClick={() => onEdit(p)}
+              className="relative aspect-[3/4] bg-zinc-50 overflow-hidden cursor-pointer"
+            >
+              {p.imageUrl ? (
+                <Image 
+                  src={p.imageUrl} 
+                  alt={p.name} 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-zinc-200">
+                  <Plus size={32} strokeWidth={1} />
+                </div>
+              )}
+              
+              {/* Quick Status Badges */}
+              <div className="absolute top-4 left-4 flex flex-col gap-2">
+                <span className={`text-[8px] font-black uppercase tracking-tighter px-2 py-0.5 border ${
+                  p.department === 'feminino' ? 'border-pink-200 text-pink-600 bg-white/90' : 'border-zinc-200 text-zinc-600 bg-white/90'
+                }`}>
+                  {p.department || 'Elite'}
+                </span>
+              </div>
 
-                {/* Departamento */}
-                <td className="px-4 py-4 border-y border-gray-100">
-                   <span className={`text-[9px] font-black tracking-widest uppercase px-2 py-0.5 border ${
-                     p.department === 'feminino' ? 'border-pink-200 text-pink-600 bg-pink-50' : 'border-blue-200 text-blue-600 bg-blue-50'
-                   }`}>
-                     {p.department || 'não definido'}
-                   </span>
-                </td>
+              {/* Hover Actions Float Overlay */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }}
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform"
+                    title={p.isActive ? "Ocultar" : "Mostrar"}
+                  >
+                    {p.isActive ? <Eye size={20} /> : <EyeOff size={20} />}
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onEdit(p); }}
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black hover:scale-110 transition-transform"
+                    title="Editar"
+                  >
+                    <Edit3 size={20} />
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onDelete(p.id, p.name); }}
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-red-500 hover:scale-110 transition-transform"
+                    title="Excluir"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+              </div>
+            </div>
 
-                {/* Qualidade Elite */}
-                <td className="px-4 py-4 border-y border-gray-100">
-                  <QualityBadge product={p} />
-                </td>
-
-                {/* Preço */}
-                <td className="px-4 py-4 border-y border-gray-100">
-                  <span className="text-xs font-bold text-hooke-900">
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}
-                  </span>
-                </td>
-
-                {/* Status de Sincronização */}
-                <td className="px-4 py-4 border-y border-gray-100">
-                   <button 
-                    onClick={() => onSync(p)}
-                    className="flex flex-col items-center gap-0.5 hover:scale-105 transition-transform"
-                   >
-                     {(p as Product & { syncStatus?: string }).syncStatus === 'synced' ? (
-                       <CheckCircle2 size={16} className="text-green-500" />
-                     ) : (
-                       <RefreshCw size={16} className={`text-amber-500 ${(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''}`} />
-                     )}
-                     <span className="text-[8px] font-black text-gray-400 uppercase">
-                       { (p as Product & { syncStatus?: string }).syncStatus === 'synced' ? 'Sincronizado' : ((p as Product & { syncStatus?: string }).syncStatus === 'failed' ? 'Falhou' : 'Pendente') }
-                     </span>
-                   </button>
-                </td>
-
-                {/* Ações */}
-                <td className="px-4 py-4 border-y last:border-r border-gray-100 text-right">
-                  <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => onToggleActive(p.id, p.isActive !== false)}
-                      className={`p-2 transition-colors ${p.isActive ? "text-blue-500 hover:bg-blue-50" : "text-gray-400 hover:bg-gray-100"}`}
-                      title={p.isActive ? "Ocultar" : "Mostrar"}
-                    >
-                      {p.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-                    </button>
-                    <button 
-                      onClick={() => onEdit(p)}
-                      className="p-2 text-hooke-900 hover:bg-hooke-50 transition-colors"
-                      title="Editar"
-                    >
-                      <Edit3 size={16} />
-                    </button>
-                    <button 
-                      onClick={() => onDelete(p.id, p.name)}
-                      className="p-2 text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
-                      title="Excluir"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredProducts.length === 0 && (
-          <div className="py-20 text-center border-2 border-dashed border-gray-100">
-            <p className="text-xs font-black tracking-widest text-gray-300 uppercase">Nenhum produto encontrado neste filtro</p>
-          </div>
-        )}
+            {/* Info Section */}
+            <div className="p-5 flex-1 flex flex-col justify-between border-t border-black/[0.05]">
+              <div>
+                <h3 className="text-[10px] font-black text-zinc-900 tracking-tight leading-tight uppercase mb-1 truncate">{p.name}</h3>
+                <p className="text-[8px] font-mono text-zinc-400 uppercase tracking-tighter">{p.id}</p>
+              </div>
+              
+              <div className="mt-4 flex items-end justify-between">
+                <span className="text-sm font-serif text-zinc-900">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}
+                </span>
+                
+                <button 
+                  onClick={() => onSync(p)}
+                  className="p-2 border border-black/[0.05] hover:bg-zinc-50 transition-colors"
+                >
+                  {(p as Product & { syncStatus?: string }).syncStatus === 'synced' ? (
+                    <CheckCircle2 size={14} className="text-emerald-500" />
+                  ) : (
+                    <RefreshCw size={14} className={`text-zinc-300 ${(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin text-amber-500' : ''}`} />
+                  )}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      {filteredProducts.length === 0 && (
+        <div className="py-40 text-center border-2 border-dashed border-black/[0.05] bg-zinc-50">
+          <p className="text-[10px] font-black tracking-[0.4em] text-zinc-300 uppercase">Nenhum produto encontrado neste filtro</p>
+        </div>
+      )}
     </div>
   );
 }

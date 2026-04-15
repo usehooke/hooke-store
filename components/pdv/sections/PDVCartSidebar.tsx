@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
 import { useShallow } from 'zustand/react/shallow';
-import { Trash2, Minus, Plus, Zap, AlertCircle, User, Phone } from "lucide-react";
+import { Trash2, Minus, Plus, Zap, AlertCircle, User, Phone, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -63,87 +63,91 @@ export default function PDVCartSidebar() {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-8">
-      {/* Header Seletivo */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-[10px] font-black tracking-[0.3em] uppercase text-zinc-500 italic">Carrinho Elite</h2>
-        <span className="bg-white/5 border border-white/10 text-[#FAFAFA] text-[10px] font-mono px-3 py-1">
+    <div className="flex flex-col h-full space-y-10">
+      {/* Header Seletivo - Atelier Style */}
+      <div className="flex items-center justify-between border-b border-black/[0.05] pb-6">
+        <h2 className="text-[11px] font-black tracking-[0.4em] uppercase text-zinc-400 italic">Resumo Operacional</h2>
+        <span className="bg-black text-white text-[10px] font-mono px-4 py-1.5 font-bold">
           {count} ITENS
         </span>
       </div>
 
       {/* Cadastro do Cliente - Operação Rápida */}
-      <div className="space-y-4 bg-white/[0.02] border border-white/[0.05] p-6">
-        <div className="flex items-center gap-2 mb-2 border-b border-white/[0.05] pb-2">
-            <User size={12} className="text-zinc-500" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-[#FAFAFA]">Identificação</span>
+      <div className="space-y-6 bg-zinc-50/50 border border-black/[0.03] p-8">
+        <div className="flex items-center gap-3 mb-2">
+            <User size={14} className="text-black" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black">Identificação do Cliente</span>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-5">
           <input 
             type="text" 
-            placeholder="NOME DO CLIENTE *"
+            placeholder="NOME COMPLETO *"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            className="w-full bg-transparent border-b border-white/10 py-2 text-sm text-[#FAFAFA] font-light focus:border-white transition-all outline-none placeholder:text-zinc-700 uppercase"
+            className="w-full bg-white border border-black/[0.05] p-5 text-sm text-zinc-900 font-bold focus:border-black transition-all outline-none placeholder:text-zinc-300 uppercase shadow-sm"
           />
           <div className="relative">
-            <Phone size={12} className="absolute left-0 top-3 text-zinc-700 font-bold" />
+            <Phone size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-300" />
             <input 
                 type="tel" 
                 placeholder="WHATSAPP (OPCIONAL)"
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
-                className="w-full bg-transparent border-b border-white/10 py-2 pl-6 text-xs text-zinc-400 font-light focus:border-white transition-all outline-none placeholder:text-zinc-700"
+                className="w-full bg-white border border-black/[0.05] p-5 pl-12 text-sm text-zinc-900 font-bold focus:border-black transition-all outline-none placeholder:text-zinc-300 shadow-sm"
             />
           </div>
         </div>
       </div>
 
-      {/* Listagem de Itens com Scroll Minimalista */}
-      <div className="flex-grow overflow-y-auto space-y-4 pr-2 custom-scrollbar max-h-[300px] lg:max-h-none">
+      {/* Listagem de Itens (Scroll Minimalista High Contrast) */}
+      <div className="flex-grow overflow-y-auto space-y-4 pr-2 custom-scrollbar max-h-[250px] lg:max-h-none">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 border border-dashed border-white/10 opacity-30">
-            <AlertCircle size={24} strokeWidth={1} />
-            <p className="text-[9px] font-bold tracking-widest mt-3">AGUARDANDO PRODUTOS</p>
+          <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-black/[0.03] bg-zinc-50/30">
+            <AlertCircle size={32} strokeWidth={1} className="text-zinc-200" />
+            <p className="text-[10px] font-black tracking-[0.4em] mt-5 text-zinc-300 uppercase italic">Aguardando Produtos</p>
           </div>
         ) : (
           items.map((item) => (
-            <div key={item.cartItemId} className="flex gap-4 group">
-              <div className="relative h-16 w-12 bg-white/5 overflow-hidden flex-shrink-0">
+            <div key={item.cartItemId} className="flex gap-6 p-4 bg-white border border-black/[0.03] group hover:border-black/10 transition-all shadow-sm">
+              <div className="relative h-20 w-16 bg-zinc-50 overflow-hidden shrink-0">
                 <Image
                   src={item.imageUrl}
                   alt={item.name}
                   fill
-                  className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                  className="object-cover group-hover:scale-105 transition-transform"
                 />
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-between">
-                <div>
-                  <h4 className="text-[11px] font-bold text-[#FAFAFA] truncate uppercase tracking-tight">{item.name}</h4>
-                  <p className="text-[9px] text-zinc-500 font-mono mt-0.5">{item.selectedSize} • R$ {item.price.toFixed(2)}</p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-[11px] font-black text-black truncate uppercase tracking-tight">{item.name}</h4>
+                    <p className="text-[10px] text-zinc-400 font-mono mt-0.5">{item.selectedSize}</p>
+                  </div>
+                  <button 
+                    onClick={() => removeItem(item.cartItemId)}
+                    className="p-1 text-zinc-200 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
-                <div className="flex items-center justify-between pb-1">
-                  <div className="flex items-center gap-3">
+                
+                <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center gap-1 bg-zinc-100 p-1">
                     <button 
                       onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
-                      className="text-zinc-500 hover:text-white transition-colors"
+                      className="w-8 h-8 flex items-center justify-center bg-white hover:bg-black hover:text-white transition-all border border-black/[0.05]"
                     >
                       <Minus size={12} />
                     </button>
-                    <span className="text-[10px] font-mono text-[#FAFAFA]">{item.quantity}</span>
+                    <span className="w-10 text-center text-[11px] font-black text-black">{item.quantity}</span>
                     <button 
                       onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
-                      className="text-zinc-500 hover:text-white transition-colors"
+                      className="w-8 h-8 flex items-center justify-center bg-white hover:bg-black hover:text-white transition-all border border-black/[0.05]"
                     >
                       <Plus size={12} />
                     </button>
                   </div>
-                  <button 
-                    onClick={() => removeItem(item.cartItemId)}
-                    className="text-zinc-800 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={12} />
-                  </button>
+                  <p className="text-[11px] font-bold text-black">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price * item.quantity)}</p>
                 </div>
               </div>
             </div>
@@ -151,47 +155,50 @@ export default function PDVCartSidebar() {
         )}
       </div>
 
-      {/* Footer de Fechamento */}
-      <div className="pt-6 border-t border-white/10 space-y-6">
-        <div className="flex justify-between items-end">
-          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none">Subtotal</span>
-          <span className="text-4xl font-serif text-[#FAFAFA] tracking-tighter leading-none">R$ {total.toFixed(2)}</span>
+      {/* Footer de Fechamento - Alta Performance */}
+      <div className="pt-8 border-t-2 border-dashed border-black/[0.05] space-y-8">
+        <div className="flex justify-between items-end bg-zinc-50 p-6">
+          <span className="text-[11px] font-black text-zinc-400 uppercase tracking-widest leading-none">Total da Venda</span>
+          <span className="text-5xl font-serif text-black tracking-tighter leading-none">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}</span>
         </div>
 
-        <div className="space-y-3">
-          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] italic">Método de Liquidação</span>
-          <div className="grid grid-cols-3 gap-1">
+        <div className="space-y-4">
+          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em] pl-1">Liquidação</span>
+          <div className="grid grid-cols-3 gap-2">
             {(['dinheiro', 'pix', 'cartao'] as const).map((method) => (
               <button
                 key={method}
                 onClick={() => setPaymentMethod(method)}
                 className={cn(
-                  "py-3 text-[9px] font-black uppercase tracking-widest border transition-all",
+                  "py-5 text-[10px] font-black uppercase tracking-widest border transition-all h-20 flex flex-col items-center justify-center gap-2",
                   paymentMethod === method 
-                    ? "bg-white text-black border-white" 
-                    : "bg-transparent text-zinc-500 border-white/5 hover:border-white/20"
+                    ? "bg-black text-white border-black shadow-lg" 
+                    : "bg-white text-zinc-400 border-black/[0.05] hover:border-black/20"
                 )}
               >
                 {method}
+                <span className={`w-4 h-[1px] ${paymentMethod === method ? 'bg-white/20' : 'bg-zinc-100'}`} />
               </button>
             ))}
           </div>
         </div>
 
-        <button
-          onClick={handleFastSale}
-          className="w-full bg-white text-black p-5 font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-3 hover:bg-zinc-200 active:scale-[0.98] transition-all"
-        >
-          <Zap size={14} className="fill-black" />
-          Concluir Venda
-        </button>
-        
-        <button
-          onClick={clearCart}
-          className="w-full text-zinc-600 hover:text-zinc-400 py-2 text-[9px] font-black uppercase tracking-widest transition-colors"
-        >
-          Limpar Sessão
-        </button>
+        <div className="space-y-3 pt-2">
+          <button
+            onClick={handleFastSale}
+            className="w-full bg-black text-white p-7 font-black uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-4 hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xl shadow-black/10"
+          >
+            <CheckCircle2 size={18} />
+            Concluir Venda
+          </button>
+          
+          <button
+            onClick={clearCart}
+            className="w-full text-zinc-300 hover:text-red-500 py-2 text-[9px] font-black uppercase tracking-[0.4em] transition-all italic"
+          >
+            Cancelar Sessão
+          </button>
+        </div>
       </div>
 
       {showReceipt && (
