@@ -57,13 +57,17 @@ export default function PDVDashboard() {
  <p className="text-[10px] font-bold text-hooke-500 mb-1">Vendas PDV</p>
  <p className="text-3xl font-black tracking-tighter">R$ {physicalSalesTotal.toFixed(2)}</p>
  </div>
- <div className="bg-hooke-50 p-6 shadow-neumorph text-center">
- <Package className="h-6 w-6 mx-auto mb-2 text-hooke-500" />
- <p className="text-[10px] font-bold text-hooke-500 mb-1">Itens Saídos</p>
- <p className="text-3xl font-black tracking-tighter">
- {offlineQueue.reduce((acc, sale) => acc + sale.items.reduce((iAcc, item) => iAcc + item.quantity, 0), 0)}
- </p>
- </div>
+        <div className="bg-hooke-50 p-6 shadow-neumorph text-center">
+          <Package className="h-6 w-6 mx-auto mb-2 text-hooke-500" />
+          <p className="text-[10px] font-bold text-hooke-500 mb-1">Itens Saídos</p>
+          <p className="text-3xl font-black tracking-tighter">
+            {offlineQueue.reduce((acc, sale) => 
+              acc + sale.items.reduce((iAcc, item) => 
+                iAcc + Object.values(item.sizeQuantities || {}).reduce((sqAcc, q) => sqAcc + q, 0)
+              , 0)
+            , 0)}
+          </p>
+        </div>
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
