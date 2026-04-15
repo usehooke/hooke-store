@@ -80,6 +80,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
   // Sanitização de Imagens (Evitando crashes por valores nulos ou duplicados)
   const initialImages = Array.isArray(initialData?.images) ? initialData.images : (initialData?.imageUrl ? [initialData.imageUrl] : []);
   const [images, setImages] = useState<string[]>(initialImages);
+  const [metaDescription, setMetaDescription] = useState(initialData?.seo?.metaDescription || "");
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
