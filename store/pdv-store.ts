@@ -17,9 +17,9 @@ const idbStorage: StateStorage = {
 };
 
 export interface PDVItem extends Product {
-  quantity: number;
-  selectedSize: string;
-  cartItemId: string;
+  sizeQuantities: Record<string, number>; // { "P": 2, "G": 5 }
+  customPrice?: number;
+  addedAt: number;
 }
 
 export interface OfflineSale {
@@ -28,21 +28,26 @@ export interface OfflineSale {
   customerName: string;
   customerPhone?: string;
   total: number;
+  isWholesale?: boolean;
   paymentMethod: 'dinheiro' | 'pix' | 'cartao';
   timestamp: number;
   status: 'pending' | 'synced' | 'failed' | 'exhausted';
   retryCount: number;
   lastError?: string;
+  addedAt?: number;
 }
 
 interface PDVState {
   items: PDVItem[];
   offlineQueue: OfflineSale[];
+  isWholesale: boolean; // Toggle manual de atacado
   
   // Actions
   addItem: (product: Product, size: string) => void;
-  removeItem: (cartItemId: string) => void;
-  updateQuantity: (cartItemId: string, quantity: number) => void;
+  updateSizeQuantity: (productId: string, size: string, quantity: number) => void;
+  updateCustomPrice: (productId: string, price: number) => void;
+  removeItem: (productId: string) => void;
+  setWholesale: (status: boolean) => void;
   clearCart: () => void;
   
   // Offline Sync Actions
@@ -56,46 +61,62 @@ export const usePDVStore = create<PDVState>()(
     (set, get) => ({
       items: [],
       offlineQueue: [],
+      isWholesale: false,
+
+      setWholesale: (status) => set({ isWholesale: status }),
 
       addItem: (product: Product, size: string) => {
         const currentItems = get().items;
-        const uniqueId = `${product.id}-${size}`;
-
-        const existingItemIndex = currentItems.findIndex(
-          (item) => item.cartItemId === uniqueId
-        );
+        const existingItemIndex = currentItems.findIndex(item => item.id === product.id);
 
         if (existingItemIndex > -1) {
           const newItems = [...currentItems];
-          newItems[existingItemIndex].quantity += 1;
+          const item = newItems[existingItemIndex];
+          item.sizeQuantities[size] = (item.sizeQuantities[size] || 0) + 1;
           set({ items: newItems });
         } else {
           const newItem: PDVItem = {
             ...product,
-            quantity: 1,
-            selectedSize: size,
-            cartItemId: uniqueId,
+            sizeQuantities: { [size]: 1 },
+            addedAt: Date.now()
           };
           set({ items: [...currentItems, newItem] });
         }
       },
 
-      removeItem: (cartItemId: string) => {
-        set({
-          items: get().items.filter((item) => item.cartItemId !== cartItemId),
-        });
+      updateSizeQuantity: (productId, size, quantity) => {
+        const currentItems = get().items;
+        const newItems = currentItems.map(item => {
+          if (item.id === productId) {
+            const newSizes = { ...item.sizeQuantities };
+            if (quantity <= 0) {
+              delete newSizes[size];
+            } else {
+              newSizes[size] = quantity;
+            }
+            return { ...item, sizeQuantities: newSizes };
+          }
+          return item;
+        }).filter(item => Object.keys(item.sizeQuantities).length > 0);
+        
+        set({ items: newItems });
       },
 
-      updateQuantity: (cartItemId: string, quantity: number) => {
-        if (quantity < 1) return;
+      updateCustomPrice: (productId, price) => {
         const currentItems = get().items;
-        const newItems = currentItems.map((item) =>
-          item.cartItemId === cartItemId ? { ...item, quantity: quantity } : item
+        const newItems = currentItems.map(item => 
+          item.id === productId ? { ...item, customPrice: price } : item
         );
         set({ items: newItems });
       },
 
-      clearCart: () => set({ items: [] }),
+      removeItem: (productId: string) => {
+        set({
+          items: get().items.filter((item) => item.id !== productId),
+        });
+      },
+
+      clearCart: () => set({ items: [], isWholesale: false }),
 
       addToQueue: (saleData) => {
         const newSale: OfflineSale = {
@@ -107,7 +128,8 @@ export const usePDVStore = create<PDVState>()(
         };
         set({ 
           offlineQueue: [...get().offlineQueue, newSale],
-          items: [] // Limpa o carrinho após mover para fila
+          items: [],
+          isWholesale: false
         });
       },
 
@@ -131,7 +153,7 @@ export const usePDVStore = create<PDVState>()(
       },
     }),
     {
-      name: 'hooke-pdv-storage-v2', // Versão 2 para evitar conflito com localStorage antigo
+      name: 'hooke-pdv-storage-v3.5', // Nova versão para evitar conflito
       storage: createJSONStorage(() => idbStorage),
     }
   )
@@ -139,19 +161,32 @@ export const usePDVStore = create<PDVState>()(
 
 // Selectors
 export const selectPDVCount = (state: PDVState) => 
-  state.items.reduce((acc, item) => acc + item.quantity, 0);
+  state.items.reduce((acc, item) => {
+    const itemQty = Object.values(item.sizeQuantities).reduce((a, b) => a + b, 0);
+    return acc + itemQty;
+  }, 0);
 
 export const selectPDVTotal = (state: PDVState) => {
   const totalItems = selectPDVCount(state);
-  const isCombo = totalItems >= 3;
+  const isAutoWholesale = totalItems >= 5;
 
   return state.items.reduce((acc, item) => {
-    // Se for combo e o produto tiver preço de combo, usa ele. Caso contrário, preço normal.
-    // O combo se aplica a todas as peças se houver 3+ no total.
-    const activePrice = isCombo && item.comboPrice ? item.comboPrice : item.price;
-    return acc + activePrice * item.quantity;
+    const itemQty = Object.values(item.sizeQuantities).reduce((a, b) => a + b, 0);
+    
+    // Prioridade: Preço Customizado > Preço Combo (se atacado auto) > Preço Normal
+    let unitPrice = item.price;
+    if (item.customPrice !== undefined) {
+      unitPrice = item.customPrice;
+    } else if (isAutoWholesale && item.comboPrice) {
+      unitPrice = item.comboPrice;
+    }
+
+    return acc + (unitPrice * itemQty);
   }, 0);
 };
+
+export const selectPendingSales = (state: PDVState) => 
+  state.offlineQueue.filter(s => s.status === 'pending');
 
 export const selectPendingSales = (state: PDVState) => 
   state.offlineQueue.filter(s => s.status === 'pending');

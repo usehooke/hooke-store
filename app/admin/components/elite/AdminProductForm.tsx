@@ -70,17 +70,16 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
 
   const [stock, setStock] = useState<Record<string, number>>(initialData?.stock || {});
   const [skus, setSkus] = useState<Record<string, string>>(initialData?.skus || {});
-  const [images, setImages] = useState<string[]>(initialData?.images || (initialData?.imageUrl ? [initialData?.imageUrl] : []));
-  const [metaDescription, setMetaDescription] = useState(initialData?.seo?.metaDescription || "");
-
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [featured, setFeatured] = useState(initialData?.featured || false);
   const [isActive, setIsActive] = useState(initialData?.isActive !== false);
   const [modelSigla, setModelSigla] = useState<ModelSigla>((initialData?.modelSigla as ModelSigla) || "TSH");
   const [printSigla, setPrintSigla] = useState<PrintSigla>((initialData?.printSigla as PrintSigla) || "HK1");
   const [weight, setWeight] = useState<number>(initialData?.weight || 300);
   const [colors, setColors] = useState<{ name: string; imageUrl: string }[]>(initialData?.colors || []);
-  /* eslint-enable @typescript-eslint/no-unused-vars */
+
+  // Sanitização de Imagens (Evitando crashes por valores nulos ou duplicados)
+  const initialImages = Array.isArray(initialData?.images) ? initialData.images : (initialData?.imageUrl ? [initialData.imageUrl] : []);
+  const [images, setImages] = useState<string[]>(initialImages);
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -177,7 +176,14 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
                 }}>
                   <SortableContext items={images} strategy={rectSortingStrategy}>
                     <div className="flex flex-wrap gap-3">
-                      {images.map(url => <SortablePhoto key={url} id={url} url={url} onRemove={() => setImages(images.filter(i => i !== url))} />)}
+                      {images.map((url, index) => (
+                        <SortablePhoto 
+                          key={`${url}-${index}`} 
+                          id={url} 
+                          url={url} 
+                          onRemove={() => setImages(images.filter((_, i) => i !== index))} 
+                        />
+                      ))}
                       {images.length < 5 && (
                         <div className="w-24 h-24 border-2 border-dashed border-gray-200 flex items-center justify-center relative hover:border-hooke-900 transition-colors">
                           <UploadButton 

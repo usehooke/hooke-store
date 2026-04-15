@@ -69,14 +69,14 @@ export default function PDVPage() {
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-0 min-h-[calc(100vh-80px)]">
-        {/* Grade de Produtos - Fundo Escuro Profundo */}
-        <section className="lg:col-span-8 p-8 lg:p-12 border-r border-white/[0.05]">
-          <PDVProductGrid />
+        {/* Área de Venda Principal - Foco Atacado */}
+        <section className="lg:col-span-8 p-6 lg:p-10 border-r border-white/[0.05] overflow-y-auto custom-scrollbar bg-[#080808]">
+          <PDVCartSidebar />
         </section>
 
-        {/* Checkout Lateral - Estilo Sidebar Pro */}
-        <aside className="lg:col-span-4 p-8 lg:p-10 bg-black/20 backdrop-blur-md sticky top-20 h-[calc(100vh-80px)] overflow-hidden">
-          <PDVCartSidebar />
+        {/* Catálogo de Produtos Lateral - Seleção Rápida */}
+        <aside className="lg:col-span-4 p-4 lg:p-6 bg-black/40 backdrop-blur-md sticky top-20 h-[calc(100vh-80px)] overflow-y-auto custom-scrollbar">
+          <PDVProductGrid />
         </aside>
       </main>
     </div>
