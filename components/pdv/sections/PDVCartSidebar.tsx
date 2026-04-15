@@ -216,16 +216,3 @@ export default function PDVCartSidebar() {
     </div>
   );
 }
-
-      {showReceipt && (
-        <ReceiptTemplate
-          saleId={lastSaleId}
-          items={items}
-          total={total}
-          paymentMethod={paymentMethod}
-          onClose={() => setShowReceipt(false)}
-        />
-      )}
-    </div>
-  );
-}

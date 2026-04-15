@@ -187,6 +187,3 @@ export const selectPDVTotal = (state: PDVState) => {
 
 export const selectPendingSales = (state: PDVState) => 
   state.offlineQueue.filter(s => s.status === 'pending');
-
-export const selectPendingSales = (state: PDVState) => 
-  state.offlineQueue.filter(s => s.status === 'pending');
