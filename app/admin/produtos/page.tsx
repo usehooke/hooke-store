@@ -124,17 +124,6 @@ export default function AdminPage() {
     }
   };
 
-  if (loading && !products.length) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-hooke-900 border-t-transparent rounded-full animate-spin" />
-          <p className="text-[10px] font-black tracking-widest text-hooke-900 uppercase">Acessando Hooke Office...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50/50 p-4 md:p-10 font-sans">
       <Toaster position="top-right" richColors />
@@ -178,9 +167,10 @@ export default function AdminPage() {
         </header>
 
         {/* Lista Ultra-Limpa Principal */}
-        <main className="bg-white border border-gray-100 p-6 shadow-sm">
+        <main className="bg-white border border-gray-100 p-6 shadow-sm min-h-[400px]">
           <AdminProductList
             products={products}
+            isLoading={loading && products.length === 0}
             onEdit={(p) => {
               setEditingProduct(p);
               setIsDrawerOpen(true);

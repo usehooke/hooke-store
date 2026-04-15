@@ -47,6 +47,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/icon.svg',
+    apple: '/pdv-icon.png',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Hooke PDV",
+    // startUpImage: "/pdv-icon.png",
   },
   openGraph: {
     title: `${brandConfig.name} | Moda Masculina Premium`,
