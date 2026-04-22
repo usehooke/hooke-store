@@ -18,7 +18,7 @@ export default async function Home() {
   const showcaseProducts = await getFeaturedProducts(8);
 
   return (
-    <main className="bg-hooke-paper min-h-screen">
+    <main className="bg-hooke-paper min-h-screen pb-24 md:pb-0">
       {/* 🚀 Dynamic Hole: Personalização via Suspense */}
       <Suspense fallback={<div className="h-10" />}>
         <VIPGreeting />

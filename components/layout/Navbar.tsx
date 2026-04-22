@@ -88,13 +88,13 @@ export default function Navbar() {
                 <Search strokeWidth={1.5} size={20} />
               </button>
 
-              <Link href="/meus-pedidos" className="hidden md:block text-hooke-900 hover:text-gray-500 transition-colors">
+              <Link href="/meus-pedidos" className="hidden md:flex text-hooke-900 hover:text-gray-500 transition-colors">
                 <User strokeWidth={1.5} size={20} />
               </Link>
 
               <button 
                 onClick={openCart}
-                className="relative text-hooke-900 hover:text-gray-500 transition-colors group p-1"
+                className="hidden md:flex relative text-hooke-900 hover:text-gray-500 transition-colors group p-1"
                 aria-label="Abrir Sacola"
               >
                 <ShoppingBag strokeWidth={1.5} size={20} />
