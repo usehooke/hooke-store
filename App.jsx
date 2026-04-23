@@ -52,8 +52,8 @@ const ASSETS = {
 };
 
 const PRODUCTS = [
-  { id: 'hk-01', name: 'Wafer Off-White Atelier', price: 289.90, category: 'Essencial', image: ASSETS.WAFER, isNew: true },
-  { id: 'hk-02', name: 'Heavy Black Heavyweight', price: 199.90, category: 'Masculino', image: ASSETS.HEAVY, isNew: false },
+  { id: 'hk-01', name: 'Wafer Off-White Atelier', price: 289.90, category: 'Feminino', fit_type: 'Conjunto Viscose', grammage: 230, image: ASSETS.WAFER, isNew: true },
+  { id: 'hk-02', name: 'Heavy Black Heavyweight', price: 199.90, category: 'Masculino', fit_type: 'T-Shirt Boxy', grammage: 320, image: ASSETS.HEAVY, isNew: false },
 ];
 
 // 2. COMPONENTE: VIP TAGS DINÂMICAS (GLASSMORPHISM + NEUMORPHIC BORDER)
@@ -101,7 +101,22 @@ const OptimizedImage = ({ src, alt, className = "" }) => {
   );
 };
 
-// 4. PRODUCT CARD: ORGANIC NEUMORPHISM (SOFT-EXTRUSION)
+// 4. COMPONENTE: TECHNICAL SPECS (UX LUXURY)
+const TechnicalSpecs = ({ fitType, grammage }) => {
+  let specString = "";
+  if (fitType === 'T-Shirt Boxy') specString = `GEOMETRIA TÊXTIL: ${grammage}G/M²`;
+  else if (fitType === 'Conjunto Viscose') specString = `FLUIDEZ TÊXTIL: ${grammage}G/M²`;
+  else if (fitType === 'Bermuda' || fitType === 'Calça') specString = `ESTRUTURA: HIGH-DENSITY`;
+  else specString = `ENGENHARIA TÊXTIL: ${grammage}G/M²`;
+
+  return (
+    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.4em] mb-1">
+      {specString}
+    </p>
+  );
+};
+
+// 5. PRODUCT CARD: ORGANIC NEUMORPHISM (SOFT-EXTRUSION)
 const ProductCard = ({ product, stock, isAuthenticated, addToArsenal }) => (
   <motion.div 
     whileHover={{ y: -10 }}
@@ -123,6 +138,7 @@ const ProductCard = ({ product, stock, isAuthenticated, addToArsenal }) => (
 
     <div className="px-4">
       <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 mb-2 block">{product.category}</span>
+      <TechnicalSpecs fitType={product.fit_type} grammage={product.grammage} />
       <h3 className="text-lg font-semibold tracking-tighter text-black mb-3">{product.name}</h3>
       <div className="flex justify-between items-center">
         <span className="text-md font-bold font-mono">R$ {product.price.toFixed(2)}</span>
@@ -286,7 +302,10 @@ export default function App() {
                       triggerHaptic('heavy');
                       
                       const total = cloudArsenal.reduce((acc, i) => acc + i.price, 0);
+                      const orderSlug = `HK-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+                      
                       const orderData = {
+                        orderSlug: orderSlug,
                         userId: user.uid,
                         userName: user.isAnonymous ? 'Explorador Hooke' : user.displayName,
                         items: cloudArsenal,

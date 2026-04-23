@@ -78,8 +78,13 @@ export default function AdminDashboard() {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [isVipLocked, setIsVipLocked] = useState(false);
     const [isBatchPaused, setIsBatchPaused] = useState(false);
-    const [labStyle, setLabStyle] = useState('Estúdio');
     const [isAuthorized, setIsAuthorized] = useState(false);
+    
+    // CREATIVE LAB V2 STATES
+    const [fitCategory, setFitCategory] = useState('T-Shirt Boxy');
+    const [grammage, setGrammage] = useState(320);
+    const [showQAModal, setShowQAModal] = useState(false);
+    const [qaChecks, setQaChecks] = useState({ pele: false, gola: false, modelagem: false, metal: false });
 
     // SECURITY HANDSHAKE
     useEffect(() => {
@@ -259,43 +264,137 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* CREATIVE LAB INTEGRATION */}
+            {/* CREATIVE LAB INTEGRATION (V2) */}
             <section className="p-16 rounded-[4rem] bg-zinc-900 text-white shadow-[30px_30px_80px_rgba(0,0,0,0.1)] space-y-16 overflow-hidden relative">
                 <div className="relative z-10 space-y-10">
                     <div className="space-y-4">
                         <div className="flex items-center gap-4">
                             <Cpu size={24} className="text-zinc-500" />
-                            <h2 className="text-4xl font-semibold tracking-tighter italic">Laboratório de Ativos</h2>
+                            <h2 className="text-4xl font-semibold tracking-tighter italic">Laboratório de Ativos V2</h2>
                         </div>
-                        <p className="text-zinc-500 text-sm max-w-xl">Gerador de assets via IA focado na Referência 1 (Fernando Luiz Jr).</p>
+                        <p className="text-zinc-500 text-sm max-w-xl">Motor de geração de assets Hooke (Flux.1). Calibração dinâmica de modelagem e gramatura com Veto Protocol.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div className="p-12 border-2 border-dashed border-white/10 rounded-[3rem] flex flex-col items-center justify-center gap-6 hover:bg-white/5 transition-colors cursor-pointer group">
-                            <PlusCircle size={32} />
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">Arraste Imagens</p>
+                        {/* INPUTS DE ARQUITETURA TÊXTIL */}
+                        <div className="space-y-10 bg-white/5 p-10 rounded-[3rem] border border-white/10">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-6 block">Categoria de Modelagem</label>
+                                <div className="flex flex-col gap-4">
+                                    {['T-Shirt Boxy', 'Bermuda/Calça', 'Conjunto Viscose'].map(fit => (
+                                        <button 
+                                            key={fit}
+                                            onClick={() => setFitCategory(fit)}
+                                            className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-left ${
+                                                fitCategory === fit ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-transparent hover:bg-white/10 border border-white/10 text-zinc-400'
+                                            }`}
+                                        >
+                                            {fit}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div className="flex justify-between items-end mb-6">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Gramatura (g/m²)</label>
+                                    <span className="text-xl font-mono font-bold text-emerald-400">{grammage}g</span>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    min="150" 
+                                    max="400" 
+                                    step="10"
+                                    value={grammage} 
+                                    onChange={(e) => setGrammage(Number(e.target.value))}
+                                    className="w-full accent-white h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                />
+                            </div>
                         </div>
                         
-                        <div className="space-y-8">
-                            <div className="flex flex-wrap gap-4">
-                                {['Estúdio', 'Urbano', 'Praia'].map(style => (
-                                    <button 
-                                        key={style}
-                                        onClick={() => setLabStyle(style)}
-                                        className={`px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
-                                            labStyle === style ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10 border border-white/10'
-                                        }`}
-                                    >
-                                        {style}
-                                    </button>
-                                ))}
+                        {/* PROMPT GERADO E AÇÃO */}
+                        <div className="space-y-8 flex flex-col justify-between">
+                            <div className="p-8 rounded-[2rem] bg-black/50 border border-white/5 font-mono text-[10px] leading-loose text-zinc-300 h-full overflow-y-auto custom-scrollbar">
+                                <span className="text-emerald-400"># MASTER CONTEXT</span><br/>
+                                Atelier Mode, High-end studio, Softbox multidirecional, Cinematic DOF. Zero plastic effect.<br/><br/>
+                                
+                                <span className="text-emerald-400"># TECHNICAL SPECS</span><br/>
+                                {fitCategory === 'T-Shirt Boxy' && `Heavy ${grammage}g cotton texture, thick collar perfectly structured, absolute facial authenticity.`}
+                                {fitCategory === 'Conjunto Viscose' && `Fluid motion, ${grammage}g lightweight drape, elegant flow, gold-metallic drawstring tips.`}
+                                {fitCategory === 'Bermuda/Calça' && `Structured drape, reinforced seams, high-density ${grammage}g fabric.`}
                             </div>
-                            <button className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.5em] text-[11px] rounded-full">CALIBRAR IA</button>
+                            
+                            <button 
+                                onClick={() => setShowQAModal(true)}
+                                className="w-full py-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-[0.5em] text-[11px] rounded-full transition-colors"
+                            >
+                                AVALIAÇÃO QA (VETO PROTOCOL)
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white opacity-[0.02] blur-[150px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             </section>
+
+            {/* QA VETO MODAL */}
+            <AnimatePresence>
+                {showQAModal && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="w-full max-w-xl bg-[#F5F5F5] rounded-[3rem] p-12 shadow-[30px_30px_80px_rgba(0,0,0,0.2)] border border-white"
+                        >
+                            <h3 className="text-3xl font-semibold tracking-tighter italic text-black mb-2">Protocolo de Veto</h3>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-10">Checklist Obrigatório antes da Publicação</p>
+                            
+                            <div className="space-y-4 mb-10">
+                                {[
+                                    { id: 'pele', label: '1. Pele Real (Poros visíveis, sem efeito plástico)' },
+                                    { id: 'gola', label: '2. Estrutura Têxtil (Gola firme, sem afinar)' },
+                                    { id: 'modelagem', label: '3. Modelagem Exata (Boxy Regular, não oversized)' },
+                                    { id: 'metal', label: '4. Detalhes Metálicos (Ouro reflexivo e nítido)' }
+                                ].map((item) => (
+                                    <label key={item.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/50 border border-white cursor-pointer hover:shadow-md transition-all">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={qaChecks[item.id] || false}
+                                            onChange={(e) => setQaChecks({...qaChecks, [item.id]: e.target.checked})}
+                                            className="w-5 h-5 rounded accent-emerald-500"
+                                        />
+                                        <span className="text-sm font-medium text-black">{item.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={() => setShowQAModal(false)}
+                                    className="flex-1 py-5 rounded-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-zinc-200 transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    disabled={Object.values(qaChecks).filter(Boolean).length !== 4}
+                                    onClick={() => {
+                                        alert("Asset validado e publicado no Lote 001 com sucesso.");
+                                        setShowQAModal(false);
+                                        setQaChecks({});
+                                    }}
+                                    className="flex-1 py-5 rounded-full text-[10px] font-black uppercase tracking-widest text-white transition-all disabled:opacity-30 disabled:bg-zinc-400 disabled:cursor-not-allowed bg-black shadow-lg hover:scale-105 active:scale-95"
+                                >
+                                    PUBLICAR NO LOTE 001
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
         </div>
     );
