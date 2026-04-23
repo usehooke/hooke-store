@@ -13,7 +13,7 @@ import Link from 'next/link';
  * Aesthetic: Deep Slate Mode (#0A0A0A) + Cinematic Animation
  */
 
-export default function PassportVault({ params }) {
+export default function PassportVault({ params }: { params: { id: string } }) {
     const appId = 'hooke-standalone-pwa';
     const vaultId = params.id;
     

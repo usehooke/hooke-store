@@ -39,7 +39,7 @@ import { NotificationService } from '@/src/services/NotificationService';
  * Architecture: Antigravity Elite Standards + Sales Telemetry
  */
 
-const MetricCard = ({ title, value, icon: Icon, description }) => (
+const MetricCard = ({ title, value, icon: Icon, description }: { title: string; value: string | number; icon: any; description: string }) => (
     <motion.div 
         whileHover={{ y: -5 }}
         className="p-10 rounded-[3rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] transition-all duration-700"
@@ -56,7 +56,7 @@ const MetricCard = ({ title, value, icon: Icon, description }) => (
     </motion.div>
 );
 
-const QuickAction = ({ label, icon: Icon, onClick, active = false, danger = false }) => (
+const QuickAction = ({ label, icon: Icon, onClick, active = false, danger = false }: { label: string; icon: any; onClick: () => void; active?: boolean; danger?: boolean }) => (
     <button 
         onClick={onClick}
         className={`flex items-center gap-4 px-8 py-5 rounded-2xl transition-all active:scale-95 ${
