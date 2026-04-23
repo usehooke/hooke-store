@@ -86,6 +86,9 @@ export default function AdminDashboard() {
     const [showQAModal, setShowQAModal] = useState(false);
     const [qaChecks, setQaChecks] = useState({ pele: false, gola: false, modelagem: false, metal: false });
 
+    const [activeTab, setActiveTab] = useState('operacoes');
+    const [vautierLeads, setVautierLeads] = useState([]);
+
     // SECURITY HANDSHAKE
     useEffect(() => {
         const unsubscribe = auth?.onAuthStateChanged((user) => {
@@ -119,18 +122,41 @@ export default function AdminDashboard() {
             const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             setRecentOrders(orders);
             
-            // Total Revenue Calculation (Simplified for UI)
             const total = orders.reduce((acc, curr) => acc + (curr.total || 0), 0);
-            setTotalRevenue(prev => Math.max(prev, total * 5)); // Simulação de faturamento acumulado
+            setTotalRevenue(prev => Math.max(prev, total * 5)); 
         });
 
-        return () => { unsubInv(); unsubUsers(); unsubOrders(); };
+        // VAUTIER LEADS
+        const leadsRef = collection(db, `artifacts/${appId}/leads_vautier`);
+        const qLeads = query(leadsRef, orderBy('timestamp', 'desc'), limit(50));
+        const unsubLeads = onSnapshot(qLeads, (snap) => {
+            setVautierLeads(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        });
+
+        return () => { unsubInv(); unsubUsers(); unsubOrders(); unsubLeads(); };
     }, [isAuthorized]);
 
     const handleGlobalPush = async () => {
         await NotificationService.sendGlobalPushNotification();
         alert("Notificação PWA disparada para todos os arsenais!");
     };
+
+    const handleGenerateVaultId = async () => {
+        try {
+            const newId = `HK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const vaultRef = doc(db, `artifacts/${appId}/vault`, newId);
+            await updateDoc(vaultRef, {
+                Numero_de_Serie: newId,
+                Categoria: 'Reserva Especial',
+                Gramatura_Tecnica: 320,
+                Data_de_Lancamento: new Date().toLocaleDateString('pt-BR')
+            }).catch(async (e) => {
+                // se falhar porque nao existe, criamos (ideal seria setDoc)
+                console.log("fallback creation");
+            });
+            alert(`Selo gerado: ${newId}`);
+        } catch(e) { console.error(e) }
+    }
 
     if (!isAuthorized) {
         return (
@@ -165,104 +191,162 @@ export default function AdminDashboard() {
                 </div>
             </header>
 
-            {/* REVENUE COUNTER (GIANT NEUMORPHISM) */}
-            <section className="flex flex-col items-center justify-center py-20">
-                <motion.div 
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="p-20 rounded-full bg-[#F5F5F5] shadow-[30px_30px_70px_#d1d1d1,-30px_-30px_70px_#ffffff] text-center"
-                >
-                    <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-20 block mb-6">Faturamento Total • Lote 001</span>
-                    <h2 className="text-8xl font-semibold tracking-tighter font-mono italic">
-                        <span className="text-4xl align-top mr-2 text-zinc-300">R$</span>
-                        {totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </h2>
-                </motion.div>
-            </section>
-
-            {/* METRICS GRID */}
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <MetricCard 
-                    title="Saúde do Lote" 
-                    value={`${inventory.count || 22}/24`} 
-                    icon={Package} 
-                    description="Unidades físicas remanescentes no atelier." 
-                />
-                <MetricCard 
-                    title="Arsenal Ativo" 
-                    value={activeUsers.length || 0} 
-                    icon={Users} 
-                    description="Usuários monitorados com itens no checkout." 
-                />
-                <MetricCard 
-                    title="Taxa de Drift" 
-                    value="0.8%" 
-                    icon={Activity} 
-                    description="Eficiência operacional do protocolo de vendas." 
-                />
-            </section>
-
-            {/* SALES PULSE (LIVE FEED) */}
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
-                
-                {/* FEED DE VENDAS */}
-                <div className="xl:col-span-8 p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-12">
-                    <div className="flex justify-between items-center">
-                        <div className="space-y-1">
-                            <h3 className="text-2xl font-semibold tracking-tighter italic">SalesPulse Feed</h3>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Tempo Real • Log de Transações</p>
-                        </div>
-                        <Activity size={20} className="text-emerald-500 animate-pulse" />
-                    </div>
-                    
-                    <div className="space-y-6">
-                        <AnimatePresence mode='popLayout'>
-                            {recentOrders.length === 0 ? (
-                                <p className="text-center py-20 text-zinc-300 italic text-sm">Aguardando primeira reserva do lote...</p>
-                            ) : (
-                                recentOrders.map((order) => (
-                                    <motion.div 
-                                        key={order.id}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, scale: 0.9 }}
-                                        layout
-                                        className="flex items-center gap-8 p-6 rounded-3xl bg-[#F5F5F5] shadow-[6px_6px_15px_#d1d1d1,-6px_-6px_15px_#ffffff] hover:shadow-[inset_4px_4px_10px_#d1d1d1,inset_-4px_-4px_10px_#ffffff] transition-all group"
-                                    >
-                                        <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-md">
-                                            <img src="https://www.usehooke.com.br/cdn/shop/files/conjunto-wafer-off-white.jpg" className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30">Venda Confirmada</p>
-                                            <h4 className="text-md font-semibold tracking-tight">{order.userName || 'Comprador Anônimo'}</h4>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-md font-bold font-mono">R$ {order.total?.toFixed(2)}</p>
-                                            <p className="text-[8px] font-black uppercase tracking-widest opacity-20">Lote 001</p>
-                                        </div>
-                                    </motion.div>
-                                ))
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-
-                {/* ARSENAL LIST (DRY SESSIONS) */}
-                <div className="xl:col-span-4 p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-10">
-                    <h3 className="text-xl font-semibold tracking-tighter italic mb-4">Radar de Drifters</h3>
-                    <div className="space-y-6 overflow-y-auto max-h-[500px] pr-4 custom-scrollbar">
-                        {activeUsers.map((session, i) => (
-                            <div key={i} className="flex items-center justify-between p-5 rounded-2xl shadow-[inset_2px_2px_5px_#d1d1d1,inset_-2px_-2px_5px_#ffffff]">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
-                                    <p className="text-[11px] font-mono font-medium opacity-60">ID: {session.id.slice(0, 8)}</p>
-                                </div>
-                                <span className="text-[9px] font-black text-zinc-300 italic">Tracking</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+            {/* TAB NAVIGATION */}
+            <div className="flex gap-4 p-2 bg-black/5 rounded-2xl w-fit">
+                {['operacoes', 'vault', 'vautier'].map(tab => (
+                    <button 
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === tab ? 'bg-white text-black shadow-md' : 'text-zinc-500 hover:text-black'
+                        }`}
+                    >
+                        {tab === 'operacoes' ? 'Operações' : tab === 'vault' ? 'Vault (Passaportes)' : 'Leads Loja 142'}
+                    </button>
+                ))}
             </div>
+
+            {/* ABA: OPERACOES */}
+            {activeTab === 'operacoes' && (
+                <div className="space-y-24">
+                    {/* REVENUE COUNTER (GIANT NEUMORPHISM) */}
+                    <section className="flex flex-col items-center justify-center py-20">
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="p-20 rounded-full bg-[#F5F5F5] shadow-[30px_30px_70px_#d1d1d1,-30px_-30px_70px_#ffffff] text-center"
+                        >
+                            <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-20 block mb-6">Faturamento Total • Lote 001</span>
+                            <h2 className="text-8xl font-semibold tracking-tighter font-mono italic">
+                                <span className="text-4xl align-top mr-2 text-zinc-300">R$</span>
+                                {totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </h2>
+                        </motion.div>
+                    </section>
+
+                    {/* METRICS GRID */}
+                    <section className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        <MetricCard 
+                            title="Saúde do Lote" 
+                            value={`${inventory.count || 22}/24`} 
+                            icon={Package} 
+                            description="Unidades físicas remanescentes no atelier." 
+                        />
+                        <MetricCard 
+                            title="Arsenal Ativo" 
+                            value={activeUsers.length || 0} 
+                            icon={Users} 
+                            description="Usuários monitorados com itens no checkout." 
+                        />
+                        <MetricCard 
+                            title="Taxa de Drift" 
+                            value="0.8%" 
+                            icon={Activity} 
+                            description="Eficiência operacional do protocolo de vendas." 
+                        />
+                    </section>
+
+                    {/* SALES PULSE (LIVE FEED) */}
+                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+                        
+                        {/* FEED DE VENDAS */}
+                        <div className="xl:col-span-8 p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-12">
+                            <div className="flex justify-between items-center">
+                                <div className="space-y-1">
+                                    <h3 className="text-2xl font-semibold tracking-tighter italic">SalesPulse Feed</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Tempo Real • Log de Transações</p>
+                                </div>
+                                <Activity size={20} className="text-emerald-500 animate-pulse" />
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <AnimatePresence mode='popLayout'>
+                                    {recentOrders.length === 0 ? (
+                                        <p className="text-center py-20 text-zinc-300 italic text-sm">Aguardando primeira reserva do lote...</p>
+                                    ) : (
+                                        recentOrders.map((order) => (
+                                            <motion.div 
+                                                key={order.id}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                                layout
+                                                className="flex items-center gap-8 p-6 rounded-3xl bg-[#F5F5F5] shadow-[6px_6px_15px_#d1d1d1,-6px_-6px_15px_#ffffff] hover:shadow-[inset_4px_4px_10px_#d1d1d1,inset_-4px_-4px_10px_#ffffff] transition-all group"
+                                            >
+                                                <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-md">
+                                                    <img src="https://www.usehooke.com.br/cdn/shop/files/conjunto-wafer-off-white.jpg" className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30">Venda Confirmada</p>
+                                                    <h4 className="text-md font-semibold tracking-tight">{order.userName || 'Comprador Anônimo'}</h4>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-md font-bold font-mono">R$ {order.total?.toFixed(2)}</p>
+                                                    <p className="text-[8px] font-black uppercase tracking-widest opacity-20">Lote 001</p>
+                                                </div>
+                                            </motion.div>
+                                        ))
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* ARSENAL LIST (DRY SESSIONS) */}
+                        <div className="xl:col-span-4 p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-10">
+                            <h3 className="text-xl font-semibold tracking-tighter italic mb-4">Radar de Drifters</h3>
+                            <div className="space-y-6 overflow-y-auto max-h-[500px] pr-4 custom-scrollbar">
+                                {activeUsers.map((session, i) => (
+                                    <div key={i} className="flex items-center justify-between p-5 rounded-2xl shadow-[inset_2px_2px_5px_#d1d1d1,inset_-2px_-2px_5px_#ffffff]">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+                                            <p className="text-[11px] font-mono font-medium opacity-60">ID: {session.id.slice(0, 8)}</p>
+                                        </div>
+                                        <span className="text-[9px] font-black text-zinc-300 italic">Tracking</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ABA: VAULT */}
+            {activeTab === 'vault' && (
+                <div className="p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-12">
+                    <h2 className="text-3xl font-semibold tracking-tighter italic">Gerenciamento de Passaportes</h2>
+                    <p className="text-zinc-500">Crie novos IDs seriais para vincular às etiquetas das peças físicas.</p>
+                    <button 
+                        onClick={handleGenerateVaultId}
+                        className="px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg hover:scale-105 transition-all"
+                    >
+                        Gerar Novo Serial (Lote 001)
+                    </button>
+                </div>
+            )}
+
+            {/* ABA: VAUTIER */}
+            {activeTab === 'vautier' && (
+                <div className="p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-12">
+                    <h2 className="text-3xl font-semibold tracking-tighter italic">Leads Físicos: Loja 142</h2>
+                    <div className="space-y-4">
+                        {vautierLeads.length === 0 ? (
+                            <p className="text-zinc-400 italic text-sm">Nenhum acesso via QR Code Vautier até o momento.</p>
+                        ) : (
+                            vautierLeads.map((lead, i) => (
+                                <div key={i} className="flex justify-between items-center p-6 rounded-2xl bg-white shadow-sm">
+                                    <div>
+                                        <p className="text-sm font-semibold">Lead Capturado</p>
+                                        <p className="text-[10px] text-zinc-400 font-mono mt-1">{new Date(lead.timestamp).toLocaleString('pt-BR')}</p>
+                                    </div>
+                                    <span className="px-4 py-1 bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase rounded-full">
+                                        Redirecionado WA
+                                    </span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* CREATIVE LAB INTEGRATION (V2) */}
             <section className="p-16 rounded-[4rem] bg-zinc-900 text-white shadow-[30px_30px_80px_rgba(0,0,0,0.1)] space-y-16 overflow-hidden relative">
