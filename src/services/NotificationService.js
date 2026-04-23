@@ -17,6 +17,7 @@ export const NotificationService = {
 
         try {
             const payload = {
+                idempotencyKey: orderData.orderSlug,
                 clienteId: orderData.userId,
                 valorTotal: orderData.total,
                 itensArsenal: orderData.items.map(i => i.name),
@@ -44,6 +45,7 @@ export const NotificationService = {
         }
 
         const message = `*NOVA RESERVA HOOKE* ⚡
+Protocolo: ${orderData.orderSlug}
 Cliente: ${orderData.userName || 'Cliente Anônimo'}
 Arsenal: ${orderData.items.map(i => i.name).join(', ')}
 Valor: R$ ${orderData.total.toFixed(2)}

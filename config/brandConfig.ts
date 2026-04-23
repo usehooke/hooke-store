@@ -19,7 +19,7 @@ export const brandConfig = {
         return `https://wa.me/5511975902528?text=${encodeURIComponent(msg)}`;
       }
     },
-    email: "suporte@usehooke.com.br",
+    email: "hooke.rugby@outlook.com",
     addresses: [
       {
         name: "Vautier Premium",

@@ -150,6 +150,9 @@ const ProductCard = ({ product, stock, isAuthenticated, addToArsenal }) => (
   </motion.div>
 );
 
+// 6. CACHE BUSTER GLOBAL
+const VERSION_ID = `V5.5-${Date.now()}`;
+
 export default function App() {
   const { arsenal: localArsenal, addToArsenal: storeAdd } = useStore();
   const appId = 'hooke-standalone-pwa';
@@ -198,10 +201,14 @@ export default function App() {
 
   return (
     <HelmetProvider>
-      <div className="bg-[#F5F5F5] min-h-screen font-sans selection:bg-black selection:text-white pb-32">
+      <div data-version={VERSION_ID} className="bg-[#F5F5F5] min-h-screen font-sans selection:bg-black selection:text-white pb-32">
         <Helmet>
           <title>Hooke | Standalone PWA</title>
           <meta name="theme-color" content="#F5F5F5" />
+          <meta name="app-version" content={VERSION_ID} />
+          <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+          <meta http-equiv="Pragma" content="no-cache" />
+          <meta http-equiv="Expires" content="0" />
         </Helmet>
 
         {/* HEADER */}
