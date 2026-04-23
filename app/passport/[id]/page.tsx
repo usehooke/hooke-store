@@ -92,7 +92,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
     };
 
     // UI RENDER HELPERS
-    const renderAnimatedText = (text) => {
+    const renderAnimatedText = (text: string) => {
         return text.split('').map((char, index) => (
             <motion.span
                 key={index}
