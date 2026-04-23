@@ -1,18 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { db, auth } from "@/lib/firebase";
-import { collection, getDocs, doc, updateDoc, setDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Toaster, toast } from "sonner";
+
+// Server Actions V11.0 Elite
+import { toggleProductVisibility, deleteProduct, saveProduct } from "../actions/products";
 
 // Novos Componentes Elite
 import { AdminProductList } from "../components/elite/AdminProductList";
 import { AdminProductDrawer } from "../components/elite/AdminProductDrawer";
 import { Product } from "@/types";
 import { LayoutDashboard, Barcode, LogOut, ExternalLink, Plus } from "lucide-react";
+import { triggerHaptic } from "@/src/utils/haptics";
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,7 +24,7 @@ export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   useEffect(() => {
@@ -59,51 +63,58 @@ export default function AdminPage() {
     }
   }
 
-  const handleToggleActive = async (id: string, currentStatus: boolean) => {
-    if (!db) return;
-    try {
-      const productRef = doc(db, "produtos", id);
-      await updateDoc(productRef, { isActive: !currentStatus });
-      setProducts(prev => prev.map(p => p.id === id ? { ...p, isActive: !currentStatus } : p));
-      toast.success(currentStatus ? "Produto ocultado" : "Produto visível");
-    } catch {
-      toast.error("Erro ao alterar visibilidade.");
-    }
+  const handleToggleActive = (id: string, currentStatus: boolean) => {
+    // Optimistic UI Update
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, isActive: !currentStatus } : p));
+    triggerHaptic('light');
+
+    startTransition(async () => {
+      const result = await toggleProductVisibility(id, currentStatus, user?.email || 'system');
+      if (result.success) {
+        toast.success(currentStatus ? "Produto ocultado" : "Produto visível");
+      } else {
+        // Rollback on failure
+        setProducts(prev => prev.map(p => p.id === id ? { ...p, isActive: currentStatus } : p));
+        toast.error("Erro ao alterar visibilidade.");
+        triggerHaptic('heavy');
+      }
+    });
   };
 
-  const handleDelete = async (id: string, name: string) => {
+  const handleDelete = (id: string, name: string) => {
     if (!window.confirm(`Excluir definitivamente "${name}"?`)) return;
-    if (!db) return;
-    try {
-      const { deleteDoc } = await import("firebase/firestore");
-      await deleteDoc(doc(db, "produtos", id));
-      setProducts(prev => prev.filter(p => p.id !== id));
-      toast.success("Produto excluído.");
-    } catch {
-      toast.error("Erro ao excluir.");
-    }
+    triggerHaptic('heavy');
+
+    const previousProducts = [...products];
+    // Optimistic UI Delete
+    setProducts(prev => prev.filter(p => p.id !== id));
+
+    startTransition(async () => {
+      const result = await deleteProduct(id, name, user?.email || 'system');
+      if (result.success) {
+        toast.success("Produto excluído.");
+      } else {
+        // Rollback
+        setProducts(previousProducts);
+        toast.error("Erro ao excluir.");
+      }
+    });
   };
 
   const handleSaveProduct = async (data: Partial<Product>) => {
-    setIsSaving(true);
-    if (!db) return;
-    try {
-      const id = data.id || doc(collection(db, "produtos")).id;
-      await setDoc(doc(db, "produtos", id), {
-        ...data,
-        id,
-        updatedAt: Date.now()
-      });
-      
-      toast.success(data.id ? "Alterações salvas" : "Novo produto cadastrado");
-      setIsDrawerOpen(false);
-      setEditingProduct(null);
-      fetchProducts();
-    } catch {
-      toast.error("Erro ao salvar dados.");
-    } finally {
-      setIsSaving(false);
-    }
+    startTransition(async () => {
+      const result = await saveProduct(data, user?.email || 'system');
+      if (result.success) {
+        triggerHaptic('success');
+        toast.success(data.id ? "Alterações salvas" : "Novo produto cadastrado");
+        setIsDrawerOpen(false);
+        setEditingProduct(null);
+        fetchProducts(); // Refresh para pegar o ID caso seja novo
+      } else {
+        triggerHaptic('heavy');
+        toast.error("Erro ao salvar dados.");
+      }
+    });
   };
 
   const handleSyncTiny = async (product: Product) => {
