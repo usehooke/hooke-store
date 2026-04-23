@@ -84,7 +84,7 @@ export default function AdminDashboard() {
     const [fitCategory, setFitCategory] = useState('T-Shirt Boxy');
     const [grammage, setGrammage] = useState(320);
     const [showQAModal, setShowQAModal] = useState(false);
-    const [qaChecks, setQaChecks] = useState({ pele: false, gola: false, modelagem: false, metal: false });
+    const [qaChecks, setQaChecks] = useState<Record<string, boolean>>({ pele: false, gola: false, modelagem: false, metal: false });
 
     const [activeTab, setActiveTab] = useState('operacoes');
     const [vautierLeads, setVautierLeads] = useState<any[]>([]);
