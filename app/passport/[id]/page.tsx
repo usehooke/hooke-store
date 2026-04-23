@@ -1,25 +1,43 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { doc, onSnapshot, updateDoc, arrayUnion } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { signInAnonymously } from 'firebase/auth';
 import { ShieldCheck, Share2, ArrowLeft, Fingerprint, Lock, Droplets, Wind } from 'lucide-react';
 import Link from 'next/link';
+import { triggerHaptic } from '@/src/utils/haptics';
 
 /**
  * HOOKE PASSPORT: POST-PURCHASE VAULT
- * Aesthetic: Deep Slate Mode (#0A0A0A) + Cinematic Animation
+ * Aesthetic: Deep Slate Mode (#0A0A0A) + Cinematic Animation (Neumorfismo 4.0)
+ * Core V10.0: Strict Types, Async Params, Offline-First Resiliency
  */
 
-export default function PassportVault({ params }: { params: { id: string } }) {
+export interface VaultAsset {
+    id?: string;
+    Numero_de_Serie: string;
+    Categoria: string;
+    Gramatura_Tecnica: number;
+    Data_de_Lancamento: string;
+    owner_id?: string;
+}
+
+export interface UserRecord {
+    uid: string;
+    owned_assets?: string[];
+}
+
+export default function PassportVault({ params }: { params: Promise<{ id: string }> }) {
     const appId = 'hooke-standalone-pwa';
-    const vaultId = params.id;
     
-    const [vaultData, setVaultData] = useState<any>(null);
+    // Async Params para Next.js 16
+    const { id: vaultId } = React.use(params);
+    
+    const [vaultData, setVaultData] = useState<VaultAsset | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<UserRecord | null>(null);
     const [isClaimed, setIsClaimed] = useState(false);
 
     // 1. INIT AUTH & FIRESTORE LISTENER
@@ -29,14 +47,14 @@ export default function PassportVault({ params }: { params: { id: string } }) {
         const initVault = async () => {
             try {
                 // Autenticação anônima para permitir leitura e claim
-                const cred = await signInAnonymously(auth as any);
-                setUser(cred.user);
+                const cred = await signInAnonymously(auth);
+                setUser({ uid: cred.user.uid });
 
                 // Vault Listener
-                const vaultRef = doc(db as any, `artifacts/${appId}/vault`, vaultId);
+                const vaultRef = doc(db, `artifacts/${appId}/vault`, vaultId);
                 const unsub = onSnapshot(vaultRef, (snap) => {
                     if (snap.exists()) {
-                        setVaultData(snap.data());
+                        setVaultData(snap.data() as VaultAsset);
                     } else {
                         setVaultData(null); // Asset não encontrado
                     }
@@ -46,6 +64,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
                 return () => unsub();
             } catch (err) {
                 console.error("Erro no Vault:", err);
+                triggerHaptic('heavy');
                 setIsLoading(false);
             }
         };
@@ -55,13 +74,13 @@ export default function PassportVault({ params }: { params: { id: string } }) {
 
     // 2. CLAIM ASSET (VINCULAÇÃO VIP)
     const handleClaimAsset = async () => {
-        if (!user || !vaultData || isClaimed || !db) return;
+        if (!user || !vaultData || isClaimed || !db || !auth) return;
         
         try {
-            // Haptic Feedback: Simula cofre destravando
-            if (navigator.vibrate) navigator.vibrate([30, 10, 30, 10, 100]);
+            // Haptic Feedback: Simula cofre destravando com sucesso
+            triggerHaptic('success');
 
-            const userRef = doc(db as any, `artifacts/${appId}/users`, user.uid);
+            const userRef = doc(db, `artifacts/${appId}/users`, user.uid);
             await updateDoc(userRef, {
                 owned_assets: arrayUnion(vaultId)
             });
@@ -69,8 +88,8 @@ export default function PassportVault({ params }: { params: { id: string } }) {
             setIsClaimed(true);
         } catch (err) {
             console.error("Falha ao vincular asset:", err);
-            // Em caso de documento de usuário não existir, cria-lo seria o ideal na arquitetura real, 
-            // assumiremos que o login inicial já garante a estrutura mínima.
+            triggerHaptic('heavy');
+            // Em caso de documento de usuário não existir, cria-lo seria o ideal na arquitetura real
         }
     };
 
@@ -147,7 +166,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className="mx-auto w-32 h-32 rounded-full bg-[#0f0f0f] shadow-[15px_15px_30px_#060606,-15px_-15px_30px_#141414,0_0_40px_rgba(212,175,55,0.15)] flex items-center justify-center border border-white/5 relative overflow-hidden"
+                        className="mx-auto w-32 h-32 rounded-full bg-[#0f0f0f] shadow-[20px_20px_60px_#060606,-20px_-20px_60px_#141414,0_0_40px_rgba(212,175,55,0.15)] flex items-center justify-center border border-white/5 relative overflow-hidden"
                     >
                         <ShieldCheck size={40} className="text-[#D4AF37] relative z-10" />
                         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#D4AF37]/10 to-transparent animate-pulse" />
@@ -168,7 +187,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="p-8 rounded-[2rem] bg-[#0f0f0f] shadow-[inset_4px_4px_10px_#060606,inset_-4px_-4px_10px_#141414] border border-white/5 space-y-6"
+                    className="p-8 rounded-[2rem] bg-[#0f0f0f] shadow-[20px_20px_60px_#060606,-20px_-20px_60px_#141414] border border-white/5 space-y-6"
                 >
                     <div className="flex justify-between items-center border-b border-white/5 pb-4">
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Categoria</span>
@@ -189,11 +208,11 @@ export default function PassportVault({ params }: { params: { id: string } }) {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.7 }}
-                    className="p-8 rounded-[2rem] bg-gradient-to-b from-white/5 to-transparent border border-white/10"
+                    className="p-8 rounded-[2rem] bg-[#0f0f0f] shadow-[20px_20px_60px_#060606,-20px_-20px_60px_#141414] border border-white/10"
                 >
                     <div className="flex items-center gap-4 mb-4">
-                        {isHeavy ? <Wind size={20} className="text-white/70" /> : <Droplets size={20} className="text-white/70" />}
-                        <h3 className="text-[11px] font-black uppercase tracking-widest">Protocolo de Preservação</h3>
+                        {isHeavy ? <Wind size={20} className="text-[#D4AF37]" /> : <Droplets size={20} className="text-[#D4AF37]" />}
+                        <h3 className="text-[11px] font-black uppercase tracking-widest text-[#D4AF37]">Protocolo de Preservação</h3>
                     </div>
                     <p className="text-sm text-white/50 leading-relaxed">
                         {isHeavy 
