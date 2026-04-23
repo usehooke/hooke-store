@@ -29,6 +29,8 @@ import {
   onSnapshot, 
   setDoc, 
   updateDoc,
+  collection,
+  addDoc,
   arrayUnion,
   arrayRemove
 } from 'firebase/firestore';
@@ -36,6 +38,7 @@ import {
 import { auth, db } from './lib/firebase';
 import { useStore } from './src/store/useStore';
 import { triggerHaptic } from './src/utils/haptics';
+import { NotificationService } from './src/services/NotificationService';
 
 /**
  * HOOKE STORE - STANDALONE PWA (ANTIGRAVITY PROJECT)
@@ -277,8 +280,47 @@ export default function App() {
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-20">Total do Lote</span>
                     <span className="text-3xl font-bold italic font-mono">R$ {cloudArsenal.reduce((acc, i) => acc + i.price, 0).toFixed(2)}</span>
                   </div>
-                  <button className="w-full py-8 bg-black text-white text-[10px] font-black uppercase tracking-[0.5em] rounded-full shadow-2xl hover:opacity-90 active:scale-95 transition-all">
-                    PROTOCOLO CHECKOUT
+                  <button 
+                    onClick={async () => {
+                      if (cloudArsenal.length === 0) return;
+                      triggerHaptic('heavy');
+                      
+                      const total = cloudArsenal.reduce((acc, i) => acc + i.price, 0);
+                      const orderData = {
+                        userId: user.uid,
+                        userName: user.isAnonymous ? 'Explorador Hooke' : user.displayName,
+                        items: cloudArsenal,
+                        total: total,
+                        timestamp: Date.now(),
+                        currentStock: stock - 1
+                      };
+
+                      try {
+                        // 1. REGISTRO DA RESERVA
+                        const ordersRef = collection(db, `artifacts/${appId}/orders`);
+                        await addDoc(ordersRef, orderData);
+
+                        // 2. BAIXA DE ESTOQUE (LOTE 001)
+                        const stockRef = doc(db, `artifacts/${appId}/public/data/inventory`, 'lote-001');
+                        await updateDoc(stockRef, { count: stock - 1 });
+
+                        // 3. NOTIFICAÇÕES ELITE
+                        await NotificationService.triggerSaleNotification(orderData);
+                        await NotificationService.sendVipWhatsAppNotification(orderData);
+
+                        // 4. LIMPEZA DO ARSENAL
+                        const arsenalRef = doc(db, `artifacts/${appId}/users/${user.uid}/arsenal`, 'items');
+                        await updateDoc(arsenalRef, { list: [] });
+                        
+                        alert("Reserva confirmada. Protocolo de envio iniciado.");
+                        setIsCartOpen(false);
+                      } catch (error) {
+                        console.error("Falha no Checkout Protocol:", error);
+                      }
+                    }}
+                    className="w-full py-8 bg-black text-white text-[10px] font-black uppercase tracking-[0.5em] rounded-full shadow-2xl hover:opacity-90 active:scale-95 transition-all"
+                  >
+                    EFETUAR RESERVA (LOTE 001)
                   </button>
                 </div>
               </motion.div>
