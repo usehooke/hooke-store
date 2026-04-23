@@ -105,21 +105,21 @@ export default function AdminDashboard() {
         // INVENTORY MONITOR
         const invRef = doc(db, `artifacts/${appId}/public/data/inventory`, 'lote-001');
         const unsubInv = onSnapshot(invRef, (snap) => {
-            if (snap.exists()) setInventory(snap.data());
+            if (snap.exists()) setInventory(snap.data() as any);
         });
 
         // ARSENAL TRACKER
         const usersRef = collection(db, `artifacts/${appId}/public/data/active_sessions`);
         const qUsers = query(usersRef, where('lastActive', '>=', Date.now() - 600000));
         const unsubUsers = onSnapshot(qUsers, (snap) => {
-            setActiveUsers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+            setActiveUsers(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as any);
         });
 
         // SALES PULSE (FEED)
         const ordersRef = collection(db, `artifacts/${appId}/orders`);
         const qOrders = query(ordersRef, orderBy('timestamp', 'desc'), limit(10));
         const unsubOrders = onSnapshot(qOrders, (snap) => {
-            const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const orders = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
             setRecentOrders(orders);
             
             const total = orders.reduce((acc, curr) => acc + (curr.total || 0), 0);
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
         const leadsRef = collection(db, `artifacts/${appId}/leads_vautier`);
         const qLeads = query(leadsRef, orderBy('timestamp', 'desc'), limit(50));
         const unsubLeads = onSnapshot(qLeads, (snap) => {
-            setVautierLeads(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+            setVautierLeads(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as any);
         });
 
         return () => { unsubInv(); unsubUsers(); unsubOrders(); unsubLeads(); };
