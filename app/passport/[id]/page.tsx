@@ -55,7 +55,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
 
     // 2. CLAIM ASSET (VINCULAÇÃO VIP)
     const handleClaimAsset = async () => {
-        if (!user || !vaultData || isClaimed) return;
+        if (!user || !vaultData || isClaimed || !db) return;
         
         try {
             // Haptic Feedback: Simula cofre destravando

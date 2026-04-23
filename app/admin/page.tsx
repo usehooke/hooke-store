@@ -142,6 +142,7 @@ export default function AdminDashboard() {
     };
 
     const handleGenerateVaultId = async () => {
+        if (!db) return;
         try {
             const newId = `HK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             const vaultRef = doc(db, `artifacts/${appId}/vault`, newId);

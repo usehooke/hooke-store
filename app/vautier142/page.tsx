@@ -15,6 +15,7 @@ export default function Vautier142Funnel() {
     const [isLoading, setIsLoading] = useState(false);
     
     const handleWhatsAppRedirect = async () => {
+        if (!db) return;
         setIsLoading(true);
         try {
             // 1. Registrar Lead no Firestore
