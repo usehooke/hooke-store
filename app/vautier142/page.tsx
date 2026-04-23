@@ -19,7 +19,7 @@ export default function Vautier142Funnel() {
         setIsLoading(true);
         try {
             // 1. Registrar Lead no Firestore
-            const leadsRef = collection(db, 'artifacts/hooke-standalone-pwa/leads_vautier');
+            const leadsRef = collection(db as any, 'artifacts/hooke-standalone-pwa/leads_vautier');
             await addDoc(leadsRef, {
                 timestamp: Date.now(),
                 origin: 'vautier_142',

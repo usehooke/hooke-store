@@ -33,7 +33,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
                 setUser(cred.user);
 
                 // Vault Listener
-                const vaultRef = doc(db, `artifacts/${appId}/vault`, vaultId);
+                const vaultRef = doc(db as any, `artifacts/${appId}/vault`, vaultId);
                 const unsub = onSnapshot(vaultRef, (snap) => {
                     if (snap.exists()) {
                         setVaultData(snap.data());
@@ -61,7 +61,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
             // Haptic Feedback: Simula cofre destravando
             if (navigator.vibrate) navigator.vibrate([30, 10, 30, 10, 100]);
 
-            const userRef = doc(db, `artifacts/${appId}/users`, user.uid);
+            const userRef = doc(db as any, `artifacts/${appId}/users`, user.uid);
             await updateDoc(userRef, {
                 owned_assets: arrayUnion(vaultId)
             });

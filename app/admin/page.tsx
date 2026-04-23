@@ -103,20 +103,20 @@ export default function AdminDashboard() {
         if (!isAuthorized || !db) return;
 
         // INVENTORY MONITOR
-        const invRef = doc(db, `artifacts/${appId}/public/data/inventory`, 'lote-001');
+        const invRef = doc(db as any, `artifacts/${appId}/public/data/inventory`, 'lote-001');
         const unsubInv = onSnapshot(invRef, (snap) => {
             if (snap.exists()) setInventory(snap.data() as any);
         });
 
         // ARSENAL TRACKER
-        const usersRef = collection(db, `artifacts/${appId}/public/data/active_sessions`);
+        const usersRef = collection(db as any, `artifacts/${appId}/public/data/active_sessions`);
         const qUsers = query(usersRef, where('lastActive', '>=', Date.now() - 600000));
         const unsubUsers = onSnapshot(qUsers, (snap) => {
             setActiveUsers(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as any);
         });
 
         // SALES PULSE (FEED)
-        const ordersRef = collection(db, `artifacts/${appId}/orders`);
+        const ordersRef = collection(db as any, `artifacts/${appId}/orders`);
         const qOrders = query(ordersRef, orderBy('timestamp', 'desc'), limit(10));
         const unsubOrders = onSnapshot(qOrders, (snap) => {
             const orders = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
         });
 
         // VAUTIER LEADS
-        const leadsRef = collection(db, `artifacts/${appId}/leads_vautier`);
+        const leadsRef = collection(db as any, `artifacts/${appId}/leads_vautier`);
         const qLeads = query(leadsRef, orderBy('timestamp', 'desc'), limit(50));
         const unsubLeads = onSnapshot(qLeads, (snap) => {
             setVautierLeads(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as any);
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         if (!db) return;
         try {
             const newId = `HK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            const vaultRef = doc(db, `artifacts/${appId}/vault`, newId);
+            const vaultRef = doc(db as any, `artifacts/${appId}/vault`, newId);
             await updateDoc(vaultRef, {
                 Numero_de_Serie: newId,
                 Categoria: 'Reserva Especial',
