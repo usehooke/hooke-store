@@ -84,7 +84,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
-      <body className="font-sans antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
+      <body className="font-jost antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
         <Providers>
           <Suspense fallback={<div className="min-h-screen bg-hooke-paper" />}>
             <ShopLayoutWrapper>

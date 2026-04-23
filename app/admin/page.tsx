@@ -88,6 +88,11 @@ export default function AdminDashboard() {
 
     const [activeTab, setActiveTab] = useState('operacoes');
     const [vautierLeads, setVautierLeads] = useState<any[]>([]);
+    
+    // VAULT V6 STATES
+    const [vaultModel, setVaultModel] = useState('T-Shirt Boxy');
+    const [vaultGrammage, setVaultGrammage] = useState(320);
+    const [lastGeneratedSerial, setLastGeneratedSerial] = useState('');
 
     // SECURITY HANDSHAKE
     useEffect(() => {
@@ -144,18 +149,17 @@ export default function AdminDashboard() {
     const handleGenerateVaultId = async () => {
         if (!db) return;
         try {
-            const newId = `HK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const newId = `HK-2026-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
             const vaultRef = doc(db as any, `artifacts/${appId}/vault`, newId);
             await updateDoc(vaultRef, {
                 Numero_de_Serie: newId,
-                Categoria: 'Reserva Especial',
-                Gramatura_Tecnica: 320,
+                Categoria: vaultModel,
+                Gramatura_Tecnica: vaultGrammage,
                 Data_de_Lancamento: new Date().toLocaleDateString('pt-BR')
             }).catch(async (e) => {
-                // se falhar porque nao existe, criamos (ideal seria setDoc)
                 console.log("fallback creation");
             });
-            alert(`Selo gerado: ${newId}`);
+            setLastGeneratedSerial(newId);
         } catch(e) { console.error(e) }
     }
 
@@ -314,14 +318,61 @@ export default function AdminDashboard() {
             {/* ABA: VAULT */}
             {activeTab === 'vault' && (
                 <div className="p-12 rounded-[3.5rem] bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] space-y-12">
-                    <h2 className="text-3xl font-semibold tracking-tighter italic">Gerenciamento de Passaportes</h2>
-                    <p className="text-zinc-500">Crie novos IDs seriais para vincular às etiquetas das peças físicas.</p>
-                    <button 
-                        onClick={handleGenerateVaultId}
-                        className="px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg hover:scale-105 transition-all"
-                    >
-                        Gerar Novo Serial (Lote 001)
-                    </button>
+                    <div className="space-y-4">
+                        <h2 className="text-4xl font-bold tracking-tighter italic text-black">Serial Generator <span className="font-light opacity-20">V6.0</span></h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.6em] text-zinc-500">Protocolo de Criação de Passaportes Físicos</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-8 bg-white/50 p-8 rounded-[2rem] border border-white">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-4 block">Modelo (Categoria)</label>
+                                <select 
+                                    value={vaultModel} 
+                                    onChange={(e) => setVaultModel(e.target.value)}
+                                    className="w-full bg-transparent border-b border-black/10 py-4 font-bold text-lg focus:outline-none"
+                                >
+                                    <option value="T-Shirt Boxy">T-Shirt Boxy</option>
+                                    <option value="Conjunto Viscose">Conjunto Viscose</option>
+                                    <option value="Bermuda High-Density">Bermuda High-Density</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 mb-4 block">Gramatura (g/m²)</label>
+                                <input 
+                                    type="number" 
+                                    value={vaultGrammage} 
+                                    onChange={(e) => setVaultGrammage(Number(e.target.value))}
+                                    className="w-full bg-transparent border-b border-black/10 py-4 font-mono font-bold text-lg focus:outline-none"
+                                />
+                            </div>
+                            <button 
+                                onClick={handleGenerateVaultId}
+                                className="w-full px-8 py-6 bg-black text-white text-[10px] font-black uppercase tracking-[0.6em] rounded-full shadow-lg hover:scale-105 transition-all"
+                            >
+                                GERAR SELO SERIAL
+                            </button>
+                        </div>
+
+                        {lastGeneratedSerial && (
+                            <div className="flex flex-col items-center justify-center space-y-8">
+                                <div className="p-8 bg-white border border-black/10 shadow-md text-center space-y-4" style={{ width: '50mm', height: '50mm' }}>
+                                    <h3 className="text-2xl font-bold italic tracking-tighter">hooke</h3>
+                                    <div className="w-full aspect-square max-w-[60px] mx-auto bg-black/5 flex items-center justify-center rounded-lg">
+                                        <Zap size={24} className="opacity-20" /> {/* Simulando QR Code minimalista */}
+                                    </div>
+                                    <p className="text-[8px] font-mono font-bold">{lastGeneratedSerial}</p>
+                                    <p className="text-[6px] font-black uppercase tracking-widest">{vaultModel} • {vaultGrammage}G</p>
+                                </div>
+                                <button 
+                                    onClick={() => window.print()}
+                                    className="px-8 py-4 bg-[#F5F5F5] border border-black/10 text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-black hover:text-white transition-colors"
+                                >
+                                    Imprimir Etiqueta (50x50mm)
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -480,6 +531,31 @@ export default function AdminDashboard() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* PRINT CSS STYLES */}
+            <style jsx global>{`
+                @media print {
+                    body * { visibility: hidden; }
+                    .print-area, .print-area * { visibility: visible; }
+                    .print-area { position: absolute; left: 0; top: 0; width: 50mm; height: 50mm; }
+                }
+            `}</style>
+            
+            {lastGeneratedSerial && (
+                <div className="hidden print:flex print-area items-center justify-center bg-white" style={{ width: '50mm', height: '50mm' }}>
+                    <div className="text-center space-y-2">
+                        <h3 className="text-xl font-bold italic tracking-tighter font-jost">hooke</h3>
+                        {/* URL Real do Passaporte para o QR */}
+                        <div className="w-16 h-16 mx-auto bg-black flex items-center justify-center p-1">
+                            <div className="w-full h-full border-2 border-white border-dashed flex items-center justify-center">
+                                <span className="text-white text-[5px] font-mono">QR</span>
+                            </div>
+                        </div>
+                        <p className="text-[10px] font-mono font-bold tracking-widest text-black">{lastGeneratedSerial}</p>
+                        <p className="text-[6px] font-black uppercase tracking-widest text-black">{vaultModel} • {vaultGrammage}G</p>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

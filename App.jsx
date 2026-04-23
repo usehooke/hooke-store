@@ -110,7 +110,7 @@ const TechnicalSpecs = ({ fitType, grammage }) => {
   else specString = `ENGENHARIA TÊXTIL: ${grammage}G/M²`;
 
   return (
-    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.4em] mb-1">
+    <p className="text-[8px] text-slate-400 font-black uppercase tracking-[0.6em] mb-1">
       {specString}
     </p>
   );
@@ -137,9 +137,9 @@ const ProductCard = ({ product, stock, isAuthenticated, addToArsenal }) => (
     </div>
 
     <div className="px-4">
-      <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-30 mb-2 block">{product.category}</span>
+      <span className="text-[8px] font-black uppercase tracking-[0.6em] opacity-30 mb-2 block">{product.category}</span>
       <TechnicalSpecs fitType={product.fit_type} grammage={product.grammage} />
-      <h3 className="text-lg font-semibold tracking-tighter text-black mb-3">{product.name}</h3>
+      <h3 className="text-lg font-bold tracking-tighter text-black mb-3">{product.name}</h3>
       <div className="flex justify-between items-center">
         <span className="text-md font-bold font-mono">R$ {product.price.toFixed(2)}</span>
         <button onClick={() => { triggerHaptic('light'); }} className="p-3 rounded-full shadow-[inset_4px_4px_8px_#d1d1d1,inset_-4px_-4px_8px_#ffffff] opacity-40 hover:opacity-100 transition-all">
@@ -151,7 +151,7 @@ const ProductCard = ({ product, stock, isAuthenticated, addToArsenal }) => (
 );
 
 // 6. CACHE BUSTER GLOBAL
-const VERSION_ID = `V5.5-${Date.now()}`;
+const VERSION_ID = `V6.0-${Date.now()}`;
 
 export default function App() {
   const { arsenal: localArsenal, addToArsenal: storeAdd } = useStore();

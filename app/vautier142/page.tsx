@@ -5,10 +5,11 @@ import { motion } from 'framer-motion';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { MapPin, ArrowRight, ShieldCheck, Instagram, Zap } from 'lucide-react';
+import { triggerHaptic } from '@/src/utils/haptics';
 
 /**
- * HOOKE STORE: VAUTIER 142 FUNNEL
- * Aesthetic: Neumorphic Alabastro (Light Mode)
+ * HOOKE STORE: VAUTIER 142 FUNNEL - V6.0 ELITE EDITION
+ * Aesthetic: Deep Alabaster Radial + Layered Neumorphism
  */
 
 export default function Vautier142Funnel() {
@@ -16,6 +17,7 @@ export default function Vautier142Funnel() {
     
     const handleWhatsAppRedirect = async () => {
         if (!db) return;
+        triggerHaptic('success');
         setIsLoading(true);
         try {
             // 1. Registrar Lead no Firestore
@@ -32,7 +34,6 @@ export default function Vautier142Funnel() {
             window.location.href = whatsappUrl;
         } catch (err) {
             console.error("Erro ao registrar lead:", err);
-            // Redireciona mesmo em caso de erro no analytics
             const message = encodeURIComponent("Olá Fernando! Estive na loja 142 e quero garantir meu item do Lote 001.");
             window.location.href = `https://wa.me/5511975902528?text=${message}`;
         } finally {
@@ -40,79 +41,100 @@ export default function Vautier142Funnel() {
         }
     };
 
+    const staggerContainer = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15
+            }
+        }
+    };
+
+    const itemVariant = {
+        hidden: { opacity: 0, y: 30 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+    };
+
     return (
-        <div className="min-h-screen bg-[#F5F5F5] font-sans selection:bg-black selection:text-white flex flex-col items-center justify-center p-8">
+        <div className="min-h-screen font-jost bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#ffffff] via-[#f5f5f5] to-[#e0e0e0] selection:bg-black selection:text-white flex flex-col items-center justify-center p-6 md:p-12 overflow-hidden">
             
-            {/* Visual Concierge Header */}
             <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-16 inline-flex items-center gap-3 px-6 py-3 bg-white/40 backdrop-blur-md rounded-full shadow-[inset_4px_4px_10px_#d1d1d1,inset_-4px_-4px_10px_#ffffff] border border-white/50"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="show"
+                className="max-w-2xl w-full"
             >
-                <MapPin size={14} className="text-black" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black">ORIGEM: VAUTIER PREMIUM - LOJA 142</span>
-            </motion.div>
+                {/* Visual Concierge Header */}
+                <motion.div variants={itemVariant} className="text-center mb-10">
+                    <div className="inline-flex items-center gap-3 px-8 py-4 bg-white/40 backdrop-blur-md rounded-full shadow-[inset_4px_4px_10px_#d1d1d1,inset_-4px_-4px_10px_#ffffff] border border-white/50">
+                        <MapPin size={14} className="text-black" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.6em] text-black">ORIGEM: UNIDADE VAUTIER PREMIUM</span>
+                    </div>
+                </motion.div>
 
-            {/* Main Content */}
-            <div className="max-w-md w-full text-center space-y-12 relative">
-                
-                {/* Neumorphic Logo Sphere */}
+                {/* THE MASSIVE CONCIERGE CARD */}
                 <motion.div 
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="mx-auto w-32 h-32 rounded-full bg-[#F5F5F5] shadow-[20px_20px_60px_#d1d1d1,-20px_-20px_60px_#ffffff] flex items-center justify-center mb-12"
+                    variants={itemVariant}
+                    className="relative w-full bg-[#F5F5F5] rounded-[4rem] shadow-[50px_50px_100px_#d1d1d1,-50px_-50px_100px_#ffffff] overflow-hidden flex flex-col items-center"
                 >
-                    <h1 className="text-3xl font-bold tracking-tighter italic text-black">hooke</h1>
-                </motion.div>
-
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="space-y-4">
-                    <h2 className="text-4xl font-semibold tracking-tighter text-black leading-tight">
-                        Acesso Restrito ao <br/><span className="italic font-light">Lote 001</span>
-                    </h2>
-                    <p className="text-sm text-zinc-500 max-w-xs mx-auto leading-relaxed">
-                        Você está no centro de distribuição da Hooke. Confirme seu interesse diretamente com o fundador.
-                    </p>
-                </motion.div>
-
-                {/* Call to Action */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                    <button 
-                        onClick={handleWhatsAppRedirect}
-                        disabled={isLoading}
-                        className="group w-full relative flex items-center justify-between p-8 rounded-[2rem] bg-black text-white overflow-hidden active:scale-95 transition-all shadow-[15px_15px_40px_rgba(0,0,0,0.15)] disabled:opacity-50"
-                    >
-                        <div className="flex items-center gap-4 relative z-10">
-                            <Zap size={20} className="text-emerald-400" />
-                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-left">
-                                {isLoading ? 'Processando...' : 'Acessar Arsenal via WhatsApp'}
-                            </span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors relative z-10">
-                            <ArrowRight size={18} />
-                        </div>
+                    {/* Ref 1 Image with Soft Gradient Mask */}
+                    <div 
+                        className="w-full h-[350px] bg-cover bg-center"
+                        style={{ 
+                            backgroundImage: 'url("https://www.usehooke.com.br/cdn/shop/files/camiseta-heavy-black.jpg")',
+                            WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)',
+                            maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)'
+                        }}
+                    />
+                    
+                    {/* Card Content Area */}
+                    <div className="w-full px-10 pb-16 pt-4 text-center space-y-12 relative z-10 -mt-16">
                         
-                        {/* Shimmer Effect */}
-                        <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
-                    </button>
-                </motion.div>
+                        <div className="space-y-4">
+                            <h2 className="text-5xl md:text-6xl font-bold tracking-tighter text-black leading-tight">
+                                O Seu Arsenal VIP
+                            </h2>
+                            <p className="text-lg italic text-slate-500 font-serif">
+                                Direct from Rua Tiers 184 to your home.
+                            </p>
+                        </div>
 
-                {/* Trust Badges */}
-                <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-                    className="flex justify-center gap-8 pt-8 opacity-40"
-                >
-                    <div className="flex items-center gap-2">
-                        <ShieldCheck size={16} />
-                        <span className="text-[9px] font-bold uppercase tracking-widest">Reserva Imediata</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Instagram size={16} />
-                        <span className="text-[9px] font-bold uppercase tracking-widest">@use.hooke</span>
+                        {/* VIP WhatsApp Button */}
+                        <button 
+                            onClick={handleWhatsAppRedirect}
+                            disabled={isLoading}
+                            className="group w-full max-w-sm mx-auto relative flex items-center justify-between p-8 rounded-[2rem] bg-[#0A0A0A] text-white overflow-hidden active:scale-95 transition-all shadow-[15px_15px_40px_rgba(0,0,0,0.15)] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] disabled:opacity-50"
+                        >
+                            <div className="flex items-center gap-4 relative z-10">
+                                <Zap size={24} className="text-[#D4AF37]" />
+                                <span className="text-[12px] font-black uppercase tracking-widest text-left text-white">
+                                    {isLoading ? 'Processando...' : 'Acesso VIP Imediato'}
+                                </span>
+                            </div>
+                            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#D4AF37]/20 transition-colors relative z-10">
+                                <ArrowRight size={20} className="text-white group-hover:text-[#D4AF37]" />
+                            </div>
+                            
+                            {/* Golden Shimmer Effect */}
+                            <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent skew-x-12" />
+                        </button>
+
+                        {/* Trust Badges */}
+                        <div className="flex justify-center gap-10 pt-4 opacity-40">
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck size={18} />
+                                <span className="text-[9px] font-bold uppercase tracking-widest">Reserva Direta</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Instagram size={18} />
+                                <span className="text-[9px] font-bold uppercase tracking-widest">@use.hooke</span>
+                            </div>
+                        </div>
+
                     </div>
                 </motion.div>
-
-            </div>
+            </motion.div>
         </div>
     );
 }
