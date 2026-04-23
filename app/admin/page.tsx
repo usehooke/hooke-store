@@ -73,8 +73,8 @@ const QuickAction = ({ label, icon: Icon, onClick, active = false, danger = fals
 export default function AdminDashboard() {
     const appId = 'hooke-standalone-pwa';
     const [inventory, setInventory] = useState({ count: 22, status: 'ativo' });
-    const [activeUsers, setActiveUsers] = useState([]);
-    const [recentOrders, setRecentOrders] = useState([]);
+    const [activeUsers, setActiveUsers] = useState<any[]>([]);
+    const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [isVipLocked, setIsVipLocked] = useState(false);
     const [isBatchPaused, setIsBatchPaused] = useState(false);
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
     const [qaChecks, setQaChecks] = useState({ pele: false, gola: false, modelagem: false, metal: false });
 
     const [activeTab, setActiveTab] = useState('operacoes');
-    const [vautierLeads, setVautierLeads] = useState([]);
+    const [vautierLeads, setVautierLeads] = useState<any[]>([]);
 
     // SECURITY HANDSHAKE
     useEffect(() => {
