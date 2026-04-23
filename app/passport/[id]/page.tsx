@@ -17,9 +17,9 @@ export default function PassportVault({ params }: { params: { id: string } }) {
     const appId = 'hooke-standalone-pwa';
     const vaultId = params.id;
     
-    const [vaultData, setVaultData] = useState(null);
+    const [vaultData, setVaultData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<any>(null);
     const [isClaimed, setIsClaimed] = useState(false);
 
     // 1. INIT AUTH & FIRESTORE LISTENER
@@ -29,7 +29,7 @@ export default function PassportVault({ params }: { params: { id: string } }) {
         const initVault = async () => {
             try {
                 // Autenticação anônima para permitir leitura e claim
-                const cred = await signInAnonymously(auth);
+                const cred = await signInAnonymously(auth as any);
                 setUser(cred.user);
 
                 // Vault Listener
