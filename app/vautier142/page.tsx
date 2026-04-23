@@ -41,7 +41,7 @@ export default function Vautier142Funnel() {
         }
     };
 
-    const staggerContainer = {
+    const staggerContainer: any = {
         hidden: { opacity: 0 },
         show: {
             opacity: 1,
@@ -51,7 +51,7 @@ export default function Vautier142Funnel() {
         }
     };
 
-    const itemVariant = {
+    const itemVariant: any = {
         hidden: { opacity: 0, y: 30 },
         show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
     };
