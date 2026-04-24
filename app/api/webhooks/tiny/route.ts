@@ -24,7 +24,6 @@ export async function POST(req: Request) {
     // Validação de schema — rejeita payloads estruturalmente inválidos
     const validation = TinyWebhookSchema.safeParse(rawPayload);
     if (!validation.success) {
-      console.error("Webhook Tiny: payload rejeitado pelo schema Zod.", validation.error.format());
       return NextResponse.json({ error: 'Payload com estrutura inválida.' }, { status: 400 });
     }
 
@@ -35,14 +34,12 @@ export async function POST(req: Request) {
     const newStock = payload?.dados?.saldo ?? payload?.estoque ?? payload?.quantidade ?? payload?.saldo;
 
     if (!sku || newStock === undefined) {
-      console.error("Webhook Tiny: SKU ou Saldo ausentes no payload.");
       return NextResponse.json({ error: 'Payload inválido. SKU ou Saldo ausentes.' }, { status: 400 });
     }
 
     // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, o Webhook não pode atualizar o estoque.
     const firestore = db;
     if (!firestore) {
-      console.error("❌ [Hooke System] Webhook Tiny abortado: Firestore offline.");
       return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
     }
 
@@ -75,10 +72,8 @@ export async function POST(req: Request) {
     });
 
     if (updated) {
-      console.log(`Sucesso: Estoque mapeado para o produto ${productIdToUpdate}. Nova Qtd: ${newStock}`);
       return NextResponse.json({ success: true, message: `Estoque do SKU ${sku} atualizado com sucesso.` });
     } else {
-      console.warn(`Aviso: Webhook recebeu SKU ${sku}, mas ele não existe em nenhum produto do Firebase.`);
       return NextResponse.json({ success: false, message: `SKU ${sku} não encontrado no banco de dados da loja.` }, { status: 404 });
     }
   } catch (error) {

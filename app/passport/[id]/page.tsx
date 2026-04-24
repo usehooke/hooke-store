@@ -115,7 +115,7 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
                     url: window.location.href,
                 });
             } catch (err) {
-                console.log("Compartilhamento cancelado ou falhou.");
+                // Silently fail on share cancellation or unsupported platform
             }
         } else {
             alert("Compartilhamento não suportado neste navegador. Copie o link da barra de endereços.");

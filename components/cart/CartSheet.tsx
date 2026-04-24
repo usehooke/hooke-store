@@ -28,9 +28,18 @@ const SmartSuggestions = dynamic(() => import("@/components/shop/SmartSuggestion
 const FreeShippingBar = dynamic(() => import("@/components/shop/FreeShippingBar"), { ssr: false });
 
 export default function CartSheet() {
+  const [hydrated, setHydrated] = useState(false);
   const items = useCartStore(state => state.items);
   const subtotal = useCartStore(selectCartSubTotal);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+  useEffect(() => {
+    setHydrated(useCartStore.persist.hasHydrated());
+    const unsub = useCartStore.persist.onFinishHydration(() => setHydrated(true));
+    return () => unsub();
+  }, []);
+
+  if (!hydrated) return <div className="h-[1px] w-full opacity-0" />;
 
   const handleWhatsAppCheckout = () => {
     // Lógica simplificada de WhatsApp movida para utilitário ou mantida aqui por conveniência

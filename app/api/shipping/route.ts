@@ -6,8 +6,6 @@ import { ShippingRequestSchema } from "@/lib/schemas";
 
 // Função para simular fallback funcional dinâmico
 async function getFallbackShipping(cepDestino: string, pesoFinal: string): Promise<{ nome: string; valor: string; prazo: string }[]> {
-    console.log(`Fallback ativado: Melhor Envio / Frenet para CEP: ${cepDestino} (Peso: ${pesoFinal})`);
-    
     // Regra simples: Estado de SP e arredores (CEPs iniciados em 0 ou 1) vs Resto do Brasil
     const isSP = cepDestino.startsWith("0") || cepDestino.startsWith("1");
     
@@ -51,7 +49,6 @@ export async function POST(req: Request) {
             const cacheKey = `shipping_${sCepDestino}_${pesoFinal}`;
             const cachedValue = await get(cacheKey);
             if (cachedValue && Array.isArray(cachedValue)) {
-                console.log(`[Cache] Retornando frete em cache do Edge Config para ${sCepDestino}`);
                 return NextResponse.json({ fretes: cachedValue }, { status: 200 });
             }
         } catch (edgeError) {

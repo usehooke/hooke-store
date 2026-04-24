@@ -13,17 +13,23 @@ import { useCartStore } from "@/store/cart-store";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const openCart = useCartStore((state) => state.openCart);
   const items = useCartStore((state) => state.items);
 
   useEffect(() => {
-    setMounted(true);
+    // ⚡ VERCEL EDGE OPTIMIZATION: Sincronização com IndexedDB
+    setHydrated(useCartStore.persist.hasHydrated());
+    const unsub = useCartStore.persist.onFinishHydration(() => setHydrated(true));
+    
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      unsub();
+    };
   }, []);
 
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
@@ -98,7 +104,7 @@ export default function Navbar() {
                 aria-label="Abrir Sacola"
               >
                 <ShoppingBag strokeWidth={1.5} size={20} />
-                {mounted && totalItems > 0 && (
+                {hydrated && totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 bg-hooke-900 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center font-bold">
                     {totalItems}
                   </span>

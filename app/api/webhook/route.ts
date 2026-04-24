@@ -4,66 +4,79 @@ import { client } from "@/lib/mercadopago";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { OrderStatus } from "@/types/order";
+import { z } from "zod";
+
+// Schema para validação da notificação do Mercado Pago (via Query Params)
+const MPNotificationSchema = z.object({
+    type: z.literal("payment"),
+    "data.id": z.string().min(1)
+});
 
 export async function POST(req: Request) {
     try {
         const url = new URL(req.url);
-        const type = url.searchParams.get("type");
-        const dataId = url.searchParams.get("data.id");
+        
+        // Validação via Zod para garantir integridade do input
+        const params = {
+            type: url.searchParams.get("type"),
+            "data.id": url.searchParams.get("data.id")
+        };
 
-        // Verifica se a notificação é referente a um Pagamento
-        if (type === "payment" && dataId) {
-            const payment = new Payment(client);
-            const paymentData = await payment.get({ id: dataId });
+        const validation = MPNotificationSchema.safeParse(params);
 
-            const externalReference = paymentData.external_reference; // ID do nosso Pedido Firestore
-            const mpStatus = paymentData.status;
+        if (!validation.success) {
+            // Ignoramos notificações que não sejam de pagamento sem quebrar o fluxo
+            return NextResponse.json({ success: true, ignored: true });
+        }
 
-            if (externalReference) {
-                // Mapeamento de status MP para o nosso modelo de Pedidos
-                let orderStatus: OrderStatus = 'pending';
+        const { "data.id": dataId } = validation.data;
 
-                switch (mpStatus) {
-                    case 'approved':
-                        orderStatus = 'approved';
-                        break;
-                    case 'rejected':
-                    case 'cancelled':
-                        orderStatus = 'cancelled';
-                        break;
-                    case 'in_process':
-                    case 'authorized':
-                        orderStatus = 'in_process';
-                        break;
-                    default:
-                        orderStatus = 'pending';
-                }
+        const payment = new Payment(client);
+        const paymentData = await payment.get({ id: dataId });
 
-                // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, o Webhook não pode persistir a aprovação.
-                if (!db) {
-                    console.error("❌ [Hooke System] Webhook abortado: Firestore offline.");
-                    return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
-                }
+        const externalReference = paymentData.external_reference; // ID do nosso Pedido Firestore
+        const mpStatus = paymentData.status;
 
-                const orderRef = doc(db, "pedidos", externalReference);
+        if (externalReference) {
+            // Mapeamento de status MP para o nosso modelo de Pedidos
+            let orderStatus: OrderStatus = 'pending';
 
-                await updateDoc(orderRef, {
-                    status: orderStatus,
-                    paymentId: paymentData.id?.toString(),
-                    paymentMethod: paymentData.payment_type_id || paymentData.payment_method_id,
-                    updatedAt: Date.now()
-                });
-
-                console.log(`[Webhook] Pedido ${externalReference} atualizado para ${orderStatus}`);
+            switch (mpStatus) {
+                case 'approved':
+                    orderStatus = 'approved';
+                    break;
+                case 'rejected':
+                case 'cancelled':
+                    orderStatus = 'cancelled';
+                    break;
+                case 'in_process':
+                case 'authorized':
+                    orderStatus = 'in_process';
+                    break;
+                default:
+                    orderStatus = 'pending';
             }
+
+            // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, o Webhook não pode persistir a aprovação.
+            if (!db) {
+                console.error("❌ [Hooke System] Webhook abortado: Firestore offline.");
+                return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
+            }
+
+            const orderRef = doc(db, "pedidos", externalReference);
+
+            await updateDoc(orderRef, {
+                status: orderStatus,
+                paymentId: paymentData.id?.toString(),
+                paymentMethod: paymentData.payment_type_id || paymentData.payment_method_id,
+                updatedAt: Date.now()
+            });
         }
 
         return NextResponse.json({ success: true }, { status: 200 });
 
     } catch (error: unknown) {
-        console.error("[Webhook Error] Falha no processamento:", error instanceof Error ? error.message : 'Unknown Error');
-        // Mesmo em falha, é boa prática retornar 200 para o MP não ficar re-tentando infinitamente
-        // caso não seja um erro vital de rede. Mas retornaremos 500 para debug interno no vercel logs se preferir.
-        return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
+        console.error("[Webhook Error] Falha crítica no processamento:", error instanceof Error ? error.message : 'Unknown Error');
+        return NextResponse.json({ error: "Internal processing error" }, { status: 500 });
     }
 }
