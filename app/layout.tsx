@@ -84,6 +84,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+              for (const registration of registrations) { registration.unregister(); }
+            });
+            if ('caches' in window) {
+              caches.keys().then(names => {
+                for (const name of names) caches.delete(name);
+              });
+            }
+          }
+        `}} />
+      </head>
       <body className="font-jost antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
         <Providers>
           <Suspense fallback={<div className="min-h-screen bg-hooke-paper" />}>

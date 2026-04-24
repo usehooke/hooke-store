@@ -2,17 +2,14 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  disable: process.env.NODE_ENV === "development",
+  disable: true, // Emergency Disable to purge cache
   register: true,
   skipWaiting: true,
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  swcMinify: true,
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  generateBuildId: async () => `hooke-v13-recovery-${Date.now()}`,
   // 🚨 O PULO DO GATO (Correção do Erro de Build):
   // Isso força o Next.js a processar o pacote do Typebot corretamente na Vercel.
   transpilePackages: ["@typebot.io/react"],

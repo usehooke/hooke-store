@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-export const runtime = 'edge';
+
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { CouponRequestSchema } from "@/lib/schemas";

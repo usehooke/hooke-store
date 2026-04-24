@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { brandConfig } from '@/config/brandConfig';
 
-export const runtime = 'edge';
+
 
 /**
  * Meta Conversions API (CAPI) Proxy
