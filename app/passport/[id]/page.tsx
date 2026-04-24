@@ -45,8 +45,20 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
         if (!auth || !db) return;
 
         const initVault = async () => {
+            // Guarda de tipo: TS perde narrowing em funções async aninhadas
+            if (!auth) {
+                console.error("Firebase Auth não inicializado.");
+                setIsLoading(false);
+                return;
+            }
+            if (!db) {
+                console.error("Firebase DB não inicializado.");
+                setIsLoading(false);
+                return;
+            }
+
             try {
-                // Autenticação anônima para permitir leitura e claim
+                // Agora o TS sabe que 'auth' e 'db' não são null
                 const cred = await signInAnonymously(auth);
                 setUser({ uid: cred.user.uid });
 
