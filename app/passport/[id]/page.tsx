@@ -276,4 +276,3 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
         </div>
     );
 }
-}
