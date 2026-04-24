@@ -23,7 +23,7 @@ const idbStorageEngine: StateStorage = {
 };
 
 export interface ArsenalItem extends Partial<Product> {
-  id: number | string;
+  id: string;
   name?: string;
   price?: number;
   addedAt?: number;
@@ -48,7 +48,7 @@ export const useStore = create<RootState>()(
       
       // AÇÕES
       addToArsenal: (item) => set((state) => ({ 
-        arsenal: [...state.arsenal, { ...item, id: Date.now() }] 
+        arsenal: [...state.arsenal, { ...item, id: item.id ?? String(Date.now()) }] 
       })),
       
       setVipStatus: (status) => set({ vipStatus: status }),
