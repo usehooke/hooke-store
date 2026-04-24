@@ -1,18 +1,41 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { z } from 'zod';
+
+// Schema Zod: aceita os múltiplos formatos de webhook do Tiny ERP
+const TinyWebhookSchema = z.object({
+  dados: z.object({
+    sku: z.string().optional(),
+    saldo: z.number().optional(),
+  }).optional(),
+  sku: z.string().optional(),
+  codigo: z.string().optional(),
+  idProduto: z.string().optional(),
+  estoque: z.number().optional(),
+  quantidade: z.number().optional(),
+  saldo: z.number().optional(),
+});
 
 export async function POST(req: Request) {
   try {
-    const payload = await req.json();
-    console.log("Webhook Tiny Recebido:", JSON.stringify(payload));
+    const rawPayload = await req.json();
 
-    // Tenta extrair o SKU e Saldo de diferentes formatos possíveis de webhooks
+    // Validação de schema — rejeita payloads estruturalmente inválidos
+    const validation = TinyWebhookSchema.safeParse(rawPayload);
+    if (!validation.success) {
+      console.error("Webhook Tiny: payload rejeitado pelo schema Zod.", validation.error.format());
+      return NextResponse.json({ error: 'Payload com estrutura inválida.' }, { status: 400 });
+    }
+
+    const payload = validation.data;
+
+    // Extração tipada dos campos relevantes
     const sku = payload?.dados?.sku || payload?.sku || payload?.codigo || payload?.idProduto;
     const newStock = payload?.dados?.saldo ?? payload?.estoque ?? payload?.quantidade ?? payload?.saldo;
 
     if (!sku || newStock === undefined) {
-      console.error("Webhook falhou: SKU ou Saldo ausentes no payload.");
+      console.error("Webhook Tiny: SKU ou Saldo ausentes no payload.");
       return NextResponse.json({ error: 'Payload inválido. SKU ou Saldo ausentes.' }, { status: 400 });
     }
 
