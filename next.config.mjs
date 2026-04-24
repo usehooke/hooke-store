@@ -1,16 +1,7 @@
-import withPWAInit from "@ducanh2912/next-pwa";
-
-const withPWA = withPWAInit({
-  dest: "public",
-  disable: true, // Emergency Disable to purge cache
-  register: true,
-  skipWaiting: true,
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   generateBuildId: async () => `hooke-v13-recovery-${Date.now()}`,
-  // 🚨 O PULO DO GATO (Correção do Erro de Build):
+  // 🚨 O PULO DO GATO:
   // Isso força o Next.js a processar o pacote do Typebot corretamente na Vercel.
   transpilePackages: ["@typebot.io/react"],
 
@@ -31,15 +22,14 @@ const nextConfig = {
 
   // Performance e Segurança
   reactStrictMode: true, 
-  poweredByHeader: false, // Remove o aviso "X-Powered-By" (Segurança)
+  poweredByHeader: false, 
 
   // Limpeza para Produção
   compiler: {
-    // Remove console.log apenas quando o site estiver online (produção)
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Logs detalhados em dev para diagnosticar gargalos (Max Power)
+  // Logs detalhados em dev
   logging: {
     fetches: {
       fullUrl: true,
@@ -49,8 +39,8 @@ const nextConfig = {
   // 🚀 NEXT-LEVEL PERFORMANCE (PPR & Dynamic IO)
   cacheComponents: true,
 
-  // Compatibilidade com Webpack (PWA)
+  // Compatibilidade
   turbopack: {},
 };
 
-export default withPWA(nextConfig);
+export default nextConfig;

@@ -199,7 +199,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-hooke-paper p-8 md:p-16 space-y-16 font-sans selection:bg-black selection:text-white">
+        <div className="min-h-screen bg-white p-8 md:p-16 space-y-16 font-sans selection:bg-black selection:text-white">
             
             <header className="flex flex-col md:flex-row justify-between items-end gap-12 border-b border-black pb-12">
                 <div className="space-y-4">
