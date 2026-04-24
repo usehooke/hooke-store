@@ -42,9 +42,9 @@ export default function AdminPage() {
   }, [router]);
 
   async function fetchProducts() {
-    if (!db) return;
     setLoading(true);
     try {
+      if (!db) throw new Error("Firebase DB não inicializado.");
       const querySnapshot = await getDocs(collection(db, "produtos"));
       const productsData: Product[] = [];
       querySnapshot.forEach((doc) => {
@@ -55,9 +55,9 @@ export default function AdminPage() {
         } as Product);
       });
       setProducts(productsData);
-    } catch {
-      console.error("Erro ao buscar produtos");
-      toast.error("Erro ao carregar catálogo.");
+    } catch (err) {
+      console.error("Erro ao buscar produtos:", err);
+      toast.error("Erro ao carregar catálogo. Verifique a conexão.");
     } finally {
       setLoading(false);
     }
@@ -201,7 +201,7 @@ export default function AdminPage() {
           }}
           product={editingProduct}
           onSubmit={handleSaveProduct}
-          isSaving={isSaving}
+          isSaving={isPending}
         />
 
         {/* Footer Minimalista */}
