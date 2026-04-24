@@ -142,38 +142,48 @@ export function AdminProductList({
               exit={{ opacity: 0 }}
               className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
             >
-              {filteredProducts.map((p) => (
-                <motion.div 
-                  layout
-                  key={p.id} 
-                  className={`group bg-white border border-black/[0.05] flex flex-col hover:border-black/20 transition-all ${!p.isActive ? "opacity-40 grayscale" : ""}`}
-                >
-                  <div onClick={() => onEdit(p)} className="relative aspect-[3/4] bg-zinc-50 overflow-hidden cursor-pointer">
-                    {p.imageUrl ? (
-                      <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-200"><Plus size={32} strokeWidth={1} /></div>
-                    )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
-                        <button onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform">{p.isActive ? <Eye size={18} /> : <EyeOff size={18} />}</button>
-                        <button onClick={(e) => { e.stopPropagation(); onEdit(p); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform"><Edit3 size={18} /></button>
-                        <button onClick={(e) => { e.stopPropagation(); onDelete(p.id, p.name); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-red-500 hover:scale-110 transition-transform"><Trash2 size={18} /></button>
-                    </div>
-                  </div>
-                  <div className="p-4 flex-1 flex flex-col justify-between border-t border-black/[0.05]">
-                    <div>
-                      <h3 className="text-[10px] font-black text-zinc-900 tracking-tight leading-tight uppercase mb-1 truncate">{p.name}</h3>
-                      <p className="text-[8px] font-mono text-zinc-400 uppercase">{p.id}</p>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="text-xs font-serif text-zinc-900">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}</span>
-                      <button onClick={() => onSync(p)} className="p-1.5 border border-black/[0.05] hover:bg-zinc-50">
-                        {(p as Product & { syncStatus?: string }).syncStatus === 'synced' ? <CheckCircle2 size={12} className="text-emerald-500" /> : <RefreshCw size={12} className={`text-zinc-300 ${(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin text-amber-500' : ''}`} />}
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+              {filteredProducts.map((p) => {
+                // 🛡️ FAIL-SAFE RENDER: Se o produto não tiver os campos mínimos, ignoramos
+                if (!p || !p.id || !p.name) return null;
+
+                try {
+                  return (
+                    <motion.div 
+                      layout
+                      key={p.id} 
+                      className={`group bg-white border border-black/[0.05] flex flex-col hover:border-black/20 transition-all ${!p.isActive ? "opacity-40 grayscale" : ""}`}
+                    >
+                      <div onClick={() => onEdit(p)} className="relative aspect-[3/4] bg-zinc-50 overflow-hidden cursor-pointer">
+                        {p.imageUrl ? (
+                          <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-zinc-200"><Plus size={32} strokeWidth={1} /></div>
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
+                            <button onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform">{p.isActive ? <Eye size={18} /> : <EyeOff size={18} />}</button>
+                            <button onClick={(e) => { e.stopPropagation(); onEdit(p); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform"><Edit3 size={18} /></button>
+                            <button onClick={(e) => { e.stopPropagation(); onDelete(p.id, p.name); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-red-500 hover:scale-110 transition-transform"><Trash2 size={18} /></button>
+                        </div>
+                      </div>
+                      <div className="p-4 flex-1 flex flex-col justify-between border-t border-black/[0.05]">
+                        <div>
+                          <h3 className="text-[10px] font-black text-zinc-900 tracking-tight leading-tight uppercase mb-1 truncate">{p.name}</h3>
+                          <p className="text-[8px] font-mono text-zinc-400 uppercase">{p.id}</p>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-xs font-serif text-zinc-900">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}</span>
+                          <button onClick={() => onSync(p)} className="p-1.5 border border-black/[0.05] hover:bg-zinc-50">
+                            {(p as Product & { syncStatus?: string }).syncStatus === 'synced' ? <CheckCircle2 size={12} className="text-emerald-500" /> : <RefreshCw size={12} className={`text-zinc-300 ${(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin text-amber-500' : ''}`} />}
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                } catch (e) {
+                  console.error("🔥 Crash silenciado no item:", p.id, e);
+                  return null;
+                }
+              })}
             </motion.div>
           ) : (
             /* Modo LISTA DENSA (Novo Padrão Operacional 3.1) */
@@ -183,38 +193,46 @@ export function AdminProductList({
               exit={{ opacity: 0 }}
               className="border border-black/[0.05] bg-white divide-y divide-black/[0.03]"
             >
-              {filteredProducts.map((p) => (
-                <div key={p.id} className={`flex items-center p-3 gap-6 hover:bg-zinc-50 transition-colors group ${!p.isActive ? "opacity-30 grayscale" : ""}`}>
-                  <div className="relative h-16 w-12 bg-zinc-50 flex-shrink-0 cursor-pointer overflow-hidden border border-black/[0.05]" onClick={() => onEdit(p)}>
-                    {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform" />}
-                  </div>
-                  
-                  <div className="flex-grow min-w-0" onClick={() => onEdit(p)}>
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-[11px] font-black text-black uppercase tracking-tight truncate">{p.name}</h3>
-                      {p.department && (
-                        <span className="text-[7px] font-bold px-1.5 py-0.5 border border-black/[0.05] bg-zinc-50 text-zinc-400 uppercase italic">
-                          {p.department}
+              {filteredProducts.map((p) => {
+                if (!p || !p.id || !p.name) return null;
+                
+                try {
+                  return (
+                    <div key={p.id} className={`flex items-center p-3 gap-6 hover:bg-zinc-50 transition-colors group ${!p.isActive ? "opacity-30 grayscale" : ""}`}>
+                      <div className="relative h-16 w-12 bg-zinc-50 flex-shrink-0 cursor-pointer overflow-hidden border border-black/[0.05]" onClick={() => onEdit(p)}>
+                        {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform" />}
+                      </div>
+                      
+                      <div className="flex-grow min-w-0" onClick={() => onEdit(p)}>
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-[11px] font-black text-black uppercase tracking-tight truncate">{p.name}</h3>
+                          {p.department && (
+                            <span className="text-[7px] font-bold px-1.5 py-0.5 border border-black/[0.05] bg-zinc-50 text-zinc-400 uppercase italic">
+                              {p.department}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[9px] font-mono text-zinc-400">SKU: {p.id}</p>
+                      </div>
+
+                      <div className="w-32 text-right">
+                        <span className="text-xs font-serif text-black font-bold">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}
                         </span>
-                      )}
+                      </div>
+
+                      <div className="flex items-center gap-2 pr-4 border-l border-black/[0.03] pl-4 ml-4">
+                        <button onClick={() => onToggleActive(p.id, p.isActive !== false)} title="Status" className="p-2 text-zinc-300 hover:text-black transition-colors">{p.isActive ? <Eye size={14} /> : <EyeOff size={14} />}</button>
+                        <button onClick={() => onEdit(p)} title="Editar" className="p-2 text-zinc-300 hover:text-black transition-colors"><Edit3 size={14} /></button>
+                        <button onClick={() => onSync(p)} title="Sincronizar" className="p-2 text-zinc-300 hover:text-amber-500 transition-colors"><RefreshCw size={14} className={(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''} /></button>
+                        <button onClick={() => onDelete(p.id, p.name)} title="Excluir" className="p-2 text-zinc-200 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                      </div>
                     </div>
-                    <p className="text-[9px] font-mono text-zinc-400">SKU: {p.id}</p>
-                  </div>
-
-                  <div className="w-32 text-right">
-                    <span className="text-xs font-serif text-black font-bold">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 pr-4 border-l border-black/[0.03] pl-4 ml-4">
-                    <button onClick={() => onToggleActive(p.id, p.isActive !== false)} title="Status" className="p-2 text-zinc-300 hover:text-black transition-colors">{p.isActive ? <Eye size={14} /> : <EyeOff size={14} />}</button>
-                    <button onClick={() => onEdit(p)} title="Editar" className="p-2 text-zinc-300 hover:text-black transition-colors"><Edit3 size={14} /></button>
-                    <button onClick={() => onSync(p)} title="Sincronizar" className="p-2 text-zinc-300 hover:text-amber-500 transition-colors"><RefreshCw size={14} className={(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''} /></button>
-                    <button onClick={() => onDelete(p.id, p.name)} title="Excluir" className="p-2 text-zinc-200 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
-                  </div>
-                </div>
-              ))}
+                  );
+                } catch (e) {
+                  return null;
+                }
+              })}
             </motion.div>
           )}
         </AnimatePresence>

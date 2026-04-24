@@ -4,8 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { UploadButton } from "@/utils/uploadthing";
 import { Trash2, GripVertical, Plus } from "lucide-react";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
 
 // dnd-kit
 import {
@@ -24,7 +22,6 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 import { 
   ModelSigla,
@@ -156,7 +153,13 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
 
             <div className="space-y-2">
               <label className="text-[10px] font-black tracking-widest text-hooke-900 uppercase">Descrição Hooke</label>
-              <ReactQuill theme="snow" value={description} onChange={setDescription} className="bg-white min-h-[150px]" />
+              <textarea 
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                rows={8}
+                className="w-full border border-gray-200 p-4 text-xs font-medium focus:border-hooke-900 outline-none resize-none bg-white"
+                placeholder="Detalhes técnicos do item..."
+              />
             </div>
           </div>
         )}
