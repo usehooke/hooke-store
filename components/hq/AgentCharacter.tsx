@@ -59,28 +59,24 @@ export const AgentCharacter = memo(function AgentCharacter({
          {thought && (
            <motion.div
              layout
-             initial={{ opacity: 0, scale: 0.5, y: 20, x: "-50%" }}
-             animate={{ opacity: 1, scale: 1, y: 0, x: "-50%" }}
-             exit={{ opacity: 0, scale: 0.5, y: 10, x: "-50%" }}
-             className="absolute -top-16 left-1/2 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-stone-200/50 text-[11px] font-bold text-stone-800 whitespace-nowrap z-50"
+             initial={{ opacity: 0, y: 10, x: "-50%" }}
+             animate={{ opacity: 1, y: 0, x: "-50%" }}
+             exit={{ opacity: 0, y: 5, x: "-50%" }}
+             className="absolute -top-16 left-1/2 bg-white border border-black px-5 py-3 shadow-sharp text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap z-50"
            >
               {thought}
-              <motion.div 
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-r border-b border-stone-200 rotate-45" 
-              />
+              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-black rotate-45" />
            </motion.div>
          )}
        </AnimatePresence>
 
-       {/* Thematic Avatar Container - Neumorfismo Suave & Gloss */}
+       {/* Thematic Avatar Container - Sharp Brutalism */}
        <motion.div 
-         whileHover={{ scale: 1.05, y: -5 }}
+         whileHover={{ scale: 1.05 }}
          className={cn(
-           "relative w-[85px] h-[85px] rounded-[2.2rem] overflow-hidden transition-all duration-500 group",
-           "bg-stone-100 shadow-[10px_10px_30px_#00000040,-5px_-5px_30px_#ffffff10]", // Dark Neumorphism adaptado
-           "border-[1px] border-white/20 backdrop-blur-sm shadow-2xl"
+           "relative w-[85px] h-[85px] overflow-hidden transition-all duration-500 group",
+           "bg-zinc-900 shadow-sharp", 
+           "border border-white/20"
          )}
        >
           {/* Camada de brilho gloss premium */}
@@ -88,8 +84,8 @@ export const AgentCharacter = memo(function AgentCharacter({
           
           {/* Badge de Status em tempo real */}
           <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5">
-             <div className={cn("w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]", statusColors[status])}>
-                <div className={cn("w-full h-full rounded-full animate-ping opacity-40", statusColors[status])} />
+             <div className={cn("w-2 h-2 rounded-none shadow-[0_0_8px_rgba(0,0,0,0.5)]", statusColors[status])}>
+                <div className={cn("w-full h-full rounded-none animate-ping opacity-40", statusColors[status])} />
              </div>
           </div>
 
@@ -104,29 +100,25 @@ export const AgentCharacter = memo(function AgentCharacter({
                alt={name}
                fill
                sizes="85px"
-               priority={false}
-               className="object-cover scale-[1.1] grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-125 transition-all duration-700" 
+               className="object-cover scale-[1.1] grayscale hover:grayscale-0 transition-all duration-1000" 
                onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-800 to-stone-900 text-stone-400 font-black text-xl tracking-tighter">
+            <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-white font-black text-xl tracking-tighter italic">
               {initials}
             </div>
           )}
        </motion.div>
 
        {/* Premium Elite Label */}
-       <div className="absolute -bottom-12 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 flex flex-col items-center">
-          <div className="bg-stone-900 text-white text-[8px] px-3 py-1 rounded-full shadow-2xl uppercase tracking-[0.2em] font-black whitespace-nowrap border border-white/10">
+       <div className="absolute -bottom-14 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 flex flex-col items-center">
+          <div className="bg-black text-white text-[9px] px-4 py-2 shadow-sharp uppercase tracking-[0.3em] font-black whitespace-nowrap border border-white/10">
              {name}
           </div>
-          <div className="text-[7px] text-stone-400 font-bold uppercase tracking-widest mt-1">
+          <div className="text-[7px] text-zinc-500 font-bold uppercase tracking-[0.4em] mt-2">
              {role.split('/')[0].trim()}
           </div>
        </div>
-
-       {/* Subtle status aura */}
-       <div className="absolute -inset-4 bg-white/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
     </motion.div>
   );
 });

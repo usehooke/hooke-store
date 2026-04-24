@@ -71,7 +71,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
               transition={{ delay: 0.5, duration: 0.5 }}
               className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-sm border border-hooke-200 px-2 py-1 shadow-sm"
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></div>
+              <div className="w-1.5 h-1.5 rounded-none bg-red-600 animate-pulse"></div>
               <span className="text-hooke-900 text-[8px] font-bold uppercase tracking-[0.2em]">
                 {product.totalStock <= 8 ? 'Lote Final' : `Lote 001 - ${product.totalStock} Unidades`}
               </span>
@@ -109,4 +109,4 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       </Link>
     </motion.div>
   );
-}
+}

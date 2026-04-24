@@ -30,7 +30,7 @@ export default function ContactPage() {
  <div className="space-y-12">
  
  {/* Bloco WhatsApp (Destaque) */}
- <div className="bg-hooke-50 p-8 border border-gray-100">
+ <div className="bg-white p-8 border border-gray-100">
  <div className="flex items-center gap-3 mb-4">
  <MessageCircle size={24} className="text-green-600" />
  <h3 className="text-lg font-black tracking-tight">WhatsApp</h3>
@@ -99,7 +99,7 @@ export default function ContactPage() {
  </div>
 
  {/* 3. FAQ RÁPIDO */}
- <div className="w-full bg-hooke-50 px-6 md:px-12 py-20 border-t border-gray-100">
+ <div className="w-full bg-white px-6 md:px-12 py-20 border-t border-gray-100">
  <h2 className="text-2xl font-black tracking-tight mb-12 text-center">Dúvidas Frequentes</h2>
  
  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">

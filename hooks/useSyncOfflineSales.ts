@@ -41,8 +41,8 @@ export function useSyncOfflineSales() {
             const errorMsg = result.error || "Erro no servidor ERP";
             throw new Error(errorMsg);
           }
-        } catch (error: any) {
-          const errorMessage = error.message || "Erro de conexão";
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Erro de conexão";
           console.error(`❌ [Sync Error] Venda ${sale.id}:`, errorMessage);
           
           const newRetryCount = sale.retryCount + 1;

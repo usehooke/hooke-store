@@ -52,7 +52,12 @@ interface AgentState {
     status: "online" | "busy" | "away";
 }
 
-export function useAgentLife(initialAgents: any[]) {
+interface AgentInitial {
+    id: string;
+    position: { top: number; left: number };
+}
+
+export function useAgentLife(initialAgents: AgentInitial[]) {
     const statuses: ("online" | "busy" | "away")[] = ["online", "busy", "away"];
 
     const [agentStates, setAgentStates] = useState<AgentState[]>(

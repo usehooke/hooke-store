@@ -72,16 +72,16 @@ export default function PopulateDictionaryPage() {
  };
 
  return (
- <div className="min-h-screen bg-hooke-50 p-8 font-sans">
+ <div className="min-h-screen bg-white p-8 font-sans">
  <div className="max-w-2xl mx-auto space-y-8">
  <header className="flex items-center gap-4">
- <Link href="/admin/pdv" className="p-3 shadow-neumorph rounded-full">
+ <Link href="/admin/pdv" className="p-3 border border-black shadow-sharp rounded-none">
  <ArrowLeft className="h-5 w-5" />
  </Link>
  <h1 className="text-2xl font-black tracking-tighter">Carga de Dicionário 2026</h1>
  </header>
 
- <div className="bg-hooke-50 p-8 shadow-neumorph space-y-6">
+ <div className="bg-white p-8 border border-black shadow-sharp space-y-6">
  <div className="flex items-center gap-4 text-yellow-600 bg-yellow-50 p-4 border border-yellow-200">
  <AlertTriangle className="h-6 w-6 shrink-0" />
  <p className="text-xs font-bold ">
@@ -96,8 +96,8 @@ export default function PopulateDictionaryPage() {
  <button
  onClick={handlePopulate}
  disabled={isPopulating}
- className={`w-full p-6 font-black tracking-widest flex items-center justify-center gap-3 shadow-neumorph transition-all active:shadow-neumorph-inset ${
- isPopulating ? "opacity-50 cursor-not-allowed" : "bg-hooke-900 text-white hover:bg-black"
+ className={`w-full p-6 font-black tracking-widest flex items-center justify-center gap-3 border border-black shadow-sharp transition-all  ${
+ isPopulating ? "opacity-50 cursor-not-allowed" : "bg-black text-white hover:bg-black"
  }`}
  >
  {isPopulating ? (

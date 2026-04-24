@@ -4,7 +4,7 @@ import Link from 'next/link';
 export default function PoliticaDevolucao() {
   return (
     <main className="min-h-screen bg-gray-50 pt-32 pb-20 px-6">
-      <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm">
+      <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-none shadow-sm">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Política de Devolução e Trocas</h1>
         
         <div className="prose prose-gray max-w-none text-gray-600 space-y-6">

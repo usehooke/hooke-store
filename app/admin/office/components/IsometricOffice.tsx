@@ -164,7 +164,7 @@ export function IsometricOffice() {
                       duration: 3 + Math.random() * 2,
                       ease: "easeInOut" 
                     }}
-                    className={`w-14 h-14 ${agent.color} text-white flex items-center justify-center shadow-lg relative rounded-full group-hover:shadow-2xl transition-all border-4 border-white`}
+                    className={`w-14 h-14 ${agent.color} text-white flex items-center justify-center shadow-lg relative rounded-none group-hover:shadow-2xl transition-all border-4 border-white`}
                   >
                     <agent.icon size={24} strokeWidth={1.5} />
                   </motion.div>
@@ -191,7 +191,7 @@ export function IsometricOffice() {
         </h4>
         <div className="space-y-2">
            <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+             <div className="w-2 h-2 rounded-none bg-green-500 animate-pulse" />
              <span className="text-[9px] font-bold text-gray-900 uppercase tracking-widest italic">Operação 2D Ativa</span>
            </div>
            <p className="text-[9px] font-medium text-gray-500 leading-relaxed uppercase">

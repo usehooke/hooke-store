@@ -15,7 +15,7 @@ export default function PDVPage() {
       {/* Top Bar Elite PDV */}
       <header className="flex h-20 items-center justify-between px-8 border-b border-white/[0.05] bg-black/40 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-6">
-          <div className="flex h-10 w-10 items-center justify-center bg-white/5 border border-white/10 rounded-full">
+          <div className="flex h-10 w-10 items-center justify-center bg-white/5 border border-white/10 rounded-none">
             <Package className="h-5 w-5 text-white" strokeWidth={1.5} />
           </div>
           <div>
@@ -56,7 +56,7 @@ export default function PDVPage() {
               </div>
             ) : (
               <div className="flex items-center gap-3 text-[9px] font-black text-emerald-500 bg-emerald-500/5 px-4 py-2 border border-emerald-500/10">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 animate-pulse" />
                 TERMINAL ONLINE
               </div>
             )}

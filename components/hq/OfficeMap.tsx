@@ -88,90 +88,92 @@ export function OfficeMap() {
                      }} 
                 />
 
-                {/* THE WAR ROOM: Feedback Visual Neon & Holográfico */}
+                {/* THE WAR ROOM */}
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute top-[80px] left-[450px] w-[600px] h-[350px] bg-emerald-500/[0.02] backdrop-blur-3xl border border-emerald-500/10 rounded-[2.5rem] shadow-[inset_0_0_40px_rgba(0,0,0,0.4)] flex flex-col items-center justify-start py-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute top-[80px] left-[450px] w-[600px] h-[350px] bg-emerald-500/[0.02] border border-emerald-500/10 shadow-alabastro flex flex-col items-center justify-start py-8"
                 >
-                    <div className="flex items-center gap-2 mb-4">
-                        <Shield size={16} className="text-emerald-500/50 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500/70">The War Room</h2>
+                    <div className="flex items-center gap-4 mb-4">
+                        <Shield size={16} className="text-emerald-500/50" />
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-500/70 italic">The War Room</h2>
                     </div>
-                    <div className="w-[80%] h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent shadow-[0_0_15px_rgba(16,185,129,0.3)]" />
+                    <div className="w-[70%] h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                 </motion.div>
 
-                {/* EXECUTIVE SUITE: Neumorfismo de Recesso Profundo */}
+                {/* EXECUTIVE SUITE */}
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="absolute top-[500px] left-[450px] w-[600px] h-[450px] bg-stone-900 shadow-[inset_10px_10px_30px_#050505,inset_-10px_-10px_30px_#151515] border border-white/5 rounded-[3rem] flex flex-col items-center justify-center p-1"
+                    className="absolute top-[500px] left-[450px] w-[600px] h-[450px] bg-zinc-900/50 border border-white/5 shadow-sharp flex flex-col items-center justify-center p-1"
                 >
-                    <div className="bg-white/[0.02] w-full h-full rounded-[2.8rem] flex flex-col items-center justify-center border border-white/5 backdrop-blur-sm">
-                        <div className="flex items-center gap-3 mb-1">
-                            <Cpu size={20} className="text-white/20" />
-                            <h2 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Executive Suite</h2>
+                    <div className="bg-black/20 w-full h-full border border-white/5 flex flex-col items-center justify-center">
+                        <div className="flex items-center gap-4 mb-2">
+                            <Cpu size={20} className="text-white/10" />
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30 italic">Executive Suite</h2>
                         </div>
-                        <p className="text-[8px] text-white/20 uppercase tracking-widest font-medium">Hooke Core Leadership</p>
+                        <p className="text-[8px] text-white/10 uppercase tracking-widest font-black">Core Intelligence</p>
                         
-                        {/* Mesa Executiva com Glow */}
-                        <div className="mt-12 w-[400px] h-[120px] border border-white/5 rounded-full bg-white/[0.01] flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.01)]">
-                            <div className="w-[60%] h-[1px] bg-white/5" />
+                        <div className="mt-16 w-[450px] h-[150px] border border-white/5 bg-white/[0.01] flex items-center justify-center">
+                            <div className="w-[80%] h-[1px] bg-white/5" />
                         </div>
                     </div>
                 </motion.div>
 
                 {/* CREATIVE WORKSHOP */}
                 <motion.div 
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="absolute top-[300px] left-[80px] w-[320px] h-[550px] bg-stone-100/[0.01] backdrop-blur-lg border border-white/5 rounded-[3rem] p-8 shadow-[inset_20px_20px_60px_rgba(0,0,0,0.4)]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute top-[300px] left-[80px] w-[320px] h-[550px] bg-zinc-900/20 border border-white/5 shadow-sharp p-8"
                 >
-                    <div className="flex items-center gap-2 mb-6">
-                        <Zap size={16} className="text-amber-500/50" />
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Creative Workshop</h2>
+                    <div className="flex items-center gap-4 mb-8">
+                        <Zap size={16} className="text-zinc-500" />
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Creative Lab</h2>
+                    </div>
+                    <div className="w-full h-full border-t border-white/5 pt-8">
+                        <div className="w-full h-[300px] border border-dashed border-white/5" />
                     </div>
                 </motion.div>
 
                 {/* LOUNGE VIP */}
                 <motion.div 
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="absolute top-[1000px] left-[550px] w-[500px] h-[350px] bg-stone-900/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 flex flex-col items-end shadow-2xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute top-[1000px] left-[550px] w-[500px] h-[350px] bg-zinc-900/40 border border-white/5 p-12 flex flex-col items-end shadow-sharp"
                 >
-                    <div className="flex items-center gap-3 mb-4">
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Lounge VIP</h2>
-                        <Coffee size={18} className="text-white/20" />
+                    <div className="flex items-center gap-4 mb-6">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Elite Lounge</h2>
+                        <Coffee size={18} className="text-white/10" />
                     </div>
-                    <div className="w-[150px] h-[100px] border border-white/5 rounded-2xl mt-auto ml-auto bg-white/[0.02]" />
+                    <div className="w-[200px] h-[120px] border border-white/5 mt-auto ml-auto bg-black/20" />
                 </motion.div>
 
-                {/* ZEN GARDEN / RECOVERY ZONE: Biofeedback Aesthetic */}
+                {/* ZEN GARDEN */}
                 <motion.div 
-                    className="absolute top-[800px] left-[1110px] w-[300px] h-[450px] bg-blue-500/[0.01] backdrop-blur-md border border-blue-500/10 rounded-full flex flex-col items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.02)]"
+                    className="absolute top-[800px] left-[1110px] w-[300px] h-[450px] bg-blue-500/[0.01] border border-blue-500/10 flex flex-col items-center justify-center shadow-sharp"
                 >
-                   <Sparkles size={20} className="text-blue-500/20 mb-4" />
-                   <span className="text-[8px] font-black uppercase tracking-[0.4em] text-blue-500/30 vertical-rl">Zen Zone</span>
+                   <Sparkles size={20} className="text-blue-500/10 mb-6" />
+                   <span className="text-[8px] font-black uppercase tracking-[0.8em] text-blue-500/20 vertical-rl">Recovery Area</span>
                 </motion.div>
 
                 {/* HUD: Feedback Button */}
                 <div 
                     onClick={() => setIsModalOpen(true)}
-                    className="absolute bottom-20 left-20 w-[70px] h-[70px] bg-stone-100 text-stone-900 rounded-2xl shadow-[10px_10px_30px_#00000080,-5px_-5px_30px_#ffffff05] flex flex-col items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-all group z-40 pointer-events-auto border border-white/10"
+                    className="absolute bottom-20 left-20 w-[80px] h-[80px] bg-white text-black shadow-sharp flex flex-col items-center justify-center cursor-pointer hover:bg-zinc-200 active:scale-95 transition-all group z-40 pointer-events-auto border border-black"
                 >
-                    <Inbox size={24} className="group-hover:translate-y-[-2px] transition-transform" />
-                    <span className="text-[7px] font-black uppercase tracking-tighter mt-1">Inbox</span>
+                    <Inbox size={28} className="group-hover:-translate-y-1 transition-transform" />
+                    <span className="text-[8px] font-black uppercase tracking-widest mt-2">Inbox</span>
                 </div>
 
                 {/* Ambience Component */}
                 <OfficeAmbience />
 
                 {/* Global HQ Status HUD */}
-                <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-2 rounded-full z-40 pointer-events-none shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
-                    <p className="text-[9px] text-white font-black uppercase tracking-[0.3em] flex items-center gap-3">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
-                        Hooke Elite Virtual HQ <span className="text-white/20">|</span> v5.1 Active
+                <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-8 py-3 shadow-sharp z-40 pointer-events-none">
+                    <p className="text-[9px] text-white font-black uppercase tracking-[0.5em] flex items-center gap-4">
+                        <span className="w-2 h-2 bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
+                        Hooke Elite Virtual HQ <span className="text-white/20">|</span> v15.0 Active
                     </p>
                 </div>
 

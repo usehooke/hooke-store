@@ -18,8 +18,8 @@ export async function toggleProductVisibility(id: string, currentStatus: boolean
         revalidatePath('/'); // O2O Shielding: Limpa cache do catálogo
         
         return { success: true, newStatus: !currentStatus };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
 
@@ -34,8 +34,8 @@ export async function deleteProduct(id: string, name: string, userEmail: string 
         revalidatePath('/');
         
         return { success: true };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
 
@@ -58,7 +58,7 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         revalidatePath('/');
         
         return { success: true, product: payload };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }

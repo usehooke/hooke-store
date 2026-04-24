@@ -98,7 +98,7 @@ export default function Sidebar({ user }: { user: User }) {
                 {!isCollapsed && (
                     <div className="space-y-1 px-1">
                         <div className="flex items-center gap-2">
-                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                             <div className="w-1.5 h-1.5 rounded-none bg-emerald-500" />
                              <p className="text-[8px] uppercase tracking-[0.3em] text-zinc-400 font-black">Online • Seguro</p>
                         </div>
                         <p className="text-[11px] text-zinc-900 truncate font-mono font-medium">{user.email}</p>

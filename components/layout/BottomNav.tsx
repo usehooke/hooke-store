@@ -49,7 +49,7 @@ export default function BottomNav() {
                             {isActive && (
                                 <motion.div 
                                     layoutId="bottomNavActive"
-                                    className="absolute -top-4 w-1 h-1 bg-black rounded-full"
+                                    className="absolute -top-4 w-1 h-1 bg-black rounded-none"
                                 />
                             )}
                         </Link>

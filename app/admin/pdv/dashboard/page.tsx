@@ -31,11 +31,11 @@ export default function PDVDashboard() {
  ];
 
  return (
- <div className="min-h-screen bg-hooke-50 text-hooke-900 font-sans p-6">
+ <div className="min-h-screen bg-white text-hooke-900 font-sans p-6">
  <div className="max-w-7xl mx-auto">
  <header className="flex items-center justify-between mb-8">
  <div className="flex items-center gap-4">
- <Link href="/admin/pdv" className="p-3 shadow-neumorph rounded-full active:shadow-neumorph-inset">
+ <Link href="/admin/pdv" className="p-3 border border-black shadow-sharp rounded-none active:bg-zinc-50 border border-black/5 shadow-inner">
  <ArrowLeft className="h-5 w-5" />
  </Link>
  <h1 className="text-2xl font-black tracking-tighter ">Fechamento de Caixa</h1>
@@ -47,17 +47,17 @@ export default function PDVDashboard() {
 
  {/* Stats Grid */}
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
- <div className="bg-hooke-50 p-6 shadow-neumorph text-center">
+ <div className="bg-white p-6 border border-black shadow-sharp text-center">
  <DollarSign className="h-6 w-6 mx-auto mb-2 text-hooke-500" />
  <p className="text-[10px] font-bold text-hooke-500 mb-1">Total Vendido</p>
  <p className="text-3xl font-black tracking-tighter">R$ {(physicalSalesTotal + onlineSalesTotal).toFixed(2)}</p>
  </div>
- <div className="bg-hooke-50 p-6 shadow-neumorph text-center">
+ <div className="bg-white p-6 border border-black shadow-sharp text-center">
  <TrendingUp className="h-6 w-6 mx-auto mb-2 text-hooke-500" />
  <p className="text-[10px] font-bold text-hooke-500 mb-1">Vendas PDV</p>
  <p className="text-3xl font-black tracking-tighter">R$ {physicalSalesTotal.toFixed(2)}</p>
  </div>
-        <div className="bg-hooke-50 p-6 shadow-neumorph text-center">
+        <div className="bg-white p-6 border border-black shadow-sharp text-center">
           <Package className="h-6 w-6 mx-auto mb-2 text-hooke-500" />
           <p className="text-[10px] font-bold text-hooke-500 mb-1">Itens Saídos</p>
           <p className="text-3xl font-black tracking-tighter">
@@ -72,7 +72,7 @@ export default function PDVDashboard() {
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
  {/* Sales Mix Chart */}
- <div className="bg-hooke-50 p-8 shadow-neumorph">
+ <div className="bg-white p-8 border border-black shadow-sharp">
  <h3 className="text-sm font-black tracking-widest mb-6">Mix de Vendas: Físico vs Online</h3>
  <div className="h-64">
  <ResponsiveContainer width="100%" height="100%">
@@ -98,7 +98,7 @@ export default function PDVDashboard() {
  </div>
 
  {/* Top Items Chart */}
- <div className="bg-hooke-50 p-8 shadow-neumorph">
+ <div className="bg-white p-8 border border-black shadow-sharp">
  <h3 className="text-sm font-black tracking-widest mb-6">Top Itens do Dia</h3>
  <div className="h-64">
  <ResponsiveContainer width="100%" height="100%">

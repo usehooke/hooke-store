@@ -66,7 +66,7 @@ export default async function MasculinoPage() {
 
  {/* 4. BANNER FINAL (Rodapé da Categoria) */}
  <div className="w-full px-6 md:px-12 mt-12">
- <div className="bg-hooke-50 border border-hooke-100 py-16 text-center">
+ <div className="bg-white border border-hooke-100 py-16 text-center">
  <h3 className="text-xl font-bold tracking-tight mb-2 text-hooke-900">
  Engineering Basics
  </h3>

@@ -46,7 +46,7 @@ export function AdminProductDrawer({ isOpen, onClose, product, onSubmit, isSavin
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500"
+                className="p-2 hover:bg-gray-100 rounded-none transition-colors text-gray-500"
               >
                 <X size={20} />
               </button>

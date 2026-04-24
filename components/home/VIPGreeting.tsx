@@ -39,7 +39,7 @@ export default function VIPGreeting() {
  </div>
  <button 
  onClick={() => setIsVisible(false)}
- className="absolute right-4 p-1 hover:bg-white/10 rounded-full transition-colors"
+ className="absolute right-4 p-1 hover:bg-white/10 rounded-none transition-colors"
  >
  <X size={14} />
  </button>

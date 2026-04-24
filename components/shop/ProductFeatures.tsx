@@ -29,7 +29,7 @@ export default function ProductFeatures() {
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-hooke-100 animate-in fade-in duration-700 delay-500">
  {features.map((feature, index) => (
  <div key={index} className="flex items-start gap-3">
- <div className="p-2 bg-hooke-50 text-hooke-900 rounded-sm">
+ <div className="p-2 bg-white text-hooke-900 rounded-sm">
  {feature.icon}
  </div>
  <div>

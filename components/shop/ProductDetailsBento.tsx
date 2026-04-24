@@ -20,7 +20,7 @@ export default function ProductDetailsBento({ details }: BentoProps) {
  
  {/* 1. MATERIAL (Compact) */}
  <div className="col-span-2 bg-white rounded-sm p-4 flex items-center gap-4 border border-gray-100 hover:border-hooke-900 transition-all duration-500 group">
- <div className="bg-hooke-50 w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
+ <div className="bg-white w-10 h-10 rounded-none flex-shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform">
  <Feather className="text-hooke-900 w-4 h-4" />
  </div>
  <div>
@@ -54,4 +54,4 @@ export default function ProductDetailsBento({ details }: BentoProps) {
  </div>
  </div>
  );
-}
+}

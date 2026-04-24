@@ -41,7 +41,7 @@ export default function ShareButton({ productName, productDescription }: ShareBu
   return (
     <button
       onClick={handleShare}
-      className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-hooke-600 bg-hooke-50 hover:bg-hooke-100 hover:text-hooke-900 transition-all rounded-sm border border-hooke-200 w-full md:w-auto"
+      className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-hooke-600 bg-white hover:bg-gray-100 hover:text-hooke-900 transition-all rounded-sm border border-hooke-200 w-full md:w-auto"
       aria-label="Compartilhar produto"
     >
       {copied ? (

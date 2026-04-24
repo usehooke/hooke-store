@@ -40,8 +40,8 @@ export async function adjustStock(delta: number, userEmail: string = 'system'): 
         revalidatePath('/');
 
         return { success: true, newCount };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
 
@@ -66,7 +66,7 @@ export async function toggleSalesPause(isPaused: boolean, userEmail: string = 's
         revalidatePath('/');
 
         return { success: true };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }

@@ -40,7 +40,7 @@ export default function SizeGuideModal() {
  
  {/* LADO ESQUERDO: Diagrama Visual */}
  <div className="w-full md:w-1/3 flex flex-col gap-4">
- <div className="relative aspect-[3/4] w-full rounded-sm overflow-hidden bg-hooke-50 border border-hooke-100">
+ <div className="relative aspect-[3/4] w-full rounded-sm overflow-hidden bg-white border border-hooke-100">
  <Image
  priority src={measurementDiagramUrl}
  alt="Diagrama de como medir a camiseta"
@@ -49,7 +49,7 @@ export default function SizeGuideModal() {
  />
  </div>
  {/* Legenda do Diagrama */}
- <div className="text-sm text-hooke-600 space-y-1 bg-hooke-50 p-3 rounded-sm">
+ <div className="text-sm text-hooke-600 space-y-1 bg-white p-3 rounded-sm">
  <p><span className="font-bold text-hooke-900">A: Tórax:</span> Medida de axila a axila.</p>
  <p><span className="font-bold text-hooke-900">B: Comprimento:</span> Do ponto mais alto do ombro até a barra.</p>
  </div>
@@ -59,7 +59,7 @@ export default function SizeGuideModal() {
  <div className="w-full md:w-2/3">
  <div className="overflow-hidden rounded-sm border border-hooke-200">
  <table className="w-full text-sm text-left text-hooke-600">
- <thead className="text-xs text-hooke-900 bg-hooke-100 font-bold tracking-wider">
+ <thead className="text-xs text-hooke-900 bg-gray-100 font-bold tracking-wider">
  <tr>
  <th scope="col" className="px-4 py-3">Tamanho</th>
  <th scope="col" className="px-4 py-3">A. Tórax</th>
@@ -71,7 +71,7 @@ export default function SizeGuideModal() {
  {sizeGuideData.map((row, index) => (
  <tr 
  key={row.size} 
- className={`border-b border-hooke-100 hover:bg-hooke-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-hooke-50/30'}`}
+ className={`border-b border-hooke-100 hover:bg-white transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/30'}`}
  >
  <th scope="row" className="px-4 py-3 font-bold text-hooke-900 whitespace-nowrap">
  <span className="inline-block w-8 h-8 leading-8 text-center rounded-sm bg-hooke-900 text-white">{row.size}</span>

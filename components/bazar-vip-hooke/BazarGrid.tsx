@@ -13,7 +13,7 @@ export function BazarGrid({ products }: BazarGridProps) {
         <Link 
           href={`/shop/${product.slug}`} 
           key={product.id}
-          className="group relative flex flex-col bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden shadow-lg transition-transform hover:scale-[1.02]"
+          className="group relative flex flex-col bg-neutral-900 border border-neutral-800 rounded-none overflow-hidden shadow-lg transition-transform hover:scale-[1.02]"
         >
           {/* Badge: ÚLTIMA PEÇA */}
           <div className="absolute top-3 left-3 z-20">

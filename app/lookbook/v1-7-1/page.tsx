@@ -43,7 +43,7 @@ export default function LookbookV171() {
             <p className="text-xs font-black tracking-[0.2em] uppercase">Curated Essentials</p>
             <p className="text-[10px] text-gray-400">Minimalism that speaks volume.</p>
           </div>
-          <div className="animate-bounce p-2 border border-black/5 rounded-full">
+          <div className="animate-bounce p-2 border border-black/5 rounded-none">
             <MoveRight className="rotate-90 text-gray-300" size={16} strokeWidth={1} />
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function LookbookV171() {
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 print:hidden z-50">
         <button 
           onClick={() => window.print()}
-          className="bg-zinc-900 text-white border border-white/10 px-10 py-4 rounded-full text-[10px] font-black tracking-[0.3em] flex items-center gap-4 shadow-black/80 shadow-2xl hover:scale-105 active:scale-95 transition-all uppercase"
+          className="bg-zinc-900 text-white border border-white/10 px-10 py-4 rounded-none text-[10px] font-black tracking-[0.3em] flex items-center gap-4 shadow-black/80 shadow-2xl hover:scale-105 active:scale-95 transition-all uppercase"
         >
           Exportar Catalogo
         </button>

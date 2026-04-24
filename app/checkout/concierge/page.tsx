@@ -117,7 +117,7 @@ export default function ConciergeLounge() {
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-hooke-50 text-hooke-900 p-6">
+            <div className="min-h-screen flex items-center justify-center bg-white text-hooke-900 p-6">
                 <div className="text-center space-y-4 max-w-md">
                     <h2 className="text-2xl font-serif">Ocorreu um imprevisto técnico</h2>
                     <p className="text-hooke-500 font-light">{error}</p>
@@ -128,7 +128,7 @@ export default function ConciergeLounge() {
     }
 
     return (
-        <div className="relative min-h-screen bg-hooke-50 text-hooke-900 font-sans overflow-hidden">
+        <div className="relative min-h-screen bg-white text-hooke-900 font-sans overflow-hidden">
             
             {/* 🎞️ PALATE CLEANSER OVERLAY (Transição de Luxo) */}
             <AnimatePresence>
@@ -197,12 +197,12 @@ export default function ConciergeLounge() {
                             {/* Header Status */}
                             <div className="text-center space-y-6">
                                 <div className="relative inline-block">
-                                    <div className="w-20 h-20 border border-hooke-200 rounded-full flex items-center justify-center">
+                                    <div className="w-20 h-20 border border-hooke-200 rounded-none flex items-center justify-center">
                                         {stage === 'preparing' ? (
                                             <motion.div
                                                 animate={{ rotate: 360 }}
                                                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                                                className="absolute inset-0 border-t border-hooke-900 rounded-full"
+                                                className="absolute inset-0 border-t border-hooke-900 rounded-none"
                                             />
                                         ) : (
                                             <Sparkles className="w-6 h-6 text-hooke-400 animate-pulse" />
@@ -248,7 +248,7 @@ export default function ConciergeLounge() {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="bg-white border p-10 space-y-8 shadow-sm backdrop-blur-xl bg-white/80"
                                 >
-                                    <div className="flex justify-between items-center bg-hooke-50 p-4">
+                                    <div className="flex justify-between items-center bg-white p-4">
                                         <span className="text-[10px] uppercase font-bold tracking-widest text-hooke-400">Investimento</span>
                                         <span className="text-2xl font-serif text-hooke-900">
                                             R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}

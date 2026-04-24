@@ -208,7 +208,7 @@ export default async function LandingPage() {
  {Array(4).fill(CONFIG.faixa_movimento).flat().map((texto, i) => (
  <div key={i} className="flex items-center gap-4 opacity-80">
  <span className="text-white text-xs font-black tracking-[0.2em]">{texto}</span>
- <div className="w-1 h-1 bg-gray-500 rounded-full" />
+ <div className="w-1 h-1 bg-gray-500 rounded-none" />
  </div>
  ))}
  </div>

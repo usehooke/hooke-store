@@ -37,7 +37,7 @@ export default function FreeShippingBar({ subtotal }: FreeShippingBarProps) {
  <span className="text-[10px] font-black text-hooke-900">{Math.round(percentage)}%</span>
  </div>
  
- <div className="h-1.5 w-full bg-hooke-50 rounded-full overflow-hidden">
+ <div className="h-1.5 w-full bg-white rounded-none overflow-hidden">
  <motion.div
  initial={{ width: 0 }}
  animate={{ width: `${percentage}%` }}

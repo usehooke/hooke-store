@@ -34,7 +34,7 @@ export default function VirtualOffice() {
         </div>
         <div className="hidden md:flex items-center gap-4">
           <div className="flex items-center gap-2 px-3 py-1 bg-black text-white text-[10px] font-black tracking-widest uppercase">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <div className="w-1.5 h-1.5 rounded-none bg-green-500 animate-pulse" />
             Core Status: Elite
           </div>
         </div>

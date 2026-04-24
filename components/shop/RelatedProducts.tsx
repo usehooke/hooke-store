@@ -42,7 +42,7 @@ export default async function RelatedProducts({ currentSlug, category }: Related
  </div>
 
  <div className="mt-8 text-center sm:hidden">
- <Link href="/colecao" className="inline-block px-6 py-3 border border-hooke-200 text-sm font-bold tracking-wider text-hooke-900 hover:bg-hooke-50 transition-colors">
+ <Link href="/colecao" className="inline-block px-6 py-3 border border-hooke-200 text-sm font-bold tracking-wider text-hooke-900 hover:bg-white transition-colors">
  Ver Coleção Completa
  </Link>
  </div>

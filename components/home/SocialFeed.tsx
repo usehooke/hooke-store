@@ -112,7 +112,7 @@ export default function SocialFeed() {
  rel="noopener noreferrer"
  className="group flex flex-col items-center gap-3"
  >
- <div className="bg-gray-50 p-4 rounded-full text-hooke-900 group-hover:bg-hooke-900 group-hover:text-white transition-colors duration-300">
+ <div className="bg-gray-50 p-4 rounded-none text-hooke-900 group-hover:bg-hooke-900 group-hover:text-white transition-colors duration-300">
  <Instagram size={28} strokeWidth={1.5} />
  </div>
  <div>

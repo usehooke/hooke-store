@@ -148,7 +148,7 @@ export default function SizeQuizModal({ isOpen, onClose, onComplete }: SizeQuizM
  <button
  key={opt.id}
  onClick={() => setPreference(opt.id as FitnessGoal)}
- className={`p-4 border-2 text-left transition-all ${preference === opt.id ? 'border-hooke-900 bg-hooke-50' : 'border-gray-100 hover:border-gray-200'}`}
+ className={`p-4 border-2 text-left transition-all ${preference === opt.id ? 'border-hooke-900 bg-white' : 'border-gray-100 hover:border-gray-200'}`}
  >
  <div className="flex justify-between items-center">
  <span className="font-bold tracking-widest text-xs text-hooke-900">{opt.label}</span>

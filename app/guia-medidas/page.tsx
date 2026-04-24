@@ -10,7 +10,7 @@ export default function GuiaMedidas() {
  <main className="w-full bg-white min-h-screen py-24 px-6 md:px-12">
  <div className="max-w-4xl mx-auto space-y-12">
  <div className="border-b border-gray-100 pb-8 text-center">
- <div className="w-12 h-12 mx-auto bg-hooke-50 text-hooke-900 flex items-center justify-center mb-6 rounded-none">
+ <div className="w-12 h-12 mx-auto bg-white text-hooke-900 flex items-center justify-center mb-6 rounded-none">
  <Ruler size={24} strokeWidth={1.5} />
  </div>
  <h1 className="text-4xl md:text-5xl font-black text-hooke-900 tracking-tighter">Guia de Medidas</h1>

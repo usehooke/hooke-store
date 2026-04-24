@@ -21,7 +21,7 @@ export default function CartItemsList() {
     <ul className="space-y-8">
       {items.map((item) => (
         <li key={item.cartItemId} className="flex gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="relative aspect-[4/5] w-24 flex-shrink-0 overflow-hidden rounded-none bg-hooke-100 border border-hooke-200">
+          <div className="relative aspect-[4/5] w-24 flex-shrink-0 overflow-hidden rounded-none bg-gray-100 border border-hooke-200">
             <Image
               priority 
               src={item.imageUrl || (item.images && item.images.length > 0 ? item.images[0] : "/placeholder-produto.avif")}

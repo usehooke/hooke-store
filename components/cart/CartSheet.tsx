@@ -65,7 +65,7 @@ export default function CartSheet() {
       <div className="flex-1 overflow-y-auto py-6 px-6 custom-scrollbar">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
-            <div className="bg-hooke-50 p-8 rounded-full">
+            <div className="bg-white p-8 rounded-none">
               <ShoppingBag size={48} className="text-hooke-200" />
             </div>
             <div className="space-y-2">

@@ -190,7 +190,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
           ${isAdded
             ? "bg-green-600 text-white cursor-default"
             : !selectedSize
-            ? "bg-hooke-100 text-hooke-400 cursor-not-allowed"
+            ? "bg-gray-100 text-hooke-400 cursor-not-allowed"
             : "bg-hooke-900 text-white hover:bg-hooke-800 hover:shadow-lg active:scale-[0.98]"
           }
         `}
@@ -222,7 +222,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
             disabled={!selectedSize || isAdded}
             className={`
               flex-1 flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold tracking-widest transition-all
-              ${isAdded ? "bg-green-600 text-white" : !selectedSize ? "bg-hooke-100 text-hooke-400" : "bg-hooke-900 text-white active:scale-95"}
+              ${isAdded ? "bg-green-600 text-white" : !selectedSize ? "bg-gray-100 text-hooke-400" : "bg-hooke-900 text-white active:scale-95"}
             `}
           >
             {isAdded ? <Check size={14} /> : <ShoppingBag size={14} />}

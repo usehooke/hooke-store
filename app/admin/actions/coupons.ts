@@ -46,7 +46,7 @@ export async function validateCouponCode(code: string, cartSubtotal: number): Pr
         if (coupon.usedCount >= coupon.maxUses) return { valid: false, message: "Limite de usos atingido" };
 
         return { valid: true, discountPercent: coupon.discountPercent };
-    } catch (err: any) {
+    } catch (err: unknown) {
         return { valid: false, message: "Erro ao validar cupom" };
     }
 }
@@ -61,8 +61,8 @@ export async function saveCoupon(coupon: CouponDTO, userEmail: string = 'system'
         await logAdminAction('SAVE_COUPON', { code: coupon.code }, userEmail);
         revalidatePath('/admin');
         return { success: true };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
 
@@ -76,8 +76,8 @@ export async function toggleCouponStatus(code: string, newStatus: boolean, userE
         await logAdminAction('TOGGLE_COUPON', { code, newStatus }, userEmail);
         revalidatePath('/admin');
         return { success: true };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
 
@@ -90,8 +90,8 @@ export async function deleteCoupon(code: string, userEmail: string = 'system') {
         await logAdminAction('DELETE_COUPON', { code }, userEmail);
         revalidatePath('/admin');
         return { success: true };
-    } catch (err: any) {
-        return { success: false, message: err.message };
+    } catch (err: unknown) {
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
 

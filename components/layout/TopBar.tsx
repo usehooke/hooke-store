@@ -10,17 +10,17 @@ export default function TopBar() {
  <span className="text-[10px] md:text-xs font-medium tracking-[0.2em] font-sans">
  entregamos para todo o Brasil
  </span>
- <span className="w-0.5 h-0.5 bg-white/40 rounded-full"></span>
+ <span className="w-0.5 h-0.5 bg-white/40 rounded-none"></span>
 
  <span className="text-[10px] md:text-xs font-medium tracking-[0.2em] font-sans">
  5% OFF no PIX
  </span>
- <span className="w-0.5 h-0.5 bg-white/40 rounded-full"></span>
+ <span className="w-0.5 h-0.5 bg-white/40 rounded-none"></span>
 
  <span className="text-[10px] md:text-xs font-medium tracking-[0.2em] font-sans">
  Envio em 24h
  </span>
- <span className="w-0.5 h-0.5 bg-white/40 rounded-full"></span>
+ <span className="w-0.5 h-0.5 bg-white/40 rounded-none"></span>
  </div>
  ))}
 

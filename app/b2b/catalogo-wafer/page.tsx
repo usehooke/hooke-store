@@ -31,7 +31,7 @@ export default function CatalogoB2BPage() {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto w-full mb-10">
-          <div className="inline-block border border-neutral-600 bg-black/50 px-4 py-1 rounded-full mb-6">
+          <div className="inline-block border border-neutral-600 bg-black/50 px-4 py-1 rounded-none mb-6">
             <span className="text-xs font-bold tracking-widest uppercase text-neutral-300">
               Uso Exclusivo B2B — Catálogo Lojistas
             </span>
@@ -62,7 +62,7 @@ export default function CatalogoB2BPage() {
           {/* Color Palette Display */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
             <div className="flex flex-col items-center group">
-              <div className="w-full aspect-video bg-[#000000] rounded-2xl mb-4 border border-neutral-800 shadow-2xl relative overflow-hidden flex items-center justify-center">
+              <div className="w-full aspect-video bg-[#000000] rounded-none mb-4 border border-neutral-800 shadow-2xl relative overflow-hidden flex items-center justify-center">
                  <span className="font-bold text-neutral-800 text-6xl opacity-20 group-hover:opacity-40 transition-opacity">01</span>
                  <Image src="/produtos/camiseta-oversized-preta-premium-hooke-1.avif" alt="Deep Black" fill className="object-cover opacity-80 mix-blend-lighten" />
               </div>
@@ -71,7 +71,7 @@ export default function CatalogoB2BPage() {
             </div>
             
             <div className="flex flex-col items-center group">
-              <div className="w-full aspect-video bg-[#4A3728] rounded-2xl mb-4 shadow-2xl relative overflow-hidden flex items-center justify-center border border-[#5c4431]">
+              <div className="w-full aspect-video bg-[#4A3728] rounded-none mb-4 shadow-2xl relative overflow-hidden flex items-center justify-center border border-[#5c4431]">
                  <span className="font-bold text-[#2a1f16] text-6xl opacity-40 group-hover:opacity-80 transition-opacity">02</span>
                  <Image src="/produtos/testura-canelada-marrom-1.webp" alt="Earth Brown" fill className="object-cover opacity-60 mix-blend-overlay" />
               </div>
@@ -80,7 +80,7 @@ export default function CatalogoB2BPage() {
             </div>
 
             <div className="flex flex-col items-center group">
-              <div className="w-full aspect-video bg-[#4B5320] rounded-2xl mb-4 shadow-2xl relative overflow-hidden flex items-center justify-center border border-[#6b7530]">
+              <div className="w-full aspect-video bg-[#4B5320] rounded-none mb-4 shadow-2xl relative overflow-hidden flex items-center justify-center border border-[#6b7530]">
                  <span className="font-bold text-[#20240d] text-6xl opacity-40 group-hover:opacity-80 transition-opacity">03</span>
                  <Image src="/produtos/Hooke-Regata-Canelada-Verde.avif" alt="Olive Moss" fill className="object-cover opacity-60 mix-blend-overlay" />
               </div>
@@ -116,7 +116,7 @@ export default function CatalogoB2BPage() {
                 </div>
               </div>
 
-              <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-6 flex flex-col justify-center items-center text-center h-full">
+              <div className="bg-green-500/10 border border-green-500/30 rounded-none p-6 flex flex-col justify-center items-center text-center h-full">
                 <TrendingUp className="w-12 h-12 text-green-400 mb-4" />
                 <span className="text-green-500 font-bold uppercase tracking-widest text-sm mb-2">Seu Lucro Líquido Protegido</span>
                 <span className="text-6xl font-black text-white">R$ 60,00</span>
@@ -135,7 +135,7 @@ export default function CatalogoB2BPage() {
           href={wppLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full max-w-sm flex items-center justify-center gap-3 bg-white text-black font-black text-xl py-5 rounded-full hover:bg-neutral-200 transition-all active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.15)] group"
+          className="w-full max-w-sm flex items-center justify-center gap-3 bg-white text-black font-black text-xl py-5 rounded-none hover:bg-neutral-200 transition-all active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.15)] group"
         >
           <CheckCircle2 className="w-6 h-6 group-hover:text-[#4B5320] transition-colors" />
           QUERO RESERVAR MINHA GRADE

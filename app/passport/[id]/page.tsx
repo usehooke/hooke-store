@@ -138,16 +138,18 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
     };
 
     if (isLoading) {
-        return <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="w-8 h-8 border-t-2 border-white/20 rounded-full animate-spin" /></div>;
+        return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-12 h-12 border border-white/20 border-t-white animate-spin" /></div>;
     }
 
     if (!vaultData) {
         return (
-            <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-8 text-white text-center">
-                <Lock size={48} className="text-white/20 mb-8" />
-                <h1 className="text-2xl font-bold tracking-tighter mb-4">Registro não encontrado</h1>
-                <p className="text-sm text-white/50 max-w-xs mb-12">O código inserido não corresponde a nenhum ativo validado no cofre da Hooke.</p>
-                <Link href="/" className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full">
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-white text-center">
+                <div className="p-8 border border-white/10 mb-12">
+                    <Lock size={48} className="text-white/20" />
+                </div>
+                <h1 className="text-3xl font-black tracking-tighter uppercase mb-4 italic">Cofre Vazio</h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 max-w-xs mb-12">O serial inserido não corresponde a nenhum ativo validado no protocolo Hooke.</p>
+                <Link href="/" className="px-10 py-5 bg-white text-black text-[10px] font-black uppercase tracking-[0.5em] hover:bg-zinc-200 transition-colors border border-white">
                     Retornar ao Arsenal
                 </Link>
             </div>
@@ -158,38 +160,46 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
     const isHeavy = grammage >= 300;
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-white selection:text-black pb-32">
+        <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black pb-32">
             
             {/* Header */}
-            <header className="p-8 flex justify-between items-center">
-                <Link href="/" className="p-4 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+            <header className="p-8 flex justify-between items-center border-b border-white/5">
+                <Link href="/" className="p-4 border border-white/10 hover:bg-white hover:text-black transition-all">
                     <ArrowLeft size={20} />
                 </Link>
-                <button onClick={handleShare} className="p-4 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-black uppercase tracking-[0.6em]">Hooke Passport</span>
+                    <span className="text-[8px] font-medium uppercase tracking-[0.4em] opacity-30">V15.0 Elite</span>
+                </div>
+                <button onClick={handleShare} className="p-4 border border-white/10 hover:bg-white hover:text-black transition-all">
                     <Share2 size={20} />
                 </button>
             </header>
 
-            <main className="px-8 md:max-w-md md:mx-auto space-y-16 mt-8">
+            <main className="px-8 md:max-w-xl md:mx-auto space-y-16 mt-16">
                 
                 {/* Autenticidade Visual */}
-                <div className="text-center space-y-8">
+                <div className="text-center space-y-10">
                     <motion.div 
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className="mx-auto w-32 h-32 rounded-full bg-[#0f0f0f] shadow-[20px_20px_60px_#060606,-20px_-20px_60px_#141414,0_0_40px_rgba(212,175,55,0.15)] flex items-center justify-center border border-white/5 relative overflow-hidden"
+                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="mx-auto w-40 h-40 bg-zinc-900 border border-[#D4AF37]/30 shadow-[0_0_50px_rgba(212,175,55,0.1)] flex items-center justify-center relative group"
                     >
-                        <ShieldCheck size={40} className="text-[#D4AF37] relative z-10" />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#D4AF37]/10 to-transparent animate-pulse" />
+                        <ShieldCheck size={48} className="text-[#D4AF37] relative z-10" />
+                        <div className="absolute inset-0 border border-[#D4AF37]/10 animate-pulse scale-110" />
                     </motion.div>
                     
-                    <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#D4AF37]">
-                            {renderAnimatedText("Ativo Autenticado")}
-                        </p>
-                        <h1 className="text-4xl font-semibold tracking-tighter italic font-mono break-all">
-                            {renderAnimatedText(vaultData.Numero_de_Serie)}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-center gap-3">
+                            <span className="w-10 h-[1px] bg-[#D4AF37]/30" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.6em] text-[#D4AF37]">
+                                Ativo Validado
+                            </p>
+                            <span className="w-10 h-[1px] bg-[#D4AF37]/30" />
+                        </div>
+                        <h1 className="text-5xl md:text-6xl font-black tracking-tighter uppercase italic break-all leading-none">
+                            {vaultData.Numero_de_Serie}
                         </h1>
                     </div>
                 </div>
@@ -199,37 +209,37 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="p-8 rounded-[2rem] bg-[#0f0f0f] shadow-[20px_20px_60px_#060606,-20px_-20px_60px_#141414] border border-white/5 space-y-6"
+                    className="p-10 bg-zinc-900 border border-white/10 shadow-sharp space-y-8"
                 >
-                    <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Categoria</span>
-                        <span className="text-sm font-semibold tracking-wide">{vaultData.Categoria}</span>
+                    <div className="flex justify-between items-center border-b border-white/5 pb-6">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Categoria</span>
+                        <span className="text-xs font-bold tracking-[0.2em] uppercase">{vaultData.Categoria}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Geometria Têxtil</span>
-                        <span className="text-sm font-mono font-bold text-[#D4AF37]">{vaultData.Gramatura_Tecnica}g/m²</span>
+                    <div className="flex justify-between items-center border-b border-white/5 pb-6">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Gramatura Têxtil</span>
+                        <span className="text-xs font-mono font-black text-[#D4AF37]">{vaultData.Gramatura_Tecnica} G/M²</span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Origem</span>
-                        <span className="text-sm font-semibold tracking-wide">{vaultData.Data_de_Lancamento}</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Data de Registro</span>
+                        <span className="text-xs font-bold tracking-[0.2em] uppercase">{vaultData.Data_de_Lancamento}</span>
                     </div>
                 </motion.div>
 
-                {/* Card de Preservação (UX adaptativa) */}
+                {/* Card de Preservação */}
                 <motion.div 
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.7 }}
-                    className="p-8 rounded-[2rem] bg-[#0f0f0f] shadow-[20px_20px_60px_#060606,-20px_-20px_60px_#141414] border border-white/10"
+                    className="p-10 bg-zinc-900 border-l-2 border-[#D4AF37] border-y border-r border-white/5 space-y-6"
                 >
-                    <div className="flex items-center gap-4 mb-4">
-                        {isHeavy ? <Wind size={20} className="text-[#D4AF37]" /> : <Droplets size={20} className="text-[#D4AF37]" />}
-                        <h3 className="text-[11px] font-black uppercase tracking-widest text-[#D4AF37]">Protocolo de Preservação</h3>
+                    <div className="flex items-center gap-4">
+                        {isHeavy ? <Wind size={18} className="text-[#D4AF37]" /> : <Droplets size={18} className="text-[#D4AF37]" />}
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-[#D4AF37]">Manutenção de Acervo</h3>
                     </div>
-                    <p className="text-sm text-white/50 leading-relaxed">
+                    <p className="text-[11px] text-white/40 leading-relaxed uppercase tracking-widest font-medium">
                         {isHeavy 
-                            ? "ESTRUTURA PESADA: Lavagem em ciclo suave com sabão neutro. Secagem horizontal à sombra para manter a arquitetura da gola e ombros."
-                            : "FLUIDEZ SENSÍVEL: Lavagem delicada (preferencialmente manual). Evitar torção mecânica para proteger a trama de viscose."}
+                            ? "Estrutura Heavy-Weight: Lavagem a frio. Secagem plana em ambiente controlado. Evitar exposição direta UV para preservar a integridade da fibra."
+                            : "Estrutura Light-Fluid: Higienização manual obrigatória. Secagem suspensa sem torção. Proteção térmica máxima na passagem."}
                     </p>
                 </motion.div>
 
@@ -238,27 +248,32 @@ export default function PassportVault({ params }: { params: Promise<{ id: string
                     <button 
                         onClick={handleClaimAsset}
                         disabled={isClaimed}
-                        className={`w-full py-6 rounded-[2rem] flex items-center justify-center gap-4 transition-all ${
+                        className={`w-full py-8 flex items-center justify-center gap-6 transition-all border ${
                             isClaimed 
-                            ? "bg-[#1a1a1a] text-[#D4AF37] border border-[#D4AF37]/20 cursor-default"
-                            : "bg-[#D4AF37] text-black hover:bg-[#b5952f] shadow-[0_10px_30px_rgba(212,175,55,0.2)] active:scale-95"
+                            ? "bg-zinc-950 text-[#D4AF37] border-[#D4AF37]/20 cursor-default"
+                            : "bg-[#D4AF37] text-black hover:bg-white hover:text-black hover:border-white border-black active:scale-[0.98] shadow-sharp"
                         }`}
                     >
                         {isClaimed ? (
                             <>
-                                <Fingerprint size={18} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Ativo Vinculado</span>
+                                <Fingerprint size={20} />
+                                <span className="text-[11px] font-black uppercase tracking-[0.5em]">Ativo Vinculado ao Perfil</span>
                             </>
                         ) : (
                             <>
-                                <Lock size={18} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Vincular ao meu Perfil VIP</span>
+                                <Lock size={20} />
+                                <span className="text-[11px] font-black uppercase tracking-[0.5em]">Vincular ao Meu Arsenal</span>
                             </>
                         )}
                     </button>
                 </motion.div>
 
+                <p className="text-center text-[8px] font-black uppercase tracking-[1em] opacity-10 pt-10">
+                    Hooke Digital Assets • Blockchain Verified
+                </p>
+
             </main>
         </div>
     );
+}
 }

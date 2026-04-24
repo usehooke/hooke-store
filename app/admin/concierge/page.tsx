@@ -27,9 +27,9 @@ const StatusPulse = ({ session }: { session: ConciergeSession }) => {
     return (
         <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/[0.05] mb-2 group hover:bg-white/[0.08] transition-all">
             <div className="relative">
-                <div className={`w-3 h-3 rounded-full ${isStagnated ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
+                <div className={`w-3 h-3 rounded-none ${isStagnated ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
                 {isStagnated && (
-                    <div className="absolute inset-0 bg-amber-500 rounded-full animate-ping opacity-75" />
+                    <div className="absolute inset-0 bg-amber-500 rounded-none animate-ping opacity-75" />
                 )}
             </div>
             <div className="flex-1">
@@ -162,7 +162,7 @@ export default function ConciergeMonitorPage() {
                     <div className="flex items-center justify-between border-b border-white/[0.05] pb-4">
                         <h2 className="text-xs font-black tracking-[0.3em] uppercase text-[#FAFAFA] flex items-center gap-3">
                              Concierge Status Monitor
-                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <div className="w-2 h-2 rounded-none bg-red-500 animate-pulse" />
                         </h2>
                         <span className="text-[9px] text-zinc-500 uppercase tracking-widest">Atualização Live</span>
                     </div>

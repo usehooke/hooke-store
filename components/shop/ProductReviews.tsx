@@ -66,14 +66,14 @@ export default function ProductReviews() {
  <div key={review.id} className="border-b border-gray-50 pb-8 last:border-0">
  <div className="flex justify-between items-start mb-4">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-hooke-900 font-bold text-xs">
+ <div className="w-10 h-10 bg-gray-100 rounded-none flex items-center justify-center text-hooke-900 font-bold text-xs">
  {review.author.charAt(0)}
  </div>
  <div>
  <div className="flex items-center gap-2">
  <h4 className="font-bold text-sm text-hooke-900">{review.author}</h4>
  {review.verified && (
- <div className="flex items-center gap-1 text-[8px] font-bold text-green-600 tracking-widest bg-green-50 px-1.5 py-0.5 rounded-full">
+ <div className="flex items-center gap-1 text-[8px] font-bold text-green-600 tracking-widest bg-green-50 px-1.5 py-0.5 rounded-none">
  <CheckCircle2 size={8} />
  Verificado
  </div>
@@ -94,7 +94,7 @@ export default function ProductReviews() {
  </div>
  ))}
  
- <button className="w-full md:w-auto mt-4 px-8 py-3 bg-gray-50 text-hooke-900 text-[10px] font-black tracking-widest hover:bg-hooke-100 transition-all border border-gray-100">
+ <button className="w-full md:w-auto mt-4 px-8 py-3 bg-gray-50 text-hooke-900 text-[10px] font-black tracking-widest hover:bg-gray-100 transition-all border border-gray-100">
  Ver todas as avaliações
  </button>
  </div>

@@ -30,12 +30,12 @@ export default function WhatsAppButton() {
         Fale Conosco
       </span>
 
-      <div className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:bg-[#20bd5a] hover:scale-110 hover:-translate-y-1 transition-all duration-300">
+      <div className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-none shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:bg-[#20bd5a] hover:scale-110 hover:-translate-y-1 transition-all duration-300">
         <MessageCircle size={28} fill="white" className="relative z-10" />
         
         {/* Bolinha de notificação pulsante */}
-        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white z-20">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
+        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 rounded-none border-2 border-white z-20">
+          <span className="absolute inline-flex h-full w-full rounded-none bg-red-400 opacity-75 animate-ping"></span>
         </span>
       </div>
     </a>

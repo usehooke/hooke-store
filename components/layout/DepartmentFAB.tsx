@@ -19,12 +19,12 @@ export default function DepartmentFAB() {
 
   return (
     <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="bg-white/80 backdrop-blur-xl p-1 rounded-full shadow-2xl border border-hooke-100 flex items-center relative overflow-hidden">
+      <div className="bg-white/80 backdrop-blur-xl p-1 rounded-none shadow-2xl border border-hooke-100 flex items-center relative overflow-hidden">
         
         {/* Background Animado do Toggle */}
         <motion.div 
           layoutId="fab-active-bg"
-          className="absolute inset-y-1 bg-black rounded-full w-[calc(50%-4px)]"
+          className="absolute inset-y-1 bg-black rounded-none w-[calc(50%-4px)]"
           initial={false}
           animate={{
             left: isFeminino ? "auto" : "4px",

@@ -104,12 +104,12 @@ export default function ShippingSection() {
                 key={idx}
                 onClick={() => setShipping(zipInput, Number(opt.valor), opt.nome)}
                 className={`w-full flex items-center justify-between p-4 border text-left bg-white transition-all cursor-pointer rounded-none group
-                ${selected ? 'border-hooke-900 bg-hooke-50 ring-1 ring-hooke-900' : 'border-hooke-200 hover:border-hooke-400'}
+                ${selected ? 'border-hooke-900 bg-white ring-1 ring-hooke-900' : 'border-hooke-200 hover:border-hooke-400'}
                 `}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${selected ? 'border-hooke-900' : 'border-gray-200'}`}>
-                    {selected && <div className="w-2.5 h-2.5 bg-hooke-900 rounded-full" />}
+                  <div className={`w-5 h-5 rounded-none border-2 flex items-center justify-center shrink-0 transition-colors ${selected ? 'border-hooke-900' : 'border-gray-200'}`}>
+                    {selected && <div className="w-2.5 h-2.5 bg-hooke-900 rounded-none" />}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-black text-hooke-900 uppercase tracking-widest">{opt.nome}</span>

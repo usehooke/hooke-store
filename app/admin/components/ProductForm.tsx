@@ -91,7 +91,7 @@ function SortablePhoto({ id, url, onRemove }: { id: string; url: string; onRemov
  <button
  type="button"
  onClick={onRemove}
- className="text-red-400 hover:text-red-600 p-1 bg-black/50 rounded-full"
+ className="text-red-400 hover:text-red-600 p-1 bg-black/50 rounded-none"
  title="Remover foto"
  >
  <Trash2 size={16} />

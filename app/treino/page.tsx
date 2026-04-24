@@ -99,14 +99,14 @@ export default function PersonalHookePage() {
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}
  onClick={() => setIsSidebarOpen(true)}
- className="pointer-events-auto bg-white/10 backdrop-blur-2xl p-3.5 rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15"
+ className="pointer-events-auto bg-white/10 backdrop-blur-2xl p-3.5 rounded-none border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-colors hover:bg-white/15"
  >
  <Menu className="w-6 h-6 text-white" />
  </motion.button>
 
  {/* Status discreto com Glassmorphism */}
- <div className="hidden sm:flex bg-white/5 backdrop-blur-xl px-5 py-2 rounded-2xl border border-white/5 items-center gap-2">
- <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+ <div className="hidden sm:flex bg-white/5 backdrop-blur-xl px-5 py-2 rounded-none border border-white/5 items-center gap-2">
+ <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 animate-pulse" />
  <span className="text-[10px] tracking-[0.3em] font-bold text-white/50">
  Hooke Personal Assistant
  </span>
@@ -118,7 +118,7 @@ export default function PersonalHookePage() {
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}
  onClick={() => setShowMusic(!showMusic)}
- className={`bg-white/5 backdrop-blur-xl p-3.5 rounded-2xl border transition-all ${showMusic ? 'border-orange-500/50 text-orange-500' : 'border-white/5 text-white/40'}`}
+ className={`bg-white/5 backdrop-blur-xl p-3.5 rounded-none border transition-all ${showMusic ? 'border-orange-500/50 text-orange-500' : 'border-white/5 text-white/40'}`}
  >
  <Music className="w-5 h-5" />
  </motion.button>
@@ -127,7 +127,7 @@ export default function PersonalHookePage() {
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}
  onClick={handleRestart}
- className="bg-white/5 backdrop-blur-xl p-3.5 rounded-2xl border border-white/5 text-white/40 hover:text-white"
+ className="bg-white/5 backdrop-blur-xl p-3.5 rounded-none border border-white/5 text-white/40 hover:text-white"
  >
  <RotateCcw className="w-5 h-5" />
  </motion.button>
@@ -147,13 +147,13 @@ export default function PersonalHookePage() {
  <div className="flex p-2 gap-2 bg-white/5 border-b border-white/5">
  <button 
  onClick={() => handleMusicServiceChange('ytmusic')}
- className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-xl text-[10px] font-bold tracking-widest transition-all ${musicService === 'ytmusic' ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]' : 'hover:bg-white/5 text-white/40'}`}
+ className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-none text-[10px] font-bold tracking-widest transition-all ${musicService === 'ytmusic' ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)]' : 'hover:bg-white/5 text-white/40'}`}
  >
  YT Music
  </button>
  <button 
  onClick={() => handleMusicServiceChange('spotify')}
- className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-xl text-[10px] font-bold tracking-widest transition-all ${musicService === 'spotify' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'hover:bg-white/5 text-white/40'}`}
+ className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-none text-[10px] font-bold tracking-widest transition-all ${musicService === 'spotify' ? 'bg-emerald-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'hover:bg-white/5 text-white/40'}`}
  >
  Spotify
  </button>
@@ -215,7 +215,7 @@ export default function PersonalHookePage() {
  </div>
  <button 
  onClick={() => setIsSidebarOpen(false)}
- className="p-2.5 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
+ className="p-2.5 bg-white/5 rounded-none hover:bg-white/10 transition-colors"
  >
  <X className="w-5 h-5" />
  </button>
@@ -235,7 +235,7 @@ export default function PersonalHookePage() {
  return (
  <div 
  key={day} 
- className={`flex-1 h-1.5 rounded-full ${hasTrained ? 'bg-orange-500' : 'bg-white/10'}`} 
+ className={`flex-1 h-1.5 rounded-none ${hasTrained ? 'bg-orange-500' : 'bg-white/10'}`} 
  />
  );
  })}
@@ -280,7 +280,7 @@ export default function PersonalHookePage() {
  className="w-full flex items-center justify-between bg-orange-500/10 p-5 rounded-3xl border border-orange-500/20 transition-all hover:bg-orange-500/20 group active:scale-[0.98]"
  >
  <div className="flex items-center gap-4">
- <div className="p-2.5 bg-orange-500/20 rounded-xl group-hover:bg-orange-500/30">
+ <div className="p-2.5 bg-orange-500/20 rounded-none group-hover:bg-orange-500/30">
  <RotateCcw className="w-5 h-5 text-orange-500" />
  </div>
  <span className="font-bold text-sm text-orange-200">Reiniciar Treino</span>
@@ -295,10 +295,10 @@ export default function PersonalHookePage() {
  <p className="text-[10px] text-white/20 tracking-widest pl-1">Últimos Registros</p>
  <div className="space-y-2">
  {workoutHistory.map((date, idx) => (
- <div key={idx} className="flex items-center gap-3 bg-white/[0.02] p-3 rounded-2xl border border-white/5">
+ <div key={idx} className="flex items-center gap-3 bg-white/[0.02] p-3 rounded-none border border-white/5">
  <Calendar className="w-3.5 h-3.5 text-white/20" />
  <span className="text-[11px] font-medium text-white/40">{date}</span>
- <div className="ml-auto w-1 h-1 rounded-full bg-orange-500/40" />
+ <div className="ml-auto w-1 h-1 rounded-none bg-orange-500/40" />
  </div>
  ))}
  </div>
@@ -308,7 +308,7 @@ export default function PersonalHookePage() {
 
  {/* Footer Sidebar */}
  <div className="mt-auto pt-8 border-t border-white/5 flex items-center gap-3">
- <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-900/20">
+ <div className="w-8 h-8 rounded-none bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-900/20">
  <Zap className="w-4 h-4 text-white fill-current" />
  </div>
  <div>
@@ -331,7 +331,7 @@ export default function PersonalHookePage() {
  className="absolute inset-0 flex flex-col items-center justify-center bg-[#050505] z-[90]"
  >
  <div className="relative mb-8">
- <div className="absolute inset-0 bg-orange-500/20 blur-2xl rounded-full scale-150 animate-pulse" />
+ <div className="absolute inset-0 bg-orange-500/20 blur-2xl rounded-none scale-150 animate-pulse" />
  <div className="relative bg-white/5 p-6 rounded-3xl border border-white/10 backdrop-blur-xl">
  <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
  </div>

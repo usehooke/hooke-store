@@ -39,7 +39,7 @@ export default function BrandBento() {
  </div>
 
  {/* ITEM 2: Modelagem (Pequeno - Direita Cima) */}
- <div className="group relative overflow-hidden bg-hooke-100 p-8 border border-gray-100 flex flex-col justify-center min-h-[200px]">
+ <div className="group relative overflow-hidden bg-gray-100 p-8 border border-gray-100 flex flex-col justify-center min-h-[200px]">
  <Ruler className="w-6 h-6 text-hooke-900 mb-4" strokeWidth={1.5} />
  <h4 className="text-lg font-bold tracking-tight text-hooke-900 mb-2">Modelagem Streetwear</h4>
  <p className="text-xs text-hooke-500 leading-relaxed">

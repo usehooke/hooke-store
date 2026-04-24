@@ -85,7 +85,7 @@ export function OfficeAmbience() {
             <button 
                 onClick={() => setIsMuted(!isMuted)}
                 className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500",
+                    "w-12 h-12 rounded-none flex items-center justify-center transition-all duration-500",
                     "bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl",
                     "hover:scale-110 active:scale-95 group",
                     !isMuted ? "text-emerald-400 border-emerald-500/30" : "text-stone-400"
@@ -94,7 +94,7 @@ export function OfficeAmbience() {
             >
                 {/* Indicador de Pulsação quando ativo */}
                 {!isMuted && (
-                    <span className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping pointer-events-none" />
+                    <span className="absolute inset-0 rounded-none bg-emerald-500/20 animate-ping pointer-events-none" />
                 )}
                 
                 {isMuted ? (

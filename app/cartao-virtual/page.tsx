@@ -97,7 +97,7 @@ export default function VirtualCardPage() {
  className="group relative flex items-center justify-center gap-3 bg-black text-white px-8 py-5 text-xs font-bold tracking-widest hover:bg-zinc-900 transition-all disabled:opacity-50"
  >
  {isExporting ? (
- <span className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white" />
+ <span className="animate-spin rounded-none h-4 w-4 border-2 border-white/20 border-t-white" />
  ) : (
  <Download size={18} className="group-hover:scale-110 transition-transform" />
  )}

@@ -40,7 +40,7 @@ export default function InventoryModePage() {
  };
 
  return (
- <div className="min-h-screen bg-hooke-paper text-hooke-900 font-sans p-8 overflow-x-hidden selection:bg-black selection:text-white">
+ <div className="min-h-screen bg-zinc-50 text-black font-sans p-8 overflow-x-hidden selection:bg-black selection:text-white">
  <Toaster position="top-right" richColors />
  <div className="max-w-4xl mx-auto">
  <header className="flex flex-col md:flex-row md:items-center justify-between mb-12 border-b border-black/10 pb-8 gap-6">

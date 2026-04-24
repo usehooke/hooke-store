@@ -51,7 +51,7 @@ function SortablePhoto({ id, url, onRemove }: { id: string; url: string; onRemov
       <Image priority src={url} alt="Gallery item" fill className="object-cover" />
       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
         <button type="button" {...attributes} {...listeners} className="text-white hover:text-hooke-400 cursor-grab active:cursor-grabbing p-1"><GripVertical size={18} /></button>
-        <button type="button" onClick={onRemove} className="text-red-400 hover:text-red-600 p-1 bg-black/50 rounded-full"><Trash2 size={16} /></button>
+        <button type="button" onClick={onRemove} className="text-red-400 hover:text-red-600 p-1 bg-black/50 rounded-none"><Trash2 size={16} /></button>
       </div>
     </div>
   );
