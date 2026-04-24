@@ -70,13 +70,24 @@
 }
 
 @layer components {
-  /* HOOKE ELITE GLASSMORPHISM */
+  /* HOOKE ELITE GLASSMORPHISM - V13.0 SHARP EDITION */
   .hooke-glass {
-    @apply backdrop-blur-[12px] bg-white/70 border-b border-white/20 shadow-subtle transition-all duration-300;
+    @apply backdrop-blur-[12px] bg-white/70 border-b border-black/10 shadow-sharp transition-all duration-300;
+    border-radius: 0 !important;
   }
   
   .glass-card {
-    @apply backdrop-blur-[8px] bg-white/40 border border-white/30 shadow-subtle;
+    @apply backdrop-blur-[8px] bg-white/40 border border-black/5 shadow-alabastro;
+    border-radius: 0 !important;
+  }
+
+  /* SHARP-SOFT BRUTALISM UTILITIES */
+  .shadow-alabastro {
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .shadow-sharp {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
   }
 
   /* SKELETON LOADING */
@@ -84,16 +95,17 @@
     100% { transform: translateX(100%); }
   }
   .skeleton-shimmer {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden bg-gray-100;
+    border-radius: 0 !important;
   }
   .skeleton-shimmer::after {
     content: "";
-    @apply absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/50 to-transparent;
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent;
   }
 
-  /* HOOKE ELITE: INK LIQUID REVEAL */
+  /* HOOKE ELITE: INK LIQUID REVEAL - V13.0 */
   .btn-hooke-elite {
-    @apply relative overflow-hidden bg-black text-white hover:text-black transition-colors duration-500 z-10;
+    @apply relative overflow-hidden bg-black text-white hover:text-black transition-colors duration-500 z-10 rounded-none border border-black;
   }
   
   .btn-hooke-elite::after {

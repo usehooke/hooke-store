@@ -103,17 +103,17 @@ export default function CartSheet() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => setIsCheckoutOpen(true)}
-                className="w-full h-16 bg-hooke-900 text-white flex items-center justify-center gap-3 text-sm font-black tracking-[0.2em] uppercase hover:bg-black transition-all shadow-xl shadow-hooke-900/10"
+                className="w-full h-16 bg-black text-white flex items-center justify-center gap-3 text-sm font-bold tracking-[0.2em] uppercase hover:bg-zinc-900 transition-all border border-black shadow-sharp"
               >
-                <CreditCard size={20} />
-                Comprar Agora
+                <CreditCard size={18} />
+                Finalizar Compra
               </button>
               
               <button
                 onClick={handleWhatsAppCheckout}
-                className="w-full py-4 text-green-700 border-2 border-green-600 text-[10px] font-black tracking-[0.2em] uppercase hover:bg-green-50 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 text-black border border-black/10 text-[9px] font-bold tracking-[0.2em] uppercase hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
               >
-                Finalizar via WhatsApp
+                WhatsApp Checkout
               </button>
             </div>
           </div>

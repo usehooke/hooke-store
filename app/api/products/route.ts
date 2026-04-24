@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export const runtime = 'edge';
 import { products } from "@/data/products";
 
 export async function GET() {

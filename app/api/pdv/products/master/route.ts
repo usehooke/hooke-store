@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export const runtime = 'edge';
 import { TinyClient } from "@/lib/tiny/client";
 import { getMarketplaceMapping, ModelSigla } from "@/utils/sku-generator";
 

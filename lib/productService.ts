@@ -2,69 +2,65 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData } from "firebase/firestore";
 import { Product } from "@/types";
 import { MOCK_PRODUCTS } from "./mockData";
+import { unstable_cache } from "next/cache";
+import { ProductSchema } from "./schemas";
 
 export const COLLECTION_NAME = "produtos";
 
 /**
- * @Agent-LegacyRescue Protocol: RESILIENCE ENGINE V1
- * Centraliza a inteligência de Fallback para garantir "Zero Build Error" na Vercel
- * e alta disponibilidade em produção.
+ * @Agent-Elite V13.0: PERFORMANCE ENGINE
+ * Centraliza a inteligência de Cache e Resiliência.
  */
 
-/** 1. Utilitário de Detecção de Ambiente */
 const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build' || !db;
 
-import { ProductSchema } from "./schemas";
-
-/** 2. Mapeamento Seguro de Documento com Blindagem Zod */
 const mapToProduct = (docId: string, data: DocumentData): Product | null => {
     try {
         const rawBody = { id: docId, ...data };
         const validation = ProductSchema.safeParse(rawBody);
-
-        if (!validation.success) {
-            console.error(`❌ [Hooke Blindagem] Falha de esquema no produto ${docId}:`, validation.error.format());
-            return null; // Força o motor resiliente a usar o fallback
-        }
-
-        return validation.data as Product;
+        return validation.success ? (validation.data as Product) : null;
     } catch (err) {
         return null;
     }
 };
 
-/** 3. Motor de Execução Resiliente (The Core) */
-async function executeResilient<T>(
+/** 3. Motor de Execução Resiliente com Cache Persistente */
+async function executeResilientCached<T>(
     operationName: string,
+    cacheKey: string,
+    tags: string[],
     firestoreQuery: () => Promise<T>,
     mockFallback: T
 ): Promise<T> {
-    // A. Curto-circuito em tempo de Build
-    if (isBuildPhase()) {
-        return mockFallback;
-    }
+    if (isBuildPhase()) return mockFallback;
 
-    try {
-        const result = await firestoreQuery();
-        // Se o resultado for vazio/falso, tentamos o Mock (Auto-cura)
-        if (!result || (Array.isArray(result) && result.length === 0)) {
-            return mockFallback;
-        }
-        return result;
-    } catch (error) {
-        console.warn(`⚠️ [Hooke Rescue] Falha em ${operationName}. Ativando Mock Fallback.`, error);
-        // TODO: Enviar telemetria via analytics.ts quando implementado server-side
-        return mockFallback;
-    }
+    const cachedOperation = unstable_cache(
+        async () => {
+            try {
+                const result = await firestoreQuery();
+                if (!result || (Array.isArray(result) && result.length === 0)) return mockFallback;
+                return result;
+            } catch (error) {
+                console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Fallback ativo.`, error);
+                return mockFallback;
+            }
+        },
+        [cacheKey],
+        { revalidate: 3600, tags }
+    );
+
+    return cachedOperation();
 }
 
 /** 
- * 🚀 EXPORTS DOS SERVIÇOS (Refatorados & Limpos)
+ * 🚀 EXPORTS DOS SERVIÇOS (Elite V13.0)
  */
 
 export async function getProducts(category?: string): Promise<Product[]> {
-    return executeResilient(
+    return executeResilientCached(
         "getProducts",
+        `products-${category || 'all'}`,
+        ['products', category ? `category-${category}` : 'all-products'],
         async () => {
             const productsRef = collection(db!, COLLECTION_NAME);
             const conditions: QueryConstraint[] = [];
@@ -86,8 +82,10 @@ export async function getProducts(category?: string): Promise<Product[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-    return executeResilient(
+    return executeResilientCached(
         "getProductBySlug",
+        `product-slug-${slug}`,
+        ['products', `product-${slug}`],
         async () => {
             const productsRef = collection(db!, COLLECTION_NAME);
             const q = query(productsRef, where("slug", "==", slug), limit(1));
@@ -107,8 +105,10 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getFeaturedProducts(limitCount: number = 8): Promise<Product[]> {
-    return executeResilient(
+    return executeResilientCached(
         "getFeaturedProducts",
+        `featured-products-${limitCount}`,
+        ['products', 'featured'],
         async () => {
             const productsRef = collection(db!, COLLECTION_NAME);
             const q = query(productsRef, where("featured", "==", true));

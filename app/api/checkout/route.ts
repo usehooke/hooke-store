@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export const runtime = 'edge';
 import { Preference } from "mercadopago";
 import { client } from "@/lib/mercadopago";
 import { adminDb } from "@/lib/firebase-admin";
