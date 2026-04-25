@@ -16,6 +16,8 @@ export async function toggleProductVisibility(id: string, currentStatus: boolean
         await logAdminAction('TOGGLE_PRODUCT_VISIBILITY', { id, newStatus: !currentStatus }, userEmail);
         revalidatePath('/admin/produtos');
         revalidatePath('/'); // O2O Shielding: Limpa cache do catálogo
+        revalidatePath('/masculino');
+        revalidatePath('/feminino');
         
         return { success: true, newStatus: !currentStatus };
     } catch (err: unknown) {
@@ -32,6 +34,8 @@ export async function deleteProduct(id: string, name: string, userEmail: string 
         
         revalidatePath('/admin/produtos');
         revalidatePath('/');
+        revalidatePath('/masculino');
+        revalidatePath('/feminino');
         
         return { success: true };
     } catch (err: unknown) {
@@ -56,6 +60,8 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         
         revalidatePath('/admin/produtos');
         revalidatePath('/');
+        revalidatePath('/masculino');
+        revalidatePath('/feminino');
         
         return { success: true, product: payload };
     } catch (err: unknown) {

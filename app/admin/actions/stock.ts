@@ -36,8 +36,11 @@ export async function adjustStock(delta: number, userEmail: string = 'system'): 
 
         // O2O Shielding: limpa cache do catálogo e do admin ao mesmo tempo
         revalidatePath('/admin');
+        revalidatePath('/admin/produtos');
         revalidatePath('/vautier142');
         revalidatePath('/');
+        revalidatePath('/masculino');
+        revalidatePath('/feminino');
 
         return { success: true, newCount };
     } catch (err: unknown) {
@@ -62,8 +65,11 @@ export async function toggleSalesPause(isPaused: boolean, userEmail: string = 's
         await logAdminAction(isPaused ? 'PAUSE_SALES' : 'RELEASE_DROP', { isPaused }, userEmail);
 
         revalidatePath('/admin');
+        revalidatePath('/admin/produtos');
         revalidatePath('/vautier142');
         revalidatePath('/');
+        revalidatePath('/masculino');
+        revalidatePath('/feminino');
 
         return { success: true };
     } catch (err: unknown) {

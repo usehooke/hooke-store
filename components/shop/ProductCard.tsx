@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +16,8 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
   const parcelas = SITE_CONFIG.max_parcelas;
   const valorParcela = (product.price / parcelas).toFixed(2).replace('.', ',');
   const precoFormatado = product.price.toFixed(2).replace('.', ',');
+  const [imgError, setImgError] = useState(false);
+  const [imgError2, setImgError2] = useState(false);
 
   return (
     <motion.div
@@ -27,22 +30,37 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       <Link href={`/produto/${product.slug}`} className="block w-full">
         {/* 1. IMAGEM CONTAINER */}
         <div className="relative aspect-[3/4] overflow-hidden bg-hooke-paper skeleton-shimmer mb-4">
-          <Image
-            priority={priority}
-            src={product.imageUrl}
-            alt={product.seoAltText || product.name}
-            fill
-            className={`object-cover object-center transition-all duration-1000 ${product.images && (product.images as string[]).length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          />
-          {product.images && (product.images as string[]).length > 1 && (
+          {!imgError ? (
             <Image
-              src={product.images[1]}
-              alt={`${product.name} - Ângulo 2`}
+              priority={priority}
+              src={product.imageUrl}
+              alt={product.seoAltText || product.name}
               fill
-              className="object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
+              className={`object-cover object-center transition-all duration-1000 ${product.images && (product.images as string[]).length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              onError={() => setImgError(true)}
             />
+          ) : (
+            <div className="absolute inset-0 bg-[#F5F5F5] flex flex-col items-center justify-center border border-black/5 shadow-alabastro">
+               <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 uppercase">Imagem Indisponível</span>
+            </div>
+          )}
+
+          {product.images && (product.images as string[]).length > 1 && (
+            !imgError2 ? (
+              <Image
+                src={product.images[1]}
+                alt={`${product.name} - Ângulo 2`}
+                fill
+                className="object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                onError={() => setImgError2(true)}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-[#F5F5F5] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center border border-black/5 shadow-alabastro transition-all duration-1000">
+                <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 uppercase">Hooke Elite</span>
+              </div>
+            )
           )}
           
           {/* Badge Minimalista */}

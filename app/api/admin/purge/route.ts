@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { revalidatePath } from "next/cache";
 
 /**
  * MISSION: DATABASE PURGE & MALFORMED DATA CLEANUP
@@ -51,6 +52,12 @@ export async function POST() {
         }
       }
     }
+
+    // O2O Shielding: Limpa cache após purga em massa
+    revalidatePath('/');
+    revalidatePath('/masculino');
+    revalidatePath('/feminino');
+    revalidatePath('/admin/produtos');
 
     return NextResponse.json({ 
       success: true, 
