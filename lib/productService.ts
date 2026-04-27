@@ -38,7 +38,7 @@ async function executeResilientCached<T>(
         async () => {
             try {
                 const result = await firestoreQuery();
-                if (!result || (Array.isArray(result) && result.length === 0)) return mockFallback;
+                if (!result) return mockFallback; // Keep fallback for nulls if appropriate, but empty array is a valid result.
                 return result;
             } catch (error) {
                 console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Fallback ativo.`, error);
