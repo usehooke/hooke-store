@@ -162,7 +162,7 @@ export default function AdminPage() {
                 toast.loading("Aniquilando banco de dados...");
                 try {
                   for (const p of products) {
-                    await deleteDoc(doc(db, "produtos", p.id));
+                    await deleteDoc(doc(db!, "produtos", p.id));
                   }
                   toast.success("💥 Banco de Dados Aniquilado.");
                   fetchProducts();
