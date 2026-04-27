@@ -19,6 +19,33 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
   const [imgError, setImgError] = useState(false);
   const [imgError2, setImgError2] = useState(false);
 
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
+
+  const prepareImage = (src: string) => {
+    if (!src) return { src: '', deliveryType: 'upload' as const };
+    
+    // 1. Se for uma URL completa do Cloudinary, extraímos o ID para usar 'upload' nativo
+    if (src.includes('res.cloudinary.com')) {
+      const parts = src.split('/');
+      const filename = parts[parts.length - 1];
+      const publicId = filename.split('.')[0];
+      return { src: publicId, deliveryType: 'upload' as const };
+    }
+    
+    // 2. Se for um caminho local, transformamos em URL absoluta para o 'fetch' funcionar
+    if (src.startsWith('/')) {
+      return { src: `${siteUrl}${src}`, deliveryType: 'fetch' as const };
+    }
+    
+    // 3. Outras URLs externas
+    return { src, deliveryType: 'fetch' as const };
+  };
+
+  const mainImage = prepareImage(product.imageUrl);
+  const hoverImage = product.images && (product.images as string[]).length > 1 
+    ? prepareImage(product.images[1]) 
+    : null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,14 +60,14 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           {!imgError ? (
             <CldImage
               priority={priority}
-              src={product.imageUrl}
+              src={mainImage.src}
               alt={product.seoAltText || product.name}
               fill
               tint="70"
               className={`object-cover object-center transition-all duration-1000 ${product.images && (product.images as string[]).length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               onError={() => setImgError(true)}
-              deliveryType="fetch"
+              deliveryType={mainImage.deliveryType}
               format="avif"
               quality="auto"
             />
@@ -50,16 +77,16 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             </div>
           )}
 
-          {product.images && (product.images as string[]).length > 1 && (
+          {hoverImage && (
             !imgError2 ? (
               <CldImage
-                src={product.images[1]}
+                src={hoverImage.src}
                 alt={`${product.name} - Ângulo 2`}
                 fill
                 className="object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 onError={() => setImgError2(true)}
-                deliveryType="fetch"
+                deliveryType={hoverImage.deliveryType}
                 format="avif"
                 quality="auto"
               />
