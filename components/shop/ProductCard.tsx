@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, SITE_CONFIG } from "@/data/catalogo";
-import Image from "next/image";
+import { CldImage } from 'next-cloudinary';
 import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
@@ -31,14 +31,18 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         {/* 1. IMAGEM CONTAINER */}
         <div className="relative aspect-[3/4] overflow-hidden bg-hooke-paper skeleton-shimmer mb-4">
           {!imgError ? (
-            <Image
+            <CldImage
               priority={priority}
               src={product.imageUrl}
               alt={product.seoAltText || product.name}
               fill
+              tint="70"
               className={`object-cover object-center transition-all duration-1000 ${product.images && (product.images as string[]).length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               onError={() => setImgError(true)}
+              deliveryType="fetch"
+              format="avif"
+              quality="auto"
             />
           ) : (
             <div className="absolute inset-0 bg-[#F5F5F5] flex flex-col items-center justify-center border border-black/5 shadow-alabastro">
@@ -48,13 +52,16 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
           {product.images && (product.images as string[]).length > 1 && (
             !imgError2 ? (
-              <Image
+              <CldImage
                 src={product.images[1]}
                 alt={`${product.name} - Ângulo 2`}
                 fill
                 className="object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 onError={() => setImgError2(true)}
+                deliveryType="fetch"
+                format="avif"
+                quality="auto"
               />
             ) : (
               <div className="absolute inset-0 bg-[#F5F5F5] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center border border-black/5 shadow-alabastro transition-all duration-1000">

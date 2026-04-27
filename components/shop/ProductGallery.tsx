@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import { Product } from "@/types";
 import { motion, useScroll, useSpring } from "framer-motion";
 
@@ -48,13 +48,16 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full aspect-[4/5] bg-gray-50 overflow-hidden group cursor-zoom-in border border-gray-100"
           >
-            <Image
+            <CldImage
               src={img}
               alt={`${product.name} - Vista ${index + 1}`}
               fill
               priority={index === 0}
               className="object-cover object-center transition-transform duration-[3000ms] ease-out group-hover:scale-110"
               sizes="(max-width: 1200px) 70vw, 50vw"
+              deliveryType="fetch"
+              format="avif"
+              quality="auto"
             />
           </motion.div>
         ))}
@@ -80,13 +83,16 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
               key={index}
               className="relative min-w-full h-full snap-center flex-shrink-0 bg-gray-50 overflow-hidden"
             >
-              <Image
+              <CldImage
                 src={img}
                 alt={`${product.name} - Detalhe ${index + 1}`}
                 fill
                 priority={index === 0}
                 className="object-cover object-center animate-in fade-in duration-700"
                 sizes="100vw"
+                deliveryType="fetch"
+                format="avif"
+                quality="auto"
               />
 
               {/* Tag de Exclusividade sutil no primeiro slide */}

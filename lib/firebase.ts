@@ -2,7 +2,6 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth, FacebookAuthProvider } from "firebase/auth";
-import { getStorage, FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -28,7 +27,6 @@ const isConfigPresent = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "un
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
 let auth: Auth | null = null;
-let storage: FirebaseStorage | null = null;
 const facebookProvider = new FacebookAuthProvider();
 
 /** 📐 Inicialização Silenciosa & Resiliente */
@@ -37,7 +35,6 @@ if (isConfigPresent && !isBuildPhase) {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         db = getFirestore(app);
         auth = getAuth(app);
-        storage = getStorage(app);
     } catch (error) {
         console.error("❌ [Hooke Rescue] Falha crítica ao despertar o Firebase:", error);
     }
@@ -45,4 +42,4 @@ if (isConfigPresent && !isBuildPhase) {
     console.warn("⚠️ [Hooke System] Rodando sem Firebase (Chaves ausentes).");
 }
 
-export { app, db, auth, storage, facebookProvider };
+export { app, db, auth, facebookProvider };

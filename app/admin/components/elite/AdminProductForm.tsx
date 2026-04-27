@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { UploadButton } from "@/utils/uploadthing";
-import { Trash2, GripVertical, Plus } from "lucide-react";
+import { Trash2, GripVertical, Plus, UploadCloud } from "lucide-react";
 
 // dnd-kit
 import {
@@ -56,6 +55,7 @@ function SortablePhoto({ id, url, onRemove }: { id: string; url: string; onRemov
 
 export default function AdminProductForm({ initialData, onSubmit, onCancel, isSaving }: ProductFormProps) {
   const [activeTab, setActiveTab] = useState<"geral" | "visual" | "estoque" | "seo">("geral");
+  const [isUploading, setIsUploading] = useState(false);
   
   const [name, setName] = useState(initialData?.name || "");
   const [department, setDepartment] = useState<"masculino" | "feminino" | "unissex">(initialData?.department || "masculino");
@@ -166,8 +166,10 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
 
         {activeTab === "visual" && (
            <div className="space-y-8">
-              <div className="space-y-4">
-                <h3 className="text-xs font-black tracking-[0.2em] text-hooke-900 uppercase">Galeria do Produto</h3>
+            <div className="space-y-4">
+              <h3 className="text-xs font-black tracking-[0.2em] text-hooke-900 uppercase">Galeria do Produto</h3>
+              
+              <div className="flex flex-wrap gap-4 mb-4">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => {
                   const { active, over } = e;
                   if (over && active.id !== over.id) {
@@ -188,20 +190,67 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
                           onRemove={() => setImages(images.filter((_, i) => i !== index))} 
                         />
                       ))}
-                      {images.length < 5 && (
-                        <div className="w-24 h-24 border-2 border-dashed border-gray-200 flex items-center justify-center relative hover:border-hooke-900 transition-colors">
-                          <UploadButton 
-                            endpoint="imageUploader" 
-                            onClientUploadComplete={(res) => res?.[0] && setImages([...images, res[0].url])}
-                            appearance={{ button: "absolute inset-0 w-full h-full opacity-0", allowedContent: "hidden" }}
-                          />
-                          <Plus className="text-gray-300" />
-                        </div>
-                      )}
                     </div>
                   </SortableContext>
                 </DndContext>
+
+                {/* Cloudinary Elite Upload Area */}
+                {images.length < 5 && (
+                  <label 
+                    className={`
+                      w-24 h-24 flex flex-col items-center justify-center cursor-pointer
+                      border border-black bg-hooke-paper transition-all duration-300
+                      hover:shadow-sharp focus-within:shadow-sharp relative overflow-hidden
+                    `}
+                  >
+                    {isUploading ? (
+                      <div className="absolute inset-0 bg-black flex flex-col items-center justify-center overflow-hidden">
+                        <div className="animate-marquee whitespace-nowrap text-[8px] font-black tracking-widest text-white uppercase">
+                          enviando arquivo... enviando arquivo... enviando arquivo...
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            setIsUploading(true);
+                            try {
+                              const formData = new FormData();
+                              formData.append("file", file);
+                              formData.append("upload_preset", "rsjrcxrg");
+                              
+                              const res = await fetch(
+                                `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+                                { method: "POST", body: formData }
+                              );
+                              
+                              const data = await res.json();
+                              if (data.secure_url) {
+                                setImages([...images, data.secure_url]);
+                              }
+                            } catch (err) {
+                              console.error("Cloudinary Error:", err);
+                            } finally {
+                              setIsUploading(false);
+                            }
+                          }}
+                        />
+                        <div className="flex flex-col items-center gap-1 text-black">
+                          <UploadCloud size={24} strokeWidth={1.5} />
+                          <span className="text-[10px] font-jost font-medium lowercase tracking-widest">upload</span>
+                        </div>
+                      </>
+                    )}
+                  </label>
+                )}
               </div>
+            </div>
            </div>
         )}
 

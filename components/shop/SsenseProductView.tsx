@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import { CldImage } from 'next-cloudinary';
 import { Product } from '@/data/catalogo';
 import { motion } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
@@ -95,12 +95,15 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               transition={{ duration: 0.8, delay: idx * 0.1 }}
               className="relative aspect-[2/3] w-full bg-white group overflow-hidden border border-black/5"
             >
-              <Image
+              <CldImage
                 src={img}
                 alt={`${product.name} - Vista ${idx + 1}`}
                 fill
                 className="object-cover object-top transition-transform duration-[length:2s] group-hover:scale-105"
                 priority={idx === 0}
+                deliveryType="fetch"
+                format="avif"
+                quality="auto"
               />
             </motion.div>
           ))}
