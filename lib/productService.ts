@@ -30,19 +30,19 @@ async function executeResilientCached<T>(
     cacheKey: string,
     tags: string[],
     firestoreQuery: () => Promise<T>,
-    mockFallback: T
+    emptyFallback: T
 ): Promise<T> {
-    if (isBuildPhase()) return mockFallback;
+    if (isBuildPhase()) return emptyFallback;
 
     const cachedOperation = unstable_cache(
         async () => {
             try {
                 const result = await firestoreQuery();
-                if (!result) return mockFallback; // Keep fallback for nulls if appropriate, but empty array is a valid result.
+                if (!result) return emptyFallback;
                 return result;
             } catch (error) {
-                console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Fallback ativo.`, error);
-                return mockFallback;
+                console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Retornando estado vazio.`, error);
+                return emptyFallback;
             }
         },
         [cacheKey],
@@ -77,7 +77,7 @@ export async function getProducts(category?: string): Promise<Product[]> {
             });
             return products;
         },
-        category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS
+        [] as Product[]
     );
 }
 
@@ -100,7 +100,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
             return null;
         },
-        MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null
+        null
     );
 }
 
@@ -122,6 +122,6 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
             });
             return products;
         },
-        MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount)
+        [] as Product[]
     );
 }
