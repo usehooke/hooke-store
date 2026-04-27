@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { db, auth } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -153,6 +153,28 @@ export default function AdminPage() {
           </div>
 
           <div className="flex items-center gap-3">
+             <button
+              onClick={async () => {
+                if (!window.confirm("🚨 ALERTA CRÍTICO: DESTRUIR TODO O INVENTÁRIO? Isso apagará todos os produtos do banco de dados definitivamente.")) return;
+                const confirm2 = window.prompt('Digite "ELITE" para confirmar a aniquilação do banco:');
+                if (confirm2 !== "ELITE") return;
+                
+                toast.loading("Aniquilando banco de dados...");
+                try {
+                  for (const p of products) {
+                    await deleteDoc(doc(db, "produtos", p.id));
+                  }
+                  toast.success("💥 Banco de Dados Aniquilado.");
+                  fetchProducts();
+                } catch (err) {
+                  toast.error("Erro ao deletar: " + String(err));
+                }
+              }}
+              className="px-6 py-3 bg-red-600 text-white text-[10px] font-black tracking-widest uppercase hover:bg-red-800 transition-all shadow-lg flex items-center gap-2"
+             >
+               DESTRUIR INVENTÁRIO
+             </button>
+
              <button
               onClick={() => {
                 setEditingProduct(null);
