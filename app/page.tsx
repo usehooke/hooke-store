@@ -7,7 +7,6 @@ import SocialFeed from "@/components/home/SocialFeed";
 import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import React, { Suspense } from "react";
-import { revalidatePath } from 'next/cache';
 
 /**
  * Hooke V15.0: Atomic Cache Purge & Defensive Rendering.
@@ -15,10 +14,6 @@ import { revalidatePath } from 'next/cache';
  * para garantir que produtos deletados sumam instantaneamente da vitrine.
  */
 export default async function Home() {
-  // ATOMIC CACHE PURGE (The Nuke Action)
-  // Forçamos a invalidação de todo o layout para limpar "ghost products" da Vercel CDN.
-  revalidatePath('/', 'layout');
-
   // Otimização: Buscamos os produtos em paralelo/servidor
   const showcaseProducts = await getFeaturedProducts(8);
 
