@@ -7,15 +7,25 @@ import SocialFeed from "@/components/home/SocialFeed";
 import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import React, { Suspense } from "react";
+import { revalidatePath } from 'next/cache';
 
 /**
- * Hooke V3: Home Page Otimizada com PPR.
- * A casca (Hero, Marquee) é servida instantaneamente do cache estático.
- * A lista de produtos e o saudoso VIP são carregados de forma asíncrona (Dynamic).
+ * Hooke V15.0: Atomic Cache Purge & Defensive Rendering.
+ * @Agent-LegacyRescue: Esta versão injeta uma purga de cache forçada na borda (Edge)
+ * para garantir que produtos deletados sumam instantaneamente da vitrine.
  */
 export default async function Home() {
+  // ATOMIC CACHE PURGE (The Nuke Action)
+  // Forçamos a invalidação de todo o layout para limpar "ghost products" da Vercel CDN.
+  revalidatePath('/', 'layout');
+
   // Otimização: Buscamos os produtos em paralelo/servidor
   const showcaseProducts = await getFeaturedProducts(8);
+
+  // FAIL-SAFE RENDER: Se o catálogo estiver vazio, mostramos o estado Alabastro
+  if (!showcaseProducts || showcaseProducts.length === 0) {
+    return <EmptyCatalogVisual />;
+  }
 
   return (
     <main className="bg-hooke-paper min-h-screen pb-24 md:pb-0">
@@ -64,6 +74,47 @@ export default async function Home() {
 
       <div className="bg-white border-t border-hooke-100">
         <BrandBento />
+      </div>
+    </main>
+  );
+}
+
+/** 🛡️ ESTADO DEFENSIVO: ALABASTRO / SHARP BRUTALISM */
+function EmptyCatalogVisual() {
+  return (
+    <main className="min-h-screen bg-[#F5F5F5] flex flex-col items-center justify-center p-6 font-jost text-black">
+      <div className="max-w-md w-full border border-black bg-white p-12 shadow-sharp flex flex-col items-center text-center gap-8">
+        <div className="w-16 h-16 border border-black flex items-center justify-center">
+          <span className="text-2xl font-light">00</span>
+        </div>
+        
+        <div className="space-y-2">
+          <h1 className="text-2xl font-black tracking-tighter uppercase leading-none">
+            inventário <br /> <span className="opacity-30">em atualização</span>
+          </h1>
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400">
+            hooke elite : lounge privado
+          </p>
+        </div>
+
+        <div className="h-px w-20 bg-black/10" />
+
+        <p className="text-xs font-medium leading-relaxed lowercase tracking-tight max-w-[240px]">
+          nossa curadoria está sendo recalibrada. novos itens de elite em breve no arsenal.
+        </p>
+
+        <a 
+          href="/admin" 
+          className="mt-4 px-8 py-4 border border-black text-[10px] font-black tracking-widest uppercase hover:bg-black hover:text-white transition-all shadow-sm active:shadow-none"
+        >
+          acessar painel hq
+        </a>
+      </div>
+      
+      <div className="mt-12 opacity-10">
+        <span className="text-[8px] font-black tracking-[0.5em] uppercase">
+          design para a permanência
+        </span>
       </div>
     </main>
   );
