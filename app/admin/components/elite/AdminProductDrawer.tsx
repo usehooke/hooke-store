@@ -33,7 +33,7 @@ export function AdminProductDrawer({ isOpen, onClose, product, onSubmit, isSavin
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full md:w-[60%] lg:w-[50%] xl:w-[45%] bg-white shadow-2xl z-[101] overflow-y-auto"
+            className="fixed top-0 right-0 h-full w-full md:w-[80%] lg:w-[70%] xl:w-[60%] bg-white shadow-2xl z-[101] overflow-y-auto"
           >
             <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex items-center justify-between z-10">
               <div>

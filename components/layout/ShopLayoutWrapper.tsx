@@ -17,7 +17,7 @@ export default function ShopLayoutWrapper({ children }: ShopLayoutWrapperProps) 
   const pathname = usePathname();
   
   // Lista de rotas que não devem exibir o layout padrão da loja
-  const isImmersiveRoute = pathname?.startsWith("/treino") || pathname?.startsWith("/bazar-vip-hooke") || pathname?.startsWith("/b2b");
+  const isImmersiveRoute = pathname?.startsWith("/treino") || pathname?.startsWith("/bazar-vip-hooke") || pathname?.startsWith("/b2b") || pathname?.startsWith("/admin");
 
   if (isImmersiveRoute) {
     return <>{children}</>;

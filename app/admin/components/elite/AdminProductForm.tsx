@@ -56,6 +56,7 @@ function SortablePhoto({ id, url, onRemove }: { id: string; url: string; onRemov
 export default function AdminProductForm({ initialData, onSubmit, onCancel, isSaving }: ProductFormProps) {
   const [activeTab, setActiveTab] = useState<"geral" | "visual" | "estoque" | "seo">("geral");
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   
   const [name, setName] = useState(initialData?.name || "");
   const [department, setDepartment] = useState<"masculino" | "feminino" | "unissex">(initialData?.department || "masculino");
@@ -196,23 +197,51 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
 
                 {/* Cloudinary Elite Upload Area */}
                 {images.length < 5 && (
-                  <label 
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={async (e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (!file) return;
+                      
+                      setIsUploading(true);
+                      try {
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        formData.append("upload_preset", "rsjrcxrg");
+                        const res = await fetch(
+                          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+                          { method: "POST", body: formData }
+                        );
+                        const data = await res.json();
+                        if (data.secure_url) {
+                          setImages(prev => [...prev, data.secure_url]);
+                        }
+                      } catch (err) {
+                        console.error("Cloudinary Error:", err);
+                      } finally {
+                        setIsUploading(false);
+                      }
+                    }}
                     className={`
-                      w-24 h-24 flex flex-col items-center justify-center cursor-pointer
-                      border border-black bg-hooke-paper transition-all duration-300
-                      hover:shadow-sharp focus-within:shadow-sharp relative overflow-hidden
+                      w-full aspect-[3/1] md:aspect-[4/1] flex flex-col items-center justify-center
+                      border-2 border-dashed transition-all duration-300 relative overflow-hidden
+                      ${isDragging ? 'border-hooke-900 bg-gray-100 scale-[1.01]' : 'border-gray-300 bg-hooke-paper hover:border-black hover:shadow-sharp'}
                     `}
                   >
                     {isUploading ? (
                       <div className="absolute inset-0 bg-black flex flex-col items-center justify-center overflow-hidden">
-                        <div className="animate-marquee whitespace-nowrap text-[8px] font-black tracking-widest text-white uppercase">
-                          enviando arquivo... enviando arquivo... enviando arquivo...
+                        <div className="animate-marquee whitespace-nowrap text-xs font-black tracking-widest text-white uppercase">
+                          PROCESSANDO ARQUIVO DE ALTA RESOLUÇÃO... PROCESSANDO ARQUIVO DE ALTA RESOLUÇÃO...
                         </div>
                       </div>
                     ) : (
                       <>
                         <input 
                           type="file" 
+                          id="file-upload"
                           className="hidden" 
                           accept="image/*"
                           onChange={async (e) => {
@@ -232,7 +261,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
                               
                               const data = await res.json();
                               if (data.secure_url) {
-                                setImages([...images, data.secure_url]);
+                                setImages(prev => [...prev, data.secure_url]);
                               }
                             } catch (err) {
                               console.error("Cloudinary Error:", err);
@@ -241,13 +270,18 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
                             }
                           }}
                         />
-                        <div className="flex flex-col items-center gap-1 text-black">
-                          <UploadCloud size={24} strokeWidth={1.5} />
-                          <span className="text-[10px] font-jost font-medium lowercase tracking-widest">upload</span>
-                        </div>
+                        <label htmlFor="file-upload" className="flex flex-col items-center gap-2 cursor-pointer p-8 w-full h-full justify-center">
+                          <UploadCloud size={32} strokeWidth={1.5} className={isDragging ? 'text-hooke-900' : 'text-gray-400'} />
+                          <span className="text-xs font-black tracking-widest uppercase text-hooke-900">
+                            {isDragging ? 'SOLTE A IMAGEM AQUI' : 'CLIQUE OU ARRASTE UMA IMAGEM'}
+                          </span>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            AVIF / WEBP / PNG / JPG (Max 5 Fotos)
+                          </span>
+                        </label>
                       </>
                     )}
-                  </label>
+                  </div>
                 )}
               </div>
             </div>
