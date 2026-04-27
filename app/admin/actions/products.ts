@@ -29,9 +29,27 @@ export async function deleteProduct(id: string, name: string, userEmail: string 
     if (!db) return { success: false, message: "DB indisponível" };
 
     try {
+        // 1. PRIORIDADE MÁXIMA: Deleção do Documento no Firestore
+        // Isso garante que o produto saia da vitrine imediatamente.
         await deleteDoc(doc(db, 'produtos', id));
-        await logAdminAction('DELETE_PRODUCT', { id, name }, userEmail);
         
+        // 2. LOG DA OPERAÇÃO
+        await logAdminAction('DELETE_PRODUCT', { id, name }, userEmail);
+
+        // 3. STORAGE CLEANUP (FAIL-SAFE)
+        // Tentamos limpar as imagens, mas não permitimos que falhas de Storage 
+        // bloqueiem a conclusão da deleção do produto.
+        try {
+            // @Agent-LegacyRescue: Como o Firebase Storage foi removido/migrado para Cloudinary,
+            // aqui entraria a lógica de deleção do Cloudinary caso necessário.
+            // Por enquanto, apenas logamos que o documento foi removido.
+            console.log(`[Hooke System] Produto ${id} removido do Firestore. Imagens órfãs no Storage aguardando expiração ou limpeza manual.`);
+        } catch (storageErr) {
+            console.warn("⚠️ [Hooke Rescue] Falha ao tentar limpar Storage (não crítico):", storageErr);
+        }
+        
+        // 4. CACHE REVALIDATION
+        // Limpamos o cache da Home e listagens para garantir sincronia total.
         revalidatePath('/admin/produtos');
         revalidatePath('/');
         revalidatePath('/masculino');
@@ -39,6 +57,7 @@ export async function deleteProduct(id: string, name: string, userEmail: string 
         
         return { success: true };
     } catch (err: unknown) {
+        console.error("❌ [Hooke System] Falha crítica na deleção do produto:", err);
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
