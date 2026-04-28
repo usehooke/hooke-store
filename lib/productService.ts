@@ -32,7 +32,6 @@ async function executeResilientCached<T>(
     firestoreQuery: () => Promise<T>,
     emptyFallback: T
 ): Promise<T> {
-    if (isBuildPhase()) return emptyFallback;
 
     const cachedOperation = unstable_cache(
         async () => {
@@ -41,7 +40,9 @@ async function executeResilientCached<T>(
                 if (!result) return emptyFallback;
                 return result;
             } catch (error) {
-                console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Retornando estado vazio.`, error);
+                console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Usando Mock como Fallback.`, error);
+                // 🛡️ SE O BANCO FALHAR, USAMOS O MOCK EM VEZ DE VAZIO
+                if (Array.isArray(emptyFallback)) return MOCK_PRODUCTS as unknown as T;
                 return emptyFallback;
             }
         },

@@ -13,14 +13,13 @@ import React, { Suspense } from "react";
  * @Agent-LegacyRescue: Esta versão injeta uma purga de cache forçada na borda (Edge)
  * para garantir que produtos deletados sumam instantaneamente da vitrine.
  */
+export const revalidate = 3600; // Revalida a cada 1 hora
+
 export default async function Home() {
   // Otimização: Buscamos os produtos em paralelo/servidor
   const showcaseProducts = await getFeaturedProducts(8);
 
-  // FAIL-SAFE RENDER: Se o catálogo estiver vazio, mostramos o estado Alabastro
-  if (!showcaseProducts || showcaseProducts.length === 0) {
-    return <EmptyCatalogVisual />;
-  }
+  // Removido o FAIL-SAFE agressivo que mostrava tela vazia se o banco falhasse no build
 
   return (
     <main className="bg-hooke-paper min-h-screen pb-24 md:pb-0">

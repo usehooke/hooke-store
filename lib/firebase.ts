@@ -13,12 +13,11 @@ const firebaseConfig = {
 };
 
 /**
- * @Agent-LegacyRescue: AMBIENT SHIELD V2
- * Detecta se estamos na fase de Build da Vercel para evitar 
- * conexões externas que quebram o pré-processamento.
+ * @Agent-LegacyRescue: AMBIENT SHIELD V2.1
+ * Detecta se estamos na fase de Build da Vercel. 
+ * Se as chaves estiverem presentes, tentamos conectar mesmo no build para SSG.
  */
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
-                     (typeof window === 'undefined' && !process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' && !process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
 const isConfigPresent = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
 
