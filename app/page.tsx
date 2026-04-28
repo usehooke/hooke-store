@@ -13,8 +13,6 @@ import React, { Suspense } from "react";
  * @Agent-LegacyRescue: Esta versão injeta uma purga de cache forçada na borda (Edge)
  * para garantir que produtos deletados sumam instantaneamente da vitrine.
  */
-export const revalidate = 3600; // Revalida a cada 1 hora
-
 export default async function Home() {
   // Otimização: Buscamos os produtos em paralelo/servidor
   const showcaseProducts = await getFeaturedProducts(8);
