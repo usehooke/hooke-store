@@ -63,7 +63,6 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
               src={mainImage.src}
               alt={product.seoAltText || product.name}
               fill
-              tint="70"
               className={`object-cover object-center transition-all duration-1000 ${product.images && (product.images as string[]).length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-110'}`}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               onError={() => setImgError(true)}
