@@ -400,10 +400,10 @@ export const PRODUTOS: Product[] = [
     isNew: true,
     totalStock: 24,
     description: "Elegância que não marca. O corte manga morcego aliado à viscose de alta gramatura proporciona uma silhueta fluida e sofisticada, garantindo conforto absoluto sem perder a postura.",
-    imageUrl: "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/hooke_manga_morcego_marrom_modelo_referencia_01_1777398730607.png",
+    imageUrl: "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/hooke_manga_morcego_marrom_modelo_real_01_1777400323313.png",
     images: [
-      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/hooke_manga_morcego_marrom_modelo_referencia_01_1777398730607.png",
-      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/hooke_manga_morcego_marrom_modelo_referencia_02_1777398807964.png"
+      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/hooke_manga_morcego_marrom_modelo_real_01_1777400323313.png",
+      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/hooke_manga_morcego_real_02_1777400403705.png"
     ],
     sizes: ["P", "M", "G"],
     department: "feminino",
