@@ -388,6 +388,29 @@ export const PRODUTOS: Product[] = [
     department: "feminino",
     category: "Conjuntos",
     details: { fabric: "96% Viscose, 4% Elastano (Lore Liso)", model: "Pantalona & Relaxed T-shirt", wash: "Acabamento Fosco Premium" }
+  },
+  {
+    id: "fem-conjunto-manga-morcego-marrom",
+    name: "Conjunto Manga Morcego Marrom",
+    seoAltText: "Conjunto Feminino Manga Morcego Marrom Chocolate em Viscose e elastano de alta gramatura que não marca - Hooke Femme",
+    slug: "conjunto-feminino-manga-morcego-marrom",
+    price: 100.00,
+    featured: true,
+    isPremiumCollection: true,
+    isNew: true,
+    totalStock: 24,
+    description: "Elegância que não marca. O corte manga morcego aliado à viscose de alta gramatura proporciona uma silhueta fluida e sofisticada, garantindo conforto absoluto sem perder a postura.",
+    imageUrl: "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/IMG_20260428_125717045_HDR_PCT.jpg",
+    images: [
+      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/IMG_20260428_125717045_HDR_PCT.jpg",
+      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/IMG_20260428_125818692_HDR_PCT.jpg",
+      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/IMG_20260428_125905527_HDR_PCT.jpg",
+      "/ensaio-feminino/conjunto-feminino-manga_morcego-marrom/IMG_20260428_125847671_HDR_PCT.jpg"
+    ],
+    sizes: ["P", "M", "G"],
+    department: "feminino",
+    category: "Conjuntos",
+    details: { fabric: "Viscose e Elastano (Alta Gramatura)", model: "Manga Morcego & Pantalona", wash: "Acabamento Premium" }
   }
 ];
 
