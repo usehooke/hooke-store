@@ -26,10 +26,10 @@ import {
   ModelSigla,
   PrintSigla
 } from "@/utils/sku-generator";
-import { Product, ProductCategory } from "@/types";
+import { Product, ProductCategory, Department, Size } from "@/types";
 
-const AVAILABLE_SIZES_MASCO = ["P", "M", "G", "GG", "XG", "G1", "G2"];
-const AVAILABLE_SIZES_FEMIN = ["PP", "P", "M", "G", "GG"];
+const AVAILABLE_SIZES_MASCO = [Size.P, Size.M, Size.G, Size.GG, Size.XG, Size.G1, Size.G2];
+const AVAILABLE_SIZES_FEMIN = [Size.PP, Size.P, Size.M, Size.G, Size.GG];
 
 type FormProductData = Partial<Product>;
 
@@ -59,12 +59,12 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
   const [isDragging, setIsDragging] = useState(false);
   
   const [name, setName] = useState(initialData?.name || "");
-  const [department, setDepartment] = useState<"masculino" | "feminino" | "unissex">(initialData?.department || "masculino");
-  const [category, setCategory] = useState<ProductCategory>(initialData?.category || (department === "feminino" ? "Conjuntos" : "Oversized"));
+  const [department, setDepartment] = useState<Department>(initialData?.department || Department.MASCULINO);
+  const [category, setCategory] = useState<ProductCategory>(initialData?.category || (department === Department.FEMININO ? "Conjuntos" : "Oversized"));
   const [price, setPrice] = useState(initialData?.price || 0);
   const [comboPrice, setComboPrice] = useState(initialData?.comboPrice || 0);
   const [description, setDescription] = useState(initialData?.description || "");
-  const [sizes, setSizes] = useState<string[]>(initialData?.sizes || (department === "feminino" ? ["P", "M", "G"] : ["P", "M", "G", "GG"]));
+  const [sizes, setSizes] = useState<Size[]>(initialData?.sizes || (department === Department.FEMININO ? [Size.P, Size.M, Size.G] : [Size.P, Size.M, Size.G, Size.GG]));
 
   const [stock, setStock] = useState<Record<string, number>>(initialData?.stock || {});
   const [skus, setSkus] = useState<Record<string, string>>(initialData?.skus || {});
@@ -116,18 +116,18 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
                  <label className="text-[10px] font-black tracking-widest text-hooke-900 uppercase">Departamento</label>
                  <select 
                     value={department} 
-                    onChange={(e) => setDepartment(e.target.value as "masculino" | "feminino" | "unissex")} 
+                    onChange={(e) => setDepartment(e.target.value as Department)} 
                     className="w-full border border-gray-200 p-3 text-xs font-bold bg-white outline-none"
                   >
-                   <option value="masculino">MASCULINO</option>
-                   <option value="feminino">FEMININO</option>
-                   <option value="unissex">UNISSEX</option>
+                   <option value={Department.MASCULINO}>MASCULINO</option>
+                   <option value={Department.FEMININO}>FEMININO</option>
+                   <option value={Department.UNISSEX}>UNISSEX</option>
                  </select>
                </div>
                <div className="space-y-2">
                  <label className="text-[10px] font-black tracking-widest text-hooke-900 uppercase">Categoria</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value as ProductCategory)} className="w-full border border-gray-200 p-3 text-xs font-bold bg-white outline-none">
-                    {department === 'feminino' ? (
+                    {department === Department.FEMININO ? (
                       <><option value="Conjuntos">Conjuntos</option><option value="Cropped">Cropped</option><option value="Top">Top</option></>
                     ) : (
                       <><option value="Oversized">Oversized</option><option value="Regatas">Regatas</option><option value="Vintage">Vintage</option><option value="Kits">Kits</option></>
@@ -293,7 +293,7 @@ export default function AdminProductForm({ initialData, onSubmit, onCancel, isSa
              <div className="space-y-3">
                <label className="text-[10px] font-black tracking-widest text-hooke-900 uppercase">Tamanhos Disponíveis</label>
                <div className="flex flex-wrap gap-2">
-                 {(department === 'feminino' ? AVAILABLE_SIZES_FEMIN : AVAILABLE_SIZES_MASCO).map(s => (
+                 {(department === Department.FEMININO ? AVAILABLE_SIZES_FEMIN : AVAILABLE_SIZES_MASCO).map(s => (
                    <button key={s} type="button" onClick={() => setSizes(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])}
                            className={`w-10 h-10 text-xs font-bold border-2 transition-all ${sizes.includes(s) ? 'bg-hooke-900 text-white border-hooke-900' : 'bg-white text-gray-300 border-gray-100 hover:border-gray-300'}`}>
                      {s}

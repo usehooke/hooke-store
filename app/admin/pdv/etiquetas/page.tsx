@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/types";
+import { Product, Size } from "@/types";
 import BarcodeLabel from "@/components/pdv/BarcodeLabel";
 import { Package, Printer, Plus, Minus, ArrowLeft, Search } from "lucide-react";
 import Link from "next/link";
@@ -12,7 +12,7 @@ export default function LabelGeneratorPage() {
  const [search, setSearch] = useState("");
  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
  const [quantity, setQuantity] = useState(1);
- const [selectedSize, setSelectedSize] = useState("M");
+ const [selectedSize, setSelectedSize] = useState<Size>(Size.M);
  const [selectedColor, setSelectedColor] = useState<ColorSigla>("PRE");
 
  const { data: products } = useQuery<Product[]>({
@@ -87,7 +87,7 @@ export default function LabelGeneratorPage() {
  <div className="flex flex-col gap-2">
  <span className="text-[10px] font-black ">Tam:</span>
  <div className="flex flex-wrap gap-2">
- {["P", "M", "G", "GG", "XG", "G1", "G2"].map(s => {
+ {Object.values(Size).map(s => {
  const hasSize = selectedProduct.sizes.includes(s);
  return (
  <button 

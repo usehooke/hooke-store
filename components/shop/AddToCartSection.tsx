@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Product } from "@/types";
+import { Product, Size } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { ShoppingBag, Check, Ruler } from "lucide-react";
 import Image from "next/image";
@@ -11,12 +11,14 @@ import SizeQuizModal from "./SizeQuizModal";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/analytics";
 import InventoryBadge from "./InventoryBadge";
+import { useFirebaseInventory } from "@/src/hooks/useFirebaseInventory";
 
 interface AddToCartSectionProps {
   product: Product;
 }
 
 export default function AddToCartSection({ product }: AddToCartSectionProps) {
+  const { stock: liveStock, isLoading: isStockLoading } = useFirebaseInventory(product.id, product.stock);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(product.colors && product.colors.length > 0 ? product.colors[0].name : null);
   const [isAdded, setIsAdded] = useState(false);
@@ -133,12 +135,12 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
         />
 
         <div className="flex flex-wrap gap-3">
-          {["P", "M", "G", "GG", "XG"].map((size) => {
+          {[Size.P, Size.M, Size.G, Size.GG, Size.XG].map((size) => {
             let hasStock = false;
 
-            if (product.stock) {
+            if (liveStock) {
               const comboKey = selectedColor ? `${selectedColor}-${size}` : size;
-              const stockQuantity = product.stock[comboKey] || 0;
+              const stockQuantity = liveStock[comboKey] || 0;
               hasStock = stockQuantity > 0;
             } else {
               hasStock = product.sizes.includes(size);
@@ -177,7 +179,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
       </div>
 
       <InventoryBadge 
-        stock={product.stock} 
+        stock={liveStock} 
         selectedSize={selectedSize} 
         selectedColor={selectedColor} 
       />

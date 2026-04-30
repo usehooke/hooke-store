@@ -1,7 +1,7 @@
 'use client';
 
 import { useCartStore } from "@/store/cart-store";
-import { Product } from "@/types";
+import { Product, Size } from "@/types";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Check } from "lucide-react";
@@ -28,7 +28,7 @@ export default function SmartSuggestions() {
  setAddingId(product.id);
  
  // Adição rápida com tamanho padrão (M) ou o primeiro disponível
- const size = product.sizes.includes("M") ? "M" : product.sizes[0];
+ const size = product.sizes.includes(Size.M) ? Size.M : product.sizes[0];
  const color = product.colors && product.colors.length > 0 ? product.colors[0].name : undefined;
  
  addItem(product, size, color);

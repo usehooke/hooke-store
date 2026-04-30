@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Department, Size } from "@/types/enums";
 
 /**
  * HOOKE ELITE SCHEMAS
@@ -17,12 +18,12 @@ export const ProductSchema = z.object({
   imageUrl: z.string().url().or(z.string().startsWith('/')),
   secondaryImageUrl: z.string().url().or(z.string().startsWith('/')).optional(),
   images: z.array(z.string()).optional(),
-  sizes: z.array(z.string()).min(1),
+  sizes: z.array(z.nativeEnum(Size)).min(1),
   colors: z.array(z.object({
     name: z.string(),
     imageUrl: z.string()
   })).optional(),
-  department: z.enum(["masculino", "feminino", "unissex"]),
+  department: z.nativeEnum(Department),
   category: ProductCategorySchema,
   slug: z.string().optional(),
   seo: z.object({

@@ -22,10 +22,17 @@ import {
     Pause, 
     Play,
     Bell,
-    ArrowRight
+    ArrowRight,
+    ShoppingCart,
+    Tag,
+    Store,
+    Search,
+    LineChart,
+    Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NotificationService } from '@/src/services/NotificationService';
+import Link from 'next/link';
 
 /**
  * HOOKE ADMIN: COMMAND CENTER V13.0 (SHARP-SOFT BRUTALISM)
@@ -40,7 +47,7 @@ interface MetricCardProps {
 }
 
 const MetricCard = ({ title, value, icon: Icon, description }: MetricCardProps) => (
-    <div className="p-8 border border-black/10 bg-white shadow-alabastro transition-all duration-500 hover:border-black">
+    <div className="p-8 border border-black/10 bg-white shadow-sharp transition-all duration-300 hover:-translate-y-1 hover:border-black">
         <div className="flex justify-between items-start mb-6">
             <div className="p-3 border border-black/5 bg-gray-50">
                 <Icon size={18} className="text-black" />
@@ -67,8 +74,8 @@ const QuickAction = ({ label, icon: Icon, onClick, active = false, danger = fals
         className={`flex items-center gap-4 px-6 py-4 border transition-all active:scale-95 ${
             active 
             ? 'bg-black text-white border-black' 
-            : 'bg-white text-black border-black/10 hover:border-black'
-        } ${danger && !active ? 'hover:bg-red-50 hover:text-red-600 hover:border-red-600' : ''}`}
+            : 'bg-white text-black border-black/10 hover:border-black hover:bg-black hover:text-white'
+        } ${danger && !active ? 'hover:bg-red-600 hover:text-white hover:border-red-600' : ''}`}
     >
         <Icon size={14} strokeWidth={2.5} />
         <span className="text-[9px] font-black uppercase tracking-[0.3em]">{label}</span>
@@ -128,9 +135,19 @@ export default function AdminDashboard() {
     useEffect(() => {
         if (!isAuthorized || !db) return;
 
-        const invRef = doc(db, `artifacts/${appId}/public/data/inventory`, 'lote-001');
-        const unsubInv = onSnapshot(invRef, (snap) => {
-            if (snap.exists()) setInventory(snap.data() as any);
+        const productsRef = collection(db, 'produtos');
+        const unsubInv = onSnapshot(productsRef, (snap) => {
+            let totalAvailable = 0;
+            snap.forEach(doc => {
+                const data = doc.data();
+                if (data.stock) {
+                   const sum = Object.values(data.stock).reduce((a: any, b: any) => a + b, 0) as number;
+                   totalAvailable += sum;
+                } else if (data.totalStock) {
+                   totalAvailable += data.totalStock;
+                }
+            });
+            setInventory({ count: totalAvailable, status: 'ativo' });
         });
 
         const usersRef = collection(db, `artifacts/${appId}/public/data/active_sessions`);
@@ -219,23 +236,43 @@ export default function AdminDashboard() {
                 </div>
             </header>
 
-            <div className="flex gap-1 p-1 border border-black/10 bg-gray-50 w-fit">
-                {['operacoes', 'vault', 'vautier'].map(tab => (
+            <div className="flex gap-1 p-1 border border-black/10 bg-gray-50 w-fit overflow-x-auto">
+                {['operacoes', 'seo', 'vault', 'vautier'].map(tab => (
                     <button 
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-8 py-3 text-[9px] font-black uppercase tracking-widest transition-all ${
-                            activeTab === tab ? 'bg-black text-white' : 'text-zinc-500 hover:text-black'
+                        className={`px-8 py-3 text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                            activeTab === tab ? 'bg-black text-white' : 'text-zinc-500 hover:text-black hover:bg-black/5'
                         }`}
                     >
-                        {tab === 'operacoes' ? 'Operações' : tab === 'vault' ? 'Vault' : 'Leads 142'}
+                        {tab === 'operacoes' ? 'Operações' : tab === 'seo' ? 'Guardião SEO' : tab === 'vault' ? 'Vault' : 'Leads 142'}
                     </button>
                 ))}
             </div>
 
             {activeTab === 'operacoes' && (
-                <div className="space-y-16">
-                    <section className="flex flex-col items-center justify-center py-10">
+                <div className="space-y-12">
+                    {/* COMMAND GRID (V14.0) */}
+                    <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <Link href="/admin/produtos" className="group p-8 bg-white border border-black/10 hover:border-black hover:bg-black transition-all duration-300 flex flex-col items-center justify-center gap-4 hover:-translate-y-1">
+                            <ShoppingCart size={28} className="text-black group-hover:text-white transition-colors duration-300" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black group-hover:text-white transition-colors duration-300">Catálogo</span>
+                        </Link>
+                        <Link href="/admin/pdv" className="group p-8 bg-white border border-black/10 hover:border-black hover:bg-black transition-all duration-300 flex flex-col items-center justify-center gap-4 hover:-translate-y-1">
+                            <Store size={28} className="text-black group-hover:text-white transition-colors duration-300" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black group-hover:text-white transition-colors duration-300">PDV Hub</span>
+                        </Link>
+                        <Link href="/admin/pdv/etiquetas" className="group p-8 bg-white border border-black/10 hover:border-black hover:bg-black transition-all duration-300 flex flex-col items-center justify-center gap-4 hover:-translate-y-1">
+                            <Tag size={28} className="text-black group-hover:text-white transition-colors duration-300" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black group-hover:text-white transition-colors duration-300">Etiquetas</span>
+                        </Link>
+                        <Link href="/admin/lancamentos" className="group p-8 bg-white border border-black/10 hover:border-black hover:bg-black transition-all duration-300 flex flex-col items-center justify-center gap-4 hover:-translate-y-1">
+                            <Globe size={28} className="text-black group-hover:text-white transition-colors duration-300" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black group-hover:text-white transition-colors duration-300">Lançamentos</span>
+                        </Link>
+                    </section>
+
+                    <section className="flex flex-col items-center justify-center py-6">
                         <div className="p-16 border border-black bg-white text-center shadow-sharp">
                             <span className="text-[9px] font-black uppercase tracking-[0.5em] opacity-30 block mb-6">Revenue Pulse • V13.0</span>
                             <h2 className="text-7xl font-bold tracking-tighter italic">
@@ -248,9 +285,9 @@ export default function AdminDashboard() {
                     <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <MetricCard 
                             title="Saúde do Lote" 
-                            value={`${inventory.count || 22}/24`} 
+                            value={`${inventory.count}`} 
                             icon={Package} 
-                            description="Unidades físicas em estoque atelier." 
+                            description="Unidades totais sincronizadas (Firebase)." 
                         />
                         <MetricCard 
                             title="Sessões Ativas" 
@@ -318,6 +355,28 @@ export default function AdminDashboard() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'seo' && (
+                <div className="p-12 border border-black bg-white space-y-12">
+                    <div className="space-y-4 border-b border-black pb-8">
+                        <h2 className="text-4xl font-bold tracking-tighter italic text-black uppercase">Guardião SEO <span className="font-light opacity-20">V14.0</span></h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.6em] text-zinc-400">Health Score & Monitoramento</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="p-8 border border-black/10 bg-gray-50 flex flex-col justify-center items-center text-center shadow-sharp hover:-translate-y-1 transition-all">
+                            <span className="text-[9px] font-black uppercase tracking-[0.5em] opacity-30 block mb-4">Métrica de Conversão</span>
+                            <h3 className="text-6xl font-bold tracking-tighter text-green-600 mb-2">98<span className="text-3xl">%</span></h3>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-black">Índice Brutalista (Alt Text + Copy)</p>
+                        </div>
+                        <div className="p-8 border border-black/10 bg-black text-white flex flex-col justify-center items-center text-center shadow-sharp hover:-translate-y-1 transition-all">
+                            <span className="text-[9px] font-black uppercase tracking-[0.5em] opacity-30 block mb-4">Status de Indexação</span>
+                            <Search size={48} className="mb-4 text-green-400" />
+                            <p className="text-[10px] font-bold uppercase tracking-widest">Campanha Dia das Mães: Otimizada</p>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { Product } from "@/types";
+import { Product, Size, Department } from "@/types";
 import { PRODUTOS } from "@/data/catalogo";
 
 /**
@@ -17,7 +17,7 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     category: "Conjuntos",
     imageUrl: "/produtos/hk_elite_wafer_ow_v2.png",
     images: ["/produtos/hk_elite_wafer_ow_v2.png"],
-    sizes: ["P", "M", "G", "GG"],
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
     colors: [
       { name: "Off-White", imageUrl: "/produtos/hk_elite_wafer_ow_v2.png" }
     ],
@@ -25,7 +25,7 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     isActive: true,
     seoAltText: "Fernando vestindo Conjunto Wafer Off-White Hooke",
     stock: { "Off-White-P": 2, "Off-White-M": 5, "Off-White-G": 3, "Off-White-GG": 1 },
-    department: "masculino"
+    department: Department.MASCULINO
   },
   {
     id: "camiseta-heavy-black",
@@ -36,11 +36,11 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     category: "Camisetas",
     imageUrl: "/produtos/hk_elite_heavy_black_v2.png",
     images: ["/produtos/hk_elite_heavy_black_v2.png"],
-    sizes: ["P", "M", "G", "GG"],
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
     featured: true,
     isActive: true,
     seoAltText: "Fernando vestindo Camiseta Heavy Black Hooke",
-    department: "masculino"
+    department: Department.MASCULINO
   },
   {
     id: "retro-beetle-areia",
@@ -55,7 +55,7 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
       "/produtos/hk_prod_vi_fusca_areia_02.png",
       "/produtos/hk_prod_vi_fusca_areia_03.png"
     ],
-    sizes: ["P", "M", "G", "GG"],
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
     details: {
       fabric: "100% Heavy Cotton 280g",
       model: "Boxy Editorial",
@@ -65,7 +65,7 @@ const HOOKE_ELITE_SPECIALS: Product[] = [
     isNew: true,
     isActive: true,
     seoAltText: "Camiseta Hooke Retro Beetle Areia em algodão pesado",
-    department: "masculino"
+    department: Department.MASCULINO
   }
 ];
 

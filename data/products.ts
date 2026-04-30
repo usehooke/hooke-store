@@ -1,5 +1,5 @@
 // src/data/products.ts
-import { Product } from "@/types";
+import { Product, Department, Size } from "@/types";
 
 export const products: Product[] = [
   // --- 1. [DESTAQUE HERO] LANÇAMENTO: KIT 3 OVERSIZED ---
@@ -21,8 +21,8 @@ export const products: Product[] = [
       "/produtos/HK_PROD_OV_GREEN_01.avif",
       "/produtos/HK_PROD_OV_BLUE_01.avif"
     ],
-    sizes: ["P", "M", "G", "GG", "XG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG, Size.XG],
+    department: Department.MASCULINO,
     category: "Kits",
     details: { fabric: "Algodão Premium Encorpado", model: "Oversized Streetwear", wash: "Amaciada com Silicone" }
   },
@@ -41,8 +41,8 @@ export const products: Product[] = [
       "/produtos/HK_PROD_RE_MILITARY_01.jpg",
       "/produtos/HK_PROD_RE_MILITARY_02.jpg"
     ],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -63,8 +63,8 @@ export const products: Product[] = [
       "/produtos/HK_PROD_VI_FUSCA_BLACK_02.png",
       "/produtos/HK_PROD_VI_FUSCA_BLACK_03.png",
     ],
-    sizes: ["P", "M", "G", "GG", "XG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG, Size.XG],
+    department: Department.MASCULINO,
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Pré-Encolhida" }
   },
@@ -85,8 +85,8 @@ export const products: Product[] = [
       "/produtos/HK_PROD_OV_BLACK_03.avif",
       "/produtos/HK_PROD_OV_BLACK_01.avif"
     ],
-    sizes: ["P", "M", "G", "GG", "XG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG, Size.XG],
+    department: Department.MASCULINO,
     category: "Oversized",
     details: { fabric: "Algodão Premium", model: "Oversized", wash: "Amaciada" }
   },
@@ -101,8 +101,8 @@ export const products: Product[] = [
     description: "Tonalidade natural que traz sofisticação e leveza para o cotidiano.",
     imageUrl: "/produtos/HK_PROD_OV_OFFWHITE_01.avif",
     images: ["/produtos/HK_PROD_OV_OFFWHITE_01.avif"],
-    sizes: ["P", "M", "G", "GG", "XG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG, Size.XG],
+    department: Department.MASCULINO,
     category: "Oversized",
     details: { fabric: "Algodão Premium", model: "Oversized", wash: "Amaciada" }
   },
@@ -120,8 +120,8 @@ export const products: Product[] = [
       "/produtos/HK_PROD_RE_COFFEE_02.jpg",
       "/produtos/HK_PROD_RE_COFFEE_03.jpg"
     ],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -135,8 +135,8 @@ export const products: Product[] = [
     description: "Velocidade e história. Homenagem ao lendário V8. Cor vibrante com estampa desgastada.",
     imageUrl: "/produtos/HK_PROD_VI_MAVERICK_RED_01.jpg",
     images: ["/produtos/HK_PROD_VI_MAVERICK_RED_01.jpg"],
-    sizes: ["M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Vintage",
     details: { fabric: "Algodão Premium", model: "Regular", wash: "Amaciada" }
   },
@@ -150,8 +150,8 @@ export const products: Product[] = [
     description: "Um visual limpo e clássico. A cor off-white destaca a estampa do Beetle com suavidade.",
     imageUrl: "/produtos/HK_PROD_VI_FUSCA_OFFWHITE_01.jpg",
     images: ["/produtos/HK_PROD_VI_FUSCA_OFFWHITE_01.jpg", "/produtos/HK_PROD_VI_FUSCA_OFFWHITE_04.jpg"],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Regular Fit", wash: "Pré-Encolhida" }
   },
@@ -165,8 +165,8 @@ export const products: Product[] = [
     description: "Básica, mas nunca simples. Corte a fio na gola e mangas para um visual despojado.",
     imageUrl: "/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg",
     images: ["/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg"],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Lifestyle",
     details: { fabric: "Algodão BCI", model: "Oversized", wash: "Tingimento Ecológico" }
   },
@@ -180,8 +180,8 @@ export const products: Product[] = [
     description: "Elegância e atitude. O tom bordô traz sofisticação para o visual casual.",
     imageUrl: "/produtos/HK_PROD_VI_FUSCA_BORDO_01.jpg",
     images: ["/produtos/HK_PROD_VI_FUSCA_BORDO_01.jpg"],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim Comfort", wash: "Amaciada" }
   },
@@ -198,8 +198,8 @@ export const products: Product[] = [
       "/produtos/HK_PROD_RE_SAND_01.jpg",
       "/produtos/HK_PROD_RE_SAND_02.jpg"
     ],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Regatas",
     details: { fabric: "Malha Canelada", model: "Machão", wash: "Stone Washed" }
   },
@@ -213,8 +213,8 @@ export const products: Product[] = [
     description: "Para espíritos livres. A Kombi representa a viagem, não o destino.",
     imageUrl: "/produtos/HK_PROD_VI_KOMBI_OFFWHITE_01.jpg",
     images: ["/produtos/HK_PROD_VI_KOMBI_OFFWHITE_01.jpg"],
-    sizes: ["P", "M", "G", "GG"],
-    department: "masculino",
+    sizes: [Size.P, Size.M, Size.G, Size.GG],
+    department: Department.MASCULINO,
     category: "Vintage",
     details: { fabric: "Algodão Egípcio", model: "Slim", wash: "Pré-Encolhida" }
   }
