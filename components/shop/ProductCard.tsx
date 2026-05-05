@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useCartStore } from '@/store/cart-store';
 
 interface ProductCardProps {
   product: Product;
@@ -20,6 +21,13 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
   const [imgError2, setImgError2] = useState(false);
 
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
+
+  // Handler to add product to cart (used by quick add button)
+  const handleAddToCart = () => {
+    const size = (product as any).defaultSize || 'M';
+    useCartStore.getState().addItem(product, size);
+  };
+
 
   const prepareImage = (src: string) => {
     if (!src) return { src: '', deliveryType: 'upload' as const };
@@ -133,7 +141,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           
           {/* Quick Add Button (Visual only) */}
-          <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+          <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500" onClick={handleAddToCart}>
             <div className="w-full bg-white text-hooke-900 p-3 text-[10px] font-bold tracking-[0.2em] flex items-center justify-center gap-2 shadow-sm">
               <ShoppingBag size={12} />
               Adicionar ao carrinho
