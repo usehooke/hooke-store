@@ -54,7 +54,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="group"
     >
-      <Link href={`/produto/${product.slug}`} className="block w-full">
+      <Link href={`/produto/${product.slug || product.id}`} className="block w-full">
         {/* 1. IMAGEM CONTAINER */}
         <div className="relative aspect-[3/4] overflow-hidden bg-hooke-paper skeleton-shimmer mb-4">
           {!imgError ? (

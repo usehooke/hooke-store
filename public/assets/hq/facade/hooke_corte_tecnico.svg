@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 800" width="1600" height="800">
+  <defs>
+    <style>
+      .text-logo {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 400px;
+        font-weight: bold;
+        letter-spacing: -10px;
+        fill: #000000;
+      }
+      .dimension-line {
+        stroke: #FF0000;
+        stroke-width: 4;
+      }
+      .dimension-text {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 32px;
+        fill: #FF0000;
+      }
+      .note {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 24px;
+        fill: #333333;
+      }
+    </style>
+  </defs>
+
+  <!-- Fundo branco para visualização -->
+  <rect width="100" height="100" fill="#FFFFFF" width="1600" height="800"/>
+
+  <!-- Logo text (lowercase) -->
+  <text x="200" y="500" class="text-logo">hooke</text>
+
+  <!-- Linha de Dimensão: Altura 40cm -->
+  <!-- Linha vertical -->
+  <line x1="150" y1="200" x2="150" y2="500" class="dimension-line" />
+  <!-- Marcações horizontais (top, bottom) -->
+  <line x1="130" y1="200" x2="170" y2="200" class="dimension-line" />
+  <line x1="130" y1="500" x2="170" y2="500" class="dimension-line" />
+  
+  <!-- Texto da Dimensão -->
+  <text x="40" y="360" class="dimension-text">40 cm</text>
+  <text x="40" y="400" class="dimension-text">(H)</text>
+
+  <!-- Notas Técnicas -->
+  <g transform="translate(200, 650)">
+    <rect x="-20" y="-40" width="800" height="120" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="2"/>
+    <text x="0" y="0" class="note" font-weight="bold">ARQUIVO DE CORTE TÉCNICO - FACHADA HOOKE ELITE</text>
+    <text x="0" y="30" class="note">PRODUÇÃO: Letra Caixa</text>
+    <text x="0" y="60" class="note">ACABAMENTO: Preto Fosco Absoluto (Matte Black)</text>
+    <text x="0" y="90" class="note">FIXAÇÃO: Pinos de afastamento de 3cm (Invisíveis)</text>
+  </g>
+</svg>

@@ -29,14 +29,21 @@ export async function POST(req: NextRequest) {
     // Criação da preferência no Mercado Pago
     const response = await preference.create({
       body: {
-        items: items.map((item) => ({
-          id: item.id,
-          title: `${item.name} (${item.selectedSize}) - Hooke Elite`,
-          unit_price: Number(item.price),
-          quantity: Number(item.quantity),
-          currency_id: 'BRL',
-          picture_url: item.imageUrl,
-        })),
+        items: items.map((item) => {
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
+          const absoluteImageUrl = item.imageUrl.startsWith('http')
+            ? item.imageUrl
+            : `${appUrl}${item.imageUrl.startsWith('/') ? '' : '/'}${item.imageUrl}`;
+          
+          return {
+            id: item.id,
+            title: `${item.name} (${item.selectedSize}) - Hooke Elite`,
+            unit_price: Number(item.price),
+            quantity: Number(item.quantity),
+            currency_id: 'BRL',
+            picture_url: absoluteImageUrl,
+          };
+        }),
         payer: {
           name: customerName || 'Cliente Hooke',
         },
