@@ -1,5 +1,5 @@
 import React from 'react';
-import { vi } from 'vitest';
+import { vi, test, expect } from 'vitest';
 vi.mock('next-cloudinary', () => ({
   CldImage: (props: any) => <img src={props.src} alt={props.alt} data-testid="cld-image" />,
 }));

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ProductCard from '@/components/shop/ProductCard';
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, test, expect } from 'vitest';
 
 // Mock next-cloudinary as before
 vi.mock('next-cloudinary', () => ({
