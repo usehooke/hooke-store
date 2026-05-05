@@ -14,7 +14,8 @@ global.IntersectionObserver = class {
   observe() {}
   unobserve() {}
   disconnect() {}
-};
+  takeRecords() { return []; }
+} as any;
 
 // Mock next/link for Vitest – returns a simple <a> element
 vi.mock('next/link', () => ({
