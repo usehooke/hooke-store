@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* HOOKE ELITE HSL SYSTEM */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    
+    --hooke-900: 0 0% 0%;
+    --hooke-800: 0 0% 15%;
+    --hooke-700: 0 0% 25%;
+    --hooke-400: 0 0% 64%;
+    --hooke-200: 0 0% 90%;
+    --hooke-100: 0 0% 95%;
+    --hooke-paper: 0 0% 98%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    
+    --radius: 0px; /* Estilo Hooke Elite: Totalmente quadrado */
+
+    /* HOOKE COMMAND CENTER (HCC) - DARK ELITE TOKENS */
+    --admin-bg: #050505;
+    --admin-card: #0D0D0D;
+    --admin-border: rgba(255, 255, 255, 0.05);
+    --admin-accent: #FAFAFA;
+    --admin-success: #10B981;
+    --admin-alert: #F59E0B;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --hooke-900: 0 0% 98%;
+    --hooke-paper: 0 0% 10%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    border-radius: 0 !important; /* Sharp corners everywhere */
+  }
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-black selection:text-white;
+  }
+  
+  /* NO ALL CAPS RULE (GLOBAL) */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight font-light;
+    text-transform: none !important;
+  }
+
+  button, input, select, textarea {
+    @apply tracking-wide rounded-none font-light;
+    text-transform: none !important;
+  }
+}
+
+@layer components {
+  /* HOOKE ELITE GLASSMORPHISM - V13.0 SHARP EDITION */
+  .hooke-glass {
+    @apply backdrop-blur-[12px] bg-white/70 border-b border-black/10 shadow-sharp transition-all duration-300;
+    border-radius: 0 !important;
+  }
+  
+  .glass-card {
+    @apply backdrop-blur-[8px] bg-white/40 border border-black/5 shadow-alabastro;
+    border-radius: 0 !important;
+  }
+
+  /* SHARP-SOFT BRUTALISM UTILITIES */
+  .shadow-alabastro {
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .shadow-sharp {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  }
+
+  /* SKELETON LOADING */
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+  .skeleton-shimmer {
+    @apply relative overflow-hidden bg-gray-100;
+    border-radius: 0 !important;
+  }
+  .skeleton-shimmer::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent;
+  }
+
+  /* HOOKE ELITE: INK LIQUID REVEAL - V13.0 */
+  .btn-hooke-elite {
+    @apply relative overflow-hidden bg-black text-white hover:text-black transition-colors duration-500 z-10 rounded-none border border-black;
+  }
+  
+  .btn-hooke-elite::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0 bg-white transition-all duration-500 ease-in-out -z-10;
+  }
+  
+  .btn-hooke-elite:hover::after {
+    @apply h-full;
+  }
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #000;
+}

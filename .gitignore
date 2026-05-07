@@ -41,3 +41,14 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+.env*.local
+
+# AI References (Internal)
+.ai-references/
+
+# PWA
+/public/sw.js
+/public/sw.js.map
+/public/workbox-*.js
+/public/worker-*.js
+/public/fallback-*.js
