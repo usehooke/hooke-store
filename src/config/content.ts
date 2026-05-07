@@ -16,3 +16,21 @@ export const FAQ_GERAL = [
   { q: "Estabilidade dimensional (encolhimento)?", a: "Zero. O tecido passa por estabilização prévia. A forma da peça é preservada lavagem após lavagem." },
   { q: "Cálculo de manuseio e tamanho?", a: "Padrão brasileiro de precisão. Recomendamos sua numeração habitual para o caimento planejado." }
 ];
+
+import { Truck, RefreshCw, ShieldCheck } from "lucide-react";
+
+export const BENEFICIOS_MARQUEE = [
+  {
+    icon: Truck,
+    text: "Enviamos para todo o Brasil",
+  },
+  {
+    icon: RefreshCw,
+    text: "Primeira troca grátis",
+  },
+  {
+    icon: ShieldCheck,
+    text: "Compra 100% segura",
+  },
+];
+

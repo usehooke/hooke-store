@@ -1,4 +1,4 @@
-import { Product, Department, Size } from "@/types";
+import { Product } from "@/types"; import { Department, Size } from "@/types";
 import { IMAGE_BASE_URL } from "./site";
 
 export const PRODUTOS: Product[] = [
