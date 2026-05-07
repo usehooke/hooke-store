@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  generateBuildId: async () => `hooke-v13-recovery-${Date.now()}`,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
   // 🚨 O PULO DO GATO:
-  // Isso força o Next.js a processar o pacote do Typebot corretamente na Vercel.
-  transpilePackages: ["@typebot.io/react"],
+  // Isso força o Next.js a processar os pacotes corretamente na Vercel.
+  transpilePackages: ["@typebot.io/react", "react-quill"],
 
   // Otimização de Imagens
   images: {
