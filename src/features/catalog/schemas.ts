@@ -21,6 +21,7 @@ export const productSchema = z.object({
     model: z.string(),
     wash: z.string(),
   }).optional(),
+  stock: z.record(z.string(), z.number()).optional(),
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;
