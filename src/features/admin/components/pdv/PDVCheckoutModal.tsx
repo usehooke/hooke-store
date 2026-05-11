@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, QrCode, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
+import { generatePixPayment } from '@/actions/payments';
 import { usePDVStore, selectPDVTotal } from '@/store/pdv-store';
 
 interface PDVCheckoutModalProps {
@@ -11,8 +12,9 @@ interface PDVCheckoutModalProps {
 }
 
 export function PDVCheckoutModal({ isOpen, onClose }: PDVCheckoutModalProps) {
-  const [step, setStep] = useState<'decision' | 'processing' | 'success'>('decision');
+  const [step, setStep] = useState<'decision' | 'processing' | 'pix_pending' | 'success'>('decision');
   const [paymentMethod, setPaymentMethod] = useState<'maquininha' | 'pix' | null>(null);
+  const [pixData, setPixData] = useState<{ image: string, code: string } | null>(null);
   
   const total = usePDVStore(selectPDVTotal);
   const items = usePDVStore(state => state.items);
@@ -23,32 +25,40 @@ export function PDVCheckoutModal({ isOpen, onClose }: PDVCheckoutModalProps) {
     setPaymentMethod(method);
     setStep('processing');
 
-    // Simulação de processamento ou integração real
-    if (method === 'maquininha') {
-        // Fluxo Maquininha: Baixa direta no estoque (via Queue Offline que o Hook processa)
-        addToQueue({
-            items,
-            customerName: 'Cliente Balcão',
-            total,
-            paymentMethod: 'cartao',
-            timestamp: Date.now(),
-            isWholesale: items.length >= 5
-        });
-        
-        setTimeout(() => setStep('success'), 1500);
-    } else {
-        // Fluxo PIX: Aqui integraria com Mercado Pago
-        // Por enquanto, simulamos o registro
-        addToQueue({
-            items,
-            customerName: 'Cliente Balcão (PIX)',
-            total,
-            paymentMethod: 'pix',
-            timestamp: Date.now(),
-            isWholesale: items.length >= 5
-        });
-        setTimeout(() => setStep('success'), 2000);
+    try {
+        if (method === 'maquininha') {
+            // Fluxo Maquininha: Baixa direta
+            addToQueue({
+                items,
+                customerName: 'Cliente Balcão',
+                total,
+                paymentMethod: 'cartao',
+                timestamp: Date.now(),
+                isWholesale: items.length >= 5
+            });
+            setTimeout(() => setStep('success'), 1500);
+        } else {
+            // Fluxo PIX: Integração Real
+            const data = await generatePixPayment(total, 'Venda Balcão Hooke');
+            setPixData({ image: data.qr_code_base64, code: data.qr_code });
+            setStep('pix_pending');
+        }
+    } catch (error: any) {
+        alert("Erro no Pagamento: " + error.message);
+        setStep('decision');
     }
+  };
+
+  const handleConfirmPix = () => {
+    addToQueue({
+        items,
+        customerName: 'Cliente Balcão (PIX)',
+        total,
+        paymentMethod: 'pix',
+        timestamp: Date.now(),
+        isWholesale: items.length >= 5
+    });
+    setStep('success');
   };
 
   const handleFinalize = () => {
@@ -106,6 +116,48 @@ export function PDVCheckoutModal({ isOpen, onClose }: PDVCheckoutModalProps) {
                <div className="text-center">
                  <h2 className="text-2xl font-black uppercase tracking-widest mb-2">Processando {paymentMethod === 'pix' ? 'PIX' : 'Venda'}</h2>
                  <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.4em]">Iniciando Protocolo de Baixa no Estoque...</p>
+               </div>
+            </div>
+          )}
+
+          {step === 'pix_pending' && pixData && (
+            <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6 bg-white overflow-y-auto">
+               <div className="text-center mb-4">
+                 <h2 className="text-4xl font-black uppercase tracking-tighter">Aguardando PIX</h2>
+                 <p className="text-xl font-bold text-emerald-600">Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}</p>
+               </div>
+
+               <div className="border-[6px] border-black p-4 bg-white shadow-[15px_15px_0px_0px_rgba(0,0,0,0.05)]">
+                 <img 
+                    src={`data:image/png;base64,${pixData.image}`} 
+                    alt="QR Code PIX" 
+                    className="w-64 h-64 md:w-80 md:h-80 object-contain"
+                 />
+               </div>
+
+               <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(pixData.code);
+                  alert("Código PIX copiado!");
+                }}
+                className="px-6 py-3 bg-zinc-100 border-2 border-black font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all"
+               >
+                 Copiar Código PIX (Copia e Cola)
+               </button>
+
+               <div className="w-full max-w-md flex flex-col gap-3 mt-4">
+                 <button 
+                  onClick={handleConfirmPix}
+                  className="w-full bg-black text-white py-8 font-black uppercase tracking-[0.2em] text-xl active:bg-zinc-900 shadow-[0_4px_0px_0px_rgba(0,0,0,0.2)]"
+                 >
+                   Confirmar Recebimento
+                 </button>
+                 <button 
+                  onClick={() => setStep('decision')}
+                  className="w-full py-4 text-zinc-400 font-black uppercase tracking-widest text-[10px] hover:text-black"
+                 >
+                   Voltar / Mudar Forma
+                 </button>
                </div>
             </div>
           )}
