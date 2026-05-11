@@ -29,6 +29,9 @@ export default function PDVPage() {
     },
   });
 
+  // 4 Mais Vendidos (Simulado ou Real)
+  const topSellers = Array.isArray(products) ? products.slice(0, 4) : [];
+
   // Estado para Seleção de Tamanho (Fat Finger)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
