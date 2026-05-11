@@ -2,10 +2,49 @@ import { getProductBySlug } from "@/lib/productService";
 import { notFound } from "next/navigation";
 import SsenseProductView from "@/components/shop/SsenseProductView";
 import React, { Suspense } from "react";
+import { Metadata } from "next";
 
 // Interface para os parâmetros da página (Promise no Next 15)
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
+}
+
+/** 🚀 SEO Dinâmico: Geração de Metadados para Social Share */
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) return { title: 'Produto não encontrado' };
+
+  // Prioriza a imagem principal, mas garante fallback estético
+  const previewImage = product.imageUrl || '/banner-home.jpg';
+
+  return {
+    title: `${product.name} | Hooke Elite`,
+    description: product.description || "Equipamento premium projetado para a permanência absoluta.",
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      url: `https://www.usehooke.com.br/produto/${slug}`,
+      siteName: "Hooke",
+      images: [
+        {
+          url: previewImage,
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        },
+      ],
+      locale: "pt_BR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.description,
+      images: [previewImage],
+    },
+  };
 }
 
 /**

@@ -20,7 +20,7 @@ export async function analyzeProductImage(base64Image: string): Promise<AIProduc
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }, { apiVersion: "v1beta" });
 
     const prompt = `
       Você é o Guardião SEO e Diretor de Arte da Hooke, uma marca de moda masculina premium com estética Soft Brutalism e Luxury.

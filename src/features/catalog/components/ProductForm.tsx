@@ -41,6 +41,8 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       featured: false,
       isNew: true,
       department: 'Masculino' as any,
+      id: '',
+      imageUrl: '/hero-preta.avif', // Fallback estético
     }
   });
 
@@ -64,6 +66,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       setValue('category', data.category, { shouldDirty: true });
       setValue('price', data.price, { shouldDirty: true });
       setValue('description', data.description, { shouldDirty: true });
+      setValue('imageUrl', data.imageUrl || '/hero-preta.avif', { shouldDirty: true });
       setValue('slug', data.name.toLowerCase().replace(/ /g, '-'), { shouldDirty: true });
       
       setValue('details', {
@@ -99,7 +102,15 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
     try {
       if (!db) throw new Error("Firebase não inicializado");
-      await addDoc(collection(db, 'produtos'), data);
+      
+      const finalData = {
+        ...data,
+        id: data.id || data.slug || `prod-${Date.now()}`,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+
+      await addDoc(collection(db, 'produtos'), finalData);
       toast.success("Equipamento incorporado ao arsenal com sucesso!");
       reset();
       setSnapshot(null);
@@ -136,6 +147,8 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       </AnimatePresence>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-12">
+        <input type="hidden" {...register('id')} />
+        <input type="hidden" {...register('imageUrl')} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* NOME */}
           <div className="space-y-2">

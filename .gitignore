@@ -52,3 +52,7 @@ next-env.d.ts
 /public/workbox-*.js
 /public/worker-*.js
 /public/fallback-*.js
+
+# Secrets & Scratch
+serviceAccountKey.json
+/scratch/
