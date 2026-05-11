@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { get, set } from 'idb-keyval';
-import { Product } from '@/config';
+import { Product } from '@/types';
 
 const RECENTLY_VIEWED_KEY = 'hooke_recently_viewed';
 const MAX_ITEMS = 10;

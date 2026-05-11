@@ -5,7 +5,7 @@ vi.mock('next-cloudinary', () => ({
 }));
 
 import { render, screen } from '@testing-library/react';
-import ProductCard from '@/components/shop/ProductCard';
+import { ProductCard } from '@/features/catalog/ProductCard';
 import '@testing-library/jest-dom';
 
 test('ProductCard uses product.id when slug is missing', () => {

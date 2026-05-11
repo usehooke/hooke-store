@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { CldImage } from 'next-cloudinary';
-import { Product } from '@/config';
+import { Product } from '@/types';
 import { motion } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
@@ -86,7 +86,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
 
         {/* COLUNA 2: GALERIA VERTICAL (CENTER SCROLL) */}
         <div className="col-span-1 md:col-span-6 space-y-4 md:space-y-8">
-          {(product.images && product.images.length > 0 ? product.images : [product.imageUrl]).map((img, idx) => (
+          {(product.images && product.images.length > 0 ? product.images : [product.imageUrl]).map((img: string, idx: number) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, y: 30 }}
@@ -128,7 +128,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               <div className="space-y-4">
                 <p className="text-[11px] font-bold tracking-widest text-hooke-400">Selecione o tamanho</p>
                 <div className="flex flex-wrap gap-2">
-                  {(product.sizes || ['P', 'M', 'G', 'GG']).map(size => (
+                  {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
                     <button 
                       key={size}
                       onClick={() => setSelectedSize(size)}

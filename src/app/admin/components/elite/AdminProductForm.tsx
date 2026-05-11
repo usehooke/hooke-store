@@ -26,7 +26,7 @@ import {
   ModelSigla,
   PrintSigla
 } from "@/utils/sku-generator";
-import { Product } from "@/types"; import { ProductCategory, Department, Size } from "@/types";
+import { Product, ProductCategory, Department, Size } from "@/types";
 
 const AVAILABLE_SIZES_MASCO = [Size.P, Size.M, Size.G, Size.GG, Size.XG, Size.G1, Size.G2];
 const AVAILABLE_SIZES_FEMIN = [Size.PP, Size.P, Size.M, Size.G, Size.GG];

@@ -30,7 +30,7 @@ vi.mock('next-cloudinary', () => ({
 }));
 
 // Import component AFTER mocks are defined
-import ProductCard from '@/components/shop/ProductCard';
+import { ProductCard } from '@/features/catalog/ProductCard';
 
 const mockProduct = {
   id: 'test-id-456',

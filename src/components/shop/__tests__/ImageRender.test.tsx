@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ProductCard from '@/components/shop/ProductCard';
+import { ProductCard } from '@/features/catalog/ProductCard';
 import '@testing-library/jest-dom';
 import { vi, test, expect } from 'vitest';
 

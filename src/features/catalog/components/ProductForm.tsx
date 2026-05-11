@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useImperativeHandle, forwardRef, useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductSchema } from '../schemas';
 import { Input, Button } from '@/components/ui';
@@ -17,7 +17,11 @@ export interface ProductFormHandle {
   setValues: (data: any) => void;
 }
 
-const ProductForm = forwardRef<ProductFormHandle>((props: { onSubmit?: (data: ProductSchema) => Promise<void> }, ref) => {
+export interface ProductFormProps {
+  onSubmit?: (data: ProductSchema) => Promise<void>;
+}
+
+const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref) => {
   const { onSubmit: externalOnSubmit } = props;
   const [snapshot, setSnapshot] = useState<ProductSchema | null>(null);
   const [aiGlowFields, setAiGlowFields] = useState<Set<string>>(new Set());
@@ -30,7 +34,7 @@ const ProductForm = forwardRef<ProductFormHandle>((props: { onSubmit?: (data: Pr
     formState: { errors, isSubmitting, dirtyFields },
     reset
   } = useForm<ProductSchema>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchema) as any,
     defaultValues: {
       images: [],
       sizes: [],
@@ -86,9 +90,10 @@ const ProductForm = forwardRef<ProductFormHandle>((props: { onSubmit?: (data: Pr
     }
   };
 
-  const handleFormSubmit = async (data: ProductSchema) => {
+  const handleFormSubmit: SubmitHandler<any> = async (data) => {
+    const productData = data as ProductSchema;
     if (externalOnSubmit) {
-      await externalOnSubmit(data);
+      await (externalOnSubmit as any)(productData);
       return;
     }
 
