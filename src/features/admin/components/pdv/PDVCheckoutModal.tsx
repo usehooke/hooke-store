@@ -188,9 +188,9 @@ export function PDVCheckoutModal({ isOpen, onClose }: PDVCheckoutModalProps) {
                >
                  Próximo Cliente
                </button>
-            </motion.div>
+            </MotionDiv>
           )}
-        </motion.div>
+        </MotionDiv>
       )}
     </AnimatePresence>
   );

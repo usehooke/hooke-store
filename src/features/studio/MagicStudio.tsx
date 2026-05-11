@@ -24,6 +24,15 @@ import { MotionDiv, MotionForm, MotionSpan } from '@/components/admin/MotionComp
 export function MagicStudio() {
   const [step, setStep] = useState<'upload' | 'analyzing' | 'curating'>('upload');
   const [preview, setPreview] = useState<string | null>(null);
+  const [aiGlowFields, setAiGlowFields] = useState<Set<string>>(new Set());
+
+  // Limpa o glow após 4 segundos
+  React.useEffect(() => {
+    if (aiGlowFields.size > 0) {
+      const timer = setTimeout(() => setAiGlowFields(new Set()), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [aiGlowFields]);
 
   const form = useForm<ProductSchema>({
     resolver: zodResolver(productSchema) as any,
@@ -57,6 +66,7 @@ export function MagicStudio() {
         const analysis = await analyzeProductImage(base64);
         if (analysis) {
           const id = `hooke-${Date.now()}`;
+          setAiGlowFields(new Set(['name', 'price', 'category', 'description']));
           form.reset({
             id,
             name: analysis.title,
@@ -138,7 +148,7 @@ export function MagicStudio() {
                 <Sparkles size={64} className="text-emerald-500 animate-pulse" />
               </div>
             )}
-          </motion.div>
+          </MotionDiv>
         )}
 
         {step === 'analyzing' && (
@@ -158,7 +168,7 @@ export function MagicStudio() {
                 <span>Cromatismo...</span>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
 
         {step === 'curating' && (
@@ -233,7 +243,7 @@ export function MagicStudio() {
                  <span className="text-xl font-black uppercase tracking-[0.2em]">Publicar Catálogo</span>
                </button>
             </div>
-          </motion.form>
+          </MotionForm>
         )}
       </AnimatePresence>
     </div>

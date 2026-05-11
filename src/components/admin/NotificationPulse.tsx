@@ -33,7 +33,7 @@ export function NotificationPulse() {
           {/* Brilho Esmeralda/Dourado nas bordas */}
           <div className="absolute inset-0 border-[12px] border-emerald-500/20 shadow-[inset_0_0_100px_rgba(16,185,129,0.2)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(16,185,129,0.05)_100%)]" />
-        </motion.div>
+        </MotionDiv>
       )}
     </AnimatePresence>
   );

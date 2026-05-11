@@ -127,7 +127,7 @@ export default function PDVPage() {
             >
               Cancelar / Fechar
             </button>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
 

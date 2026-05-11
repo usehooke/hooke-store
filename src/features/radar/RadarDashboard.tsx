@@ -171,6 +171,6 @@ function MetricCard({ label, value, icon: Icon, highlight, urgent }: any) {
       {highlight && (
         <div className="absolute top-0 right-0 w-2 h-full bg-emerald-500" />
       )}
-    </motion.div>
+    </MotionDiv>
   );
 }
