@@ -18,6 +18,8 @@ export function RadarDashboard() {
   const [recentEvents, setRecentEvents] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!db) return;
+
     // 1. Telemetria de Pedidos de Hoje
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -56,8 +58,8 @@ export function RadarDashboard() {
       snapshot.docs.forEach(doc => {
         const product = doc.data();
         // Soma estoque de todos os tamanhos
-        const totalStock = product.stock ? Object.values(product.stock).reduce((a: any, b: any) => a + b, 0) : 0;
-        if (totalStock < 3) criticalCount++;
+        const totalStock = product.stock ? Object.values(product.stock).reduce((a: any, b: any) => a + (Number(b) || 0), 0) : 0;
+        if ((totalStock as number) < 3) criticalCount++;
       });
       setEstoqueCritico(criticalCount);
     });
