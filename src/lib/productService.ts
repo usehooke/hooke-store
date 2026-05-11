@@ -35,6 +35,7 @@ async function executeResilientCached<T>(
 
     const cachedOperation = unstable_cache(
         async () => {
+            try {
                 const result = await firestoreQuery();
                 return result || emptyFallback;
             } catch (error) {
