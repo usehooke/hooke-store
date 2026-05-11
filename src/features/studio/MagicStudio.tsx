@@ -25,7 +25,7 @@ export function MagicStudio() {
   const [preview, setPreview] = useState<string | null>(null);
 
   const form = useForm<ProductSchema>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchema) as any,
     defaultValues: {
       id: '',
       name: '',
