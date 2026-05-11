@@ -16,7 +16,13 @@ export function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await userCredential.user.getIdToken();
+      
+      // Hooke Elite: Sincronização de Sessão com Middleware
+      // Definimos um cookie que o Middleware consegue ler no Edge.
+      document.cookie = `hooke-admin-token=${idToken}; path=/; max-age=86400; SameSite=Lax`;
+      
       router.push(redirectTo);
     } catch (err: any) {
       setError(err.message.replace("Firebase: ", ""));
@@ -33,7 +39,10 @@ export function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      await signInWithPopup(auth, facebookProvider);
+      const userCredential = await signInWithPopup(auth, facebookProvider);
+      const idToken = await userCredential.user.getIdToken();
+      document.cookie = `hooke-admin-token=${idToken}; path=/; max-age=86400; SameSite=Lax`;
+      
       router.push(redirectTo);
     } catch (err: any) {
       setError(err.message.replace("Firebase: ", ""));
@@ -45,6 +54,8 @@ export function useAuth() {
   const logout = async (redirectTo = "/login") => {
     if (!auth) return;
     await signOut(auth);
+    // Remove o cookie de sessão
+    document.cookie = "hooke-admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     router.push(redirectTo);
   };
 
