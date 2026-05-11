@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, MotionSpan } from '@/components/admin/MotionComponents';
 import { db } from '@/lib/firebase';
 import { collection, query, orderBy, limit, onSnapshot, where, Timestamp } from 'firebase/firestore';
 import { TrendingUp, ShoppingBag, AlertTriangle, Activity, Package } from 'lucide-react';
@@ -149,7 +150,7 @@ export function RadarDashboard() {
 
 function MetricCard({ label, value, icon: Icon, highlight, urgent }: any) {
   return (
-    <motion.div 
+    <MotionDiv 
       whileHover={{ y: -5 }}
       className={`relative p-8 border-2 border-black bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4 overflow-hidden ${
         urgent && 'border-red-500'
@@ -159,14 +160,14 @@ function MetricCard({ label, value, icon: Icon, highlight, urgent }: any) {
         <span className="text-[10px] font-black uppercase tracking-[0.3em]">{label}</span>
         <Icon size={16} />
       </div>
-      <motion.span 
+      <MotionSpan 
         key={value}
         initial={{ scale: 0.95, opacity: 0.5 }}
         animate={{ scale: 1, opacity: 1 }}
         className={`text-5xl font-black uppercase tracking-tighter italic ${highlight ? 'text-black' : urgent ? 'text-red-500' : 'text-zinc-800'}`}
       >
         {value}
-      </motion.span>
+      </MotionSpan>
       {highlight && (
         <div className="absolute top-0 right-0 w-2 h-full bg-emerald-500" />
       )}

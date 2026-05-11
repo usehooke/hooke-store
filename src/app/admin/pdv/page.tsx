@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { MotionDiv } from "@/components/admin/MotionComponents";
 import { Product } from "@/types";
 import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
 import { Scan, Plus, Minus, Trash2, ShoppingBag, Loader2, ChevronRight, CreditCard } from "lucide-react";
@@ -97,7 +98,7 @@ export default function PDVPage() {
       {/* MODAL DE SELEÇÃO DE TAMANHO (MASSIVO) */}
       <AnimatePresence>
         {selectedProduct && (
-          <motion.div 
+          <MotionDiv 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

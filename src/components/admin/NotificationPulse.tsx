@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv } from './MotionComponents';
 
 /**
  * HOOKE HQ: NOTIFICATION PULSE (SUCCESS GLOW)
@@ -23,7 +24,7 @@ export function NotificationPulse() {
   return (
     <AnimatePresence>
       {active && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

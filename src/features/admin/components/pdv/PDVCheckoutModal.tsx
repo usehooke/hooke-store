@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, QrCode, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
+import { MotionDiv } from '@/components/admin/MotionComponents';
 import { generatePixPayment } from '@/actions/payments';
 import { usePDVStore, selectPDVTotal } from '@/store/pdv-store';
 
@@ -71,7 +72,7 @@ export function PDVCheckoutModal({ isOpen, onClose }: PDVCheckoutModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div 
+        <MotionDiv 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -163,7 +164,7 @@ export function PDVCheckoutModal({ isOpen, onClose }: PDVCheckoutModalProps) {
           )}
 
           {step === 'success' && (
-            <motion.div 
+            <MotionDiv 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="flex-1 flex flex-col items-center justify-center gap-10 bg-emerald-500 text-white p-10"

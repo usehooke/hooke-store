@@ -14,6 +14,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
 
 import { Department, Size } from '@/types';
+import { MotionDiv, MotionForm, MotionSpan } from '@/components/admin/MotionComponents';
 
 /**
  * HOOKE HQ: MAGIC STUDIO WORKSPACE
@@ -114,7 +115,7 @@ export function MagicStudio() {
 
       <AnimatePresence mode="wait">
         {step === 'upload' && (
-          <motion.div 
+          <MotionDiv 
             key="upload"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -141,7 +142,7 @@ export function MagicStudio() {
         )}
 
         {step === 'analyzing' && (
-          <motion.div 
+          <MotionDiv 
             key="analyzing"
             className="h-[500px] flex flex-col items-center justify-center gap-8 bg-black text-white"
           >
@@ -161,7 +162,7 @@ export function MagicStudio() {
         )}
 
         {step === 'curating' && (
-          <motion.form 
+          <MotionForm 
             key="curating"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -181,7 +182,9 @@ export function MagicStudio() {
                <div className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Nome do Produto</label>
-                    <Input {...form.register('name')} variant="brutalist" className="text-xl" />
+                    <MotionDiv animate={aiGlowFields.has('name') ? { scale: [1, 1.02, 1] } : {}}>
+                      <Input {...form.register('name')} variant="brutalist" className="text-xl" />
+                    </MotionDiv>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
