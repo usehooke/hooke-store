@@ -27,8 +27,20 @@ export default function PDVPage() {
     },
   });
 
-  // 4 Mais Vendidos (Simulado ou Real)
-  const topSellers = Array.isArray(products) ? products.slice(0, 4) : [];
+  // Estado para Seleção de Tamanho (Fat Finger)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleAddWithSize = (size: string) => {
+    if (selectedProduct) {
+      addItem(selectedProduct, size);
+      setSelectedProduct(null);
+      toast.success(`${selectedProduct.name} (${size}) adicionado.`);
+    }
+  };
 
   if (isLoading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
@@ -55,7 +67,7 @@ export default function PDVPage() {
           {topSellers.map((product) => (
             <button 
               key={product.id}
-              onClick={() => addItem(product, product.sizes[0] || 'G')}
+              onClick={() => handleProductClick(product)}
               className="group relative aspect-square border-2 border-black overflow-hidden flex flex-col active:scale-95 transition-all"
             >
               {product.imageUrl && (
@@ -76,6 +88,42 @@ export default function PDVPage() {
           ))}
         </div>
       </section>
+
+      {/* MODAL DE SELEÇÃO DE TAMANHO (MASSIVO) */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-6"
+          >
+            <div className="w-full max-w-xl text-center mb-10">
+              <h2 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4">Escolha o Tamanho</h2>
+              <h3 className="text-white text-4xl font-black uppercase tracking-tighter italic">{selectedProduct.name}</h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 w-full max-w-xl">
+              {selectedProduct.sizes.map((size) => (
+                <button 
+                  key={size}
+                  onClick={() => handleAddWithSize(size)}
+                  className="bg-white text-black py-10 text-4xl font-black border-4 border-transparent hover:border-emerald-500 active:scale-95 transition-all"
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            <button 
+              onClick={() => setSelectedProduct(null)}
+              className="mt-12 text-zinc-500 font-black uppercase tracking-widest text-[10px] underline underline-offset-8"
+            >
+              Cancelar / Fechar
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* LADO DIREITO: CARRINHO (40% da tela) */}
       <aside className="flex-1 lg:flex-[0.4] bg-zinc-50 flex flex-col relative h-full">

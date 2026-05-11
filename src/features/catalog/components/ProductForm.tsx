@@ -62,12 +62,12 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       const newGlow = new Set(['name', 'category', 'price', 'description']);
       setAiGlowFields(newGlow);
 
-      setValue('name', data.name, { shouldDirty: true });
+      setValue('name', data.title, { shouldDirty: true });
       setValue('category', data.category, { shouldDirty: true });
-      setValue('price', data.price, { shouldDirty: true });
-      setValue('description', data.description, { shouldDirty: true });
+      setValue('price', data.suggestedPrice, { shouldDirty: true });
+      setValue('description', data.luxuryDescription, { shouldDirty: true });
       setValue('imageUrl', data.imageUrl || '/hero-preta.avif', { shouldDirty: true });
-      setValue('slug', data.name.toLowerCase().replace(/ /g, '-'), { shouldDirty: true });
+      setValue('slug', data.title.toLowerCase().replace(/ /g, '-'), { shouldDirty: true });
       
       setValue('details', {
         fabric: data.fabric,
