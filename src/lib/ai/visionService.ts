@@ -11,6 +11,7 @@ export interface AIProductAnalysis {
   fabric: string;
   model: string;
   seoKeywords: string[];
+  imageUrl?: string;
 }
 
 export async function analyzeProductImage(base64Image: string): Promise<AIProductAnalysis | null> {
