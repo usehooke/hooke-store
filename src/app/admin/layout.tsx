@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/features/admin';
 import { Toaster } from 'sonner';
+import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
+import { GlobalCommand } from '@/components/admin/GlobalCommand';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -15,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname();
 
     // Rotas que exigem foco total (Zen Mode)
-    const isZenMode = pathname?.includes('/admin/pdv') || pathname?.includes('/admin/produtos');
+    const isZenMode = pathname?.includes('/admin/pdv') || pathname?.includes('/admin/produtos/novo');
 
     useEffect(() => {
         if (!auth) {
@@ -48,29 +50,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!user) return null;
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA] text-zinc-900 font-sans selection:bg-black selection:text-white">
+        <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-black selection:text-white">
             <Toaster position="bottom-right" theme="light" richColors />
+            <GlobalCommand />
             
-            {/* HCC Atelier 3.0 Architecture */}
+            {/* Hooke HQ: Paradigma Linear (Mobile & Tablet First) */}
             <div className="flex h-screen overflow-hidden">
                 
-                {/* Sidebar Adaptativo - Oculto no Zen Mode */}
-                {!isZenMode && <Sidebar user={user} />}
-
                 {/* Main Content Area */}
-                <main className={`flex-1 overflow-y-auto custom-scrollbar relative ${isZenMode ? 'p-0' : ''}`}>
-                    {/* Linha de Grade Sutil (Subpixel) - Agora em cinza suave */}
-                    <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[size:32px_32px]" />
+                <main className="flex-1 overflow-y-auto custom-scrollbar relative pb-24 md:pb-32">
+                    {/* Linha de Grade Sutil (Subpixel) */}
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[size:48px_48px]" />
                     
                     <div className={`relative z-10 transition-all duration-500 ${
                         isZenMode 
                         ? 'max-w-none p-0' 
-                        : 'p-8 md:p-12 lg:p-16 max-w-7xl mx-auto'
+                        : 'p-6 md:p-16 max-w-7xl mx-auto'
                     }`}>
                         {children}
                     </div>
                 </main>
             </div>
+
+            {/* Acessibilidade Balcão: Navegação de Titânio */}
+            <AdminBottomNav />
         </div>
     );
 }
