@@ -5,13 +5,15 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Sparkles, Loader2, CheckCircle2, ChevronRight, Package, Tag, Layers } from 'lucide-react';
 import { analyzeProductImage, AIProductAnalysis } from '@/lib/ai/visionService';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductSchema } from '@/features/catalog/schemas';
 import { Button, Input } from '@/components/ui';
 import { db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
+
+import { Department, Size } from '@/types';
 
 /**
  * HOOKE HQ: MAGIC STUDIO WORKSPACE
@@ -31,8 +33,9 @@ export function MagicStudio() {
       price: 0,
       description: '',
       category: '',
-      sizes: ['P', 'M', 'G', 'GG'],
-      department: 'Masculino',
+      sizes: [Size.P, Size.M, Size.G, Size.GG],
+      department: Department.MASCULINO,
+      imageUrl: '',
       images: [],
       featured: false,
       details: { fabric: '', model: '', wash: 'Lavagem suave' }
@@ -55,15 +58,16 @@ export function MagicStudio() {
           const id = `hooke-${Date.now()}`;
           form.reset({
             id,
-            name: analysis.name,
-            slug: analysis.name.toLowerCase().replace(/ /g, '-'),
-            price: analysis.price,
-            description: analysis.description,
+            name: analysis.title,
+            slug: analysis.title.toLowerCase().replace(/ /g, '-'),
+            price: analysis.suggestedPrice,
+            description: analysis.luxuryDescription,
             category: analysis.category,
-            sizes: ['P', 'M', 'G', 'GG'],
-            department: 'Masculino',
-            imageUrl: base64, // Em produção seria upload para Cloudinary
-            images: [base64],
+            sizes: [Size.P, Size.M, Size.G, Size.GG],
+            department: Department.MASCULINO,
+            imageUrl: base64 as string, 
+            images: [base64 as string],
+            featured: false,
             details: {
               fabric: analysis.fabric,
               model: analysis.model,
@@ -86,10 +90,11 @@ export function MagicStudio() {
     multiple: false 
   });
 
-  const onSubmit = async (data: ProductSchema) => {
+  const onSubmit = async (data: any) => {
+    const validData = data as ProductSchema;
     try {
-      const docRef = doc(db, "produtos", data.id);
-      await setDoc(docRef, { ...data, createdAt: Date.now() });
+      const docRef = doc(db, "produtos", validData.id);
+      await setDoc(docRef, { ...validData, createdAt: Date.now() });
       toast.success("Produto Publicado com Sucesso!");
       setStep('upload');
       setPreview(null);

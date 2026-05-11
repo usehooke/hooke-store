@@ -4,10 +4,10 @@ const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export interface AIProductAnalysis {
-  name: string;
+  title: string;
   category: string;
-  description: string;
-  price: number;
+  luxuryDescription: string;
+  suggestedPrice: number;
   fabric: string;
   model: string;
   seoKeywords: string[];
@@ -24,23 +24,26 @@ export async function analyzeProductImage(base64Image: string): Promise<AIProduc
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }, { apiVersion: "v1beta" });
 
     const prompt = `
-      Você é o Guardião SEO e Diretor de Arte da Hooke, uma marca de moda masculina premium com estética Soft Brutalism e Luxury.
-      Analise esta imagem de produto e extraia as informações necessárias para o cadastro no sistema.
-      
-      Diretrizes de Tom de Voz:
-      - Fria, minimalista, arquitetônica.
-      - Foco na textura do tecido e na geometria do corte.
-      - Use termos como "Equipamento Base", "Permanência Absoluta", "Arquitetura Têxtil".
-      
-      Retorne APENAS um objeto JSON válido (sem markdown, sem explicações) com a seguinte estrutura:
+      VOCÊ É O 'GUARDIÃO SEO' E DIRETOR DE ARTE DA HOOKE STORE.
+      Sua missão é analisar imagens de roupas masculinas e gerar um objeto JSON rigoroso.
+
+      ESTÉTICA DA MARCA: 'Quiet Luxury' e 'Soft Brutalism'. Foco em minimalismo, sofisticação fria e modelagem arquitetônica.
+      Nós NÃO vendemos 'looks completos', focamos em peças básicas premium e camisetas com texturas perfeitas.
+
+      REGRAS DE REDAÇÃO (LUXURY COPYWRITING):
+      - ELEVAÇÃO TÁTIL: Nunca use palavras como 'confortável', 'legal' ou 'bonita'. Use 'arquitetura têxtil', 'caimento estruturado', 'gramatura premium' e 'toque frio'.
+      - O DETALHE ASSINATURA: Destaque a nossa etiqueta física de alta definição (Woven Label). Exalte que é uma peça de engenharia com refino tipográfico puro (Wordmark).
+      - SEO DENSO: Gere palavras-chave de cauda longa baseadas na cor exata, textura visual e corte.
+
+      RETORNO OBRIGATÓRIO EM JSON (SEM MARKDOWN):
       {
-        "name": "Nome curto e impactante (ex: T-Shirt Pima Boxy)",
-        "category": "Uma das: Oversized, Vintage, Regata, Kit",
-        "description": "Descrição técnica e poética (máximo 200 caracteres)",
-        "price": Sugestão de preço (número, ex: 189.90),
-        "fabric": "Tipo do tecido (ex: 100% Algodão Pima, Viscose Fluida)",
-        "model": "Tipo da modelagem (ex: Boxy Fit, Regular, Slim)",
-        "seoKeywords": ["lista", "de", "5", "palavras-chave"]
+        "title": "Nome SEO afiado (ex: T-Shirt Pima Boxy)",
+        "luxuryDescription": "A copy de luxo focada no corte e na etiqueta Woven",
+        "suggestedPrice": 189.90,
+        "category": "Oversized, Vintage, Regata ou Kit",
+        "fabric": "Tipo do tecido (ex: 100% Algodão Pima)",
+        "model": "Tipo da modelagem (ex: Boxy Fit)",
+        "seoKeywords": ["array", "de", "5", "tags", "específicas"]
       }
     `;
 
