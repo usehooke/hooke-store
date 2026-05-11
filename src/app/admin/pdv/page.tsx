@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/types";
 import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
-import { Scan, Plus, Minus, Trash2, ShoppingBag, Loader2 } from "lucide-react";
+import { Scan, Plus, Minus, Trash2, ShoppingBag, Loader2, ChevronRight, CreditCard } from "lucide-react";
 import { PDVCheckoutModal } from "@/features/admin/components/pdv/PDVCheckoutModal";
 
 /**
