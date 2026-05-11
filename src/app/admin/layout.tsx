@@ -9,6 +9,7 @@ import { Sidebar } from '@/features/admin';
 import { Toaster } from 'sonner';
 import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
 import { GlobalCommand } from '@/components/admin/GlobalCommand';
+import { NotificationPulse } from '@/components/admin/NotificationPulse';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
@@ -53,6 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-black selection:text-white">
             <Toaster position="bottom-right" theme="light" richColors />
             <GlobalCommand />
+            <NotificationPulse />
             
             {/* Hooke HQ: Paradigma Linear (Mobile & Tablet First) */}
             <div className="flex h-screen overflow-hidden">
