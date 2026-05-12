@@ -1,6 +1,6 @@
 'use server';
 
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase/index';
 import { doc, updateDoc, getDoc, increment } from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
 import { logAdminAction } from './audit';

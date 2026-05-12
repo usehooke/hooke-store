@@ -1,6 +1,6 @@
 'use server';
 
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase/index';
 import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from 'firebase/firestore';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { logAdminAction } from './audit';
@@ -60,7 +60,7 @@ export async function saveCoupon(coupon: CouponDTO, userEmail: string = 'system'
         await setDoc(couponRef, { ...coupon, code: coupon.code.toUpperCase().trim() });
         await logAdminAction('SAVE_COUPON', { code: coupon.code }, userEmail);
         revalidatePath('/admin');
-        revalidateTag('coupons');
+        revalidatePath('/', 'layout');
         return { success: true };
     } catch (err: unknown) {
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
@@ -76,7 +76,7 @@ export async function toggleCouponStatus(code: string, newStatus: boolean, userE
         await updateDoc(couponRef, { isActive: newStatus });
         await logAdminAction('TOGGLE_COUPON', { code, newStatus }, userEmail);
         revalidatePath('/admin');
-        revalidateTag('coupons');
+        revalidatePath('/', 'layout');
         return { success: true };
     } catch (err: unknown) {
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
@@ -91,7 +91,7 @@ export async function deleteCoupon(code: string, userEmail: string = 'system') {
         await deleteDoc(doc(db, COUPONS_COLLECTION, code.toUpperCase()));
         await logAdminAction('DELETE_COUPON', { code }, userEmail);
         revalidatePath('/admin');
-        revalidateTag('coupons');
+        revalidatePath('/', 'layout');
         return { success: true };
     } catch (err: unknown) {
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
