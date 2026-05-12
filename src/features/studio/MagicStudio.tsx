@@ -87,11 +87,11 @@ export function MagicStudio() {
           });
           setStep('curating');
         } else {
-          toast.error("Falha ao analisar a imagem. A IA retornou vazio ou a chave da API (Gemini) está ausente.");
+          toast.error("A IA retornou um formato inesperado. Tente outra foto.");
           setStep('upload');
         }
-      } catch (error) {
-        toast.error("Falha na Análise Têxtil. Tente novamente.");
+      } catch (error: any) {
+        toast.error(`Falha: ${error?.message || "Erro desconhecido na IA."}`);
         setStep('upload');
       }
     };

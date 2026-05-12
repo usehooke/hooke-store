@@ -16,8 +16,7 @@ export interface AIProductAnalysis {
 
 export async function analyzeProductImage(base64Image: string): Promise<AIProductAnalysis | null> {
   if (!API_KEY) {
-    console.warn("NEXT_PUBLIC_GEMINI_API_KEY não encontrada. O Cadastro Mágico está operando em modo de simulação.");
-    return null;
+    throw new Error("Chave NEXT_PUBLIC_GEMINI_API_KEY não configurada na Vercel.");
   }
 
   try {
@@ -69,9 +68,9 @@ export async function analyzeProductImage(base64Image: string): Promise<AIProduc
       return JSON.parse(jsonMatch[0]) as AIProductAnalysis;
     }
 
-    return null;
-  } catch (error) {
+    throw new Error("A IA respondeu, mas não encontrou o formato JSON esperado.");
+  } catch (error: any) {
     console.error("Erro na análise da imagem:", error);
-    return null;
+    throw new Error(error.message || "Erro de comunicação com o Gemini.");
   }
 }
