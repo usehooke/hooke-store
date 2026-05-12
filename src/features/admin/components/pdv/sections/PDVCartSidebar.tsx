@@ -116,20 +116,22 @@ export default function PDVCartSidebar() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start">
                     <h4 className="text-[12px] font-black text-white uppercase tracking-tighter truncate">{item.name}</h4>
-                    <button onClick={() => removeItem(item.id)} className="p-1 text-zinc-600 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                    <button onClick={() => removeItem(item.id)} aria-label={`Remover ${item.name}`} title={`Remover ${item.name}`} className="p-1 text-zinc-600 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                   </div>
                   <p className="text-[9px] text-zinc-500 font-mono mt-1">ID: {item.id}</p>
                   
                   {/* Preço Editável */}
                   <div className="mt-4 flex items-center gap-2">
-                    <label className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Preço Unitário:</label>
+                    <label htmlFor={`price-${item.id}`} className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Preço Unitário:</label>
                     <div className="flex items-center gap-1">
                       <span className="text-xs text-zinc-500">R$</span>
                       <input 
+                        id={`price-${item.id}`}
                         type="number" 
                         value={item.customPrice ?? (total >= 5 && item.comboPrice ? item.comboPrice : item.price)}
                         onChange={(e) => updateCustomPrice(item.id, Number(e.target.value))}
                         className="w-24 bg-zinc-900/50 border border-white/10 px-2 py-1 text-xs font-bold text-emerald-400 outline-none focus:border-emerald-500/50"
+                        aria-label={`Preço customizado para ${item.name}`}
                       />
                     </div>
                   </div>
@@ -149,10 +151,12 @@ export default function PDVCartSidebar() {
                           className="w-6 h-8 flex items-center justify-center hover:bg-white/10 transition-colors"
                         >-</button>
                         <input 
-                          type="number"
-                          value={qty}
-                          onChange={(e) => updateSizeQuantity(item.id, sigla, Number(e.target.value))}
-                          className="w-full h-8 bg-transparent text-center text-[11px] font-black text-white outline-none"
+                        id={`qty-${item.id}-${sigla}`}
+                        type="number"
+                        value={qty}
+                        onChange={(e) => updateSizeQuantity(item.id, sigla, Number(e.target.value))}
+                        className="w-full h-8 bg-transparent text-center text-[11px] font-black text-white outline-none"
+                        aria-label={`Quantidade do tamanho ${sigla} para ${item.name}`}
                         />
                         <button 
                           onClick={() => updateSizeQuantity(item.id, sigla, qty + 1)}

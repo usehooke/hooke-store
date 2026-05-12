@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData } from "firebase/firestore";
+import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData, orderBy } from "firebase/firestore";
 import { Product } from "@/types";
 import { MOCK_PRODUCTS } from "./mockData";
 import { unstable_cache } from "next/cache";
@@ -13,6 +13,16 @@ export const COLLECTION_NAME = "produtos";
  */
 
 const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build' || !db;
+
+export interface FilterOptions {
+    category?: string;
+    department?: string;
+    size?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    featured?: boolean;
+    limitCount?: number;
+}
 
 const mapToProduct = (docId: string, data: DocumentData): Product | null => {
     try {
@@ -112,6 +122,52 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
             const q = query(productsRef, where("featured", "==", true));
             const snapshot = await getDocs(q);
 
+            const products: Product[] = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const p = mapToProduct(doc.id, data);
+                if (data.isActive !== false && p) products.push(p);
+            });
+            return products;
+        },
+        [] as Product[]
+    );
+}
+export async function getFilteredProducts(filters: FilterOptions): Promise<Product[]> {
+    const { category, department, size, minPrice, maxPrice, featured, limitCount } = filters;
+    
+    // Cache key baseada nos filtros para granularidade máxima
+    const cacheKey = `filtered-products-${JSON.stringify(filters)}`;
+    const tags = ['products'];
+    if (category) tags.push(`category-${category}`);
+    if (department) tags.push(`department-${department}`);
+    if (size) tags.push(`size-${size}`);
+
+    return executeResilientCached(
+        "getFilteredProducts",
+        cacheKey,
+        tags,
+        async () => {
+            const productsRef = collection(db!, COLLECTION_NAME);
+            const conditions: QueryConstraint[] = [];
+
+            if (category) conditions.push(where("category", "==", category));
+            if (department) conditions.push(where("department", "==", department));
+            if (size) conditions.push(where("sizes", "array-contains", size));
+            if (featured !== undefined) conditions.push(where("featured", "==", featured));
+            
+            // Filtros de Preço (Requerem Índice Composto se usados com outros filtros)
+            if (minPrice !== undefined) conditions.push(where("price", ">=", minPrice));
+            if (maxPrice !== undefined) conditions.push(where("price", "<=", maxPrice));
+
+            // Ordenação padrão para garantir consistência
+            conditions.push(orderBy("price", "asc"));
+            
+            if (limitCount) conditions.push(limit(limitCount));
+
+            const q = query(productsRef, ...conditions);
+            const snapshot = await getDocs(q);
+            
             const products: Product[] = [];
             snapshot.forEach(doc => {
                 const data = doc.data();

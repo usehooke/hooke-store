@@ -19,8 +19,8 @@ export async function POST(req: Request) {
         const url = new URL(req.url);
         
         const params = {
-            type: url.searchParams.get("type"),
-            "data.id": url.searchParams.get("data.id")
+            type: url.searchParams.get("type") || url.searchParams.get("topic"),
+            "data.id": url.searchParams.get("data.id") || url.searchParams.get("id")
         };
 
         const validation = MPNotificationSchema.safeParse(params);
@@ -52,6 +52,10 @@ export async function POST(req: Request) {
                 case 'in_process':
                 case 'authorized':
                     orderStatus = 'in_process';
+                    break;
+                case 'refunded':
+                case 'charged_back':
+                    orderStatus = 'refunded';
                     break;
                 default:
                     orderStatus = 'pending';

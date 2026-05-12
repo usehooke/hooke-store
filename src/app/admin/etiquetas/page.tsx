@@ -82,6 +82,17 @@ export default function EtiquetasPage() {
 
  return (
  <div className="p-8">
+   <style>{`
+     .label-etiqueta {
+       height: 38.1mm;
+       width: 63.5mm;
+     }
+     @media print {
+       .print-grid {
+         width: 210mm;
+       }
+     }
+   `}</style>
  <div className="flex justify-between items-end mb-8 print:hidden">
  <div>
  <h1 className="text-3xl font-black text-hooke-900 tracking-tighter">Gerador de Etiquetas</h1>
@@ -197,16 +208,20 @@ export default function EtiquetasPage() {
  <div key={sku} className="flex justify-between items-center bg-white border border-gray-200 p-3">
  <span className="text-xs font-mono font-bold text-hooke-900 truncate flex-1">{sku}</span>
  <div className="flex items-center gap-2">
- <span className="text-[10px] text-gray-500 font-bold">Qtd</span>
+ <label htmlFor={`qty-${sku}`} className="text-[10px] text-gray-500 font-bold">Qtd</label>
  <input
+ id={`qty-${sku}`}
  type="number"
  value={qty}
  min={1}
  onChange={(e) => updateQuantity(sku, parseInt(e.target.value) || 1)}
  className="w-16 border border-gray-300 p-1 text-center text-sm focus:outline-none focus:border-hooke-900"
+ aria-label={`Quantidade para ${sku}`}
  />
  <button
  onClick={() => handleToggleSku(sku)}
+ aria-label={`Remover ${sku} da fila`}
+ title={`Remover ${sku}`}
  className="text-red-400 hover:text-red-600 p-1"
  >
  <Trash2 size={16} />
@@ -231,11 +246,11 @@ export default function EtiquetasPage() {
 
  {/* ÁREA DE IMPRESSÃO (Oculta na tela, visível apenas no Print) */}
  <div className="hidden print:block bg-white w-full">
- <div className="grid grid-cols-3 gap-x-4 gap-y-8" style={{ width: '210mm' }}>
+ <div className="grid grid-cols-3 gap-x-4 gap-y-8 print-grid">
  {Object.entries(selectedSkus).flatMap(([sku, qty]) => {
  // Duplicar a etiqueta de acordo com a quantidade configurada
  return Array(qty).fill(sku).map((s, index) => (
- <div key={`${s}-${index}`} className="flex flex-col items-center justify-center border border-dashed border-gray-300 p-4" style={{ height: '38.1mm', width: '63.5mm' }}>
+ <div key={`${s}-${index}`} className="flex flex-col items-center justify-center border border-dashed border-gray-300 p-4 label-etiqueta">
  {/* Exemplo de medida PIMACO 6280 (3 colunas, 38.1mm x 63.5mm) */}
  <Barcode
  value={s}

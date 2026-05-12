@@ -1,4 +1,6 @@
-/** @type {import('next').NextConfig} */
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import { withSentryConfig } from "@sentry/nextjs";
+
 const nextConfig = {
   experimental: {
     serverActions: {
@@ -51,4 +53,18 @@ const nextConfig = {
   turbopack: {},
 };
 
-export default nextConfig;
+const analyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const sentryConfig = {
+  // Configurações silenciosas para não poluir o build
+  silent: true,
+  org: "hooke",
+  project: "javascript-nextjs",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  tunnelRoute: "/monitoring",
+};
+
+export default withSentryConfig(analyzer(nextConfig), sentryConfig);

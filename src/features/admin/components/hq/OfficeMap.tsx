@@ -81,12 +81,13 @@ export function OfficeMap() {
             )}>
                 
                 {/* Refined Dynamic Grid Background */}
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none" 
-                     style={{ 
-                        backgroundImage: `linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)`,
-                        backgroundSize: '80px 80px' 
-                     }} 
-                />
+                <style>{`
+                  .office-grid-bg {
+                    backgroundImage: linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px);
+                    backgroundSize: 80px 80px;
+                  }
+                `}</style>
+                <div className="absolute inset-0 opacity-[0.05] pointer-events-none office-grid-bg" />
 
                 {/* THE WAR ROOM */}
                 <motion.div 

@@ -156,7 +156,7 @@ export default function PDVPage() {
                 <div key={item.id} className="bg-white border-2 border-black p-4 flex flex-col gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                   <div className="flex justify-between items-start">
                     <span className="text-xs font-black uppercase tracking-tight leading-none max-w-[70%]">{item.name}</span>
-                    <button onClick={() => removeItem(item.id)} className="text-zinc-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <button onClick={() => removeItem(item.id)} aria-label={`Remover ${item.name}`} title={`Remover ${item.name}`} className="text-zinc-300 hover:text-red-500"><Trash2 size={16} /></button>
                   </div>
                   
                   {Object.entries(item.sizeQuantities).map(([size, qty]) => (
@@ -165,6 +165,8 @@ export default function PDVPage() {
                       <div className="flex items-center gap-6">
                         <button 
                           onClick={() => updateSizeQuantity(item.id, size, qty - 1)}
+                          aria-label={`Remover ${size}`}
+                          title={`Remover ${size}`}
                           className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center active:bg-zinc-100"
                         >
                           <Minus size={20} strokeWidth={3} />
@@ -172,6 +174,8 @@ export default function PDVPage() {
                         <span className="text-xl font-black min-w-[20px] text-center">{qty}</span>
                         <button 
                           onClick={() => updateSizeQuantity(item.id, size, qty + 1)}
+                          aria-label={`Adicionar ${size}`}
+                          title={`Adicionar ${size}`}
                           className="w-12 h-12 bg-black text-white flex items-center justify-center active:bg-zinc-800"
                         >
                           <Plus size={20} strokeWidth={3} />

@@ -24,6 +24,7 @@ export default async function AdminLancamentos() {
  <a 
  href="https://gemini.google.com/app" 
  target="_blank" 
+ rel="noopener noreferrer"
  className="flex items-center gap-2 px-6 py-4 bg-zinc-100 text-black text-[10px] font-bold tracking-widest hover:bg-zinc-200 transition-all shadow-sm"
  >
  <Camera size={14} /> Abrir Gemini (Gem)

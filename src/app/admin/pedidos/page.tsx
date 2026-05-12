@@ -265,7 +265,10 @@ export default function AdminOrdersPage() {
   </div>
   </td>
   <td className="p-4">
+  <label htmlFor={`status-${order.id}`} className="sr-only">Status do Pedido</label>
   <select
+  id={`status-${order.id}`}
+  aria-label="Status do Pedido"
   value={order.status}
   onChange={(e) => handleChange(order.id, "status", e.target.value)}
   className="w-full bg-white border border-gray-300 rounded-none px-2 py-2 text-xs font-bold tracking-widest focus:ring-1 focus:ring-hooke-900 focus:border-hooke-900 outline-none transition-all text-hooke-900"

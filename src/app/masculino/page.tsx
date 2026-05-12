@@ -1,5 +1,5 @@
-import { getProducts } from "@/lib/productService";
-import { ProductCard } from "@/features/catalog";
+import { getFilteredProducts } from "@/lib/productService";
+import { ProductCard, FilterDrawer } from "@/features/catalog";
 import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
@@ -11,7 +11,20 @@ export const metadata: Metadata = {
 };
 
 
-export default async function MasculinoPage() {
+export default async function MasculinoPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
+}) {
+  const params = await searchParams;
+  const activeFilters = {
+    department: "masculino",
+    category: typeof params.category === 'string' ? params.category : undefined,
+    size: typeof params.size === 'string' ? params.size : undefined,
+    minPrice: typeof params.minPrice === 'string' ? Number(params.minPrice) : undefined,
+    maxPrice: typeof params.maxPrice === 'string' ? Number(params.maxPrice) : undefined,
+  };
+
   return (
     <div className="bg-white min-h-screen pb-20">
 
@@ -46,21 +59,18 @@ export default async function MasculinoPage() {
   <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-sm border-t border-b border-gray-100">
   <div className="w-full px-6 md:px-12 py-4 flex justify-between items-center">
 
-  <Suspense fallback={<div className="h-4 text-xs bg-gray-50 w-20 animate-pulse" />}>
-    <ProductCounter department="masculino" />
-  </Suspense>
+   <Suspense fallback={<div className="h-4 text-xs bg-gray-50 w-20 animate-pulse" />}>
+    <ProductCounter filters={activeFilters} />
+   </Suspense>
 
-  <button className="flex items-center gap-2 text-xs font-bold tracking-widest text-hooke-900 hover:bg-gray-100 px-4 py-2 transition-colors border border-transparent hover:border-gray-200">
-  <SlidersHorizontal size={14} />
-  <span className="hidden sm:inline">Filtrar</span>
-  </button>
+   <FilterDrawer />
   </div>
   </div>
 
   {/* 3. GRADE DE PRODUTOS (Dynamic Hole for PPR) */}
   <div className="w-full px-6 md:px-12 py-12">
-    <Suspense fallback={<ProductGridSkeleton />}>
-      <ProductGrid department="masculino" />
+    <Suspense fallback={<ProductGridSkeleton />} key={JSON.stringify(activeFilters)}>
+      <ProductGrid filters={activeFilters} />
     </Suspense>
   </div>
 
@@ -82,19 +92,30 @@ export default async function MasculinoPage() {
 
 // --- COMPONENTES AUXILIARES PARA PPR (DYNAMIC HOLES) ---
 
-async function ProductCounter({ department }: { department: string }) {
-  const allProducts = await getProducts();
-  const count = allProducts.filter(p => p.department === department).length;
+async function ProductCounter({ filters }: { filters: any }) {
+  const products = await getFilteredProducts(filters);
   return (
-    <span className="text-xs font-bold tracking-widest text-hooke-500 font-sans">
-      {count} Produtos
+    <span className="text-xs font-black tracking-[0.2em] text-hooke-500 font-sans uppercase">
+      {products.length} Equipamentos
     </span>
   );
 }
 
-async function ProductGrid({ department }: { department: string }) {
-  const allProducts = await getProducts();
-  const products = allProducts.filter(p => p.department === department);
+async function ProductGrid({ filters }: { filters: any }) {
+  const products = await getFilteredProducts(filters);
+
+  if (products.length === 0) {
+    return (
+      <div className="py-24 border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center text-center">
+        <span className="text-[10px] font-black tracking-[0.4em] text-zinc-300 uppercase mb-4">
+          Nenhum resultado encontrado
+        </span>
+        <p className="text-xs text-zinc-400 max-w-xs">
+          Tente ajustar seus filtros ou limpar a seleção para ver o arsenal completo.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-8">

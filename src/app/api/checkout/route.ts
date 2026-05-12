@@ -127,6 +127,7 @@ export async function POST(req: Request) {
                     } : undefined
                 },
                 external_reference: orderId, // Crucial: amarra o Webhook ao nosso Doc no FB
+                notification_url: `${appUrl}/api/webhooks/mercadopago`,
                 auto_return: "approved",
                 back_urls: {
                     success: `${appUrl}/meus-pedidos?email=${safeEmail}&id=${orderId}&status=success`,

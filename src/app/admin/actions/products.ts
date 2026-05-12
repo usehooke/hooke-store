@@ -1,7 +1,7 @@
 'use server';
 
 import { adminDb } from '@/lib/firebase-admin';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { logAdminAction } from './audit';
 import { Product } from '@/types';
 
@@ -13,9 +13,7 @@ export async function toggleProductVisibility(id: string, currentStatus: boolean
         
         await logAdminAction('TOGGLE_PRODUCT_VISIBILITY', { id, newStatus: !currentStatus }, userEmail);
         revalidatePath('/admin/produtos');
-        revalidatePath('/'); // O2O Shielding: Limpa cache do catálogo
-        revalidatePath('/masculino');
-        revalidatePath('/feminino');
+        revalidateTag('products'); // Elite Revalidation: Purga todas as queries de produtos
         
         return { success: true, newStatus: !currentStatus };
     } catch (err: unknown) {
@@ -42,9 +40,7 @@ export async function deleteProduct(id: string, name: string, userEmail: string 
         
         // 4. CACHE REVALIDATION
         revalidatePath('/admin/produtos');
-        revalidatePath('/');
-        revalidatePath('/masculino');
-        revalidatePath('/feminino');
+        revalidateTag('products');
         
         return { success: true };
     } catch (err: unknown) {
@@ -73,9 +69,7 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         await logAdminAction(data.id ? 'UPDATE_PRODUCT' : 'CREATE_PRODUCT', payload, userEmail);
         
         revalidatePath('/admin/produtos');
-        revalidatePath('/');
-        revalidatePath('/masculino');
-        revalidatePath('/feminino');
+        revalidateTag('products');
         
         return { success: true, product: payload };
     } catch (err: unknown) {

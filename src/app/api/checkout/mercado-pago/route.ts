@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
           pending: `${process.env.NEXT_PUBLIC_APP_URL}/pendente`,
         },
         auto_return: 'approved',
-        notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/mercado-pago`,
+        notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/mercadopago`,
         external_reference: orderId || `HK_${Date.now()}`,
         statement_descriptor: 'HOOKE STORE',
         metadata: {

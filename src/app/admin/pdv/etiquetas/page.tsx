@@ -121,11 +121,11 @@ export default function LabelGeneratorPage() {
  <div className="flex justify-between items-center">
  <span className="text-[10px] font-black ">Qtd de Etiquetas:</span>
  <div className="flex items-center gap-4">
- <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 border border-black shadow-sharp">
+ <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Diminuir quantidade" title="Diminuir quantidade" className="p-2 border border-black shadow-sharp">
  <Minus className="h-4 w-4" />
  </button>
  <span className="text-lg font-black">{quantity}</span>
- <button onClick={() => setQuantity(quantity + 1)} className="p-2 border border-black shadow-sharp">
+ <button onClick={() => setQuantity(quantity + 1)} aria-label="Aumentar quantidade" title="Aumentar quantidade" className="p-2 border border-black shadow-sharp">
  <Plus className="h-4 w-4" />
  </button>
  </div>

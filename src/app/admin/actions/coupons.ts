@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from 'firebase/firestore';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { logAdminAction } from './audit';
 
 const COUPONS_COLLECTION = 'coupons';
@@ -60,6 +60,7 @@ export async function saveCoupon(coupon: CouponDTO, userEmail: string = 'system'
         await setDoc(couponRef, { ...coupon, code: coupon.code.toUpperCase().trim() });
         await logAdminAction('SAVE_COUPON', { code: coupon.code }, userEmail);
         revalidatePath('/admin');
+        revalidateTag('coupons');
         return { success: true };
     } catch (err: unknown) {
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
@@ -75,6 +76,7 @@ export async function toggleCouponStatus(code: string, newStatus: boolean, userE
         await updateDoc(couponRef, { isActive: newStatus });
         await logAdminAction('TOGGLE_COUPON', { code, newStatus }, userEmail);
         revalidatePath('/admin');
+        revalidateTag('coupons');
         return { success: true };
     } catch (err: unknown) {
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
@@ -89,6 +91,7 @@ export async function deleteCoupon(code: string, userEmail: string = 'system') {
         await deleteDoc(doc(db, COUPONS_COLLECTION, code.toUpperCase()));
         await logAdminAction('DELETE_COUPON', { code }, userEmail);
         revalidatePath('/admin');
+        revalidateTag('coupons');
         return { success: true };
     } catch (err: unknown) {
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
@@ -96,13 +99,17 @@ export async function deleteCoupon(code: string, userEmail: string = 'system') {
 }
 
 /** Lista todos os cupons para o painel admin */
-export async function listCoupons(): Promise<CouponDTO[]> {
-    if (!db) return [];
+export const listCoupons = unstable_cache(
+    async (): Promise<CouponDTO[]> => {
+        if (!db) return [];
 
-    try {
-        const snap = await getDocs(collection(db, COUPONS_COLLECTION));
-        return snap.docs.map(d => d.data() as CouponDTO);
-    } catch {
-        return [];
-    }
-}
+        try {
+            const snap = await getDocs(collection(db, COUPONS_COLLECTION));
+            return snap.docs.map(d => d.data() as CouponDTO);
+        } catch {
+            return [];
+        }
+    },
+    ['coupons-list'],
+    { tags: ['coupons'], revalidate: 3600 }
+);

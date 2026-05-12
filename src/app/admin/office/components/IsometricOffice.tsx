@@ -113,8 +113,13 @@ export function IsometricOffice() {
   return (
     <div className="relative w-full h-[600px] md:h-[800px] flex items-center justify-center overflow-hidden bg-[#F8F8F8] font-sans">
       {/* Background Grid Layer (Flat) */}
-      <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" 
-           style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '100px 100px' }} />
+      <style>{`
+        .isometric-grid {
+          backgroundImage: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px);
+          backgroundSize: 100px 100px;
+        }
+      `}</style>
+      <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none isometric-grid" />
 
       {/* Main 2D Container */}
       <div className="relative w-full max-w-[1000px] h-full flex items-center justify-center">
@@ -127,9 +132,10 @@ export function IsometricOffice() {
         {/* Agents Grid (Flat 2D) */}
         <div className="relative grid grid-cols-6 grid-rows-5 gap-0 w-[900px] h-[750px]">
           {agents.map((agent) => (
+            // eslint-disable-next-line react/no-unknown-property
             <div 
               key={agent.id}
-              className="relative flex items-center justify-center"
+              className=\"relative flex items-center justify-center\"
               style={{ gridColumnStart: agent.pos.x + 1, gridRowStart: agent.pos.y + 1 }}
             >
               {/* Desk (Mesa de TI) - Estilo Tibia / Isométrico Top-Down */}
