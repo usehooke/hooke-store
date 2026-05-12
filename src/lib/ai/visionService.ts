@@ -1,6 +1,8 @@
+"use server";
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export interface AIProductAnalysis {
@@ -14,9 +16,13 @@ export interface AIProductAnalysis {
   imageUrl?: string;
 }
 
-export async function analyzeProductImage(base64Image: string): Promise<AIProductAnalysis | null> {
+export type AIResponse = 
+  | { success: true; data: AIProductAnalysis }
+  | { success: false; error: string };
+
+export async function analyzeProductImage(base64Image: string): Promise<AIResponse> {
   if (!API_KEY) {
-    throw new Error("Chave NEXT_PUBLIC_GEMINI_API_KEY não configurada na Vercel.");
+    return { success: false, error: "Chave API não configurada no servidor (Vercel)." };
   }
 
   try {
@@ -65,12 +71,12 @@ export async function analyzeProductImage(base64Image: string): Promise<AIProduc
     // Limpeza básica para garantir que pegamos apenas o JSON
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]) as AIProductAnalysis;
+      return { success: true, data: JSON.parse(jsonMatch[0]) as AIProductAnalysis };
     }
 
-    throw new Error("A IA respondeu, mas não encontrou o formato JSON esperado.");
+    return { success: false, error: "A IA não retornou um formato JSON válido." };
   } catch (error: any) {
-    console.error("Erro na análise da imagem:", error);
-    throw new Error(error.message || "Erro de comunicação com o Gemini.");
+    console.error("Erro no motor de IA (Server):", error);
+    return { success: false, error: "Falha de comunicação com o motor de IA." };
   }
 }

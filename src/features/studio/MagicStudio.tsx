@@ -63,8 +63,9 @@ export function MagicStudio() {
       setStep('analyzing');
 
       try {
-        const analysis = await analyzeProductImage(base64);
-        if (analysis) {
+        const response = await analyzeProductImage(base64);
+        if (response.success) {
+          const analysis = response.data;
           const id = `hooke-${Date.now()}`;
           setAiGlowFields(new Set(['name', 'price', 'category', 'description']));
           form.reset({
@@ -87,7 +88,7 @@ export function MagicStudio() {
           });
           setStep('curating');
         } else {
-          toast.error("A IA retornou um formato inesperado. Tente outra foto.");
+          toast.error(response.error || "Falha na análise da foto.");
           setStep('upload');
         }
       } catch (error: any) {
