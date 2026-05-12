@@ -91,7 +91,7 @@ export function MagicStudio() {
           setStep('upload');
         }
       } catch (error: any) {
-        toast.error(`Falha: ${error?.message || "Erro desconhecido na IA."}`);
+        toast.error("Falha de comunicação com o motor de IA. Tente novamente mais tarde.");
         setStep('upload');
       }
     };
