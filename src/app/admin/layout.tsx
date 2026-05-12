@@ -59,6 +59,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Hooke HQ: Paradigma Linear (Mobile & Tablet First) */}
             <div className="flex h-screen overflow-hidden">
                 
+                {/* Navegação Lateral (Desktop) */}
+                <div className="hidden lg:block h-full z-50 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+                    <Sidebar user={user} />
+                </div>
+
                 {/* Main Content Area */}
                 <main className="flex-1 overflow-y-auto custom-scrollbar relative pb-24 md:pb-32">
                     {/* Linha de Grade Sutil (Subpixel) */}
@@ -75,7 +80,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
 
             {/* Acessibilidade Balcão: Navegação de Titânio */}
-            <AdminBottomNav />
+            <div className="lg:hidden">
+                <AdminBottomNav />
+            </div>
         </div>
     );
 }

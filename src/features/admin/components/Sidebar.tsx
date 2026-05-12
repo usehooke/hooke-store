@@ -14,7 +14,11 @@ import {
     Menu,
     X,
     Orbit,
-    Zap
+    Zap,
+    TrendingUp,
+    Tag,
+    Rocket,
+    PackagePlus
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -27,6 +31,10 @@ const menuItems = [
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Concierge', href: '/admin/concierge', icon: CupSoda },
     { label: 'PDV Elite', href: '/admin/pdv', icon: Monitor },
+    { label: 'Estúdio Mágico', href: '/admin/estudio', icon: PackagePlus },
+    { label: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
+    { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },
+    { label: 'Lançamentos', href: '/admin/lancamentos', icon: Rocket },
     { label: 'Ops Desk', href: '/admin/office', icon: Orbit },
 ];
 
@@ -76,17 +84,17 @@ export function Sidebar({ user }: { user: User }) {
                             className={cn(
                                 "flex items-center gap-4 px-5 py-5 transition-all group relative overflow-hidden",
                                 isActive 
-                                    ? "text-black bg-black/[0.02] border border-black/[0.05]" 
-                                    : "text-zinc-500 hover:text-black hover:bg-black/[0.01]"
+                                    ? "text-white bg-hooke-900 border border-black/[0.05]" 
+                                    : "text-zinc-500 hover:text-white hover:bg-hooke-900"
                             )}
                         >
-                            <item.icon size={18} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-colors", isActive ? "text-black" : "group-hover:text-black")} />
+                            <item.icon size={18} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-colors", isActive ? "text-white" : "group-hover:text-white")} />
                             {!isCollapsed && (
                                 <span className="text-[10px] font-black tracking-[0.25em] uppercase italic transition-all">{item.label}</span>
                             )}
                             
                             {isActive && (
-                                <div className="absolute left-0 w-1 h-6 bg-black" />
+                                <div className="absolute left-0 top-0 w-1 h-full bg-white" />
                             )}
                         </Link>
                     );
