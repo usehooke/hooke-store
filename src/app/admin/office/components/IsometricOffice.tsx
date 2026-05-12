@@ -135,7 +135,7 @@ export function IsometricOffice() {
             // eslint-disable-next-line react/no-unknown-property
             <div 
               key={agent.id}
-              className=\"relative flex items-center justify-center\"
+              className="relative flex items-center justify-center"
               style={{ gridColumnStart: agent.pos.x + 1, gridRowStart: agent.pos.y + 1 }}
             >
               {/* Desk (Mesa de TI) - Estilo Tibia / Isométrico Top-Down */}
