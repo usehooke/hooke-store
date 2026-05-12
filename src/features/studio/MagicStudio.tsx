@@ -86,6 +86,9 @@ export function MagicStudio() {
             }
           });
           setStep('curating');
+        } else {
+          toast.error("Falha ao analisar a imagem. A IA retornou vazio ou a chave da API (Gemini) está ausente.");
+          setStep('upload');
         }
       } catch (error) {
         toast.error("Falha na Análise Têxtil. Tente novamente.");

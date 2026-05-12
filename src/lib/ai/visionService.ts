@@ -16,7 +16,7 @@ export interface AIProductAnalysis {
 
 export async function analyzeProductImage(base64Image: string): Promise<AIProductAnalysis | null> {
   if (!API_KEY) {
-    console.warn("VITE_GEMINI_API_KEY não encontrada. O Cadastro Mágico está operando em modo de simulação.");
+    console.warn("NEXT_PUBLIC_GEMINI_API_KEY não encontrada. O Cadastro Mágico está operando em modo de simulação.");
     return null;
   }
 
