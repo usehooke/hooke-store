@@ -26,7 +26,7 @@ export async function analyzeProductImage(base64Image: string): Promise<AIRespon
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const prompt = `
       VOCÊ É O 'GUARDIÃO SEO' E DIRETOR DE ARTE DA HOOKE STORE.
