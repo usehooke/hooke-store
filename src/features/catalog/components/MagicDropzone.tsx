@@ -31,16 +31,41 @@ export function MagicDropzone({ onAnalysisComplete }: MagicDropzoneProps) {
       toast.loading("Analisando equipamento via Hook Vision...", { id: "vision-loading" });
       console.log("[MagicDropzone] Iniciando conversão e análise...");
       
-      const getBase64 = (file: File): Promise<string> => {
+      const compressImage = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const MAX_WIDTH = 800;
+              const scaleSize = MAX_WIDTH / img.width;
+              
+              if (scaleSize < 1) {
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+              } else {
+                canvas.width = img.width;
+                canvas.height = img.height;
+              }
+              
+              const ctx = canvas.getContext("2d");
+              if (ctx) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", 0.6));
+              } else {
+                resolve(event.target?.result as string);
+              }
+            };
+            img.onerror = reject;
+            img.src = event.target?.result as string;
+          };
+          reader.onerror = reject;
           reader.readAsDataURL(file);
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = error => reject(error);
         });
       };
       
-      const base64Image = await getBase64(file);
+      const base64Image = await compressImage(file);
       const result = await analyzeProductImage(base64Image);
       
       toast.dismiss("vision-loading");

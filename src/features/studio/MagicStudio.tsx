@@ -56,9 +56,42 @@ export function MagicStudio() {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const base64 = reader.result as string;
+    const compressImage = (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 800;
+            const scaleSize = MAX_WIDTH / img.width;
+            
+            if (scaleSize < 1) {
+              canvas.width = MAX_WIDTH;
+              canvas.height = img.height * scaleSize;
+            } else {
+              canvas.width = img.width;
+              canvas.height = img.height;
+            }
+            
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL("image/jpeg", 0.6));
+            } else {
+              resolve(event.target?.result as string); // fallback
+            }
+          };
+          img.onerror = reject;
+          img.src = event.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    };
+
+    try {
+      const base64 = await compressImage(file);
       setPreview(base64);
       setStep('analyzing');
 
@@ -95,8 +128,10 @@ export function MagicStudio() {
         toast.error("Falha de comunicação com o motor de IA. Tente novamente mais tarde.");
         setStep('upload');
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error("Erro ao comprimir imagem.");
+      setStep('upload');
+    }
   }, [form]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
