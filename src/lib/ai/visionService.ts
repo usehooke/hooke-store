@@ -77,6 +77,7 @@ export async function analyzeProductImage(base64Image: string): Promise<AIRespon
     return { success: false, error: "A IA não retornou um formato JSON válido." };
   } catch (error: any) {
     console.error("Erro no motor de IA (Server):", error);
-    return { success: false, error: "Falha de comunicação com o motor de IA." };
+    // VAZA O ERRO REAL PARA O FRONTEND PARA FINS DE DEBUG
+    return { success: false, error: `FALHA DA IA: ${error?.message || "Desconhecido"}` };
   }
 }
