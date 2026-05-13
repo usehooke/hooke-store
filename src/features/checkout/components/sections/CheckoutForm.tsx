@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CreditCard, Loader2, Facebook, X, Truck, Check } from "lucide-react";
+import { CreditCard, Loader2, X, Truck, Check } from "lucide-react";
+import { FaFacebook } from "react-icons/fa";
 import { signInWithPopup } from "firebase/auth";
 import { auth, facebookProvider } from "@/lib/firebase";
 import { useCartStore, selectCartSubTotal, selectCartPromoDiscount } from "@/store/cart-store";
@@ -148,7 +149,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           disabled={isFacebookLoading}
           className="w-full flex items-center justify-center gap-3 bg-[#1877F2] text-white font-black tracking-widest py-4 mb-8 text-[10px] uppercase hover:bg-[#145dbf] transition-all shadow-lg shadow-blue-900/10 disabled:opacity-50"
         >
-          <Facebook size={18} fill="currentColor" stroke="none" />
+          <FaFacebook size={18} />
           {isFacebookLoading ? "Puxando dados..." : "Preenchimento 1-Clique (Meta)"}
         </button>
 

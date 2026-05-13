@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { brandConfig } from '@/config/brandConfig';
-import { Instagram, MessageCircle, Globe, MapPin, RefreshCcw } from 'lucide-react';
+import { MessageCircle, Globe, MapPin, RefreshCcw } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 
 export default function VirtualCard() {
@@ -71,7 +72,7 @@ export default function VirtualCard() {
  </div>
 
  <div className="flex items-center gap-2">
- <Instagram size={12} className="text-gray-500" />
+ <FaInstagram size={12} className="text-gray-500" />
  <p className="text-[9px] text-gray-300 font-medium">@use.hooke</p>
  </div>
  <div className="flex items-center gap-2 col-span-2">

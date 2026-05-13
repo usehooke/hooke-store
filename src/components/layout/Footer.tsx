@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Facebook, Instagram, Twitter, Send } from "lucide-react";
+import { Send } from "lucide-react";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { brandConfig } from "@/config/brandConfig";
 
 export default function Footer() {
@@ -22,13 +23,13 @@ export default function Footer() {
  </p>
  <div className="flex gap-4">
  <a href={brandConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
- <Instagram size={18} strokeWidth={1.5} />
+ <FaInstagram size={18} />
  </a>
  <a href={brandConfig.social.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
- <Facebook size={18} strokeWidth={1.5} />
+ <FaFacebook size={18} />
  </a>
  <a href={brandConfig.social.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
- <Twitter size={18} strokeWidth={1.5} />
+ <FaTwitter size={18} />
  </a>
  </div>
  </div>

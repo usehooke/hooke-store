@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Input, Button } from "@/components/ui";
-import { Facebook } from "lucide-react";
+import { FaFacebook } from "react-icons/fa";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -86,7 +86,7 @@ export function LoginForm() {
           disabled={loading}
           className="w-full flex items-center justify-center gap-3 border-2 border-black/10 hover:border-black font-black uppercase tracking-[0.2em] text-[10px] py-6"
         >
-          <Facebook size={16} fill="currentColor" stroke="none" />
+          <FaFacebook size={16} />
           Facebook Sync
         </Button>
       </form>

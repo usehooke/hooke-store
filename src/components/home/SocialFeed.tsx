@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram } from "lucide-react";
+import { FaInstagram } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { get, set } from "idb-keyval";
 
@@ -113,7 +113,7 @@ export default function SocialFeed() {
  className="group flex flex-col items-center gap-3"
  >
  <div className="bg-gray-50 p-4 rounded-none text-hooke-900 group-hover:bg-hooke-900 group-hover:text-white transition-colors duration-300">
- <Instagram size={28} strokeWidth={1.5} />
+ <FaInstagram size={28} />
  </div>
  <div>
  <span className="text-xs font-bold tracking-[0.2em] text-gray-500 mb-1 block">
@@ -155,8 +155,8 @@ export default function SocialFeed() {
  <div className="absolute inset-0 bg-black/40 md:bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end md:items-center justify-start md:justify-center p-8 md:p-0">
  <div className="md:transform md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-300 text-white flex flex-col items-start md:items-center gap-2">
  <div className="flex items-center gap-2">
- <Instagram size={24} strokeWidth={1.5} className="md:hidden" />
- <Instagram size={32} strokeWidth={1.5} className="hidden md:block" />
+ <FaInstagram size={24} className="md:hidden" />
+ <FaInstagram size={32} className="hidden md:block" />
  <span className="text-[10px] md:text-[12px] tracking-[0.3em] font-black">
  Comprar Look
  </span>

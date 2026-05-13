@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { MapPin, ArrowRight, ShieldCheck, Instagram, Zap } from 'lucide-react';
+import { MapPin, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
 import { triggerHaptic } from '@/utils/haptics';
 
 /**
@@ -121,7 +122,7 @@ export default function Vautier142Funnel() {
                                 <span className="text-[8px] font-black uppercase tracking-[0.4em]">Reserva Segura</span>
                             </div>
                             <div className="flex items-center gap-3 opacity-30">
-                                <Instagram size={16} />
+                                <FaInstagram size={16} />
                                 <span className="text-[8px] font-black uppercase tracking-[0.4em]">@use.hooke</span>
                             </div>
                         </div>

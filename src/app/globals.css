@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
 
 @layer base {
   :root {
@@ -50,7 +49,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
     border-radius: 0 !important; /* Sharp corners everywhere */
   }
   body {
@@ -72,12 +71,14 @@
 @layer components {
   /* HOOKE ELITE GLASSMORPHISM - V13.0 SHARP EDITION */
   .hooke-glass {
-    @apply backdrop-blur-[12px] bg-white/70 border-b border-black/10 shadow-sharp transition-all duration-300;
+    @apply backdrop-blur-[12px] bg-white/70 border-b border-black/10 transition-all duration-300;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
     border-radius: 0 !important;
   }
   
   .glass-card {
-    @apply backdrop-blur-[8px] bg-white/40 border border-black/5 shadow-alabastro;
+    @apply backdrop-blur-[8px] bg-white/40 border border-black/5;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
     border-radius: 0 !important;
   }
 

@@ -45,11 +45,11 @@ export function MagicDropzone({ onAnalysisComplete }: MagicDropzoneProps) {
       
       toast.dismiss("vision-loading");
       
-      if (result) {
-        onAnalysisComplete(result);
+      if (result.success) {
+        onAnalysisComplete(result.data);
         toast.success("Análise concluída com sucesso!");
       } else {
-        toast.error("A IA não conseguiu decifrar este equipamento.");
+        toast.error(result.error || "A IA não conseguiu decifrar este equipamento.");
         setPreview(null);
       }
     } catch (error) {
