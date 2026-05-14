@@ -1,51 +1,22 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { z } from "zod";
+import { CampaignPlanSchema, CampaignPlan } from "../schemas/aiSchemas";
 import { generateAndAuditMagicImage } from "@/app/admin/actions/studioOrchestrator";
-
-// 🎬 HOOKE HQ: CAMPAIGN SCHEMA
-// Estrutura para o planejamento do ensaio fotográfico.
-export const CampaignPlanSchema = z.object({
-  campaignTitle: z.string(),
-  metadata: z.record(z.string(), z.any()).optional(),
-  scenes: z.array(z.object({
-    id: z.string(),
-    angleName: z.string(),
-    scenePrompt: z.string().describe("Prompt ultra-detalhado injetando as Regras de Ouro da marca"),
-  })).min(4).max(5),
-});
-
-export type CampaignPlan = z.infer<typeof CampaignPlanSchema>;
-
-const API_KEY = process.env.GEMINI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(API_KEY);
 
 /**
  * 1. O DIRETOR DE ARTE (Decupagem do Tema)
- * Apenas planeja a campanha sem executar a geração.
  */
 export async function planCampaign(themeDescription: string): Promise<{ success: boolean; plan?: any; error?: string }> {
   try {
-    // 🛡️ Validação inicial de ambiente
     const key = process.env.GEMINI_API_KEY;
-    if (!key) {
-      console.error("[CAMPAIGN_DIRECTOR] Erro: GEMINI_API_KEY não encontrada no servidor.");
-      return { success: false, error: "Configuração de API pendente no servidor." };
-    }
+    if (!key) return { success: false, error: "Chave Gemini não configurada." };
 
-    const genAIInstance = new GoogleGenerativeAI(key);
-
-    // Tenta obter o modelo solicitado ou fallback
-    let model;
-    try {
-      model = genAIInstance.getGenerativeModel({ 
-        model: "gemini-1.5-pro", // Forçando 1.5 para estabilidade imediata
-        generationConfig: { responseMimeType: "application/json" }
-      });
-    } catch (e) {
-      return { success: false, error: "Falha ao inicializar motor de IA." };
-    }
+    const genAI = new GoogleGenerativeAI(key);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-3.1-pro",
+      generationConfig: { responseMimeType: "application/json" }
+    });
 
     const directorPrompt = `
       VOCÊ É O DIRETOR DE ARTE DA HOOKE STORE.
@@ -86,7 +57,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
       return { success: false, error: "Estrutura do plano de campanha inválida." };
     }
 
-    return { success: true, plan: validation.data };
+    return JSON.parse(JSON.stringify({ success: true, plan: validation.data }));
   } catch (error: any) {
     console.error("[CAMPAIGN_DIRECTOR] Erro Fatal:", error);
     return { success: false, error: "Falha interna no motor de campanha." };
@@ -134,13 +105,13 @@ export async function createAndExecuteCampaign(themeDescription: string) {
 
     const allApproved = finalCollection.every(item => item.success);
 
-    return {
+    return JSON.parse(JSON.stringify({
       success: allApproved,
       campaignTitle: campaignPlan.campaignTitle,
       collection: finalCollection,
       totalScenes: campaignPlan.scenes.length,
-      approvedScenes: finalCollection.filter(item => item.success).length
-    };
+      approvedScenes: finalCollection.filter((item: any) => item.success).length
+    }));
 
   } catch (error: any) {
     console.error("[CAMPAIGN] Falha na direção da campanha:", error);

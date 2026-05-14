@@ -1,27 +1,10 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { z } from "zod";
-
-// 🛡️ HOOKE HQ: AI EVALUATION SCHEMA
-// Blindagem de dados estrita para garantir que a IA retorne apenas o necessário.
-export const AIEvaluationSchema = z.object({
-  matchesFernandoFace: z.boolean(),
-  isWovenLabel: z.boolean(),
-  isQuietLuxuryAesthetic: z.boolean(),
-  score: z.number().min(0).max(10),
-  reasoning: z.string().describe("Breve explicação técnica da nota"),
-});
-
-export type AIEvaluation = z.infer<typeof AIEvaluationSchema>;
-
-const API_KEY = process.env.GEMINI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(API_KEY);
+import { AIEvaluationSchema, AIEvaluation } from "@/features/studio/schemas/aiSchemas";
 
 /**
  * MISSION: HOOKE HQ - AI IMAGE AUDITOR (GEMINI 3.1 PRO)
- * Esta Server Action implementa o "Avaliador de Fidelidade" para o Estúdio Mágico.
- * Baseado no princípio de 'Evaluation-Driven Development'.
  */
 export async function evaluateMagicStudioImage(base64Image: string): Promise<{
   success: boolean;
@@ -30,12 +13,13 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
   latencyMs?: number;
 }> {
   const startTime = Date.now();
+  const key = process.env.GEMINI_API_KEY;
 
-  if (!API_KEY) {
-    return { success: false, error: "Chave Gemini não configurada." };
-  }
+  if (!key) return { success: false, error: "Chave Gemini não configurada." };
 
   try {
+    const genAI = new GoogleGenerativeAI(key);
+    
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
     const model = genAI.getGenerativeModel({
       model: "gemini-3.1-pro",
@@ -90,17 +74,15 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     console.log(`[AI-EVAL] Image Audited. Score: ${evaluation.score}/10. Latency: ${latencyMs}ms`);
 
     // 6. Lógica de Retentativa (Auto-Correction)
-    // Se a nota for menor que 10, consideramos falha técnica.
     if (!evaluation.matchesFernandoFace || !evaluation.isWovenLabel || !evaluation.isQuietLuxuryAesthetic || evaluation.score < 10) {
       console.warn(`[AI-EVAL] Rejeição detectada: ${evaluation.reasoning}`);
-      // Nota: A lógica de acionar uma nova geração seria implementada aqui ou no orquestrador.
-      return { success: false, evaluation, latencyMs, error: "Imagem não atingiu os critérios Elite de fidelidade." };
+      return JSON.parse(JSON.stringify({ success: false, evaluation, latencyMs, error: "Imagem não atingiu os critérios Elite de fidelidade." }));
     }
 
-    return { success: true, evaluation, latencyMs };
+    return JSON.parse(JSON.stringify({ success: true, evaluation, latencyMs }));
 
   } catch (error: any) {
     console.error("[AI-EVAL] Erro crítico na auditoria:", error);
-    return { success: false, error: error.message, latencyMs: Date.now() - startTime };
+    return JSON.parse(JSON.stringify({ success: false, error: error.message, latencyMs: Date.now() - startTime }));
   }
 }

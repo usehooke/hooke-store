@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Loader2, CheckCircle2, AlertCircle, RefreshCw, ArrowRight, Camera } from 'lucide-react';
-import { planCampaign, CampaignPlan } from '../actions/campaignDirector';
+import { planCampaign } from '../actions/campaignDirector';
+import { CampaignPlan } from '../schemas/aiSchemas';
 import { generateAndAuditMagicImage } from '@/app/admin/actions/studioOrchestrator';
 import { toast } from 'sonner';
 
@@ -68,36 +69,54 @@ export function CampaignMonitor() {
   };
 
   const processScene = async (id: string, traceId: string, prompt: string) => {
-    updateScene(id, { status: 'rendering' });
+    let attempt = 1;
+    const maxRetries = 3;
+    let success = false;
 
-    try {
-      const result = await generateAndAuditMagicImage(prompt);
-      
-      // Salva rastro de telemetria (AI Trace)
-      await TelemetryService.saveTrace({
-        traceId,
-        prompt,
-        aiReasoning: result.evaluation?.reasoning || result.error,
-        status: result.success ? "approved" : "ai_rejected",
-        score: result.evaluation?.score,
-        metadata: { angle: id }
+    while (attempt <= maxRetries && !success) {
+      updateScene(id, { 
+        status: attempt === 1 ? 'rendering' : 'recalibrating',
+        retryCount: attempt - 1
       });
 
-      if (result.success) {
-        updateScene(id, { 
-          status: 'approved', 
-          imageUrl: result.image, 
+      try {
+        const result = await generateAndAuditMagicImage(prompt);
+        
+        // Registro de Telemetria para cada tentativa
+        await TelemetryService.saveTrace({
+          traceId,
+          prompt,
+          aiReasoning: result.evaluation?.reasoning || result.error,
+          status: result.success ? "approved" : "ai_rejected",
           score: result.evaluation?.score,
-          reasoning: result.evaluation?.reasoning
+          metadata: { angle: id, attempt }
         });
-      } else {
-        updateScene(id, { 
-          status: 'failed', 
-          reasoning: result.error 
-        });
+
+        if (result.success) {
+          updateScene(id, { 
+            status: 'approved', 
+            imageUrl: result.image, 
+            score: result.evaluation?.score,
+            reasoning: result.evaluation?.reasoning
+          });
+          success = true;
+          break;
+        } else {
+          console.warn(`[PROCESS_SCENE] Tentativa ${attempt} falhou: ${result.error}`);
+          if (attempt === maxRetries) {
+            updateScene(id, { 
+              status: 'failed', 
+              reasoning: result.error 
+            });
+          }
+        }
+      } catch (error) {
+        console.error(`[PROCESS_SCENE] Erro na tentativa ${attempt}:`, error);
+        if (attempt === maxRetries) {
+          updateScene(id, { status: 'failed' });
+        }
       }
-    } catch (error) {
-      updateScene(id, { status: 'failed' });
+      attempt++;
     }
   };
 
