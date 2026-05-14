@@ -1,11 +1,11 @@
 "use client";
 
-import { MagicStudio } from "@/features/studio/MagicStudio";
+import { CampaignMonitor } from "@/features/studio/components/CampaignMonitor";
 
 export default function EstudioPage() {
   return (
     <main className="min-h-screen bg-white">
-      <MagicStudio />
+      <CampaignMonitor />
     </main>
   );
 }

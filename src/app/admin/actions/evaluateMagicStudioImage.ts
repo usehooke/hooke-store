@@ -1,0 +1,106 @@
+"use server";
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { z } from "zod";
+
+// 🛡️ HOOKE HQ: AI EVALUATION SCHEMA
+// Blindagem de dados estrita para garantir que a IA retorne apenas o necessário.
+export const AIEvaluationSchema = z.object({
+  matchesFernandoFace: z.boolean(),
+  isWovenLabel: z.boolean(),
+  isQuietLuxuryAesthetic: z.boolean(),
+  score: z.number().min(0).max(10),
+  reasoning: z.string().describe("Breve explicação técnica da nota"),
+});
+
+export type AIEvaluation = z.infer<typeof AIEvaluationSchema>;
+
+const API_KEY = process.env.GEMINI_API_KEY || "";
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+/**
+ * MISSION: HOOKE HQ - AI IMAGE AUDITOR (GEMINI 3.1 PRO)
+ * Esta Server Action implementa o "Avaliador de Fidelidade" para o Estúdio Mágico.
+ * Baseado no princípio de 'Evaluation-Driven Development'.
+ */
+export async function evaluateMagicStudioImage(base64Image: string): Promise<{
+  success: boolean;
+  evaluation?: AIEvaluation;
+  error?: string;
+  latencyMs?: number;
+}> {
+  const startTime = Date.now();
+
+  if (!API_KEY) {
+    return { success: false, error: "Chave Gemini não configurada." };
+  }
+
+  try {
+    // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
+    const model = genAI.getGenerativeModel({
+      model: "gemini-3.1-pro",
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
+    });
+
+    // 2. Prompt Estratégico (O "Tribunal de Estética" da Hooke)
+    const prompt = `
+      VOCÊ É O AUDITOR CHEFE DE QUALIDADE DA HOOKE STORE.
+      Sua missão é avaliar uma imagem gerada por IA (Nano Banana 2) contra os padrões 'Elite' da marca.
+
+      REGRAS DE AVALIAÇÃO:
+      1. FIDELIDADE FACIAL: O rosto na imagem deve manter 100% das características do Fernando (Fundador).
+      2. ETIQUETA WOVEN: Deve haver uma etiqueta física tecida de alta definição. Rejeite terminantemente qualquer sinal de Silk-Screen ou estampas de baixa qualidade.
+      3. ESTÉTICA QUIET LUXURY: A composição deve ser minimalista, sofisticada, com tons sóbrios e 'Soft Brutalism'.
+
+      RETORNE UM JSON NO SEGUINTE FORMATO:
+      {
+        "matchesFernandoFace": boolean,
+        "isWovenLabel": boolean,
+        "isQuietLuxuryAesthetic": boolean,
+        "score": number (0-10),
+        "reasoning": "string"
+      }
+    `;
+
+    // 3. Processamento de Visão
+    const pureBase64 = base64Image.split(",")[1] || base64Image;
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: pureBase64,
+          mimeType: "image/jpeg",
+        },
+      },
+    ]);
+
+    const response = await result.response;
+    const text = response.text();
+
+    // 4. Validação Zod (Blindagem de Dados)
+    const rawData = JSON.parse(text);
+    const evaluation = AIEvaluationSchema.parse(rawData);
+
+    const endTime = Date.now();
+    const latencyMs = endTime - startTime;
+
+    // 5. Telemetria e Logs de Auditoria
+    console.log(`[AI-EVAL] Image Audited. Score: ${evaluation.score}/10. Latency: ${latencyMs}ms`);
+
+    // 6. Lógica de Retentativa (Auto-Correction)
+    // Se a nota for menor que 10, consideramos falha técnica.
+    if (!evaluation.matchesFernandoFace || !evaluation.isWovenLabel || !evaluation.isQuietLuxuryAesthetic || evaluation.score < 10) {
+      console.warn(`[AI-EVAL] Rejeição detectada: ${evaluation.reasoning}`);
+      // Nota: A lógica de acionar uma nova geração seria implementada aqui ou no orquestrador.
+      return { success: false, evaluation, latencyMs, error: "Imagem não atingiu os critérios Elite de fidelidade." };
+    }
+
+    return { success: true, evaluation, latencyMs };
+
+  } catch (error: any) {
+    console.error("[AI-EVAL] Erro crítico na auditoria:", error);
+    return { success: false, error: error.message, latencyMs: Date.now() - startTime };
+  }
+}
