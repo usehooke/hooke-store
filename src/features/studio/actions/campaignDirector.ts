@@ -8,6 +8,7 @@ import { generateAndAuditMagicImage } from "@/app/admin/actions/studioOrchestrat
 // Estrutura para o planejamento do ensaio fotográfico.
 export const CampaignPlanSchema = z.object({
   campaignTitle: z.string(),
+  metadata: z.record(z.string(), z.any()).optional(),
   scenes: z.array(z.object({
     id: z.string(),
     angleName: z.string(),
@@ -106,7 +107,7 @@ export async function createAndExecuteCampaign(themeDescription: string) {
     console.log(`[CAMPAIGN] Plano "${campaignPlan.campaignTitle}" gerado com ${campaignPlan.scenes.length} cenas.`);
 
     // 2. ORQUESTRAÇÃO EM LOTE (Execução Paralela com EDD)
-    const generationPromises = campaignPlan.scenes.map((scene) => 
+    const generationPromises = campaignPlan.scenes.map((scene: any) => 
       generateAndAuditMagicImage(scene.scenePrompt)
     );
 
@@ -114,7 +115,7 @@ export async function createAndExecuteCampaign(themeDescription: string) {
 
     // 3. CONSOLIDAÇÃO DA COLEÇÃO
     const finalCollection = results.map((res, index) => {
-      const scene = campaignPlan.scenes[index];
+      const scene: any = campaignPlan.scenes[index];
       if (res.status === 'fulfilled') {
         return {
           id: scene.id,
