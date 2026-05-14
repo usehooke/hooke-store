@@ -50,8 +50,8 @@ export function CampaignMonitor() {
         toast.error(result.error || "Falha ao planejar campanha.");
         setStatus('idle');
       }
-    } catch (error) {
-      toast.error("Erro no Diretor de Campanha.");
+    } catch (error: any) {
+      toast.error(error.message || "Erro no Diretor de Campanha.");
       setStatus('idle');
     }
   };

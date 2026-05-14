@@ -28,10 +28,19 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
   if (!API_KEY) return { success: false, error: "Chave Gemini não configurada." };
 
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.1-pro",
-      generationConfig: { responseMimeType: "application/json" }
-    });
+    let model;
+    try {
+      model = genAI.getGenerativeModel({ 
+        model: "gemini-3.1-pro",
+        generationConfig: { responseMimeType: "application/json" }
+      });
+    } catch (e) {
+      // Fallback para o modelo estável caso o 3.1 ainda não esteja disponível no SDK
+      model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-pro",
+        generationConfig: { responseMimeType: "application/json" }
+      });
+    }
 
     const directorPrompt = `
       VOCÊ É O DIRETOR DE ARTE DA HOOKE STORE.
@@ -58,7 +67,9 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
 
     return { success: true, plan: campaignPlan };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    console.error("[CAMPAIGN_DIRECTOR] Erro:", error);
+    // Retorna o erro real para o front-end diagnosticar
+    return { success: false, error: error.message || "Erro desconhecido no Diretor." };
   }
 }
 
