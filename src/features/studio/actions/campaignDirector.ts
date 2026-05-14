@@ -24,22 +24,26 @@ const genAI = new GoogleGenerativeAI(API_KEY);
  * 1. O DIRETOR DE ARTE (Decupagem do Tema)
  * Apenas planeja a campanha sem executar a geração.
  */
-export async function planCampaign(themeDescription: string): Promise<{ success: boolean; plan?: CampaignPlan; error?: string }> {
-  if (!API_KEY) return { success: false, error: "Chave Gemini não configurada." };
-
+export async function planCampaign(themeDescription: string): Promise<{ success: boolean; plan?: any; error?: string }> {
   try {
+    // 🛡️ Validação inicial de ambiente
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      console.error("[CAMPAIGN_DIRECTOR] Erro: GEMINI_API_KEY não encontrada no servidor.");
+      return { success: false, error: "Configuração de API pendente no servidor." };
+    }
+
+    const genAIInstance = new GoogleGenerativeAI(key);
+
+    // Tenta obter o modelo solicitado ou fallback
     let model;
     try {
-      model = genAI.getGenerativeModel({ 
-        model: "gemini-3.1-pro",
+      model = genAIInstance.getGenerativeModel({ 
+        model: "gemini-1.5-pro", // Forçando 1.5 para estabilidade imediata
         generationConfig: { responseMimeType: "application/json" }
       });
     } catch (e) {
-      // Fallback para o modelo estável caso o 3.1 ainda não esteja disponível no SDK
-      model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-pro",
-        generationConfig: { responseMimeType: "application/json" }
-      });
+      return { success: false, error: "Falha ao inicializar motor de IA." };
     }
 
     const directorPrompt = `
@@ -47,29 +51,44 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
       Sua missão é quebrar o tema "${themeDescription}" em um ensaio fotográfico coeso de 4 a 5 cenas.
 
       REGRAS DE OURO ABSOLUTAS (Injete em CADA prompt de cena):
-      - FIDELIDADE: O rosto e corpo do Fundador (Fernando) são a prioridade absoluta e imutável. Homem de 43 anos, estrutura física robusta com 173cm de altura e 96kg. O detalhe crucial e inegociável: o cabelo se divide naturalmente no meio. Proibida qualquer mutação facial, cortes de cabelo diferentes ou proporções físicas distorcidas.
-      - PRODUTO: Foco em camisetas premium (lisas ou com gráficos de carros clássicos: Fusca, Kombi). NUNCA gere looks completos ou sobreposições pesadas.
-      - BRANDING: Detalhe a Etiqueta Woven (tecida) em alta definição. Logo Wordmark HOOKE refinado.
+      - FIDELIDADE: O rosto e corpo do Fundador (Fernando) são a prioridade absoluta e imutável. Homem de 43 anos, estrutura física robusta com 173cm de altura e 96kg. Cabelo com divisão no meio.
+      - PRODUTO: Foco em camisetas premium (lisas ou com gráficos de carros clássicos: Fusca, Kombi).
+      - BRANDING: Detalhe a Etiqueta Woven em alta definição. Logo Wordmark HOOKE.
       - ESTÉTICA: 'Soft Brutalism', minimalismo, tons sóbrios.
 
       FORMATO DE RETORNO (JSON):
       {
-        "campaignTitle": "Nome épico da campanha",
+        "campaignTitle": "string",
         "scenes": [
-          { "id": "uuid", "angleName": "Ex: Close-up Etiqueta", "scenePrompt": "Prompt detalhado..." }
+          { "id": "uuid", "angleName": "string", "scenePrompt": "string" }
         ]
       }
     `;
 
     const planResult = await model.generateContent(directorPrompt);
-    const planData = JSON.parse(planResult.response.text());
-    const campaignPlan = CampaignPlanSchema.parse(planData);
+    const text = planResult.response.text();
+    
+    if (!text) throw new Error("IA retornou resposta vazia.");
 
-    return { success: true, plan: campaignPlan };
+    let planData;
+    try {
+      planData = JSON.parse(text);
+    } catch (e) {
+      console.error("[CAMPAIGN_DIRECTOR] JSON Parse Error:", text);
+      return { success: false, error: "IA gerou um formato inválido." };
+    }
+
+    // Validação Zod com captura de erro específica
+    const validation = CampaignPlanSchema.safeParse(planData);
+    if (!validation.success) {
+      console.error("[CAMPAIGN_DIRECTOR] Zod Error:", validation.error.format());
+      return { success: false, error: "Estrutura do plano de campanha inválida." };
+    }
+
+    return { success: true, plan: validation.data };
   } catch (error: any) {
-    console.error("[CAMPAIGN_DIRECTOR] Erro:", error);
-    // Retorna o erro real para o front-end diagnosticar
-    return { success: false, error: error.message || "Erro desconhecido no Diretor." };
+    console.error("[CAMPAIGN_DIRECTOR] Erro Fatal:", error);
+    return { success: false, error: "Falha interna no motor de campanha." };
   }
 }
 
