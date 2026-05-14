@@ -22,7 +22,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
     const model = genAI.getGenerativeModel({
-      model: "gemini-3.1-pro",
+      model: "gemini-1.5-pro",
       generationConfig: {
         responseMimeType: "application/json",
       }

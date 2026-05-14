@@ -14,7 +14,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
 
     const genAI = new GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.1-pro",
+      model: "gemini-1.5-pro",
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -60,7 +60,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
     return JSON.parse(JSON.stringify({ success: true, plan: validation.data }));
   } catch (error: any) {
     console.error("[CAMPAIGN_DIRECTOR] Erro Fatal:", error);
-    return { success: false, error: "Falha interna no motor de campanha." };
+    return { success: false, error: "Falha na API: " + error.message };
   }
 }
 
