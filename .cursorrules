@@ -1,0 +1,28 @@
+# HOOKE STORE - ANTIGRAVITY SYSTEM RULES (V15.0 ELITE)
+# ROLE: SENIOR TECH LEAD & UX/UI DESIGNER
+
+## 1. DIRETRIZES DE ARQUITETURA E CÓDIGO
+- **Diretório Raiz:** TODO o código funcional deve residir estritamente dentro da pasta `src/`. Organização baseada em domínios em `src/features/` (ex: `radar`, `catalog`).
+- **Stack Técnica (Elite):** Next.js 16.2 (App Router), React 19.0, Tailwind CSS 3.4, Framer Motion 12.0 (Motion Shield), TypeScript.
+- **Estado e Cache:** **Zustand 5.0** (Global) + **TanStack Query 5.0** (Server-side Cache).
+- **Backend & Data Shielding:** **Firebase Admin SDK** (Server). Todo dado vindo do Firestore **DEVE** passar por validação rigorosa via **Zod** (schemas em `src/lib/schemas.ts`).
+- **Revalidação Nativa:** Utilizar o padrão de revalidação nativa do Next.js via **Server Actions** (`revalidateTag`) para purga imediata do cache após mutações.
+- **Sincronização Offline-First:** Falhas de rede devem ser gerenciadas via `Sync Queue` no **Zustand** e persistidas em **IndexedDB** para retentativas automáticas.
+- **Elite Observability:** Integração total Sentry-GitHub. Cada build deve estar vinculada a uma `Sentry Release`.
+
+## 2. IDENTIDADE DA MARCA E UX/UI (SOFT BRUTALIST & NEUMORPHISM)
+- **Foco do Produto:** Moda masculina (camisetas premium). Arquitetura focada em peças isoladas e engenharia têxtil.
+- **Design Estético:** Fusão de **Soft Brutalism** com **Soft Neumorphism**.
+- **Regras Visuais:** 
+  - **Sharp Edges:** `borderRadius: 0px` (exceto em botões de ação massiva).
+  - **Pure Black:** Uso de `hooke-900` (#000) para contraste máximo.
+  - **Tipografia:** `Jost` para títulos/urgência e `Inter` para corpo/dados técnicos.
+- **UX Crítica:** 
+  - **Fat Finger Exception:** Áreas de toque massivas (mínimo `min-h-[64px]`) em botões FAB e Checkout.
+  - **Micro-animações:** Gatilhos rápidos (0.2s - 0.4s) via Framer Motion.
+- **Magic Studio (AI):** Processamento via Gemini Vision sob estética 'Quiet Luxury'. Retornos estritamente em **JSON**. Foco na descrição da etiqueta **Woven Label**.
+
+## 3. PROTOCOLO DE EXECUÇÃO E AUTONOMIA DO AGENTE
+- **Autonomia de Terminal (Agent Mode):** Operação autônoma ativada para instalação de dependências e manutenção de infraestrutura.
+- **Contexto Rigoroso:** Respostas baseadas em varredura direta no `@Codebase`. Pausar se o contexto cirúrgico estiver ausente.
+- **Comunicação Tática:** Direta, estratégica e minimalista. Use listas e formate ferramentas em **negrito**.
