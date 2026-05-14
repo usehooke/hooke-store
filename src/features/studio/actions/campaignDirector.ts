@@ -14,7 +14,8 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
 
     const genAI = new GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-1.5-flash-latest",
+      apiVersion: "v1",
       generationConfig: { responseMimeType: "application/json" }
     });
 
