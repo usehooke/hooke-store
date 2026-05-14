@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AIEvaluationSchema, AIEvaluation } from "@/features/studio/schemas/aiSchemas";
 
 /**
- * MISSION: HOOKE HQ - AI IMAGE AUDITOR (GEMINI 3.1 PRO)
+ * MISSION: HOOKE HQ - AI IMAGE AUDITOR (GEMINI 1.5 FLASH)
  */
 export async function evaluateMagicStudioImage(base64Image: string): Promise<{
   success: boolean;
@@ -22,7 +22,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro-latest",
+      model: "gemini-1.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
       }
