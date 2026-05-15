@@ -13,9 +13,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
     if (!key) return { success: false, error: "Chave Gemini não configurada." };
 
     const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash"
-    }, { apiVersion: "v1" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const directorPrompt = `
       VOCÊ É O DIRETOR DE ARTE DA HOOKE STORE.
@@ -27,6 +25,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
       - BRANDING: Detalhe a Etiqueta Woven em alta definição. Logo Wordmark HOOKE.
       - ESTÉTICA: 'Soft Brutalism', minimalismo, tons sóbrios.
 
+      IMPORTANTE: Responda APENAS com o objeto JSON abaixo, sem texto adicional ou markdown.
       FORMATO DE RETORNO (JSON):
       {
         "campaignTitle": "string",
@@ -41,12 +40,18 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
     
     if (!text) throw new Error("IA retornou resposta vazia.");
 
+    // SANITIZAÇÃO DE ELITE: Remove qualquer markdown e extrai apenas o JSON
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("[CAMPAIGN_DIRECTOR] Falha na extração de JSON da resposta:", text);
+      return { success: false, error: "IA não retornou um formato JSON válido." };
+    }
+
     let planData;
     try {
-      const cleanText = text.replace(/```json\n?|```/g, "").trim();
-      planData = JSON.parse(cleanText);
+      planData = JSON.parse(jsonMatch[0]);
     } catch (e) {
-      console.error("[CAMPAIGN_DIRECTOR] JSON Parse Error:", text);
+      console.error("[CAMPAIGN_DIRECTOR] JSON Parse Error:", jsonMatch[0]);
       return { success: false, error: "IA gerou um formato inválido." };
     }
 

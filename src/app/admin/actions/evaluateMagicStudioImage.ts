@@ -21,9 +21,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     const genAI = new GoogleGenerativeAI(key);
     
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash"
-    }, { apiVersion: "v1" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // 2. Prompt Estratégico (O "Tribunal de Estética" da Hooke)
     const prompt = `
@@ -35,6 +33,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
       2. ETIQUETA WOVEN: Deve haver uma etiqueta física tecida de alta definição. Rejeite terminantemente qualquer sinal de Silk-Screen ou estampas de baixa qualidade.
       3. ESTÉTICA QUIET LUXURY: A composição deve ser minimalista, sofisticada, com tons sóbrios e 'Soft Brutalism'.
 
+      IMPORTANTE: Responda APENAS com o objeto JSON abaixo, sem texto adicional ou markdown.
       RETORNE UM JSON NO SEGUINTE FORMATO:
       {
         "matchesFernandoFace": boolean,
@@ -61,8 +60,11 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     const text = response.text();
 
     // 4. Validação Zod (Blindagem de Dados)
-    const cleanText = text.replace(/```json\n?|```/g, "").trim();
-    const rawData = JSON.parse(cleanText);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("IA não retornou um JSON válido na avaliação.");
+    }
+    const rawData = JSON.parse(jsonMatch[0]);
     const evaluation = AIEvaluationSchema.parse(rawData);
 
     const endTime = Date.now();
