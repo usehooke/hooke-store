@@ -9,15 +9,14 @@ import { generateAndAuditMagicImage } from "@/app/admin/actions/studioOrchestrat
  */
 export async function planCampaign(themeDescription: string): Promise<{ success: boolean; plan?: any; error?: string }> {
   try {
-    const key = process.env.GEMINI_API_KEY;
+    const key = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     if (!key) return { success: false, error: "Chave Gemini não configurada." };
 
     const genAI = new GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash-latest",
-      apiVersion: "v1",
+      model: "gemini-1.5-flash",
       generationConfig: { responseMimeType: "application/json" }
-    });
+    }, { apiVersion: "v1" });
 
     const directorPrompt = `
       VOCÊ É O DIRETOR DE ARTE DA HOOKE STORE.

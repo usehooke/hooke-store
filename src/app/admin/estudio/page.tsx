@@ -1,4 +1,5 @@
-"use client";
+export const maxDuration = 60;
+
 
 import { CampaignMonitor } from "@/features/studio/components/CampaignMonitor";
 

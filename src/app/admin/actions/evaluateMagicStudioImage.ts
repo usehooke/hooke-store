@@ -13,7 +13,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
   latencyMs?: number;
 }> {
   const startTime = Date.now();
-  const key = process.env.GEMINI_API_KEY;
+  const key = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
   if (!key) return { success: false, error: "Chave Gemini não configurada." };
 
@@ -22,12 +22,11 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest",
-      apiVersion: "v1",
+      model: "gemini-1.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
       }
-    });
+    }, { apiVersion: "v1" });
 
     // 2. Prompt Estratégico (O "Tribunal de Estética" da Hooke)
     const prompt = `
