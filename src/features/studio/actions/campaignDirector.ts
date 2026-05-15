@@ -13,7 +13,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
     if (!key) return { success: false, error: "Chave Gemini não configurada." };
 
     const genAI = new GoogleGenerativeAI(key);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     const directorPrompt = `
       VOCÊ É O DIRETOR DE ARTE DA HOOKE STORE.

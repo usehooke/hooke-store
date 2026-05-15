@@ -21,7 +21,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     const genAI = new GoogleGenerativeAI(key);
     
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     // 2. Prompt Estratégico (O "Tribunal de Estética" da Hooke)
     const prompt = `
