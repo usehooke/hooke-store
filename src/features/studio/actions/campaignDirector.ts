@@ -14,8 +14,7 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
 
     const genAI = new GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      generationConfig: { responseMimeType: "application/json" }
+      model: "gemini-1.5-flash"
     }, { apiVersion: "v1" });
 
     const directorPrompt = `
@@ -44,7 +43,8 @@ export async function planCampaign(themeDescription: string): Promise<{ success:
 
     let planData;
     try {
-      planData = JSON.parse(text);
+      const cleanText = text.replace(/```json\n?|```/g, "").trim();
+      planData = JSON.parse(cleanText);
     } catch (e) {
       console.error("[CAMPAIGN_DIRECTOR] JSON Parse Error:", text);
       return { success: false, error: "IA gerou um formato inválido." };

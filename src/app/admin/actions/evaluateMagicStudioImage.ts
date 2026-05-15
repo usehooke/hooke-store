@@ -22,10 +22,7 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     
     // 1. Configuração do Modelo (Foco em Visão de Alta Precisão)
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-      }
+      model: "gemini-1.5-flash"
     }, { apiVersion: "v1" });
 
     // 2. Prompt Estratégico (O "Tribunal de Estética" da Hooke)
@@ -64,7 +61,8 @@ export async function evaluateMagicStudioImage(base64Image: string): Promise<{
     const text = response.text();
 
     // 4. Validação Zod (Blindagem de Dados)
-    const rawData = JSON.parse(text);
+    const cleanText = text.replace(/```json\n?|```/g, "").trim();
+    const rawData = JSON.parse(cleanText);
     const evaluation = AIEvaluationSchema.parse(rawData);
 
     const endTime = Date.now();
