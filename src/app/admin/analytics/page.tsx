@@ -1,10 +1,33 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, TrendingUp, Users, ShoppingCart, DollarSign, Eye, RefreshCw } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Toaster, toast } from 'sonner';
+import { motion } from 'framer-motion';
+
+// Tooltip brutalista premium com desfoque de fundo e sombra preta rígida
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="backdrop-blur-md bg-white/95 border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-mono text-xs">
+        <p className="font-black text-black mb-2 uppercase tracking-wider">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center gap-2 mb-1.5 last:mb-0">
+            <div className="w-3 h-3 border-2 border-black" style={{ backgroundColor: entry.payload.fill || entry.color || entry.stroke }} />
+            <span className="text-zinc-600 font-bold uppercase tracking-tight">{entry.name}:</span>
+            <span className="font-black text-black">
+              {entry.name === 'Vendas' ? `R$ ${entry.value.toLocaleString('pt-BR')}` : entry.value.toLocaleString('pt-BR')}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 
 export default function AdminAnalyticsPage() {
   const [period, setPeriod] = useState<'7d' | '30d' | '90d' | 'ytd'>('30d');
@@ -116,44 +139,72 @@ export default function AdminAnalyticsPage() {
           <h2 className="text-2xl font-black tracking-tighter mb-6">Métricas Principais</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Receita Total */}
-            <div className="border-2 border-black p-6 bg-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-all">
+            <motion.div 
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 350, damping: 15 }}
+              className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
+            >
               <div className="flex items-start justify-between mb-4">
                 <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Receita Total</span>
                 <DollarSign size={18} className="text-zinc-400" />
               </div>
-              <p className="text-3xl font-black tracking-tighter mb-2">R$ 45,890</p>
-              <p className="text-xs font-bold text-green-600">↑ +12% vs. mês anterior</p>
-            </div>
+              <p className="text-3xl font-black tracking-tighter mb-2">R$ 45.890</p>
+              <p className="text-xs font-bold text-green-600 flex items-center gap-1.5">
+                <span className="inline-block animate-pulse w-2 h-2 rounded-full bg-green-500"></span>
+                ↑ +12% vs. mês anterior
+              </p>
+            </motion.div>
 
             {/* Número de Vendas */}
-            <div className="border-2 border-black p-6 bg-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-all">
+            <motion.div 
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 350, damping: 15 }}
+              className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
+            >
               <div className="flex items-start justify-between mb-4">
                 <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Total de Vendas</span>
                 <ShoppingCart size={18} className="text-zinc-400" />
               </div>
               <p className="text-3xl font-black tracking-tighter mb-2">234</p>
-              <p className="text-xs font-bold text-green-600">↑ +8% vs. mês anterior</p>
-            </div>
+              <p className="text-xs font-bold text-green-600 flex items-center gap-1.5">
+                <span className="inline-block animate-pulse w-2 h-2 rounded-full bg-green-500"></span>
+                ↑ +8% vs. mês anterior
+              </p>
+            </motion.div>
 
             {/* Visitantes Únicos */}
-            <div className="border-2 border-black p-6 bg-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-all">
+            <motion.div 
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 350, damping: 15 }}
+              className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
+            >
               <div className="flex items-start justify-between mb-4">
                 <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Visitantes Únicos</span>
                 <Users size={18} className="text-zinc-400" />
               </div>
-              <p className="text-3xl font-black tracking-tighter mb-2">8,932</p>
-              <p className="text-xs font-bold text-red-600">↓ -5% vs. mês anterior</p>
-            </div>
+              <p className="text-3xl font-black tracking-tighter mb-2">8.932</p>
+              <p className="text-xs font-bold text-red-600 flex items-center gap-1.5">
+                <span className="inline-block animate-pulse w-2 h-2 rounded-full bg-red-500"></span>
+                ↓ -5% vs. mês anterior
+              </p>
+            </motion.div>
 
             {/* Taxa de Conversão */}
-            <div className="border-2 border-black p-6 bg-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] transition-all">
+            <motion.div 
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 350, damping: 15 }}
+              className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
+            >
               <div className="flex items-start justify-between mb-4">
                 <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Conversão</span>
                 <TrendingUp size={18} className="text-zinc-400" />
               </div>
               <p className="text-3xl font-black tracking-tighter mb-2">2.62%</p>
-              <p className="text-xs font-bold text-green-600">↑ +0.3% vs. mês anterior</p>
-            </div>
+              <p className="text-xs font-bold text-green-600 flex items-center gap-1.5">
+                <span className="inline-block animate-pulse w-2 h-2 rounded-full bg-green-500"></span>
+                ↑ +0.3% vs. mês anterior
+              </p>
+            </motion.div>
           </div>
         </section>
 
@@ -161,43 +212,117 @@ export default function AdminAnalyticsPage() {
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Gráfico de Vendas vs Visitantes */}
-          <div className="lg:col-span-2 border-2 border-black p-6 bg-white">
-            <h3 className="text-lg font-black tracking-tighter mb-6">Vendas vs Visitantes</h3>
+          <div className="lg:col-span-2 border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <div>
+                <h3 className="text-lg font-black tracking-tighter">Vendas vs Visitantes</h3>
+                <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">Desempenho de tráfego e conversão de receita</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-mono">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 bg-black border border-black rounded-sm"></span>
+                  <span className="font-bold">VENDAS</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-zinc-400">
+                  <span className="w-3 h-3 bg-zinc-400 border border-zinc-400 rounded-sm"></span>
+                  <span className="font-bold">VISITANTES</span>
+                </div>
+              </div>
+            </div>
+            
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={salesData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="vendas" stroke="#000000" strokeWidth={2} />
-                <Line type="monotone" dataKey="visitantes" stroke="#808080" strokeWidth={2} />
-              </LineChart>
+              <AreaChart data={salesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#000000" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#000000" stopOpacity={0.0}/>
+                  </linearGradient>
+                  <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#808080" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#808080" stopOpacity={0.0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="2 2" stroke="#f4f4f5" />
+                <XAxis 
+                  dataKey="month" 
+                  tick={{ fill: '#71717a', fontSize: 10, fontWeight: 'bold', fontFamily: 'monospace' }} 
+                  axisLine={{ stroke: '#000000', strokeWidth: 2 }}
+                  tickLine={{ stroke: '#000000', strokeWidth: 2 }}
+                />
+                <YAxis 
+                  tick={{ fill: '#71717a', fontSize: 10, fontWeight: 'bold', fontFamily: 'monospace' }} 
+                  axisLine={{ stroke: '#000000', strokeWidth: 2 }}
+                  tickLine={{ stroke: '#000000', strokeWidth: 2 }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="vendas" 
+                  stroke="#000000" 
+                  strokeWidth={2.5} 
+                  fillOpacity={1} 
+                  fill="url(#colorSales)" 
+                  name="Vendas"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="visitantes" 
+                  stroke="#808080" 
+                  strokeWidth={2} 
+                  fillOpacity={1} 
+                  fill="url(#colorVisitors)" 
+                  name="Visitantes"
+                />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Pie Chart Categorias */}
-          <div className="border-2 border-black p-6 bg-white">
-            <h3 className="text-lg font-black tracking-tighter mb-6">Vendas por Categoria</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name} ${value}%`}
-                  outerRadius={80}
-                  fill="#000000"
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* Donut Chart Categorias */}
+          <div className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="text-lg font-black tracking-tighter mb-2">Vendas por Categoria</h3>
+            <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider mb-6">Divisão do volume por tipo de peça</p>
+            
+            <div className="relative flex justify-center items-center h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={COLORS[index % COLORS.length]} 
+                        stroke="#000000" 
+                        strokeWidth={2}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Centro do Donut */}
+              <div className="absolute text-center pointer-events-none">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block mb-0.5">Foco</span>
+                <span className="text-xl font-mono font-black text-black">TOP #1</span>
+              </div>
+            </div>
+            
+            {/* Legenda Customizada */}
+            <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-zinc-100 font-mono text-[10px]">
+              {categoryData.map((entry, index) => (
+                <div key={entry.name} className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 border border-black" style={{ backgroundColor: COLORS[index] }}></span>
+                  <span className="font-bold text-zinc-700 truncate uppercase">{entry.name}</span>
+                  <span className="font-black text-black ml-auto">{entry.value}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

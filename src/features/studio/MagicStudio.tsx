@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 
 import { Department, Size } from '@/types';
 import { MotionDiv, MotionForm, MotionSpan } from '@/components/admin/MotionComponents';
+import { VirtualTryOn } from './components/VirtualTryOn';
 
 /**
  * HOOKE HQ: MAGIC STUDIO WORKSPACE
@@ -22,6 +23,7 @@ import { MotionDiv, MotionForm, MotionSpan } from '@/components/admin/MotionComp
  * Focado em eliminar o data-entry através de Visão Computacional.
  */
 export function MagicStudio() {
+  const [activeMode, setActiveMode] = useState<'catalog' | 'vton'>('catalog');
   const [step, setStep] = useState<'upload' | 'analyzing' | 'curating'>('upload');
   const [preview, setPreview] = useState<string | null>(null);
   const [aiGlowFields, setAiGlowFields] = useState<Set<string>>(new Set());
@@ -162,8 +164,31 @@ export function MagicStudio() {
         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Ambiente de Criação V15.0</p>
       </header>
 
-      <AnimatePresence mode="wait">
-        {step === 'upload' && (
+      {/* Brutalist Mode Switcher */}
+      <div className="flex border-4 border-black mb-12 p-1 bg-zinc-100 max-w-lg mx-auto shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+        <button 
+          onClick={() => setActiveMode('catalog')}
+          className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all active:scale-95 ${
+            activeMode === 'catalog' ? 'bg-black text-white' : 'bg-transparent text-black hover:bg-zinc-200'
+          }`}
+        >
+          Auto-Catálogo (Visão IA)
+        </button>
+        <button 
+          onClick={() => setActiveMode('vton')}
+          className={`flex-1 py-3 text-xs font-black uppercase tracking-widest transition-all active:scale-95 ${
+            activeMode === 'vton' ? 'bg-black text-white' : 'bg-transparent text-black hover:bg-zinc-200'
+          }`}
+        >
+          Vitrine Virtual (VTON)
+        </button>
+      </div>
+
+      {activeMode === 'vton' ? (
+        <VirtualTryOn />
+      ) : (
+        <AnimatePresence mode="wait">
+          {step === 'upload' && (
           <MotionDiv 
             key="upload"
             initial={{ opacity: 0, y: 20 }}
@@ -285,6 +310,7 @@ export function MagicStudio() {
           </MotionForm>
         )}
       </AnimatePresence>
+      )}
     </div>
   );
 }

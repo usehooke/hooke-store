@@ -21,6 +21,10 @@ export const productSchema = z.object({
     model: z.string(),
     wash: z.string(),
   }).optional(),
+  seo: z.object({
+    altText: z.string().optional(),
+    metaDescription: z.string().optional(),
+  }).optional(),
   stock: z.record(z.string(), z.number()).optional(),
 });
 

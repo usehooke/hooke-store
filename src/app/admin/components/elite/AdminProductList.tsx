@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import { 
   Eye, EyeOff, Edit3, Trash2, 
@@ -30,20 +30,21 @@ export function AdminProductList({
   onSync 
 }: AdminProductListProps) {
   const [searchInput, setSearchInput] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"todos" | "masculino" | "feminino">("todos");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         p.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTab = activeTab === "todos" || p.department === activeTab;
-    return matchesSearch && matchesTab;
-  });
-
-  const handleSearch = () => {
-    setSearchTerm(searchInput);
-  };
+  // Filtragem local instantânea super-otimizada com useMemo (0ms de latência)
+  const filteredProducts = useMemo(() => {
+    const term = searchInput.toLowerCase().trim();
+    return products.filter(p => {
+      const matchesSearch = !term || 
+                           p.name.toLowerCase().includes(term) || 
+                           p.id.toLowerCase().includes(term) ||
+                           (p.category && p.category.toLowerCase().includes(term));
+      const matchesTab = activeTab === "todos" || p.department === activeTab;
+      return matchesSearch && matchesTab;
+    });
+  }, [products, searchInput, activeTab]);
 
   const SkeletonItem = ({ mode }: { mode: "list" | "grid" }) => (
     <div className={`bg-white border border-black/[0.03] animate-pulse ${
@@ -84,22 +85,18 @@ export function AdminProductList({
         </div>
 
         <div className="flex items-center gap-4 w-full lg:w-auto">
-          {/* Busca com Botão (Resolvendo lentidão) */}
+          {/* Busca Instantânea Real-Time */}
           <div className="relative flex-grow lg:w-80">
             <input
               type="text"
               placeholder="Buscar por nome ou SKU..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               className="w-full pl-6 pr-12 py-3 bg-zinc-50 border border-black/[0.05] text-xs font-bold focus:outline-none focus:bg-white focus:border-black transition-all uppercase tracking-widest placeholder:text-zinc-300"
             />
-            <button 
-              onClick={handleSearch}
-              className="absolute right-0 top-0 h-full px-4 text-zinc-400 hover:text-black transition-colors"
-            >
+            <div className="absolute right-0 top-0 h-full px-4 flex items-center justify-center text-zinc-300 pointer-events-none">
               <Search size={18} />
-            </button>
+            </div>
           </div>
 
           <div className="h-8 w-px bg-zinc-200 mx-2" />

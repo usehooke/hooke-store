@@ -1,4 +1,5 @@
-import { productSchema } from "../schemas";
+import { describe, it, expect } from 'vitest';
+import { productSchema } from "@/features/catalog/schemas";
 import { Department, Size } from "@/types";
 
 describe("Catalog Schemas", () => {
@@ -6,6 +7,8 @@ describe("Catalog Schemas", () => {
     const validProduct = {
       id: "test-prod",
       name: "Test Product",
+      slug: "test-product", // Corrigido: Campo obrigatório no schema
+      description: "A high-quality test product", // Corrigido: Campo obrigatório no schema
       price: 99.9,
       department: Department.MASCULINO,
       sizes: [Size.P, Size.M],
@@ -22,6 +25,8 @@ describe("Catalog Schemas", () => {
     const invalidProduct = {
       id: "test-prod",
       name: "Test Product",
+      slug: "test-product",
+      description: "A high-quality test product",
       price: -10,
       department: Department.MASCULINO,
       sizes: [Size.P],
@@ -36,6 +41,8 @@ describe("Catalog Schemas", () => {
     const invalidProduct = {
       id: "test-prod",
       name: "Test Product",
+      slug: "test-product",
+      description: "A high-quality test product",
       price: 99.9,
       department: "INVALID",
       sizes: [Size.P],

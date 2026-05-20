@@ -6,7 +6,6 @@ export * from './sheet';
 export * from './dialog';
 export * from './BrandMarquee';
 export * from './Breadcrumbs';
-export * from './OptimizedImage';
 export * from './MetaPixel';
 export * from './ShareButton';
 export * from './WhatsAppButton';

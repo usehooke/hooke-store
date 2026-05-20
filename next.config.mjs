@@ -9,7 +9,7 @@ const nextConfig = {
   },
   // 🚨 O PULO DO GATO:
   // Isso força o Next.js a processar os pacotes corretamente na Vercel.
-  transpilePackages: ["@typebot.io/react", "react-quill"],
+  transpilePackages: ["@typebot.io/react"],
 
   // Otimização de Imagens
   images: {

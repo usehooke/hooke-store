@@ -135,6 +135,47 @@ export default function AdminPage() {
     }
   };
 
+  // Auditoria do catálogo e estoque para o Health Dashboard
+  let eliteProductsCount = 0;
+  let lowStockCount = 0;
+  let totalStockValue = 0;
+
+  products.forEach((p) => {
+    // 1. Auditoria de Padrão Elite (Simetria ao QualityBadge)
+    const hasDept = !!p.department;
+    const hasMinImages = p.images && p.images.length >= 4;
+    const hasSEO = p.seo?.metaDescription && p.seo.metaDescription.length >= 50;
+    const hasDescription = p.description && p.description.length >= 100;
+    
+    if (hasDept && hasMinImages && hasSEO && hasDescription) {
+      eliteProductsCount++;
+    }
+
+    // 2. Ruptura de estoque (limite < 3 unidades)
+    if (p.stock && typeof p.stock === 'object') {
+      Object.values(p.stock).forEach((val) => {
+        if (typeof val === 'number' && val < 3) {
+          lowStockCount++;
+        }
+      });
+    } else if (typeof (p as any).quantity === 'number' && (p as any).quantity < 3) {
+      lowStockCount++;
+    }
+
+    // 3. Capital total físico ativo
+    let totalQty = 0;
+    if (p.stock && typeof p.stock === 'object') {
+      Object.values(p.stock).forEach((val) => {
+        if (typeof val === 'number') totalQty += val;
+      });
+    } else if (typeof (p as any).quantity === 'number') {
+      totalQty = (p as any).quantity;
+    }
+    totalStockValue += totalQty * (p.price || 0);
+  });
+
+  const catalogHealth = products.length > 0 ? (eliteProductsCount / products.length) * 100 : 0;
+
   return (
     <div className="min-h-screen bg-gray-50/50 p-4 md:p-10 font-sans">
       <Toaster position="top-right" richColors />
@@ -176,6 +217,60 @@ export default function AdminPage() {
              </button>
           </div>
         </header>
+
+        {/* Health Dashboard Brutalista */}
+        {!loading && products.length > 0 && (
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Saúde do Catálogo */}
+            <div className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between animate-fadeIn">
+              <div className="flex items-start justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Saúde do Catálogo</span>
+                <span className="text-[10px] font-mono font-black px-2 py-0.5 border border-black bg-zinc-50 text-black">AUDITORIA ELITE</span>
+              </div>
+              <div className="mt-4 flex items-baseline gap-2">
+                <span className="text-4xl font-black tracking-tighter">{catalogHealth.toFixed(0)}%</span>
+                <span className="text-xs text-zinc-500 font-bold">de produtos Elite</span>
+              </div>
+              <div className="mt-4 w-full bg-zinc-100 h-2.5 border border-black">
+                <div className="bg-black h-full transition-all duration-500" style={{ width: `${catalogHealth}%` }} />
+              </div>
+            </div>
+
+            {/* Alerta de Ruptura */}
+            <div className={`border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between transition-all ${lowStockCount > 0 ? "border-amber-500 shadow-[4px_4px_0px_0px_#f59e0b]" : ""}`}>
+              <div className="flex items-start justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Alerta de Ruptura</span>
+                <span className={`text-[10px] font-mono font-black px-2 py-0.5 border ${lowStockCount > 0 ? "border-amber-500 bg-amber-50 text-amber-700 animate-pulse" : "border-black bg-zinc-50 text-black"}`}>
+                  LIMITE &lt; 3 UNIDADES
+                </span>
+              </div>
+              <div className="mt-4 flex items-baseline gap-2">
+                <span className={`text-4xl font-black tracking-tighter ${lowStockCount > 0 ? "text-amber-600" : ""}`}>{lowStockCount}</span>
+                <span className="text-xs text-zinc-500 font-bold">SKUs em nível crítico</span>
+              </div>
+              <p className="mt-4 text-[9px] font-black tracking-wide text-zinc-400 uppercase">
+                {lowStockCount > 0 ? "⚠️ Ação imediata recomendada para reposição" : "✅ Estoque operacional balanceado"}
+              </p>
+            </div>
+
+            {/* Valor em Estoque */}
+            <div className="border-2 border-black p-6 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between">
+              <div className="flex items-start justify-between">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Capital Físico Ativo</span>
+                <span className="text-[10px] font-mono font-black px-2 py-0.5 border border-black bg-zinc-50 text-black">AVALIAÇÃO ERP</span>
+              </div>
+              <div className="mt-4 flex items-baseline gap-2">
+                <span className="text-3xl font-black tracking-tighter">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(totalStockValue)}
+                </span>
+                <span className="text-xs text-zinc-500 font-bold">em inventário</span>
+              </div>
+              <p className="mt-4 text-[9px] font-black tracking-wide text-zinc-400 uppercase">
+                Patrimônio calculado com base nos custos de venda
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Lista Ultra-Limpa Principal */}
         <main className="bg-white border border-gray-100 p-6 shadow-sm min-h-[400px]">

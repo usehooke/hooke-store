@@ -10,6 +10,7 @@ import { Product } from "@/types";
 import { usePDVStore, selectPDVTotal, selectPDVCount } from "@/store/pdv-store";
 import { Scan, Plus, Minus, Trash2, ShoppingBag, Loader2, ChevronRight, CreditCard } from "lucide-react";
 import { PDVCheckoutModal } from "@/features/admin/components/pdv/PDVCheckoutModal";
+import { useSyncOfflineSales } from "@/hooks/useSyncOfflineSales";
 
 /**
  * HOOKE HQ: PDV V15.0 - FAT FINGER DESIGN
@@ -17,6 +18,7 @@ import { PDVCheckoutModal } from "@/features/admin/components/pdv/PDVCheckoutMod
  * Máximo contraste, fontes grandes e botões gigantes.
  */
 export default function PDVPage() {
+  const { isSyncing, pendingCount, exhaustedCount, isContingencyMode } = useSyncOfflineSales();
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const { items, addItem, updateSizeQuantity, removeItem, clearCart } = usePDVStore();
   const total = usePDVStore(selectPDVTotal);
@@ -139,8 +141,47 @@ export default function PDVPage() {
             <ShoppingBag size={20} />
             <span className="text-sm font-black uppercase tracking-widest">Carrinho ({count})</span>
           </div>
+
+          {/* Indicador de Sincronia Offline com Inteligência Visual Avançada (Shake e Pulsação) */}
+          {(pendingCount > 0 || exhaustedCount > 0 || isSyncing || isContingencyMode) && (
+            <motion.div 
+              key={`sync-indicator-${isContingencyMode ? 'contingency' : isSyncing ? 'syncing' : 'pending'}`}
+              animate={
+                isContingencyMode || exhaustedCount > 0 
+                ? { x: [0, -6, 6, -6, 6, 0], transition: { duration: 0.5 } }
+                : isSyncing 
+                ? { opacity: [1, 0.4, 1], transition: { repeat: Infinity, duration: 1.5 } }
+                : { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 2, ease: "easeInOut" } }
+              }
+              className={`flex items-center gap-1.5 px-2 py-1 border-2 border-black text-[9px] font-black uppercase tracking-wider ${
+                isContingencyMode 
+                ? 'bg-amber-100 border-amber-500 text-amber-900' 
+                : exhaustedCount > 0 
+                ? 'bg-red-100 border-red-500 text-red-900'
+                : 'bg-zinc-100 border-black text-black'
+              }`}
+            >
+              {isSyncing && <Loader2 size={10} className="animate-spin text-black" />}
+              {isContingencyMode ? (
+                <span>Contingência</span>
+              ) : pendingCount > 0 ? (
+                <span>{pendingCount} Pendente{pendingCount > 1 ? 's' : ''}</span>
+              ) : exhaustedCount > 0 ? (
+                <span>{exhaustedCount} Exaurida{exhaustedCount > 1 ? 's' : ''}</span>
+              ) : (
+                <span className="text-emerald-700">Sincronizado</span>
+              )}
+            </motion.div>
+          )}
+
           {items.length > 0 && (
-            <button onClick={clearCart} className="text-[10px] font-black uppercase text-red-500 underline decoration-2 underline-offset-4">Limpar</button>
+            <motion.button 
+              whileTap={{ scale: 0.95 }}
+              onClick={clearCart} 
+              className="text-[10px] font-black uppercase text-red-500 underline decoration-2 underline-offset-4 cursor-pointer"
+            >
+              Limpar
+            </motion.button>
           )}
         </div>
 
@@ -156,30 +197,40 @@ export default function PDVPage() {
                 <div key={item.id} className="bg-white border-2 border-black p-4 flex flex-col gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                   <div className="flex justify-between items-start">
                     <span className="text-xs font-black uppercase tracking-tight leading-none max-w-[70%]">{item.name}</span>
-                    <button onClick={() => removeItem(item.id)} aria-label={`Remover ${item.name}`} title={`Remover ${item.name}`} className="text-zinc-300 hover:text-red-500"><Trash2 size={16} /></button>
+                    <motion.button 
+                      whileTap={{ scale: 0.85 }}
+                      onClick={() => removeItem(item.id)} 
+                      aria-label={`Remover ${item.name}`} 
+                      title={`Remover ${item.name}`} 
+                      className="text-zinc-300 hover:text-red-500 cursor-pointer"
+                    >
+                      <Trash2 size={16} />
+                    </motion.button>
                   </div>
                   
                   {Object.entries(item.sizeQuantities).map(([size, qty]) => (
                     <div key={size} className="flex items-center justify-between bg-zinc-50 p-2 border border-black/5">
                       <span className="text-xs font-black">TAM: {size}</span>
                       <div className="flex items-center gap-6">
-                        <button 
+                        <motion.button 
+                          whileTap={{ scale: 0.85 }}
                           onClick={() => updateSizeQuantity(item.id, size, qty - 1)}
                           aria-label={`Remover ${size}`}
                           title={`Remover ${size}`}
-                          className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center active:bg-zinc-100"
+                          className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center active:bg-zinc-100 cursor-pointer"
                         >
                           <Minus size={20} strokeWidth={3} />
-                        </button>
+                        </motion.button>
                         <span className="text-xl font-black min-w-[20px] text-center">{qty}</span>
-                        <button 
+                        <motion.button 
+                          whileTap={{ scale: 0.85 }}
                           onClick={() => updateSizeQuantity(item.id, size, qty + 1)}
                           aria-label={`Adicionar ${size}`}
                           title={`Adicionar ${size}`}
-                          className="w-12 h-12 bg-black text-white flex items-center justify-center active:bg-zinc-800"
+                          className="w-12 h-12 bg-black text-white flex items-center justify-center active:bg-zinc-800 cursor-pointer"
                         >
                           <Plus size={20} strokeWidth={3} />
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   ))}
@@ -191,16 +242,22 @@ export default function PDVPage() {
 
         {/* BOTTOM ACTION BAR: COBRAR */}
         <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t-2 border-black shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-          <button 
+          <motion.button 
             disabled={items.length === 0}
             onClick={() => setIsCheckoutOpen(true)}
-            className="w-full bg-emerald-500 text-white py-8 flex flex-col items-center justify-center gap-1 active:bg-emerald-600 transition-all disabled:grayscale disabled:opacity-20 shadow-[0_4px_0px_0px_rgba(5,150,105,1)]"
+            whileTap={items.length > 0 ? { 
+              y: 4, 
+              scale: 0.98,
+              boxShadow: "0 0px 0px 0px rgba(5,150,105,1)"
+            } : {}}
+            transition={{ type: "spring", stiffness: 500, damping: 15 }}
+            className="w-full bg-emerald-500 text-white py-8 flex flex-col items-center justify-center gap-1 active:bg-emerald-600 transition-all disabled:grayscale disabled:opacity-20 shadow-[0_4px_0px_0px_rgba(5,150,105,1)] cursor-pointer"
           >
             <span className="text-xs font-black uppercase tracking-[0.4em] opacity-80">Finalizar Venda</span>
             <span className="text-3xl font-black uppercase tracking-tighter">
               Cobrar {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}
             </span>
-          </button>
+          </motion.button>
         </div>
       </aside>
 

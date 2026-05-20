@@ -1,0 +1,30 @@
+{
+  "transactions": [
+    {
+      "id": "test-uuid-001",
+      "theme": "Teste Unitário",
+      "status": "completed",
+      "localFilePath": "public/studio-outputs/test-mock.jpg",
+      "metadata": {
+        "title": "T-Shirt Minimalista",
+        "luxuryDescription": "Uma copy absurdamente luxuosa descrevendo as amarras e a etiqueta Woven da Hooke.",
+        "suggestedPrice": 199,
+        "category": "Essenciais",
+        "fabric": "Algodão Pima",
+        "model": "Boxy",
+        "seoKeywords": [
+          "minimalista",
+          "boxy",
+          "luxo",
+          "hooke"
+        ]
+      },
+      "logs": [
+        "[2026-05-20T16:52:14.899Z] Transação criada",
+        "[2026-05-20T16:52:16.427Z] Upload finalizado via Stub.",
+        "[2026-05-20T16:52:17.435Z] Produto cadastrado com sucesso via Stub."
+      ],
+      "firebaseUrl": "https://firebasestorage.googleapis.com/v0/b/mock/o/studio%2Ftest-uuid-001.webp?alt=media"
+    }
+  ]
+}
