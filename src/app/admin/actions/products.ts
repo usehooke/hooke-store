@@ -70,6 +70,8 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         
         revalidatePath('/admin/produtos');
         revalidatePath('/', 'layout');
+        revalidatePath('/loja');
+        revalidatePath('/produtos');
         
         return { success: true, product: payload };
     } catch (err: unknown) {

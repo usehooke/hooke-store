@@ -11,7 +11,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AIProductAnalysis } from '@/lib/ai/visionService';
 import { toast } from "sonner";
 import { Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, Plus, Trash2, HelpCircle } from "lucide-react";
-import { Department } from '@/types/enums';
+import { Department, Size } from '@/types/enums';
+
+// Valores válidos do ProductCategorySchema (lib/schemas.ts)
+const VALID_CATEGORIES = ["Kits", "Oversized", "Regatas", "Vintage", "Lifestyle", "Conjuntos", "Camisetas", "Cropped", "Top"] as const;
+const SIZES_MASC = [Size.P, Size.M, Size.G, Size.GG, Size.XG, Size.G1, Size.G2];
+const SIZES_FEM  = [Size.PP, Size.P, Size.M, Size.G, Size.GG];
 
 export interface ProductFormHandle {
   setValuesFromAI: (data: AIProductAnalysis) => void;
@@ -231,12 +236,21 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       const finalData = {
         ...data,
         id: data.id || data.slug || `prod-${Date.now()}`,
+        isActive: true,           // ✅ Fix: garante produto visível na loja
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
 
       await addDoc(collection(db, 'produtos'), finalData);
-      toast.success("Equipamento incorporado ao arsenal com sucesso!");
+
+      // ✅ Fix: invalida o cache imediatamente para produto aparecer no site
+      try {
+        await fetch('/api/admin/revalidate', { method: 'POST' });
+      } catch {
+        // Não bloqueia o fluxo se a revalidação falhar
+      }
+
+      toast.success("Equipamento incorporado ao arsenal com sucesso! Disponível na loja em instantes.");
       reset();
       setSnapshot(null);
     } catch (error) {
@@ -384,15 +398,55 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
             </select>
           </div>
 
-          {/* CATEGORIA */}
+          {/* CATEGORIA — select com valores válidos do enum */}
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Categoria</label>
-            <Input 
-              {...register('category')} 
-              variant="brutalist" 
-              className={aiGlowFields.has('category') ? glowStyles : ''}
-              placeholder="Ex: Camisetas, Oversized, Regatas"
-            />
+            <select
+              {...register('category')}
+              className={`w-full h-[50px] px-4 border-2 border-black font-mono text-xs uppercase tracking-widest bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none ${
+                aiGlowFields.has('category') ? glowStyles : ''
+              }`}
+            >
+              <option value="">— Selecione a categoria —</option>
+              {VALID_CATEGORIES.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* TAMANHOS — obrigatório para produto aparecer no site */}
+          <div className="space-y-2 col-span-1 md:col-span-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
+              Tamanhos Disponíveis <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {(watchedDepartment === Department.FEMININO ? SIZES_FEM : SIZES_MASC).map(size => {
+                const isSelected = (watch('sizes') || []).includes(size);
+                return (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => {
+                      const current = getValues('sizes') || [];
+                      const updated = isSelected
+                        ? current.filter(s => s !== size)
+                        : [...current, size];
+                      setValue('sizes', updated, { shouldDirty: true });
+                    }}
+                    className={`w-12 h-12 text-xs font-black border-2 transition-all shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 ${
+                      isSelected
+                        ? 'bg-black text-white border-black shadow-none translate-x-0.5 translate-y-0.5'
+                        : 'bg-white text-black border-black hover:bg-zinc-100'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+            {(watch('sizes') || []).length === 0 && (
+              <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest">⚠ Selecione ao menos 1 tamanho para publicar</p>
+            )}
           </div>
 
           {/* SLUG */}

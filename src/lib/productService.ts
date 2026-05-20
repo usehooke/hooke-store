@@ -54,7 +54,7 @@ async function executeResilientCached<T>(
             }
         },
         [cacheKey],
-        { revalidate: 3600, tags }
+        { revalidate: 300, tags } // 5 min: produtos novos aparecem rápido
     );
 
     return cachedOperation();
