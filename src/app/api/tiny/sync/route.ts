@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { products } from "@/data/products";
+import { getProducts } from "@/lib/productService";
 import { generateSKU, ModelSigla, PrintSigla, ColorSigla } from "@/utils/sku-generator";
 import { TinyClient } from "@/lib/tiny/client";
 
@@ -40,6 +40,7 @@ export async function GET(req: Request) {
     }, { status: 400 });
   }
 
+  const products = await getProducts();
   const results = [];
   let successCount = 0;
   let errorCount = 0;
