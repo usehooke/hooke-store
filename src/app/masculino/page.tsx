@@ -1,4 +1,4 @@
-import { getFilteredProducts } from "@/lib/productService";
+import { getFilteredProductsAdmin } from "@/lib/productServiceAdmin";
 import { ProductCard, FilterDrawer } from "@/features/catalog";
 import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
@@ -95,7 +95,7 @@ export default async function MasculinoPage({
 // --- COMPONENTES AUXILIARES PARA PPR (DYNAMIC HOLES) ---
 
 async function ProductCounter({ filters }: { filters: any }) {
-  const products = await getFilteredProducts(filters);
+  const products = await getFilteredProductsAdmin(filters);
   return (
     <span className="text-xs font-black tracking-[0.2em] text-hooke-500 font-sans uppercase">
       {products.length} Equipamentos
@@ -104,7 +104,7 @@ async function ProductCounter({ filters }: { filters: any }) {
 }
 
 async function ProductGrid({ filters }: { filters: any }) {
-  const products = await getFilteredProducts(filters);
+  const products = await getFilteredProductsAdmin(filters);
 
   if (products.length === 0) {
     return (

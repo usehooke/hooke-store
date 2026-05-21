@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Check, ArrowRight, Shirt, Wind, Star, ChevronDown, ShieldCheck, Dumbbell, Layers, Sun } from "lucide-react";
-import { getProducts } from "@/lib/productService";
+import { getProductsAdmin } from "@/lib/productServiceAdmin";
 
 export const metadata = {
  title: `Regatas | Valorize o Shape.`,
@@ -10,7 +10,7 @@ export const metadata = {
 
 
 export default async function LandingPage() {
- const PRODUTOS = await getProducts();
+ const PRODUTOS = await getProductsAdmin();
 
  // Fallback de segurança para build-time
  if (!PRODUTOS || PRODUTOS.length === 0) {

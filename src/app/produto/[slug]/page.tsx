@@ -1,4 +1,4 @@
-import { getProductBySlug } from "@/lib/productService";
+import { getProductBySlugAdmin } from "@/lib/productServiceAdmin";
 import { notFound } from "next/navigation";
 import SsenseProductView from "@/components/shop/SsenseProductView";
 import React, { Suspense } from "react";
@@ -12,7 +12,7 @@ interface ProductPageProps {
 /** 🚀 SEO Dinâmico: Geração de Metadados para Social Share */
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlugAdmin(slug);
 
   if (!product) return { title: 'Produto não encontrado' };
 
@@ -56,7 +56,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   
   // Fetch direto no servidor - 100% SEO e zero delay de hidratação inicial
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlugAdmin(slug);
 
   if (!product) notFound();
 

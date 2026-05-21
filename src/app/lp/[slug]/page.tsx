@@ -1,4 +1,4 @@
-import { getProducts } from "@/lib/productService";
+import { getProductsAdmin } from "@/lib/productServiceAdmin";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,7 +29,7 @@ export default async function LandingPage({ params }: LPPageProps) {
  if (!content) notFound();
 
  // O serviço getProducts já aceita categoria como filtro
- const products = await getProducts(content.category);
+ const products = await getProductsAdmin(content.category);
 
  return (
  <div className="bg-white min-h-screen font-sans">

@@ -1,4 +1,4 @@
-import { getFeaturedProducts } from "@/lib/productService";
+import { getFeaturedProductsAdmin } from "@/lib/productServiceAdmin";
 import BentoHero from "@/components/home/BentoHero";
 import BrandMarquee from "@/components/ui/BrandMarquee";
 import { ProductCard } from "@/features/catalog";
@@ -16,7 +16,7 @@ import { headers } from "next/headers";
  */
 export default async function Home() {
   headers(); // Opt-out do static rendering no build
-  const showcaseProducts = await getFeaturedProducts(8);
+  const showcaseProducts = await getFeaturedProductsAdmin();
 
   // Removido o FAIL-SAFE agressivo que mostrava tela vazia se o banco falhasse no build
 

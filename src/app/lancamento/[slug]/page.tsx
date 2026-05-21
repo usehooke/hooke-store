@@ -1,4 +1,4 @@
-import { getProductBySlug } from "@/lib/productService";
+import { getProductBySlugAdmin } from "@/lib/productServiceAdmin";
 import LaunchTemplate from "@/components/LaunchTemplate";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -15,7 +15,7 @@ interface Props {
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlugAdmin(slug);
   
   if (!product) {
     return {
@@ -46,7 +46,7 @@ export default async function LaunchPage({ params }: Props) {
 
 // Componente Assíncrono para o Conteúdo Dinâmico (PPR Hole)
 async function LaunchContent({ slug }: { slug: string }) {
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlugAdmin(slug);
 
   if (!product) {
     notFound();
