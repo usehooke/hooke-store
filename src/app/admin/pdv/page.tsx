@@ -8,13 +8,13 @@ export const metadata: Metadata = {
   description: 'Ponto de Venda de Alta Performance',
 };
 
-import { headers } from 'next/headers';
+import { connection } from 'next/server';
 
 // Ocultando force-dynamic para evitar conflito com PPR
 // export const dynamic = 'force-dynamic';
 
 export default async function PDVPage() {
-  headers();
+  await connection();
   // 1. Busca os produtos diretamente do Firebase Admin SDK no Servidor!
   // Isso garante 0 delays, 0 mocks e 100% de segurança.
   const products = await getAdminProducts();

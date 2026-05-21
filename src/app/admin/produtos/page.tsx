@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   description: 'Gerenciamento de Catálogo Elite',
 };
 
-import { headers } from 'next/headers';
+import { connection } from 'next/server';
 
 // Admin sempre precisa ler dados atualizados do banco
 // export const dynamic = 'force-dynamic';
 
 export default async function AdminProductsPage() {
-  headers();
+  await connection();
   // Leitura com privilégios de Admin direto no Firebase Admin SDK
   const products = await getAdminProducts();
 
