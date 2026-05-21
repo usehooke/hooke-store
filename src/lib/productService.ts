@@ -3,7 +3,7 @@ import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData
 import { Product } from "@/types";
 import { MOCK_PRODUCTS } from "./mockData";
 import { unstable_cache } from "next/cache";
-import { ProductSchema } from "./schemas";
+import { productSchema } from "./schemas";
 
 export const COLLECTION_NAME = "produtos";
 
@@ -26,8 +26,13 @@ export interface FilterOptions {
 
 const mapToProduct = (docId: string, data: DocumentData): Product | null => {
     try {
-        const rawBody = { id: docId, ...data };
-        const validation = ProductSchema.safeParse(rawBody);
+        const rawBody = { 
+            id: docId, 
+            slug: data.slug || docId, // Garante que nunca fica sem slug
+            isActive: data.isActive !== false, // Garante que o default é true
+            ...data 
+        };
+        const validation = productSchema.safeParse(rawBody);
         return validation.success ? (validation.data as Product) : null;
     } catch (err) {
         return null;
