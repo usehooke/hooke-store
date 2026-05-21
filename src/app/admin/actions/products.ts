@@ -68,6 +68,8 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         
         await logAdminAction(data.id ? 'UPDATE_PRODUCT' : 'CREATE_PRODUCT', payload, userEmail);
         
+        // @ts-ignore
+        revalidateTag('products');
         revalidatePath('/admin/produtos');
         revalidatePath('/', 'layout');
         revalidatePath('/loja');

@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 /**
@@ -8,6 +8,8 @@ import { NextResponse } from 'next/server';
  */
 export async function POST() {
   try {
+    // @ts-ignore
+    revalidateTag('products');
     revalidatePath('/', 'layout');
     revalidatePath('/admin/produtos');
     revalidatePath('/loja');
