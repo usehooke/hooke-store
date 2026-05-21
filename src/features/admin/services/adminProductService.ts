@@ -1,6 +1,6 @@
 import { adminDb } from '@/lib/firebase-admin';
 import { Product } from '@/types';
-import { ProductSchema } from '@/features/catalog/schemas';
+import { productSchema } from '@/features/catalog/schemas';
 
 const COLLECTION = 'produtos';
 
@@ -71,7 +71,7 @@ function mapToProduct(docId: string, data: any): Product | null {
       tags: Array.isArray(data.tags) ? data.tags : [],
     };
 
-    const validation = ProductSchema.safeParse(rawBody);
+    const validation = productSchema.safeParse(rawBody);
     
     if (validation.success) {
       return validation.data as Product;

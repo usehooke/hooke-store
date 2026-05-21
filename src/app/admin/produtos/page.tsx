@@ -7,10 +7,13 @@ export const metadata: Metadata = {
   description: 'Gerenciamento de Catálogo Elite',
 };
 
-// Admin sempre precisa ler dados atualizados do banco (opt-out de cache estático)
-export const dynamic = 'force-dynamic';
+import { headers } from 'next/headers';
+
+// Admin sempre precisa ler dados atualizados do banco
+// export const dynamic = 'force-dynamic';
 
 export default async function AdminProductsPage() {
+  headers();
   // Leitura com privilégios de Admin direto no Firebase Admin SDK
   const products = await getAdminProducts();
 
