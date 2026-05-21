@@ -3,7 +3,7 @@ import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData
 import { Product } from "@/types";
 import { MOCK_PRODUCTS } from "./mockData";
 import { unstable_cache } from "next/cache";
-import { productSchema } from "./schemas";
+import { ProductSchema } from "./schemas";
 
 export const COLLECTION_NAME = "produtos";
 
@@ -32,7 +32,7 @@ const mapToProduct = (docId: string, data: DocumentData): Product | null => {
             isActive: data.isActive !== false, // Garante que o default é true
             ...data 
         };
-        const validation = productSchema.safeParse(rawBody);
+        const validation = ProductSchema.safeParse(rawBody);
         return validation.success ? (validation.data as Product) : null;
     } catch (err) {
         return null;
