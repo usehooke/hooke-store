@@ -12,8 +12,13 @@ export async function toggleProductVisibility(id: string, currentStatus: boolean
         await adminDb.collection('produtos').doc(id).update({ isActive: !currentStatus });
         
         await logAdminAction('TOGGLE_PRODUCT_VISIBILITY', { id, newStatus: !currentStatus }, userEmail);
+        
+        // Elite Revalidation
+        // @ts-ignore
+        revalidateTag('products');
         revalidatePath('/admin/produtos');
-        revalidatePath('/', 'layout'); // Elite Revalidation
+        revalidatePath('/', 'layout'); 
+        revalidatePath('/colecao');
         
         return { success: true, newStatus: !currentStatus };
     } catch (err: unknown) {
@@ -39,8 +44,11 @@ export async function deleteProduct(id: string, name: string, userEmail: string 
         }
         
         // 4. CACHE REVALIDATION
+        // @ts-ignore
+        revalidateTag('products');
         revalidatePath('/admin/produtos');
         revalidatePath('/', 'layout');
+        revalidatePath('/colecao');
         
         return { success: true };
     } catch (err: unknown) {
@@ -68,12 +76,12 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         
         await logAdminAction(data.id ? 'UPDATE_PRODUCT' : 'CREATE_PRODUCT', payload, userEmail);
         
+        // Elite Revalidation
         // @ts-ignore
         revalidateTag('products');
         revalidatePath('/admin/produtos');
         revalidatePath('/', 'layout');
-        revalidatePath('/loja');
-        revalidatePath('/produtos');
+        revalidatePath('/colecao');
         
         return { success: true, product: payload };
     } catch (err: unknown) {

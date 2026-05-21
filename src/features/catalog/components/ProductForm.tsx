@@ -5,13 +5,13 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductSchema } from '../schemas';
 import { Input, Button } from '@/components/ui';
-import { db } from '@/lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIProductAnalysis } from '@/lib/ai/visionService';
 import { toast } from "sonner";
 import { Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, Plus, Trash2, HelpCircle } from "lucide-react";
 import { Department, Size } from '@/types/enums';
+import { saveProduct } from '@/app/admin/actions/products';
 
 // Valores válidos do ProductCategorySchema (lib/schemas.ts)
 const VALID_CATEGORIES = ["Kits", "Oversized", "Regatas", "Vintage", "Lifestyle", "Conjuntos", "Camisetas", "Cropped", "Top"] as const;
@@ -231,31 +231,26 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     }
 
     try {
-      if (!db) throw new Error("Firebase não inicializado");
-      
       const finalData = {
         ...data,
         id: data.id || data.slug || `prod-${Date.now()}`,
-        isActive: true,           // ✅ Fix: garante produto visível na loja
-        createdAt: Date.now(),
-        updatedAt: Date.now()
+        isActive: true,
       };
 
-      await addDoc(collection(db, 'produtos'), finalData);
-
-      // ✅ Fix: invalida o cache imediatamente para produto aparecer no site
-      try {
-        await fetch('/api/admin/revalidate', { method: 'POST' });
-      } catch {
-        // Não bloqueia o fluxo se a revalidação falhar
+      // 2. Tenta salvar via Server Action (Revalidação Automática e Resiliente na Vercel)
+      const result = await saveProduct(finalData, 'admin@hooke.com');
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro desconhecido ao salvar.');
       }
-
-      toast.success("Equipamento incorporado ao arsenal com sucesso! Disponível na loja em instantes.");
-      reset();
-      setSnapshot(null);
-    } catch (error) {
-      console.error("Erro ao salvar produto:", error);
-      toast.error("Falha técnica na incorporação.");
+      
+      toast.success(data.id ? "Produto atualizado com sucesso" : "Novo produto cadastrado na coleção");
+      
+      if (!data.id) reset();
+      
+    } catch (err: any) {
+      console.error("Erro ao salvar produto:", err);
+      toast.error(err.message || "Falha na comunicação com os servidores Hooke.");
     }
   };
 
