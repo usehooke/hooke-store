@@ -47,7 +47,7 @@ const nextConfig = {
   },
 
   // 🚀 NEXT-LEVEL PERFORMANCE (PPR & Dynamic IO)
-  cacheComponents: true,
+  // cacheComponents: true,
 
   // Compatibilidade
   turbopack: {},

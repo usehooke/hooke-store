@@ -9,11 +9,9 @@ export const metadata: Metadata = {
 
 import { connection } from 'next/server';
 
-// Admin sempre precisa ler dados atualizados do banco
-// export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 export default async function AdminProductsPage() {
-  await connection();
   // Leitura com privilégios de Admin direto no Firebase Admin SDK
   const products = await getAdminProducts();
 
