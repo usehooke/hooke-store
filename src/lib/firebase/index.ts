@@ -1,6 +1,6 @@
 // Hooke Elite: Firebase Infrastructure Hub
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getFirestore, Firestore } from "firebase/firestore";
+import { getFirestore, Firestore, initializeFirestore } from "firebase/firestore";
 import { getAuth, Auth, FacebookAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
@@ -24,7 +24,11 @@ const facebookProvider = new FacebookAuthProvider();
 if (isConfigPresent) {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-        db = getFirestore(app);
+        try {
+            db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+        } catch (e) {
+            db = getFirestore(app);
+        }
         auth = getAuth(app);
     } catch (error) {
         console.error("❌ [Hooke Rescue] Falha crítica ao despertar o Firebase:", error);
