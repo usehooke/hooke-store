@@ -5,6 +5,8 @@ import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
  title: "Masculino | Hooke Elite",
  description: "O básico masculino elevado à perfeição. Camisetas Oversized, Heavy Cotton e Wafer.",

@@ -8,6 +8,8 @@ import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import React, { Suspense } from "react";
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Hooke V15.0: Atomic Cache Purge & Defensive Rendering.
  * @Agent-LegacyRescue: Esta versão injeta uma purga de cache forçada na borda (Edge)

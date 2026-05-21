@@ -5,6 +5,8 @@ import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
 import React, { Suspense } from "react";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
  title: "Feminino | Hooke Elite",
  description: "O minimalismo da Hooke agora para elas. Estética crua, modelagem impecável e texturas densas.",

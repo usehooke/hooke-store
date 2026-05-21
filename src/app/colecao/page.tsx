@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
  title: "Coleção Completa | Hooke",
  description: "Descubra a coleção completa de camisetas oversized, regatas e kits premium.",
