@@ -7,8 +7,7 @@ import SocialFeed from "@/components/home/SocialFeed";
 import VIPGreeting from "@/components/home/VIPGreeting";
 import RecentlyViewed from "@/components/shop/RecentlyViewed";
 import React, { Suspense } from "react";
-
-export const dynamic = 'force-dynamic';
+import { headers } from "next/headers";
 
 /**
  * Hooke V15.0: Atomic Cache Purge & Defensive Rendering.
@@ -16,7 +15,7 @@ export const dynamic = 'force-dynamic';
  * para garantir que produtos deletados sumam instantaneamente da vitrine.
  */
 export default async function Home() {
-  // Otimização: Buscamos os produtos em paralelo/servidor
+  headers(); // Opt-out do static rendering no build
   const showcaseProducts = await getFeaturedProducts(8);
 
   // Removido o FAIL-SAFE agressivo que mostrava tela vazia se o banco falhasse no build

@@ -4,8 +4,7 @@ import React, { Suspense } from "react";
 import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
-
-export const dynamic = 'force-dynamic';
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
  title: "Coleção Completa | Hooke",
@@ -18,6 +17,7 @@ export default async function CollectionPage({
 }: { 
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
 }) {
+  headers();
   const params = await searchParams;
   const activeFilters = {
     category: typeof params.category === 'string' ? params.category : undefined,

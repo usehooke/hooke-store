@@ -4,8 +4,7 @@ import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { Metadata } from "next";
 import { Suspense } from "react";
-
-export const dynamic = 'force-dynamic';
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
  title: "Masculino | Hooke Elite",
@@ -18,6 +17,7 @@ export default async function MasculinoPage({
 }: { 
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
 }) {
+  headers();
   const params = await searchParams;
   const activeFilters = {
     department: "masculino",
