@@ -25,7 +25,7 @@ if (isConfigPresent) {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         try {
-            db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+            db = initializeFirestore(app, { experimentalForceLongPolling: true });
         } catch (e) {
             db = getFirestore(app);
         }
