@@ -235,7 +235,7 @@ export default function AdminOrdersPage() {
       const q = query(collection(firestore, "pedidos"), orderBy("createdAt", "desc"));
       const snap = await getDocs(q);
       const data: Order[] = [];
-      snap.forEach((d) => data.push(d.data() as Order));
+      snap.forEach((d) => data.push({ id: d.id, ...d.data() } as Order));
       setOrders(data);
       // Inicializa inputs de rastreio com valores do banco
       const initialInputs: Record<string, string> = {};

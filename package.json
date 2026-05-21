@@ -11,7 +11,8 @@
     "test": "vitest",
     "type-check": "tsc --noEmit",
     "security:audit": "npm audit --audit-level=high",
-    "build:analyze": "ANALYZE=true next build"
+    "build:analyze": "ANALYZE=true next build",
+    "insert-product": "node insert-product.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

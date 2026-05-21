@@ -1,18 +1,8 @@
-import { db } from "@/lib/firebase";
-import { collection, getDocs, query, where, limit, QueryConstraint, DocumentData, orderBy } from "firebase/firestore";
+import { adminDb } from "@/lib/firebase-admin";
 import { Product } from "@/types";
-import { MOCK_PRODUCTS } from "./mockData";
-import { unstable_cache } from "next/cache";
 import { ProductSchema } from "./schemas";
 
 export const COLLECTION_NAME = "produtos";
-
-/**
- * @Agent-Elite V13.0: PERFORMANCE ENGINE
- * Centraliza a inteligência de Cache e Resiliência.
- */
-
-const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build' || !db;
 
 export interface FilterOptions {
     category?: string;
@@ -24,7 +14,7 @@ export interface FilterOptions {
     limitCount?: number;
 }
 
-const mapToProduct = (docId: string, data: DocumentData): Product | null => {
+const mapToProduct = (docId: string, data: any): Product | null => {
     try {
         const rawBody = { 
             id: docId, 
@@ -56,25 +46,18 @@ async function executeResilientCached<T>(
     }
 }
 
-/** 
- * 🚀 EXPORTS DOS SERVIÇOS (Elite V13.0)
- */
-
 export async function getProducts(category?: string): Promise<Product[]> {
     return executeResilientCached(
         "getProducts",
         `products-v2-${category || 'all'}`,
         ['products', category ? `category-${category}` : 'all-products'],
         async () => {
-            const productsRef = collection(db!, COLLECTION_NAME);
-            const conditions: QueryConstraint[] = [];
-            if (category) conditions.push(where("category", "==", category));
+            let query: any = adminDb!.collection(COLLECTION_NAME);
+            if (category) query = query.where("category", "==", category);
             
-            const q = query(productsRef, ...conditions);
-            const snapshot = await getDocs(q);
-            
+            const snapshot = await query.get();
             const products: Product[] = [];
-            snapshot.forEach(doc => {
+            snapshot.forEach((doc: any) => {
                 const data = doc.data();
                 const p = mapToProduct(doc.id, data);
                 if (data.isActive !== false && p) products.push(p);
@@ -91,15 +74,14 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         `product-slug-${slug}`,
         ['products', `product-${slug}`],
         async () => {
-            const productsRef = collection(db!, COLLECTION_NAME);
-            const q = query(productsRef, where("slug", "==", slug), limit(1));
-            const snapshot = await getDocs(q);
+            const query = adminDb!.collection(COLLECTION_NAME).where("slug", "==", slug).limit(1);
+            const snapshot = await query.get();
 
             if (!snapshot.empty) return mapToProduct(snapshot.docs[0].id, snapshot.docs[0].data());
 
             // Fallback para ID
-            const qFb = query(productsRef, where("id", "==", slug), limit(1));
-            const snapshotFb = await getDocs(qFb);
+            const qFb = adminDb!.collection(COLLECTION_NAME).where("id", "==", slug).limit(1);
+            const snapshotFb = await qFb.get();
             if (!snapshotFb.empty) return mapToProduct(snapshotFb.docs[0].id, snapshotFb.docs[0].data());
 
             return null;
@@ -114,12 +96,11 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
         `featured-products-v2-${limitCount}`,
         ['products', 'featured'],
         async () => {
-            const productsRef = collection(db!, COLLECTION_NAME);
-            const q = query(productsRef, where("featured", "==", true));
-            const snapshot = await getDocs(q);
+            const query = adminDb!.collection(COLLECTION_NAME).where("featured", "==", true);
+            const snapshot = await query.get();
 
             const products: Product[] = [];
-            snapshot.forEach(doc => {
+            snapshot.forEach((doc: any) => {
                 const data = doc.data();
                 const p = mapToProduct(doc.id, data);
                 if (data.isActive !== false && p) products.push(p);
@@ -129,10 +110,10 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
         [] as Product[]
     );
 }
+
 export async function getFilteredProducts(filters: FilterOptions): Promise<Product[]> {
     const { category, department, size, minPrice, maxPrice, featured, limitCount } = filters;
     
-    // Cache key baseada nos filtros para granularidade máxima
     const cacheKey = `filtered-products-v2-${JSON.stringify(filters)}`;
     const tags = ['products'];
     if (category) tags.push(`category-${category}`);
@@ -144,35 +125,25 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
         cacheKey,
         tags,
         async () => {
-            const productsRef = collection(db!, COLLECTION_NAME);
-            const conditions: QueryConstraint[] = [];
+            let query: any = adminDb!.collection(COLLECTION_NAME);
 
-            if (category) conditions.push(where("category", "==", category));
-            if (department) conditions.push(where("department", "==", department));
-            if (size) conditions.push(where("sizes", "array-contains", size));
-            if (featured !== undefined) conditions.push(where("featured", "==", featured));
-            
-            // Filtros de Preço (Requerem Índice Composto se usados com outros filtros)
-            if (minPrice !== undefined) conditions.push(where("price", ">=", minPrice));
-            if (maxPrice !== undefined) conditions.push(where("price", "<=", maxPrice));
+            if (category) query = query.where("category", "==", category);
+            if (department) query = query.where("department", "==", department);
+            if (size) query = query.where("sizes", "array-contains", size);
+            if (featured !== undefined) query = query.where("featured", "==", featured);
+            if (minPrice !== undefined) query = query.where("price", ">=", minPrice);
+            if (maxPrice !== undefined) query = query.where("price", "<=", maxPrice);
+            if (limitCount) query = query.limit(limitCount);
 
-            // O Firebase requer um Composite Index para misturar 'where' e 'orderBy'.
-            // Para evitar a quebra silenciosa, vamos fazer a ordenação local na memória.
-            // conditions.push(orderBy("price", "asc"));
-            
-            if (limitCount) conditions.push(limit(limitCount));
-
-            const q = query(productsRef, ...conditions);
-            const snapshot = await getDocs(q);
+            const snapshot = await query.get();
             
             const products: Product[] = [];
-            snapshot.forEach(doc => {
+            snapshot.forEach((doc: any) => {
                 const data = doc.data();
                 const p = mapToProduct(doc.id, data);
                 if (data.isActive !== false && p) products.push(p);
             });
             
-            // Ordenação em Memória (Bypass no Composite Index do Firebase)
             products.sort((a, b) => a.price - b.price);
             
             return products;
