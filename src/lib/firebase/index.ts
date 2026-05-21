@@ -12,14 +12,6 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-/**
- * @Agent-LegacyRescue: AMBIENT SHIELD V2
- * Detecta se estamos na fase de Build da Vercel para evitar 
- * conexões externas que quebram o pré-processamento.
- */
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
-                     (typeof window === 'undefined' && !process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
-
 const isConfigPresent = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
 
 // Instâncias Globais (Singletons)
@@ -29,7 +21,7 @@ let auth: Auth | null = null;
 const facebookProvider = new FacebookAuthProvider();
 
 /** 📐 Inicialização Silenciosa & Resiliente */
-if (isConfigPresent && !isBuildPhase) {
+if (isConfigPresent) {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         db = getFirestore(app);
@@ -37,7 +29,7 @@ if (isConfigPresent && !isBuildPhase) {
     } catch (error) {
         console.error("❌ [Hooke Rescue] Falha crítica ao despertar o Firebase:", error);
     }
-} else if (!isBuildPhase && typeof window !== "undefined") {
+} else if (typeof window !== "undefined") {
     console.warn("⚠️ [Hooke System] Rodando sem Firebase (Chaves ausentes).");
 }
 

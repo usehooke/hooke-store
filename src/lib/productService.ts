@@ -67,7 +67,7 @@ async function executeResilientCached<T>(
 export async function getProducts(category?: string): Promise<Product[]> {
     return executeResilientCached(
         "getProducts",
-        `products-${category || 'all'}`,
+        `products-v2-${category || 'all'}`,
         ['products', category ? `category-${category}` : 'all-products'],
         async () => {
             const productsRef = collection(db!, COLLECTION_NAME);
@@ -115,7 +115,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function getFeaturedProducts(limitCount: number = 8): Promise<Product[]> {
     return executeResilientCached(
         "getFeaturedProducts",
-        `featured-products-${limitCount}`,
+        `featured-products-v2-${limitCount}`,
         ['products', 'featured'],
         async () => {
             const productsRef = collection(db!, COLLECTION_NAME);
@@ -137,7 +137,7 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
     const { category, department, size, minPrice, maxPrice, featured, limitCount } = filters;
     
     // Cache key baseada nos filtros para granularidade máxima
-    const cacheKey = `filtered-products-${JSON.stringify(filters)}`;
+    const cacheKey = `filtered-products-v2-${JSON.stringify(filters)}`;
     const tags = ['products'];
     if (category) tags.push(`category-${category}`);
     if (department) tags.push(`department-${department}`);
