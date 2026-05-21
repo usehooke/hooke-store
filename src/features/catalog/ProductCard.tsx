@@ -66,7 +66,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       <Link href={`/produto/${product.slug || product.id}`} className="block w-full">
         {/* 1. IMAGEM CONTAINER */}
         <div className="relative aspect-[3/4] overflow-hidden bg-hooke-paper skeleton-shimmer mb-4">
-          {!imgError ? (
+          {!imgError && mainImage.src ? (
             <CldImage
               priority={priority}
               src={mainImage.src}
@@ -81,7 +81,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             />
           ) : (
             <div className="absolute inset-0 bg-[#F5F5F5] flex flex-col items-center justify-center border border-black/5 shadow-alabastro">
-               <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 uppercase">Imagem Indisponível</span>
+               <span className="text-[10px] font-bold tracking-[0.3em] text-hooke-400 uppercase text-center px-4">Imagem Indisponível</span>
             </div>
           )}
 
