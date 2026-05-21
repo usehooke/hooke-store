@@ -160,8 +160,9 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
             if (minPrice !== undefined) conditions.push(where("price", ">=", minPrice));
             if (maxPrice !== undefined) conditions.push(where("price", "<=", maxPrice));
 
-            // Ordenação padrão para garantir consistência
-            conditions.push(orderBy("price", "asc"));
+            // O Firebase requer um Composite Index para misturar 'where' e 'orderBy'.
+            // Para evitar a quebra silenciosa, vamos fazer a ordenação local na memória.
+            // conditions.push(orderBy("price", "asc"));
             
             if (limitCount) conditions.push(limit(limitCount));
 
@@ -174,6 +175,10 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
                 const p = mapToProduct(doc.id, data);
                 if (data.isActive !== false && p) products.push(p);
             });
+            
+            // Ordenação em Memória (Bypass no Composite Index do Firebase)
+            products.sort((a, b) => a.price - b.price);
+            
             return products;
         },
         [] as Product[]
