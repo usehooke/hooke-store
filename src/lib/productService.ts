@@ -39,7 +39,7 @@ const mapToProduct = (docId: string, data: DocumentData): Product | null => {
     }
 };
 
-/** 3. Motor de Execução Resiliente com Cache Persistente */
+/** 3. Motor de Execução Resiliente (Tempo Real) */
 async function executeResilientCached<T>(
     operationName: string,
     cacheKey: string,
@@ -47,22 +47,13 @@ async function executeResilientCached<T>(
     firestoreQuery: () => Promise<T>,
     emptyFallback: T
 ): Promise<T> {
-
-    const cachedOperation = unstable_cache(
-        async () => {
-            try {
-                const result = await firestoreQuery();
-                return result || emptyFallback;
-            } catch (error) {
-                console.warn(`⚠️ [Hooke Cache] Falha em ${operationName}. Retornando fallback vazio.`, error);
-                return emptyFallback;
-            }
-        },
-        [cacheKey],
-        { revalidate: 300, tags } // 5 min: produtos novos aparecem rápido
-    );
-
-    return cachedOperation();
+    try {
+        const result = await firestoreQuery();
+        return result || emptyFallback;
+    } catch (error) {
+        console.warn(`⚠️ [Hooke DB] Falha em ${operationName}. Retornando fallback vazio.`, error);
+        return emptyFallback;
+    }
 }
 
 /** 
