@@ -35,7 +35,7 @@ function detectShipper(code: string): { label: string; color: string; icon: stri
 
 // ─── Gerador de Templates de Resgate ────────────────────────────────────────
 function buildRescueTemplates(order: Order) {
-  const firstName = order.customer.name.split(" ")[0];
+  const firstName = order.customer?.name?.split(" ")[0] || "Cliente";
   const itemList = order.items.map((i) => `*${i.quantity}x ${i.title}* (tam. ${i.size})`).join(", ");
   const total = order.totalAmount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -408,8 +408,8 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex flex-col gap-1">
-                        <span className="text-sm font-bold text-black">{order.customer.name}</span>
-                        <span className="text-xs text-zinc-400">{order.customer.email}</span>
+                        <span className="text-sm font-bold text-black">{order.customer?.name || "Cliente Desconhecido"}</span>
+                        <span className="text-xs text-zinc-400">{order.customer?.email || "Sem e-mail"}</span>
                         {order.shippingZipcode && (
                           <span className="text-[9px] text-zinc-400 font-mono border border-zinc-200 px-1 py-0.5 w-fit mt-1">
                             CEP: {order.shippingZipcode}
@@ -419,7 +419,7 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="p-4 text-xs text-zinc-600">
                       <ul className="list-disc pl-4 space-y-0.5">
-                        {order.items.map((item, idx) => (
+                        {order.items?.map((item, idx) => (
                           <li key={idx} className="truncate max-w-[180px]" title={item.title}>
                             {item.quantity}x {item.title} <span className="text-zinc-400">({item.size})</span>
                           </li>
@@ -429,7 +429,7 @@ export default function AdminOrdersPage() {
                     <td className="p-4">
                       <div className="flex flex-col gap-1.5">
                         <span className="text-sm font-black text-black">
-                          {order.totalAmount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                          {order.totalAmount ? order.totalAmount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "R$ 0,00"}
                         </span>
                         {order.paymentMethod && (
                           <span className="text-[9px] bg-zinc-100 px-2 py-0.5 font-bold uppercase tracking-widest w-fit">
@@ -500,7 +500,7 @@ export default function AdminOrdersPage() {
                         </button>
 
                         {/* Notificar Rastreio (aba: todos) */}
-                        {order.trackingCode && order.customer.phone && viewMode === "all" && (
+                        {order.trackingCode && order.customer?.phone && viewMode === "all" && (
                           <button
                             onClick={() => handleWhatsAppNotify(order)}
                             className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 text-[9px] font-black tracking-widest uppercase transition-all flex items-center justify-center gap-2 border-2 border-green-700 w-full"
@@ -510,7 +510,7 @@ export default function AdminOrdersPage() {
                         )}
 
                         {/* Botão Resgatar → abre Modal */}
-                        {viewMode === "opportunities" && order.customer.phone && (
+                        {viewMode === "opportunities" && order.customer?.phone && (
                           <button
                             onClick={() => setRescueOrder(order)}
                             className="bg-amber-400 hover:bg-amber-500 text-black px-4 py-3 text-[9px] font-black tracking-widest uppercase transition-all flex items-center justify-center gap-2 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 w-full"
