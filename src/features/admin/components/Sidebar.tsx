@@ -31,7 +31,6 @@ const menuItems = [
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Concierge', href: '/admin/concierge', icon: CupSoda },
     { label: 'PDV Elite', href: '/admin/pdv', icon: Monitor },
-    { label: 'Estúdio Mágico', href: '/admin/estudio', icon: PackagePlus },
     { label: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
     { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },
     { label: 'Lançamentos', href: '/admin/lancamentos', icon: Rocket },

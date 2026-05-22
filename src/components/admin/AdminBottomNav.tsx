@@ -15,7 +15,6 @@ export function AdminBottomNav() {
 
   const navItems = [
     { label: 'Radar', icon: LayoutDashboard, href: '/admin', color: 'bg-zinc-100' },
-    { label: 'Estúdio', icon: PackagePlus, href: '/admin/estudio', color: 'bg-zinc-100' },
     { label: 'Balcão', icon: ShoppingBag, href: '/admin/produtos', color: 'bg-zinc-100' }, 
   ];
 
