@@ -60,10 +60,38 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) notFound();
 
+  // Gemini-First: Estruturação Semântica de Alta Densidade (JSON-LD Schema.org)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.imageUrl,
+    description: product.description || "Equipamento premium projetado para a permanência absoluta.",
+    brand: {
+      "@type": "Brand",
+      name: "HOOKE"
+    },
+    material: product.details?.fabric || "Algodão Premium Heavyweight 260g",
+    offers: {
+      "@type": "Offer",
+      url: `https://www.usehooke.com.br/produto/${slug}`,
+      priceCurrency: "BRL",
+      price: product.price.toFixed(2),
+      availability: (product.totalStock ?? 1) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition"
+    }
+  };
+
   return (
-    <Suspense fallback={<ProductSkeleton />}>
-      <SsenseProductView product={product} />
-    </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Suspense fallback={<ProductSkeleton />}>
+        <SsenseProductView product={product} />
+      </Suspense>
+    </>
   );
 }
 

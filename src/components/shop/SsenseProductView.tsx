@@ -46,40 +46,40 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
   };
 
   return (
-    <div className="bg-hooke-paper min-h-screen pt-24 px-6 lg:px-12 pb-24 selection:bg-black selection:text-white">
+    <div className="bg-white min-h-screen pt-24 px-6 lg:px-12 pb-24 selection:bg-black selection:text-white font-mono">
       
       {/* GRID EDITORIAL 3 COLUNAS */}
       <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-start">
         
-        {/* COLUNA 1: DETALHES (LEFT STICKY) - GLASS STYLE */}
-        <div className="hidden md:flex md:col-span-3 flex-col space-y-12 sticky top-32 glass-card p-6 border-none">
+        {/* COLUNA 1: DETALHES (LEFT STICKY) - BRUTALIST STYLE */}
+        <div className="hidden md:flex md:col-span-3 flex-col space-y-12 sticky top-32 p-6 border-2 border-black bg-white shadow-[8px_8px_0px_rgba(0,0,0,1)] rounded-none">
           <div className="space-y-4">
-            <h2 className="text-[10px] font-bold tracking-widest text-hooke-400 font-sans uppercase">
+            <h2 className="text-[10px] font-black tracking-[0.3em] text-black uppercase border-b-2 border-black pb-2">
               Detalhes do Produto
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-6 pt-4">
               <div className="space-y-1">
-                <p className="text-[11px] font-bold text-hooke-900 font-sans tracking-tight">Sku</p>
-                <p className="text-xs font-medium text-black/60">{product.id}</p>
+                <p className="text-[11px] font-black text-black uppercase tracking-widest">Sku</p>
+                <p className="text-xs text-black">{product.id}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-[11px] font-bold text-hooke-900 font-sans tracking-tight">Composição</p>
-                <p className="text-xs font-medium text-black/60">{product.details?.fabric || 'Algodão Premium'}</p>
+                <p className="text-[11px] font-black text-black uppercase tracking-widest">Composição</p>
+                <p className="text-xs text-black">{product.details?.fabric || 'Algodão Premium Heavyweight 260g'}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-[11px] font-bold text-hooke-900 font-sans tracking-tight">Corte</p>
-                <p className="text-xs font-medium text-black/60">{product.details?.model || 'Editorial Boxy'}</p>
+                <p className="text-[11px] font-black text-black uppercase tracking-widest">Corte</p>
+                <p className="text-xs text-black">{product.details?.model || 'Editorial Boxy Estruturado'}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-[11px] font-bold text-hooke-900 font-sans tracking-tight">Lavagem</p>
-                <p className="text-xs font-medium text-black/60">{product.details?.wash || 'Manual/Dry Clean'}</p>
+                <p className="text-[11px] font-black text-black uppercase tracking-widest">Lavagem</p>
+                <p className="text-xs text-black">{product.details?.wash || 'Manual / Dry Clean'}</p>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-black/5 pt-8">
-            <p className="text-[13px] leading-relaxed text-hooke-900/70 font-sans font-medium italic">
-              {product.description ? `"${product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')}"` : 'Design essencial para a permanência.'}
+          <div className="border-t-2 border-black pt-8">
+            <p className="text-[11px] leading-relaxed text-black font-medium uppercase tracking-widest text-justify">
+              {product.description ? `"${product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')}"` : 'DESIGN ESSENCIAL PARA A PERMANÊNCIA ABSOLUTA.'}
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: idx * 0.1 }}
-              className="relative aspect-[2/3] w-full bg-white group overflow-hidden border border-black/5"
+              className="relative aspect-[2/3] w-full bg-white group overflow-hidden border-2 border-black rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)]"
             >
               <CldImage
                 src={img}
@@ -109,33 +109,33 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
           ))}
         </div>
 
-        {/* COLUNA 3: COMPRA (RIGHT STICKY) - GLASS STYLE */}
-        <div className="col-span-1 md:col-span-3 flex flex-col space-y-10 sticky top-32 glass-card p-6 border-none">
-          <div className="space-y-2">
-            <span className="text-[10px] tracking-widest font-bold text-hooke-400">
+        {/* COLUNA 3: COMPRA (RIGHT STICKY) - BRUTALIST STYLE */}
+        <div className="col-span-1 md:col-span-3 flex flex-col space-y-10 sticky top-32 p-6 border-2 border-black bg-white shadow-[8px_8px_0px_rgba(0,0,0,1)] rounded-none">
+          <div className="space-y-2 border-b-2 border-black pb-6">
+            <span className="text-[10px] tracking-[0.4em] font-black text-black uppercase">
               {product.category}
             </span>
-            <h1 className="text-4xl lg:text-5xl font-heading font-light tracking-tighter text-hooke-900 leading-[0.9]">
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-black uppercase leading-[0.9] mt-2">
               {product.name}
             </h1>
-            <p className="text-2xl font-sans text-hooke-900 tracking-tight mt-4 font-light">
+            <p className="text-2xl font-black text-black tracking-tighter mt-4">
               {formatter.format(product.price)}
             </p>
           </div>
 
           <div className="space-y-8">
-            <div className="border-t border-black/5 pt-8">
+            <div className="pt-2">
               <div className="space-y-4">
-                <p className="text-[11px] font-bold tracking-widest text-hooke-400">Selecione o tamanho</p>
+                <p className="text-[11px] font-black tracking-[0.2em] text-black uppercase">Selecione o tamanho</p>
                 <div className="flex flex-wrap gap-2">
                   {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
                     <button 
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 border text-[11px] font-bold flex items-center justify-center font-sans transition-all duration-300 ${
+                      className={`w-12 h-12 border-2 text-[11px] font-black flex items-center justify-center transition-all duration-150 uppercase rounded-none ${
                         selectedSize === size 
-                        ? 'bg-black text-white border-black' 
-                        : 'border-black/10 hover:border-black'
+                        ? 'bg-black text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] translate-x-[-1px] translate-y-[-1px]' 
+                        : 'bg-white text-black border-black hover:bg-zinc-100 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       {size}
@@ -147,28 +147,28 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               <button 
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className="btn-hooke-elite w-full mt-10 py-6 text-[11px] font-bold tracking-[0.2em] group relative shadow-premium disabled:opacity-50"
+                className="w-full mt-10 py-6 text-[11px] font-black tracking-[0.2em] group relative shadow-[8px_8px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none bg-black text-white uppercase border-2 border-black hover:bg-white hover:text-black transition-colors rounded-none"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {isAdding ? (
-                    <span className="animate-pulse">Reservando...</span>
+                    <span className="animate-pulse">PROCESSANDO...</span>
                   ) : (
                     <>
-                      Finalizar Reserva no Lounge
+                      ADICIONAR AO LOUNGE
                       <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </>
                   )}
                 </span>
               </button>
 
-              <div className="mt-6 flex flex-col space-y-2 opacity-40">
-                <div className="text-[9px] font-semibold text-hooke-900 flex justify-between tracking-tight">
-                  <span>Envio imediato</span>
-                  <span>Brasil</span>
+              <div className="mt-8 pt-6 border-t-2 border-black flex flex-col space-y-3">
+                <div className="text-[9px] font-black text-black flex justify-between tracking-[0.2em] uppercase">
+                  <span>ENVIO IMEDIATO</span>
+                  <span>BRASIL</span>
                 </div>
-                <div className="text-[9px] font-semibold text-hooke-900 flex justify-between tracking-tight">
-                  <span>Edição Limitada</span>
-                  <span>Disponível</span>
+                <div className="text-[9px] font-black text-black flex justify-between tracking-[0.2em] uppercase">
+                  <span>EDIÇÃO LIMITADA</span>
+                  <span>DISPONÍVEL</span>
                 </div>
               </div>
             </div>
