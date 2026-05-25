@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CldImage } from 'next-cloudinary';
 import { Product } from '@/types';
 import { motion } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight, Zap } from 'lucide-react';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+// Inicialização do SDK do Mercado Pago (Google Pay / Apple Pay)
+// Em produção, isso usará a chave real do .env
+initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY || 'TEST-mock-key', { locale: 'pt-BR' });
 
 interface SsenseProductViewProps {
   product: Product;
@@ -22,6 +27,36 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
     currency: 'BRL',
   });
 
+  // Função centralizada de telemetria GA4 / GTM
+  const trackEcommerceEvent = (eventName: string, size?: string) => {
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({ ecommerce: null }); // Clear anterior para evitar duplicação
+      (window as any).dataLayer.push({
+        event: eventName,
+        ecommerce: {
+          currency: "BRL",
+          value: product.price,
+          items: [
+            {
+              item_id: product.id,
+              item_name: product.name,
+              item_brand: "HOOKE",
+              item_category: product.category,
+              price: product.price,
+              item_variant: size || "N/A",
+              quantity: 1
+            }
+          ]
+        }
+      });
+    }
+  };
+
+  // Dispara evento de view_item assim que renderiza
+  useEffect(() => {
+    trackEcommerceEvent('view_item');
+  }, []);
+
   const handleAddToCart = () => {
     if (!selectedSize) {
       toast.error('Por favor, selecione um tamanho para sua curadoria.', {
@@ -30,9 +65,11 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
       return;
     }
 
+    // Telemetria PMax: Adição ao Carrinho Tátil
+    trackEcommerceEvent('add_to_cart', selectedSize);
+
     setIsAdding(true);
     
-    // Simulação de "Elite Feel" (Atraso sutil para dar peso à ação)
     setTimeout(() => {
       addItem(product, selectedSize);
 
@@ -42,7 +79,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
       });
       
       setIsAdding(false);
-    }, 800);
+    }, 400); // Reduzido de 800ms para 400ms para manter peso sem penalizar conversão
   };
 
   return (
@@ -144,22 +181,45 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                 </div>
               </div>
 
-              <button 
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className="w-full mt-10 py-6 text-[11px] font-black tracking-[0.2em] group relative shadow-[8px_8px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none bg-black text-white uppercase border-2 border-black hover:bg-white hover:text-black transition-colors rounded-none"
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  {isAdding ? (
-                    <span className="animate-pulse">PROCESSANDO...</span>
-                  ) : (
-                    <>
-                      ADICIONAR AO LOUNGE
-                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </span>
-              </button>
+              <div className="flex flex-col gap-3 mt-10">
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={isAdding}
+                  className="w-full py-4 text-[11px] font-black tracking-[0.2em] group relative shadow-[6px_6px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none bg-white text-black uppercase border-2 border-black hover:bg-black hover:text-white transition-colors rounded-none"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isAdding ? (
+                      <span className="animate-pulse">PROCESSANDO...</span>
+                    ) : (
+                      <>
+                        ADICIONAR AO LOUNGE
+                        <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </span>
+                </button>
+
+                {/* BOTÃO ONE-TAP MERCADO PAGO / GPAY */}
+                {selectedSize ? (
+                  <div className="w-full mt-2 relative z-0">
+                    <p className="text-[9px] text-center font-bold tracking-widest text-black/50 mb-2 uppercase">Compra Expressa</p>
+                    {/* O Wallet Brick injeta o botão nativo do GPay/ApplePay do Mercado Pago */}
+                    <div className="border-2 border-black p-1 shadow-[6px_6px_0px_rgba(0,0,0,1)] bg-black/5">
+                      <Wallet 
+                        initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }} 
+                        customization={{ texts: { action: 'pay', valueProp: 'security_details' } }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                   <button 
+                    disabled
+                    className="w-full mt-2 py-4 text-[11px] font-black tracking-[0.2em] shadow-[6px_6px_0px_rgba(0,0,0,0.1)] bg-black/5 text-black/30 uppercase border-2 border-black/10 rounded-none flex items-center justify-center gap-2"
+                  >
+                    <Zap size={14} /> EXPRESSO (GPay)
+                  </button>
+                )}
+              </div>
 
               <div className="mt-8 pt-6 border-t-2 border-black flex flex-col space-y-3">
                 <div className="text-[9px] font-black text-black flex justify-between tracking-[0.2em] uppercase">

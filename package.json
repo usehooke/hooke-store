@@ -21,6 +21,7 @@
     "@ducanh2912/next-pwa": "^10.2.6",
     "@google/generative-ai": "^0.11.0",
     "@hookform/resolvers": "^5.2.2",
+    "@mercadopago/sdk-react": "^1.0.7",
     "@next/third-parties": "15.5.14",
     "@radix-ui/react-dialog": "^1.1.15",
     "@react-pdf/renderer": "^4.5.1",
