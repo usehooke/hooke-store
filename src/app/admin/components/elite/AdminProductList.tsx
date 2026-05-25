@@ -11,7 +11,10 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/types";
 import { QualityBadge } from "./QualityBadge";
-
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { LookbookPDF } from "@/features/admin/components/pdf/LookbookPDF";
+import { createLookbook } from "@/actions/lookbook";
+import { toast } from "sonner";
 interface AdminProductListProps {
   products: Product[];
   isLoading?: boolean;
@@ -32,6 +35,37 @@ export function AdminProductList({
   const [searchInput, setSearchInput] = useState("");
   const [activeTab, setActiveTab] = useState<"todos" | "masculino" | "feminino">("todos");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  
+  // Seleção em lote para o Lookbook
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelectedIds(newSet);
+  };
+
+  const handleGenerateLink = async () => {
+    if (selectedIds.size === 0) return;
+    setIsGeneratingLink(true);
+    const result = await createLookbook(Array.from(selectedIds));
+    setIsGeneratingLink(false);
+    
+    if (result.success) {
+      toast.success("Lookbook gerado!");
+      const url = `${window.location.origin}/lookbook/${result.id}`;
+      navigator.clipboard.writeText(url);
+      toast.info("Link copiado para a área de transferência.");
+    } else {
+      toast.error(result.error);
+    }
+  };
+
+  const selectedProductsData = useMemo(() => {
+    return products.filter(p => selectedIds.has(p.id));
+  }, [products, selectedIds]);
 
   // Filtragem local instantânea super-otimizada com useMemo (0ms de latência)
   const filteredProducts = useMemo(() => {
@@ -121,6 +155,47 @@ export function AdminProductList({
         </div>
       </div>
 
+      {/* BARRA DE AÇÕES EM LOTE (LOOKBOOK) */}
+      <AnimatePresence>
+        {selectedIds.size > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-6 p-4 bg-black text-white flex flex-col md:flex-row md:items-center justify-between gap-4 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.3)] rounded-none"
+          >
+            <div className="flex items-center gap-3">
+              <span className="bg-white text-black font-black w-6 h-6 flex items-center justify-center text-[10px]">
+                {selectedIds.size}
+              </span>
+              <span className="text-xs font-black uppercase tracking-widest text-zinc-300">Selecionados para Lookbook</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button 
+                onClick={handleGenerateLink}
+                disabled={isGeneratingLink}
+                className="px-4 py-2 bg-white text-black text-[10px] font-black tracking-widest uppercase hover:bg-zinc-200 transition-colors disabled:opacity-50"
+              >
+                {isGeneratingLink ? "GERANDO..." : "1. GERAR LINK INTERATIVO"}
+              </button>
+              
+              <PDFDownloadLink
+                document={<LookbookPDF products={selectedProductsData} />}
+                fileName={`Hooke_Lookbook_${new Date().getTime()}.pdf`}
+                className="px-4 py-2 bg-zinc-800 text-white border border-white/20 text-[10px] font-black tracking-widest uppercase hover:bg-zinc-700 transition-colors"
+              >
+                {/* @ts-ignore */}
+                {({ loading }) => (loading ? "PREPARANDO PDF..." : "2. EXPORTAR PDF")}
+              </PDFDownloadLink>
+
+              <button onClick={() => setSelectedIds(new Set())} className="ml-2 text-[10px] uppercase font-bold text-zinc-400 hover:text-white underline underline-offset-4">
+                Cancelar
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {isLoading ? (
         /* Skeleton View */
         <div className={viewMode === "grid" 
@@ -156,6 +231,15 @@ export function AdminProductList({
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-zinc-200"><Plus size={32} strokeWidth={1} /></div>
                         )}
+                        {/* Checkbox Brutalista para Lookbook */}
+                        <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
+                          <input 
+                            type="checkbox" 
+                            checked={selectedIds.has(p.id)}
+                            onChange={() => toggleSelect(p.id)}
+                            className="w-6 h-6 border-2 border-black accent-black cursor-pointer bg-white"
+                          />
+                        </div>
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
                             <button onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform">{p.isActive ? <Eye size={18} /> : <EyeOff size={18} />}</button>
                             <button onClick={(e) => { e.stopPropagation(); onEdit(p); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform"><Edit3 size={18} /></button>
@@ -200,7 +284,17 @@ export function AdminProductList({
                         {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform" />}
                       </div>
                       
-                      <div className="flex-grow min-w-0" onClick={() => onEdit(p)}>
+                      {/* Checkbox Brutalista para Lookbook */}
+                      <div className="flex-shrink-0 flex items-center justify-center">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedIds.has(p.id)}
+                          onChange={() => toggleSelect(p.id)}
+                          className="w-5 h-5 border-2 border-black accent-black cursor-pointer bg-white"
+                        />
+                      </div>
+                      
+                      <div className="flex-grow min-w-0 cursor-pointer" onClick={() => onEdit(p)}>
                         <div className="flex items-center gap-3">
                           <h3 className="text-[11px] font-black text-black uppercase tracking-tight truncate">{p.name}</h3>
                           {p.department && (
