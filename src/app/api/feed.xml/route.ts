@@ -29,7 +29,7 @@ export async function GET() {
             const imageLink = product.images?.[0] || product.imageUrl || `${appUrl}/logo.png`;
             const price = Number(product.price).toFixed(2) + " BRL";
             const availability = (product.totalStock ?? 1) > 0 ? "in_stock" : "out_of_stock";
-            const color = product.details?.color || "Preto";
+            const color = (product.details as any)?.color || "Preto";
             const material = product.details?.fabric || "Algodão";
             const gender = product.department === "feminino" ? "female" : product.department === "masculino" ? "male" : "unisex";
 
