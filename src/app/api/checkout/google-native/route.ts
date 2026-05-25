@@ -40,12 +40,12 @@ export async function POST(request: Request) {
       orderId: orderRef.id
     }, { status: 201 });
 
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ 
         success: false, 
         error: 'Validação de Payload Falhou', 
-        details: error.errors 
+        details: (error as any).errors 
       }, { status: 400 });
     }
 
