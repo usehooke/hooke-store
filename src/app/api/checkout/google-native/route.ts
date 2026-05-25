@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       orderId: orderRef.id
     }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ 
         success: false, 
