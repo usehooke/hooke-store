@@ -20,9 +20,9 @@
         ]
       },
       "logs": [
-        "[2026-05-20T16:52:14.899Z] Transação criada",
-        "[2026-05-20T16:52:16.427Z] Upload finalizado via Stub.",
-        "[2026-05-20T16:52:17.435Z] Produto cadastrado com sucesso via Stub."
+        "[2026-05-25T14:14:05.991Z] Transação criada",
+        "[2026-05-25T14:14:07.542Z] Upload finalizado via Stub.",
+        "[2026-05-25T14:14:08.556Z] Produto cadastrado com sucesso via Stub."
       ],
       "firebaseUrl": "https://firebasestorage.googleapis.com/v0/b/mock/o/studio%2Ftest-uuid-001.webp?alt=media"
     }

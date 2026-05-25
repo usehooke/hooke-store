@@ -114,6 +114,28 @@ export default function RootLayout({
             }}
           />
         )}
+        
+        {/* Gemini-First: Organization Schema Global */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Hooke Elite",
+              "url": baseUrl,
+              "logo": `${baseUrl}/pdv-icon.png`,
+              "sameAs": [
+                "https://instagram.com/usehooke"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+55-11-99999-9999", // Exemplo
+                "contactType": "Customer Service"
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-jost antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
         {GTM_ID && (

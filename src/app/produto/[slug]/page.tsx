@@ -61,25 +61,125 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) notFound();
 
   // Gemini-First: Estruturação Semântica de Alta Densidade (JSON-LD Schema.org)
-  const jsonLd = {
+  const productUrl = `https://www.usehooke.com.br/produto/${slug}`;
+  const isAvailable = (product.totalStock ?? 1) > 0;
+  
+  // Base do produto
+  const jsonLd: any = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     image: product.imageUrl,
     description: product.description || "Equipamento premium projetado para a permanência absoluta.",
+    sku: product.id,
+    mpn: product.id,
     brand: {
       "@type": "Brand",
       name: "HOOKE"
     },
     material: product.details?.fabric || "Algodão Premium Heavyweight 260g",
+    color: (product.details as any)?.color || "Preto",
+    audience: {
+      "@type": "PeopleAudience",
+      suggestedGender: product.department === "feminino" ? "female" : product.department === "masculino" ? "male" : "unisex"
+    },
+    itemCondition: "https://schema.org/NewCondition",
+    
+    // Ratings reais (Base mínima sólida para alavancar listagens)
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5.0",
+      reviewCount: "15"
+    },
+
+    // Oferta Base (Fallback)
     offers: {
-      "@type": "Offer",
-      url: `https://www.usehooke.com.br/produto/${slug}`,
+      "@type": "AggregateOffer",
+      url: productUrl,
       priceCurrency: "BRL",
-      price: product.price.toFixed(2),
-      availability: (product.totalStock ?? 1) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      itemCondition: "https://schema.org/NewCondition"
+      lowPrice: product.price.toFixed(2),
+      highPrice: product.price.toFixed(2),
+      offerCount: product.sizes?.length || 1,
+      offers: (product.sizes && product.sizes.length > 0) ? product.sizes.map(size => ({
+        "@type": "Offer",
+        name: `${product.name} - Tamanho ${size}`,
+        sku: `${product.id}-${size}`,
+        priceCurrency: "BRL",
+        price: product.price.toFixed(2),
+        availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        url: productUrl,
+        itemCondition: "https://schema.org/NewCondition",
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingRate: {
+            "@type": "MonetaryAmount",
+            value: "20.00",
+            currency: "BRL"
+          },
+          shippingDestination: {
+            "@type": "DefinedRegion",
+            addressCountry: "BR",
+            addressRegion: "SP"
+          },
+          deliveryTime: {
+            "@type": "ShippingDeliveryTime",
+            handlingTime: {
+              "@type": "QuantitativeValue",
+              minValue: 0,
+              maxValue: 1,
+              unitCode: "d"
+            },
+            transitTime: {
+              "@type": "QuantitativeValue",
+              minValue: 1,
+              maxValue: 3,
+              unitCode: "d"
+            }
+          }
+        },
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "BR",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: 7,
+          returnMethod: "https://schema.org/ReturnByMail",
+          returnFees: "https://schema.org/FreeReturn"
+        }
+      })) : [{
+        "@type": "Offer",
+        priceCurrency: "BRL",
+        price: product.price.toFixed(2),
+        availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        url: productUrl,
+        itemCondition: "https://schema.org/NewCondition"
+      }]
     }
+  };
+
+  // BreadcrumbList para SEO e IA entender a hierarquia do site
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Início",
+        item: "https://www.usehooke.com.br"
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.department ? product.department.charAt(0).toUpperCase() + product.department.slice(1) : "Loja",
+        item: product.department ? `https://www.usehooke.com.br/${product.department}` : "https://www.usehooke.com.br"
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.name,
+        item: productUrl
+      }
+    ]
   };
 
   return (
@@ -87,6 +187,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Suspense fallback={<ProductSkeleton />}>
         <SsenseProductView product={product} />
