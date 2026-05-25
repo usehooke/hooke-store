@@ -207,7 +207,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                     <div className="border-2 border-black p-1 shadow-[6px_6px_0px_rgba(0,0,0,1)] bg-black/5">
                       <Wallet 
                         initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }} 
-                        customization={{ texts: { action: 'pay', valueProp: 'security_details' } }}
+                        customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
                       />
                     </div>
                   </div>
