@@ -1,4 +1,4 @@
-import { getProductsAdmin } from "@/lib/productServiceAdmin";
+import { getProductsAdmin, getHeroBannersAdmin } from "@/lib/productServiceAdmin";
 import BentoHero from "@/components/home/BentoHero";
 import BrandMarquee from "@/components/ui/BrandMarquee";
 import BrandBento from "@/components/home/BrandBento";
@@ -17,6 +17,7 @@ import { headers } from "next/headers";
 export default async function Home() {
   headers(); // Opt-out do static rendering para revalidar produtos em tempo real
   const allProducts = await getProductsAdmin();
+  const heroBanners = await getHeroBannersAdmin();
 
   return (
     <main className="bg-hooke-paper min-h-screen pb-24 md:pb-0">
@@ -26,7 +27,7 @@ export default async function Home() {
       </Suspense>
 
       {/* 1. HERO */}
-      <BentoHero />
+      <BentoHero banners={heroBanners} />
 
       {/* 2. BARRA */}
       <BrandMarquee />

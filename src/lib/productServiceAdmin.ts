@@ -107,3 +107,21 @@ export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<
         return [];
     }
 }
+
+export async function getHeroBannersAdmin(): Promise<Product[]> {
+    if (!adminDb) return [];
+    try {
+        const query = adminDb.collection(COLLECTION_NAME).where("isHeroBanner", "==", true);
+        const snapshot = await query.get();
+        const products: Product[] = [];
+        snapshot.forEach((doc: any) => {
+            const data = doc.data();
+            const p = mapToProduct(doc.id, data);
+            if (data.isActive !== false && p) products.push(p);
+        });
+        return products;
+    } catch (error) {
+        console.error("⚠️ [getHeroBannersAdmin] Falha:", error);
+        return [];
+    }
+}

@@ -4,16 +4,13 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Product } from "@/types";
 import { AdminProductList } from "../components/elite/AdminProductList";
-import { AdminProductDrawer } from "../components/elite/AdminProductDrawer";
-import { toggleProductVisibility, deleteProduct, saveProduct } from "../actions/products";
+import { toggleProductVisibility, deleteProduct } from "../actions/products";
 import { triggerHaptic } from "@/utils/haptics";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function AdminProductsView({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -53,22 +50,6 @@ export function AdminProductsView({ initialProducts }: { initialProducts: Produc
     });
   };
 
-  const handleSaveProduct = async (data: Partial<Product>) => {
-    startTransition(async () => {
-      const result = await saveProduct(data, 'admin-v4-server');
-      if (result.success) {
-        triggerHaptic('success');
-        toast.success(data.id ? "Alterações salvas" : "Novo produto cadastrado");
-        setIsDrawerOpen(false);
-        setEditingProduct(null);
-        router.refresh(); // O Server Component vai re-buscar os dados frescos do banco
-      } else {
-        triggerHaptic('heavy');
-        toast.error(`Falha: ${result.message}`);
-      }
-    });
-  };
-
   const handleSyncTiny = async (product: Product) => {
     toast.info(`Sincronizando ${product.name}...`);
     try {
@@ -93,8 +74,8 @@ export function AdminProductsView({ initialProducts }: { initialProducts: Produc
         <h2 className="text-xl font-black uppercase tracking-tighter">Inventário</h2>
         <button
           onClick={() => {
-            setEditingProduct(null);
-            setIsDrawerOpen(true);
+            triggerHaptic('light');
+            router.push('/admin/produtos/novo');
           }}
           className="px-6 py-3 bg-black text-white text-[10px] font-black tracking-widest uppercase hover:bg-zinc-800 transition-all flex items-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] active:translate-y-1 active:shadow-none"
         >
@@ -105,27 +86,16 @@ export function AdminProductsView({ initialProducts }: { initialProducts: Produc
       <div className="bg-white border border-black/10 p-6 shadow-sm min-h-[400px]">
         <AdminProductList
           products={products}
-          isLoading={false}
+          isLoading={isPending}
           onEdit={(p) => {
-            setEditingProduct(p);
-            setIsDrawerOpen(true);
+            triggerHaptic('light');
+            router.push(`/admin/produtos/${p.id}`);
           }}
           onDelete={handleDelete}
           onToggleActive={handleToggleActive}
           onSync={handleSyncTiny}
         />
       </div>
-
-      <AdminProductDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => {
-          setIsDrawerOpen(false);
-          setEditingProduct(null);
-        }}
-        product={editingProduct}
-        onSubmit={handleSaveProduct}
-        isSaving={isPending}
-      />
     </div>
   );
 }

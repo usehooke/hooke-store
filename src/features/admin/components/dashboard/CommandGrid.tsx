@@ -10,7 +10,6 @@ const commands = [
   { label: "PDV Rápido", href: "/admin/pdv", icon: Store, color: "bg-zinc-900" },
   { label: "Catálogo", href: "/admin/produtos", icon: ShoppingCart, color: "bg-zinc-800" },
   { label: "Etiquetas", href: "/admin/pdv/etiquetas", icon: Tag, color: "bg-zinc-700" },
-  { label: "Insights", href: "/admin/analytics", icon: BarChart3, color: "bg-zinc-600" },
   { label: "Config", href: "/admin/config", icon: Settings, color: "bg-zinc-500" },
 ];
 

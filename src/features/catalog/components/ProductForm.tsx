@@ -9,7 +9,7 @@ import { collection, doc, updateDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIProductAnalysis } from '@/lib/ai/visionService';
 import { toast } from "sonner";
-import { Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, Plus, Trash2, HelpCircle } from "lucide-react";
+import { Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, Plus, Trash2, HelpCircle, Star } from "lucide-react";
 import { Department, Size } from '@/types/enums';
 import { saveProduct } from '@/app/admin/actions/products';
 
@@ -65,6 +65,8 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   const watchedDescription = watch('description');
   const watchedMetaDesc = watch('seo.metaDescription');
   const watchedImages = watch('images') || [];
+  const watchedIsHero = watch('isHeroBanner');
+  const watchedHeroUrl = watch('heroImageUrl');
 
   // Auditoria de Qualidade em tempo real (Fórmula Padrão Elite)
   const issues: string[] = [];
@@ -213,8 +215,16 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
   const removeImage = (index: number) => {
     const current = getValues('images') || [];
+    const urlToRemove = current[index];
     const updated = current.filter((_, i) => i !== index);
     setValue('images', updated, { shouldDirty: true });
+    
+    // Se a imagem removida era a Hero, limpa a flag
+    if (getValues('heroImageUrl') === urlToRemove) {
+      setValue('isHeroBanner', false, { shouldDirty: true });
+      setValue('heroImageUrl', '', { shouldDirty: true });
+    }
+
     if (updated.length > 0) {
       setValue('imageUrl', updated[0], { shouldDirty: true });
     } else {
@@ -348,6 +358,8 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-10">
         <input type="hidden" {...register('id')} />
         <input type="hidden" {...register('imageUrl')} />
+        <input type="hidden" {...register('isHeroBanner')} />
+        <input type="hidden" {...register('heroImageUrl')} />
         
         {/* GRID PRINCIPAL */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -516,10 +528,46 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
           {watchedImages.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-black/5">
               {watchedImages.map((url, i) => (
-                <div key={i} className="relative group aspect-square border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden">
+                <div 
+                  key={i} 
+                  className={`relative group aspect-square border-2 bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden transition-all duration-300 ${
+                    watchedIsHero && watchedHeroUrl === url
+                      ? "border-amber-400 ring-2 ring-amber-400/50"
+                      : "border-black"
+                  }`}
+                >
+                  {watchedIsHero && watchedHeroUrl === url && (
+                    <div className="absolute top-1.5 right-1.5 bg-amber-500 text-white text-[7px] font-black px-1.5 py-0.5 border border-black uppercase tracking-wider flex items-center gap-1 z-10 shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
+                      <Star size={8} className="fill-white text-white" /> Hero
+                    </div>
+                  )}
+
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={url} alt={`Galeria ${i+1}`} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const isCurrentlyHero = watchedIsHero && watchedHeroUrl === url;
+                        if (isCurrentlyHero) {
+                          setValue('isHeroBanner', false, { shouldDirty: true });
+                          setValue('heroImageUrl', '', { shouldDirty: true });
+                          toast.info("Removido do Hero Banner da Home.");
+                        } else {
+                          setValue('isHeroBanner', true, { shouldDirty: true });
+                          setValue('heroImageUrl', url, { shouldDirty: true });
+                          toast.success("Definida como imagem do Hero Banner da Home!");
+                        }
+                      }}
+                      className={`p-2 border border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-none text-white transition-colors ${
+                        watchedIsHero && watchedHeroUrl === url
+                          ? "bg-amber-500 hover:bg-amber-600"
+                          : "bg-zinc-850 hover:bg-zinc-700"
+                      }`}
+                      title={watchedIsHero && watchedHeroUrl === url ? "Remover flag Hero" : "Marcar como Hero Banner"}
+                    >
+                      <Star size={14} className={watchedIsHero && watchedHeroUrl === url ? "fill-white" : ""} />
+                    </button>
                     <button
                       type="button"
                       onClick={() => removeImage(i)}

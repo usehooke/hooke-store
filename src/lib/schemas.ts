@@ -40,6 +40,8 @@ export const ProductSchema = z.object({
   featured: z.boolean().optional(),
   isActive: z.boolean().optional(),
   isPremiumCollection: z.boolean().optional(),
+  isHeroBanner: z.boolean().optional(),
+  heroImageUrl: z.string().url().or(z.string().startsWith('/')).optional(),
   details: z.object({
     fabric: z.string(),
     model: z.string(),

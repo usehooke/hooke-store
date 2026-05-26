@@ -11,6 +11,8 @@ export const productSchema = z.object({
   featured: z.boolean().default(false),
   isActive: z.boolean().default(true),
   isNew: z.boolean().optional(),
+  isHeroBanner: z.boolean().optional(),
+  heroImageUrl: z.string().optional(),
   description: z.string(),
   imageUrl: z.string(),
   images: z.array(z.string()),
