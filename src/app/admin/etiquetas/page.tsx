@@ -301,6 +301,13 @@ const LabelGeneratorContent: React.FC = () => {
 
       {/* RENDER EMBUTIDO DA FOLHA DE IMPRESSÃO (CSS ENGENHARIA TÉRMICA) */}
       <style>{`
+        /* REGRAS GERAIS DE RENDERIZAÇÃO */
+        * {
+          box-sizing: border-box;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
         /* CANVAS DA ETIQUETA EM TELA */
         .thermal-canvas {
           width: 100mm;
@@ -314,8 +321,8 @@ const LabelGeneratorContent: React.FC = () => {
           border: 1px solid #000;
         }
 
-        .t-line-thin { height: 1px; background-color: #000; width: 100%; margin: 3.5mm 0; }
-        .t-line-thick { height: 2px; background-color: #000; width: 100%; margin: 3.5mm 0; }
+        .t-line-thin { height: 1px; background-color: #000 !important; width: 100%; margin: 3.5mm 0; }
+        .t-line-thick { height: 2px; background-color: #000 !important; width: 100%; margin: 3.5mm 0; }
 
         .t-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .t-brand .t-logo { font-family: 'Jost', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1.2px; line-height: 1; text-transform: lowercase; }
@@ -323,7 +330,7 @@ const LabelGeneratorContent: React.FC = () => {
         .t-sender { text-align: right; font-size: 7.5px; line-height: 1.4; max-width: 45mm; font-weight: 400; }
 
         .t-logistics { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3mm; align-items: center; }
-        .t-badge { background-color: #000; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-align: center; padding: 3mm 1mm; text-transform: uppercase; word-break: break-word; }
+        .t-badge { background-color: #000 !important; color: #fff !important; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-align: center; padding: 3mm 1mm; text-transform: uppercase; word-break: break-word; }
         .t-track { display: flex; flex-direction: column; padding-left: 1mm; }
         .t-track .t-lbl { font-size: 7.5px; font-weight: 700; }
         .t-track .t-val { font-size: 14px; font-weight: 700; }
@@ -360,6 +367,9 @@ const LabelGeneratorContent: React.FC = () => {
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
+            width: 100mm !important;
+            height: 150mm !important;
+            overflow: hidden !important; /* Mata qualquer conteúdo extra que gere a página 2 */
           }
 
           /* Remover estilos visuais dos wrappers da etiqueta para não imprimirem bordas extras */
@@ -371,18 +381,13 @@ const LabelGeneratorContent: React.FC = () => {
             padding: 0 !important;
           }
 
-          /* Anular qualquer overflow hidden de pais que possa "cortar" a etiqueta */
-          * {
-            overflow: visible !important;
-          }
-
           /* A Etiqueta Térmica: Quebra o dom e fixa no canto superior esquerdo do papel */
           .thermal-canvas {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100mm !important;
-            height: 150mm !important;
+            height: 149.5mm !important; /* Reduzido 0.5mm para evitar overflow de pixel */
             border: none !important;
             margin: 0 !important;
             padding: 6mm !important;
