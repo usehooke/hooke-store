@@ -18,7 +18,6 @@ interface LabelData {
 const LabelGeneratorContent: React.FC = () => {
   const searchParams = useSearchParams();
 
-  // Estado para a etiqueta ativa no editor
   const [activeLabel, setActiveLabel] = useState<Omit<LabelData, 'id' | 'updatedAt'>>({
     shippingMethod: 'CORREIOS (SEDEX)',
     trackingCode: 'HOOK-' + Math.floor(100000 + Math.random() * 900000),
@@ -28,7 +27,9 @@ const LabelGeneratorContent: React.FC = () => {
     cep: '',
   });
 
-  // Auto-preenchimento via URL params
+  const [savedLabels, setSavedLabels] = useState<LabelData[]>([]);
+  const [isFlashing, setIsFlashing] = useState(false);
+
   useEffect(() => {
     const nome = searchParams.get('nome');
     const cep = searchParams.get('cep');
@@ -47,13 +48,14 @@ const LabelGeneratorContent: React.FC = () => {
         trackingCode: rastreio || prev.trackingCode,
         shippingMethod: metodo || prev.shippingMethod,
       }));
+      
+      // Auto-fetch se o CEP vier na URL e estiver completo
+      if (cep && cep.replace(/\D/g, '').length === 8) {
+        fetchCep(cep);
+      }
     }
   }, [searchParams]);
 
-  // Histórico de etiquetas salvas localmente (SaaS Offline-First)
-  const [savedLabels, setSavedLabels] = useState<LabelData[]>([]);
-
-  // Carrega o histórico do LocalStorage no mount
   useEffect(() => {
     const cache = localStorage.getItem('hooke_labels_history');
     if (cache) {
@@ -61,17 +63,74 @@ const LabelGeneratorContent: React.FC = () => {
     }
   }, []);
 
+  const fetchCep = async (cepStr: string) => {
+    const cleanCep = cepStr.replace(/\D/g, '');
+    if (cleanCep.length === 8) {
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await response.json();
+        if (!data.erro) {
+          setActiveLabel(prev => ({
+            ...prev,
+            street: `${data.logradouro}, `, // Pronta para receber o número
+            cityState: `${data.localidade} - ${data.uf}`
+          }));
+        }
+      } catch (error) {
+        console.error("Erro na Injeção Magnética do ViaCEP", error);
+      }
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setActiveLabel(prev => ({ ...prev, [name]: value }));
+
+    // Disparo Magnético do CEP
+    if (name === 'cep') {
+      const cleanValue = value.replace(/\D/g, '');
+      if (cleanValue.length === 8) {
+        fetchCep(cleanValue);
+      }
+    }
   };
 
-  // Salva no LocalStorage antes de disparar a impressão
+  const playSuccessSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(600, ctx.currentTime); 
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+      
+      if (navigator.vibrate) navigator.vibrate(50);
+    } catch (e) {
+      // Silence is golden if AudioContext fails (e.g. strict browser policies)
+    }
+  };
+
   const handlePrintProcess = () => {
     if (!activeLabel.recipientName || !activeLabel.cep) {
       alert('Por favor, preencha ao menos o Nome e o CEP do destinatário.');
       return;
     }
+
+    // Efeito Haptico & Visual
+    playSuccessSound();
+    setIsFlashing(true);
+    setTimeout(() => setIsFlashing(false), 120);
 
     const newLabel: LabelData = {
       ...activeLabel,
@@ -79,12 +138,14 @@ const LabelGeneratorContent: React.FC = () => {
       updatedAt: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
 
-    const updatedList = [newLabel, ...savedLabels.slice(0, 19)]; // Mantém o histórico das últimas 20
+    const updatedList = [newLabel, ...savedLabels.slice(0, 19)];
     setSavedLabels(updatedList);
     localStorage.setItem('hooke_labels_history', JSON.stringify(updatedList));
 
-    // Executa o disparo para o hardware térmico
-    window.print();
+    // Atraso de milissegundos para a tela piscar antes de abrir a janela travada do PDF/Print
+    setTimeout(() => {
+      window.print();
+    }, 150);
   };
 
   const handleLoadLabel = (label: LabelData) => {
@@ -110,7 +171,7 @@ const LabelGeneratorContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] font-['Inter'] antialiased text-black">
+    <div className={`min-h-screen bg-[#F5F5F5] font-['Inter'] antialiased text-black transition-all duration-75 ${isFlashing ? 'bg-black invert brightness-200' : ''}`}>
       
       {/* PAINEL WEB DE OPERAÇÃO */}
       <div className="max-w-[1400px] mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 print-no-margin">
@@ -118,7 +179,6 @@ const LabelGeneratorContent: React.FC = () => {
         {/* COLUNA ESQUERDA: EDITOR E HISTÓRICO */}
         <div className="no-print lg:col-span-5 flex flex-col gap-6">
           
-          {/* CONTROLADOR PRINCIPAL (ESTILO HOOKE) */}
           <div className="bg-white p-5 sm:p-8 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] rounded-none">
             <div className="flex justify-between items-center mb-6">
               <h1 className="font-['Jost'] text-xl font-bold uppercase tracking-wider">Gerador de Etiquetas</h1>
@@ -159,7 +219,7 @@ const LabelGeneratorContent: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">Nome do Destinatário (Quem Recebe)</label>
+                <label className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">Nome do Destinatário</label>
                 <input
                   type="text"
                   name="recipientName"
@@ -168,6 +228,32 @@ const LabelGeneratorContent: React.FC = () => {
                   placeholder="Nome completo de quem vai receber"
                   className="border-b border-black bg-transparent py-2 text-sm font-bold focus:outline-none rounded-none placeholder-zinc-300"
                 />
+              </div>
+              
+              {/* O CEP VEM ANTES NA UI AGORA, PARA O VIACEP FAZER SENTIDO LOGICAMENTE */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold tracking-wider text-black uppercase">CEP (Auto-Completa)</label>
+                  <input
+                    type="text"
+                    name="cep"
+                    value={activeLabel.cep}
+                    onChange={handleInputChange}
+                    placeholder="00000-000"
+                    className="border-b-2 border-black bg-black/5 py-2 px-2 text-sm font-bold focus:outline-none rounded-none placeholder-zinc-400"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">Cidade - UF</label>
+                  <input
+                    type="text"
+                    name="cityState"
+                    value={activeLabel.cityState}
+                    onChange={handleInputChange}
+                    placeholder="Ex: Belo Horizonte - MG"
+                    className="border-b border-black bg-transparent py-2 text-sm focus:outline-none rounded-none placeholder-zinc-300"
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col gap-1">
@@ -180,31 +266,6 @@ const LabelGeneratorContent: React.FC = () => {
                   placeholder="Ex: Rua dos Tupis, 1-241 - Centro"
                   className="border-b border-black bg-transparent py-2 text-sm focus:outline-none rounded-none placeholder-zinc-300"
                 />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">Cidade - UF</label>
-                  <input
-                    type="text"
-                    name="cityState"
-                    value={activeLabel.cityState}
-                    onChange={handleInputChange}
-                    placeholder="Ex: Belo Horizonte - MG"
-                    className="border-b border-black bg-transparent py-2 text-sm focus:outline-none rounded-none placeholder-zinc-300"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">CEP</label>
-                  <input
-                    type="text"
-                    name="cep"
-                    value={activeLabel.cep}
-                    onChange={handleInputChange}
-                    placeholder="00000-000"
-                    className="border-b border-black bg-transparent py-2 text-sm font-bold focus:outline-none rounded-none placeholder-zinc-300"
-                  />
-                </div>
               </div>
 
               <button
@@ -284,11 +345,12 @@ const LabelGeneratorContent: React.FC = () => {
 
               <div className="t-footer">
                 <div className="t-foot-msg">
-                  Obrigado por escolher o essencial.<br />
-                  <strong>usehooke.com.br</strong>
+                  <strong>ACESSO VIP HOOKE 🔒</strong><br />
+                  Aponte a câmera e desbloqueie seu acesso<br />
+                  antecipado para o próximo drop secreto.
                 </div>
                 <div className="t-qr">
-                  {/* Gerador QR Dinâmico apontando para o site fixo conforme sua aprovação */}
+                  {/* Gerador QR Dinâmico apontando para o site fixo */}
                   <QRCodeSVG value="https://www.usehooke.com.br" width="100%" height="100%" />
                 </div>
               </div>
@@ -348,17 +410,14 @@ const LabelGeneratorContent: React.FC = () => {
 
         /* REGRAS ESTRITAS DE DISPARO DA IMPRESSORA */
         @media print {
-          /* Esconder toda a interface que não seja a etiqueta */
           .no-print {
             display: none !important;
           }
           
-          /* Forçar ocultação de elementos do Layout Global do Admin (Sidebar, Bottom Nav) */
           nav, aside, header, footer {
             display: none !important;
           }
           
-          /* Mira específica em nav bars inferiores que usam Tailwind */
           [class*="fixed bottom-0"] {
             display: none !important;
           }
@@ -369,10 +428,9 @@ const LabelGeneratorContent: React.FC = () => {
             background: #ffffff !important;
             width: 100mm !important;
             height: 150mm !important;
-            overflow: hidden !important; /* Mata qualquer conteúdo extra que gere a página 2 */
+            overflow: hidden !important; 
           }
 
-          /* Remover estilos visuais dos wrappers da etiqueta para não imprimirem bordas extras */
           .print-wrapper, .print-inner-wrapper {
             border: none !important;
             box-shadow: none !important;
@@ -381,13 +439,12 @@ const LabelGeneratorContent: React.FC = () => {
             padding: 0 !important;
           }
 
-          /* A Etiqueta Térmica: Quebra o dom e fixa no canto superior esquerdo do papel */
           .thermal-canvas {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100mm !important;
-            height: 149.5mm !important; /* Reduzido 0.5mm para evitar overflow de pixel */
+            height: 149.5mm !important; 
             border: none !important;
             margin: 0 !important;
             padding: 6mm !important;
