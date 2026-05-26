@@ -66,13 +66,29 @@ export function MagicDropzone({ onAnalysisComplete }: MagicDropzoneProps) {
       };
       
       const base64Image = await compressImage(file);
+      
+      // 1. Envia a imagem real para o Cloudinary primeiro
+      toast.loading("Enviando para a nuvem da Hooke...", { id: "vision-loading" });
+      const uploadRes = await fetch("/api/upload/cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64Image }),
+      });
+      
+      if (!uploadRes.ok) throw new Error("Falha ao salvar no Cloudinary");
+      const { url: cloudinaryUrl } = await uploadRes.json();
+
+      // 2. Envia para a IA analisar
+      toast.loading("Analisando arquitetura têxtil via IA...", { id: "vision-loading" });
       const result = await analyzeProductImage(base64Image);
       
       toast.dismiss("vision-loading");
       
       if (result.success) {
+        // Injeta a URL permanente do Cloudinary no resultado da IA
+        result.data.imageUrl = cloudinaryUrl;
         onAnalysisComplete(result.data);
-        toast.success("Análise concluída com sucesso!");
+        toast.success("Produto salvo na nuvem e analisado!");
       } else {
         toast.error(result.error || "A IA não conseguiu decifrar este equipamento.");
         setPreview(null);
