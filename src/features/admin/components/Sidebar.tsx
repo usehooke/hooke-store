@@ -18,7 +18,8 @@ import {
     TrendingUp,
     Tag,
     Rocket,
-    PackagePlus
+    PackagePlus,
+    Store
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -26,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
+    { label: 'Ir para a Loja', href: '/', icon: Store },
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Catálogo', href: '/admin/produtos', icon: Package },
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
