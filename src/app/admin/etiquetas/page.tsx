@@ -289,7 +289,7 @@ const LabelGeneratorContent: React.FC = () => {
                 </div>
                 <div className="t-qr">
                   {/* Gerador QR Dinâmico apontando para o site fixo conforme sua aprovação */}
-                  <QRCodeSVG value="https://instagram.com/usehooke" width="100%" height="100%" />
+                  <QRCodeSVG value="https://www.usehooke.com.br" width="100%" height="100%" />
                 </div>
               </div>
             </div>
