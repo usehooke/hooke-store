@@ -1,273 +1,559 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CldImage } from 'next-cloudinary';
 import { Product } from '@/types';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { Check, ArrowRight, Zap } from 'lucide-react';
+import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler } from 'lucide-react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
-// Inicialização do SDK do Mercado Pago (Google Pay / Apple Pay)
-// Em produção, isso usará a chave real do .env
 initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY || 'TEST-mock-key', { locale: 'pt-BR' });
 
 interface SsenseProductViewProps {
   product: Product;
 }
 
+// Tabela de medidas para o guia contextual
+const SIZE_GUIDE: Record<string, { peito: string; comprimento: string; ombro: string }> = {
+  'P':  { peito: '96cm', comprimento: '68cm', ombro: '42cm' },
+  'M':  { peito: '102cm', comprimento: '70cm', ombro: '44cm' },
+  'G':  { peito: '108cm', comprimento: '72cm', ombro: '46cm' },
+  'GG': { peito: '116cm', comprimento: '74cm', ombro: '48cm' },
+};
+
 const SsenseProductView = ({ product }: SsenseProductViewProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>('tecido');
+  const [isSticky, setIsSticky] = useState(false);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((state) => state.addItem);
 
-  const formatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  });
+  const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const installment = (product.price / 3).toFixed(2).replace('.', ',');
+  const images = (product.images && product.images.length > 0 ? product.images : [product.imageUrl]).filter(Boolean);
 
-  // Função centralizada de telemetria GA4 / GTM
+  // Dispara view_item GA4
   const trackEcommerceEvent = (eventName: string, size?: string) => {
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
-      (window as any).dataLayer.push({ ecommerce: null }); // Clear anterior para evitar duplicação
+      (window as any).dataLayer.push({ ecommerce: null });
       (window as any).dataLayer.push({
         event: eventName,
         ecommerce: {
-          currency: "BRL",
+          currency: 'BRL',
           value: product.price,
-          items: [
-            {
-              item_id: product.id,
-              item_name: product.name,
-              item_brand: "HOOKE",
-              item_category: product.category,
-              price: product.price,
-              item_variant: size || "N/A",
-              quantity: 1
-            }
-          ]
+          items: [{ item_id: product.id, item_name: product.name, item_brand: 'HOOKE', item_category: product.category, price: product.price, item_variant: size || 'N/A', quantity: 1 }]
         }
       });
     }
   };
 
-  // Dispara evento de view_item assim que renderiza
+  useEffect(() => { trackEcommerceEvent('view_item'); }, []);
+
+  // Sticky Buy Button ao scrollar
   useEffect(() => {
-    trackEcommerceEvent('view_item');
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSticky(!entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    if (stickyRef.current) observer.observe(stickyRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast.error('Por favor, selecione um tamanho para sua curadoria.', {
+      toast.error('Selecione um tamanho para continuar.', {
         style: { borderRadius: 0, background: '#000', color: '#fff', border: 'none' }
       });
       return;
     }
-
-    // Telemetria PMax: Adição ao Carrinho Tátil
     trackEcommerceEvent('add_to_cart', selectedSize);
-
     setIsAdding(true);
-    
     setTimeout(() => {
       addItem(product, selectedSize);
-
-      toast.success(`${product.name} reservado com sucesso no seu Lounge.`, {
+      toast.success(`${product.name} (${selectedSize}) adicionado ao carrinho.`, {
         icon: <Check size={14} />,
         style: { borderRadius: 0, background: '#000', color: '#fff', border: 'none' }
       });
-      
       setIsAdding(false);
-    }, 400); // Reduzido de 800ms para 400ms para manter peso sem penalizar conversão
+    }, 350);
   };
 
+  const nextSlide = () => setActiveSlide((p) => (p + 1) % images.length);
+  const prevSlide = () => setActiveSlide((p) => (p - 1 + images.length) % images.length);
+
+  const toggleAccordion = (key: string) => setOpenAccordion(prev => prev === key ? null : key);
+
+  const accordions = [
+    {
+      key: 'tecido',
+      label: '🧵 O Tecido',
+      content: product.details?.fabric || 'Malha Premium 100% Algodão Penteado — 210g/m². Fio Egípcio de longa fibra. Extremamente macio ao toque, com resistência estrutural que não encolhe após lavagem.'
+    },
+    {
+      key: 'corte',
+      label: '📐 O Corte',
+      content: product.details?.model || 'Boxy Fit — Estruturado para o ombro. Gola canelada de 3cm reforçada. Costura dupla nas barras. Um corte pensado para o homem que constrói, não que segue.'
+    },
+    {
+      key: 'manifesto',
+      label: '⚡ O Manifesto',
+      content: product.description
+        ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')
+        : 'Cada peça Hooke é um protocolo de essencialismo. Feita para durar mais do que qualquer tendência. O básico refeito como declaração.'
+    },
+  ];
+
   return (
-    <div className="bg-white min-h-screen pt-24 px-6 lg:px-12 pb-24 selection:bg-black selection:text-white font-mono">
-      
-      {/* GRID EDITORIAL 3 COLUNAS */}
-      <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 items-start">
-        
-        {/* COLUNA 1: DETALHES (LEFT STICKY) - BRUTALIST STYLE */}
-        <div className="hidden md:flex md:col-span-3 flex-col space-y-12 sticky top-32 p-6 border-2 border-black bg-white shadow-[8px_8px_0px_rgba(0,0,0,1)] rounded-none">
-          <div className="space-y-4">
-            <h2 className="text-[10px] font-black tracking-[0.3em] text-black uppercase border-b-2 border-black pb-2">
-              Detalhes do Produto
-            </h2>
-            <div className="space-y-6 pt-4">
-              <div className="space-y-1">
-                <p className="text-[11px] font-black text-black uppercase tracking-widest">Sku</p>
-                <p className="text-xs text-black">{product.id}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[11px] font-black text-black uppercase tracking-widest">Composição</p>
-                <p className="text-xs text-black">{product.details?.fabric || 'Algodão Premium Heavyweight 260g'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[11px] font-black text-black uppercase tracking-widest">Corte</p>
-                <p className="text-xs text-black">{product.details?.model || 'Editorial Boxy Estruturado'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[11px] font-black text-black uppercase tracking-widest">Lavagem</p>
-                <p className="text-xs text-black">{product.details?.wash || 'Manual / Dry Clean'}</p>
-              </div>
-            </div>
-          </div>
+    <div className="bg-white min-h-screen font-['Inter'] selection:bg-black selection:text-white">
 
-          <div className="border-t-2 border-black pt-8">
-            <p className="text-[11px] leading-relaxed text-black font-medium uppercase tracking-widest text-justify">
-              {product.description ? `"${product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')}"` : 'DESIGN ESSENCIAL PARA A PERMANÊNCIA ABSOLUTA.'}
-            </p>
-          </div>
-        </div>
+      {/* ============================================
+          MOBILE: LAYOUT VERTICAL (< md)
+          ============================================ */}
+      <div className="md:hidden">
 
-        {/* COLUNA 2: GALERIA VERTICAL (CENTER SCROLL) */}
-        <div className="col-span-1 md:col-span-6 space-y-4 md:space-y-8">
-          {(product.images && product.images.length > 0 ? product.images : [product.imageUrl]).map((img: string, idx: number) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: idx * 0.1 }}
-              className="relative aspect-[2/3] w-full bg-white group overflow-hidden border-2 border-black rounded-none shadow-[8px_8px_0px_rgba(0,0,0,1)]"
+        {/* CARROSSEL FULL-WIDTH */}
+        <div className="relative w-full aspect-[3/4] bg-zinc-100 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSlide}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0"
             >
               <CldImage
-                src={img}
-                alt={`${product.name} - Vista ${idx + 1}`}
+                src={images[activeSlide]}
+                alt={`${product.name} - Vista ${activeSlide + 1}`}
                 fill
-                className="object-cover object-top transition-transform duration-[length:2s] group-hover:scale-105"
-                priority={idx === 0}
+                className="object-cover object-top"
+                priority
                 deliveryType="fetch"
                 format="avif"
                 quality="auto"
               />
             </motion.div>
-          ))}
-        </div>
+          </AnimatePresence>
 
-        {/* COLUNA 3: COMPRA (RIGHT STICKY) - BRUTALIST STYLE */}
-        <div className="col-span-1 md:col-span-3 flex flex-col space-y-10 sticky top-32 p-6 border-2 border-black bg-white shadow-[8px_8px_0px_rgba(0,0,0,1)] rounded-none">
-          <div className="space-y-2 border-b-2 border-black pb-6">
-            <span className="text-[10px] tracking-[0.4em] font-black text-black uppercase">
-              {product.category}
-            </span>
-            <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-black uppercase leading-[0.9] mt-2">
-              {product.name}
-            </h1>
-            <p className="text-2xl font-black text-black tracking-tighter mt-4">
-              {formatter.format(product.price)}
-            </p>
+          {/* Navegação do Carrossel */}
+          {images.length > 1 && (
+            <>
+              <button onClick={prevSlide} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 backdrop-blur-sm flex items-center justify-center border border-black/10 shadow">
+                <ChevronLeft size={18} />
+              </button>
+              <button onClick={nextSlide} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 backdrop-blur-sm flex items-center justify-center border border-black/10 shadow">
+                <ChevronRight size={18} />
+              </button>
+            </>
+          )}
+
+          {/* Progress Dots */}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveSlide(i)}
+                className={`h-1.5 transition-all duration-300 ${i === activeSlide ? 'w-6 bg-black' : 'w-1.5 bg-black/30'}`}
+              />
+            ))}
           </div>
 
-          <div className="space-y-8">
-            <div className="pt-2">
-              <div className="space-y-4">
-                <p className="text-[11px] font-black tracking-[0.2em] text-black uppercase">Selecione o tamanho</p>
-                <div className="flex flex-wrap gap-2">
-                  {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
-                    <button 
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`w-12 h-12 border-2 text-[11px] font-black flex items-center justify-center transition-all duration-150 uppercase rounded-none ${
-                        selectedSize === size 
-                        ? 'bg-black text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] translate-x-[-1px] translate-y-[-1px]' 
-                        : 'bg-white text-black border-black hover:bg-zinc-100 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {/* Tag VIP */}
+          {product.category && (
+            <div className="absolute top-4 left-4">
+              <span className="bg-black text-white text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1">
+                {product.category}
+              </span>
+            </div>
+          )}
+        </div>
 
-              <div className="flex flex-col gap-3 mt-10">
-                <button 
-                  onClick={handleAddToCart}
-                  disabled={isAdding}
-                  className="w-full py-4 text-[11px] font-black tracking-[0.2em] group relative shadow-[6px_6px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:shadow-none bg-white text-black uppercase border-2 border-black hover:bg-black hover:text-white transition-colors rounded-none"
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    {isAdding ? (
-                      <span className="animate-pulse">PROCESSANDO...</span>
-                    ) : (
-                      <>
-                        ADICIONAR AO LOUNGE
-                        <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </span>
-                </button>
+        {/* BLOCO DE COMPRA MOBILE */}
+        <div className="px-5 pt-6 pb-4 space-y-5">
 
-                {/* BOTÃO ONE-TAP MERCADO PAGO / GPAY */}
-                {selectedSize ? (
-                  <div className="w-full mt-2 relative z-0">
-                    <p className="text-[9px] text-center font-bold tracking-widest text-black/50 mb-2 uppercase">Compra Expressa</p>
-                    {/* O Wallet Brick injeta o botão nativo do GPay/ApplePay do Mercado Pago */}
-                    <div className="border-2 border-black p-1 shadow-[6px_6px_0px_rgba(0,0,0,1)] bg-black/5">
-                      <Wallet 
-                        initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }} 
-                        customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                   <button 
-                    disabled
-                    className="w-full mt-2 py-4 text-[11px] font-black tracking-[0.2em] shadow-[6px_6px_0px_rgba(0,0,0,0.1)] bg-black/5 text-black/30 uppercase border-2 border-black/10 rounded-none flex items-center justify-center gap-2"
-                  >
-                    <Zap size={14} /> EXPRESSO (GPay)
-                  </button>
-                )}
-              </div>
-
-              <div className="mt-8 pt-6 border-t-2 border-black flex flex-col space-y-3">
-                <div className="text-[9px] font-black text-black flex justify-between tracking-[0.2em] uppercase">
-                  <span>ENVIO IMEDIATO</span>
-                  <span>BRASIL</span>
-                </div>
-                <div className="text-[9px] font-black text-black flex justify-between tracking-[0.2em] uppercase">
-                  <span>EDIÇÃO LIMITADA</span>
-                  <span>DISPONÍVEL</span>
-                </div>
-              </div>
+          {/* Nome + Preço */}
+          <div>
+            <h1 className="text-2xl font-black tracking-tighter text-black uppercase leading-tight">
+              {product.name}
+            </h1>
+            <div className="flex items-baseline gap-3 mt-2">
+              <span className="text-2xl font-black text-black">{formatter.format(product.price)}</span>
+              <span className="text-xs text-zinc-500">ou 3x de R$ {installment}</span>
             </div>
           </div>
 
-          {/* Marca d&apos;água Hooke Elite Vertical */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.05 }}
-            transition={{ duration: 2 }}
-            className="pt-12 hidden lg:block"
-          >
-             <span className="text-7xl font-heading font-light rotate-90 origin-left inline-block tracking-tighter whitespace-nowrap opacity-20 text-hooke-900">
-                hooke elite
-             </span>
-          </motion.div>
-        </div>
+          {/* SELEÇÃO DE TAMANHO ONE-TAP */}
+          <div ref={stickyRef}>
+            <div className="flex justify-between items-center mb-3">
+              <p className="text-[11px] font-black tracking-[0.2em] text-black uppercase">Tamanho</p>
+              <button
+                onClick={() => setShowSizeGuide(p => !p)}
+                className="flex items-center gap-1 text-[10px] font-bold text-zinc-500 underline"
+              >
+                <Ruler size={11} />
+                Guia de Medidas
+              </button>
+            </div>
 
+            <div className="grid grid-cols-4 gap-2">
+              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`h-14 text-sm font-black border-2 transition-all uppercase ${
+                    selectedSize === size
+                      ? 'bg-black text-white border-black'
+                      : 'bg-white text-black border-black hover:bg-zinc-50'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            {/* Guia de Medidas Contextual (dica do fundador) */}
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium">
+              Fernando (1,82m, 82kg) veste <span className="font-black text-black underline">M</span>.
+            </p>
+
+            {/* Accordion de Medidas */}
+            <AnimatePresence>
+              {showSizeGuide && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden mt-3"
+                >
+                  <div className="border-2 border-black p-3">
+                    <table className="w-full text-[11px]">
+                      <thead>
+                        <tr className="border-b border-black">
+                          <th className="text-left font-black uppercase pb-2">Tam</th>
+                          <th className="font-black uppercase pb-2">Peito</th>
+                          <th className="font-black uppercase pb-2">Comp.</th>
+                          <th className="font-black uppercase pb-2">Ombro</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(SIZE_GUIDE).map(([size, m]) => (
+                          <tr key={size} className={`border-b border-black/10 ${selectedSize === size ? 'bg-black text-white' : ''}`}>
+                            <td className="font-black py-2">{size}</td>
+                            <td className="text-center py-2">{m.peito}</td>
+                            <td className="text-center py-2">{m.comprimento}</td>
+                            <td className="text-center py-2">{m.ombro}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* BOTÃO COMPRAR (visível no scroll normal) */}
+          <div className="flex flex-col gap-2.5">
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="w-full py-4 text-[12px] font-black tracking-[0.2em] bg-black text-white uppercase border-2 border-black active:translate-y-px transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={14} /></>}
+            </button>
+            {selectedSize && (
+              <div className="w-full border-2 border-black p-1">
+                <p className="text-[9px] text-center font-bold tracking-widest text-black/40 mb-1 uppercase">Compra Expressa</p>
+                <Wallet
+                  initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
+                  customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* ACORDEÕES RETRÁTEIS */}
+          <div className="border-t-2 border-black pt-4 space-y-0">
+            {accordions.map((a) => (
+              <div key={a.key} className="border-b border-black/10">
+                <button
+                  onClick={() => toggleAccordion(a.key)}
+                  className="w-full flex justify-between items-center py-4 text-left"
+                >
+                  <span className="text-[12px] font-black uppercase tracking-wide">{a.label}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-300 ${openAccordion === a.key ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                <AnimatePresence>
+                  {openAccordion === a.key && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="pb-4 text-[13px] text-zinc-600 leading-relaxed font-normal">
+                        {a.content}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+
+          {/* META-DADOS LOGÍSTICA */}
+          <div className="grid grid-cols-2 gap-2 text-[9px] font-black uppercase tracking-widest border-t-2 border-black pt-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-zinc-400">Envio</span>
+              <span>Imediato · Brasil</span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-zinc-400">Edição</span>
+              <span>Limitada · {new Date().getFullYear()}</span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-zinc-400">Origem</span>
+              <span>São Paulo · BR</span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-zinc-400">SKU</span>
+              <span className="truncate">{product.id}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* RODAPÉ EDITORIAL */}
-      <footer className="mt-32 max-w-[1440px] mx-auto border-t border-black/5 pt-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-        <div className="max-w-md">
-          <p className="text-[10px] font-bold tracking-[0.2em] text-hooke-400 mb-4 uppercase">Ref.: {product.id}</p>
-          <p className="text-sm font-medium text-hooke-900/60 leading-relaxed font-sans">
-            Menos excesso, mais qualidade. A Hooke Elite redefine o essencial através de tecidos nobres e acabamento magistral.
-          </p>
-        </div>
-        <div className="flex gap-12 lg:gap-20">
-          <div className="flex flex-col space-y-1 text-right">
-            <span className="text-[10px] font-bold text-hooke-400">Local</span>
-            <span className="text-xs font-bold text-hooke-900 tracking-widest uppercase">São Paulo, BR</span>
+      {/* ============================================
+          DESKTOP: GRID 3 COLUNAS (>= md)
+          ============================================ */}
+      <div className="hidden md:block pt-28 px-8 lg:px-16 pb-24">
+        <div className="max-w-[1440px] mx-auto grid grid-cols-12 gap-10 items-start">
+
+          {/* COL 1: DETALHES (STICKY LEFT) */}
+          <div className="col-span-3 sticky top-32 flex flex-col gap-8 p-6 border-2 border-black shadow-[8px_8px_0px_0px_#000]">
+            <div className="space-y-5">
+              <h2 className="text-[9px] font-black tracking-[0.3em] uppercase border-b-2 border-black pb-2">Especificações</h2>
+              {[
+                { label: 'SKU', value: product.id },
+                { label: 'Composição', value: product.details?.fabric || 'Algodão 100% Penteado 210g' },
+                { label: 'Corte', value: product.details?.model || 'Boxy Fit Estruturado' },
+                { label: 'Lavagem', value: product.details?.wash || 'Manual / Máquina Fria' },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{label}</p>
+                  <p className="text-xs font-medium text-black mt-0.5">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="border-t-2 border-black pt-6">
+              <p className="text-[11px] leading-relaxed text-black/70 font-medium italic">
+                "{product.description
+                  ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').slice(0, 180)
+                  : 'Design essencial para a permanência absoluta.'}"
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col space-y-1 text-right">
-            <span className="text-[10px] font-bold text-hooke-400">Ano</span>
-            <span className="text-xs font-bold text-hooke-900 tracking-widest">2026</span>
+
+          {/* COL 2: GALERIA (CENTER SCROLL) */}
+          <div className="col-span-6 space-y-6">
+            {images.map((img: string, idx: number) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.7, delay: idx * 0.1 }}
+                className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
+              >
+                <CldImage
+                  src={img}
+                  alt={`${product.name} - Vista ${idx + 1}`}
+                  fill
+                  className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
+                  priority={idx === 0}
+                  deliveryType="fetch"
+                  format="avif"
+                  quality="auto"
+                />
+                {idx === 0 && product.category && (
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-black text-white text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1">
+                      {product.category}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* COL 3: COMPRA (STICKY RIGHT) */}
+          <div className="col-span-3 sticky top-32 flex flex-col gap-6 p-6 border-2 border-black shadow-[8px_8px_0px_0px_#000]">
+
+            {/* Título + Preço */}
+            <div className="border-b-2 border-black pb-5">
+              <span className="text-[9px] font-black tracking-[0.3em] uppercase text-zinc-400">{product.category}</span>
+              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none mt-2">{product.name}</h1>
+              <div className="flex items-baseline gap-3 mt-4">
+                <p className="text-2xl font-black text-black">{formatter.format(product.price)}</p>
+                <p className="text-[11px] text-zinc-500">3x R$ {installment}</p>
+              </div>
+            </div>
+
+            {/* Tamanho ONE-TAP */}
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <p className="text-[10px] font-black tracking-[0.2em] uppercase">Tamanho</p>
+                <button
+                  onClick={() => setShowSizeGuide(p => !p)}
+                  className="text-[9px] font-bold text-zinc-500 underline flex items-center gap-1"
+                >
+                  <Ruler size={10} /> Medidas
+                </button>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`h-12 text-[11px] font-black border-2 transition-all uppercase ${
+                      selectedSize === size ? 'bg-black text-white border-black' : 'bg-white text-black border-black hover:bg-zinc-50'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[9px] text-zinc-400 mt-2">Fernando (1,82m · 82kg) veste <strong className="text-black">M</strong>.</p>
+
+              <AnimatePresence>
+                {showSizeGuide && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden mt-3"
+                  >
+                    <div className="border-2 border-black p-3">
+                      <table className="w-full text-[10px]">
+                        <thead><tr className="border-b border-black"><th className="text-left font-black pb-1">Tam</th><th className="font-black pb-1">Peito</th><th className="font-black pb-1">Comp.</th></tr></thead>
+                        <tbody>
+                          {Object.entries(SIZE_GUIDE).map(([sz, m]) => (
+                            <tr key={sz} className={`border-b border-black/10 ${selectedSize === sz ? 'bg-black text-white' : ''}`}>
+                              <td className="font-black py-1">{sz}</td>
+                              <td className="text-center py-1">{m.peito}</td>
+                              <td className="text-center py-1">{m.comprimento}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Botões de Compra */}
+            <div className="flex flex-col gap-2.5">
+              <button
+                onClick={handleAddToCart}
+                disabled={isAdding}
+                className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors uppercase flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000] disabled:opacity-50"
+              >
+                {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} /></>}
+              </button>
+              {selectedSize ? (
+                <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000]">
+                  <p className="text-[8px] text-center font-bold tracking-widest text-black/40 mb-1 uppercase">Compra Expressa</p>
+                  <Wallet
+                    initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
+                    customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
+                  />
+                </div>
+              ) : (
+                <button disabled className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-black/5 text-black/30 border-2 border-black/10 uppercase flex items-center justify-center gap-2">
+                  <Zap size={13} /> EXPRESSO (GPay)
+                </button>
+              )}
+            </div>
+
+            {/* Acordeões Desktop */}
+            <div className="border-t-2 border-black pt-3 space-y-0">
+              {accordions.map((a) => (
+                <div key={a.key} className="border-b border-black/10">
+                  <button onClick={() => toggleAccordion(a.key)} className="w-full flex justify-between items-center py-3 text-left">
+                    <span className="text-[10px] font-black uppercase tracking-wide">{a.label}</span>
+                    <ChevronDown size={13} className={`transition-transform duration-300 ${openAccordion === a.key ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {openAccordion === a.key && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                        <p className="pb-3 text-[11px] text-zinc-600 leading-relaxed">{a.content}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+
+            {/* Meta-dados */}
+            <div className="grid grid-cols-2 gap-3 text-[9px] font-black uppercase tracking-widest border-t-2 border-black pt-4">
+              <div><span className="text-zinc-400 block">Envio</span>Imediato · Brasil</div>
+              <div><span className="text-zinc-400 block">Edição</span>Limitada · {new Date().getFullYear()}</div>
+            </div>
           </div>
         </div>
-      </footer>
+      </div>
+
+      {/* ============================================
+          STICKY BUY BUTTON (MOBILE ONLY) 
+          Aparece quando o botão normal sai da tela
+          ============================================ */}
+      <AnimatePresence>
+        {isSticky && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t-2 border-black px-4 py-3 flex gap-3 items-center"
+            style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black text-black uppercase truncate">{product.name}</p>
+              <p className="text-[11px] font-black text-black">{formatter.format(product.price)}</p>
+            </div>
+            <div className="flex gap-2">
+              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`w-10 h-10 text-[10px] font-black border-2 border-black uppercase transition-all ${selectedSize === size ? 'bg-black text-white' : 'bg-white text-black'}`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="bg-black text-white text-[10px] font-black px-5 py-3 uppercase tracking-widest disabled:opacity-50 shrink-0"
+            >
+              {isAdding ? '...' : 'COMPRAR'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
