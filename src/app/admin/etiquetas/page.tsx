@@ -112,11 +112,11 @@ const LabelGeneratorContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-['Inter'] antialiased text-black">
       
-      {/* PAINEL WEB DE OPERAÇÃO - OCULTADO NA IMPRESSÃO */}
-      <div className="no-print max-w-[1400px] mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* PAINEL WEB DE OPERAÇÃO */}
+      <div className="max-w-[1400px] mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 print-no-margin">
         
         {/* COLUNA ESQUERDA: EDITOR E HISTÓRICO */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        <div className="no-print lg:col-span-5 flex flex-col gap-6">
           
           {/* CONTROLADOR PRINCIPAL (ESTILO HOOKE) */}
           <div className="bg-white p-5 sm:p-8 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] rounded-none">
@@ -240,9 +240,9 @@ const LabelGeneratorContent: React.FC = () => {
         </div>
 
         {/* COLUNA DIREITA: LIVE PREVIEW DA ETIQUETA REAL */}
-        <div className="lg:col-span-7 flex justify-center items-start lg:sticky lg:top-8 mt-4 lg:mt-0 max-w-full overflow-hidden">
-          <div className="bg-white p-4 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] lg:shadow-[8px_8px_0px_rgba(0,0,0,1)] max-w-full overflow-x-auto flex flex-col items-center">
-            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold mb-2 text-center min-w-[100mm]">Preview em Tela (100x150mm)</p>
+        <div className="print-wrapper lg:col-span-7 flex justify-center items-start lg:sticky lg:top-8 mt-4 lg:mt-0 max-w-full overflow-hidden">
+          <div className="print-inner-wrapper bg-white p-4 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] lg:shadow-[8px_8px_0px_rgba(0,0,0,1)] max-w-full overflow-x-auto flex flex-col items-center">
+            <p className="no-print text-[10px] text-zinc-400 uppercase tracking-widest font-bold mb-2 text-center min-w-[100mm]">Preview em Tela (100x150mm)</p>
             
             {/* CANVAS REAL DA ETIQUETA */}
             <div className="thermal-canvas mx-auto">
@@ -360,6 +360,15 @@ const LabelGeneratorContent: React.FC = () => {
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
+          }
+
+          /* Remover estilos visuais dos wrappers da etiqueta para não imprimirem bordas extras */
+          .print-wrapper, .print-inner-wrapper {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
 
           /* Anular qualquer overflow hidden de pais que possa "cortar" a etiqueta */
