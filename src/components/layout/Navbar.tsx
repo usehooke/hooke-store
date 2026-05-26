@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { Menu, ShoppingBag, X, Search, User, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cart-store";
+import dynamic from "next/dynamic";
+
+const SearchModal = dynamic(() => import("@/components/shop/SearchModal"), { ssr: false });
 
 /**
  * HOOKE ELITE: NAVBAR
@@ -15,6 +19,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const openCart = useCartStore((state) => state.openCart);
   const items = useCartStore((state) => state.items);
@@ -90,7 +95,11 @@ export default function Navbar() {
 
             {/* 3. DIREITA */}
             <div className="flex-1 flex items-center justify-end gap-4 md:gap-6">
-              <button className="hidden md:block text-hooke-900 hover:text-gray-500 transition-colors">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="hidden md:block text-hooke-900 hover:text-gray-500 transition-colors"
+                aria-label="Buscar"
+              >
                 <Search strokeWidth={1.5} size={20} />
               </button>
 
@@ -161,8 +170,20 @@ export default function Navbar() {
               <User size={18} /> Minha Conta
             </Link>
           </div>
+          {/* Busca no Menu Mobile */}
+          <button
+            onClick={() => { setIsMobileMenuOpen(false); setIsSearchOpen(true); }}
+            className="flex items-center gap-3 text-sm font-medium text-gray-600 font-heading tracking-wide mt-2"
+          >
+            <Search size={18} /> Buscar Peças
+          </button>
         </div>
       </div>
+
+      {/* SEARCH MODAL GLOBAL */}
+      <AnimatePresence>
+        {isSearchOpen && <SearchModal onClose={() => setIsSearchOpen(false)} />}
+      </AnimatePresence>
     </>
   );
 }

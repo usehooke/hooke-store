@@ -1,104 +1,91 @@
 import { getFilteredProductsAdmin } from "@/lib/productServiceAdmin";
-import { ProductCard, FilterDrawer } from "@/features/catalog";
+import { FilterDrawer } from "@/features/catalog";
+import GalleryCard from "@/components/shop/GalleryCard";
 import Link from "next/link";
-import { ChevronRight, SlidersHorizontal } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { headers } from "next/headers";
 
 export const metadata: Metadata = {
- title: "Masculino | Hooke Elite",
- description: "O básico masculino elevado à perfeição. Camisetas Oversized, Heavy Cotton e Wafer.",
+  title: "Masculino | Hooke",
+  description: "O básico masculino elevado à perfeição. Camisetas Oversized, Heavy Cotton e Wafer.",
 };
 
-
-export default async function MasculinoPage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
+export default async function MasculinoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   headers();
   const params = await searchParams;
   const activeFilters = {
     department: "masculino",
-    category: typeof params.category === 'string' ? params.category : undefined,
-    size: typeof params.size === 'string' ? params.size : undefined,
-    minPrice: typeof params.minPrice === 'string' ? Number(params.minPrice) : undefined,
-    maxPrice: typeof params.maxPrice === 'string' ? Number(params.maxPrice) : undefined,
+    category: typeof params.category === "string" ? params.category : undefined,
+    size: typeof params.size === "string" ? params.size : undefined,
+    minPrice: typeof params.minPrice === "string" ? Number(params.minPrice) : undefined,
+    maxPrice: typeof params.maxPrice === "string" ? Number(params.maxPrice) : undefined,
   };
 
   return (
-    <div className="bg-white min-h-screen pb-20">
+    <div className="bg-white min-h-screen pb-24">
+      {/* CABEÇALHO EDITORIAL */}
+      <div className="w-full px-5 md:px-12 pt-28 md:pt-32 pb-10">
+        <div className="flex items-center gap-2 text-[9px] tracking-[0.3em] text-zinc-400 mb-6 uppercase font-black">
+          <Link href="/" className="hover:text-black transition-colors">Home</Link>
+          <ChevronRight size={9} />
+          <span className="text-black">Masculino</span>
+        </div>
 
- {/* 1. CABEÇALHO (Full Width & Editorial) */}
- <div className="w-full px-6 md:px-12 pt-12 md:pt-24 pb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span className="text-[9px] font-black tracking-[0.4em] text-zinc-400 uppercase block mb-3">
+              HOOKE MENSWEAR
+            </span>
+            <h1 className="text-4xl md:text-6xl font-black text-black tracking-tighter leading-none uppercase">
+              Essencial<br />
+              <span className="font-light opacity-30">Masculino</span>
+            </h1>
+          </div>
+          <p className="text-[11px] tracking-[0.1em] text-zinc-500 max-w-xs font-medium leading-relaxed uppercase md:text-right">
+            Toque na peça para escolher o tamanho e adicionar direto ao carrinho.
+          </p>
+        </div>
+      </div>
 
- {/* Caminho (Breadcrumb) - Alinhado à esquerda */}
- <div className="flex items-center gap-2 text-[10px] tracking-widest text-hooke-400 mb-6 font-sans">
- <Link href="/" className="hover:text-hooke-900 transition-colors border-b border-transparent hover:border-hooke-900 pb-0.5">
- Home
- </Link>
- <ChevronRight size={10} />
- <span className="text-hooke-900 font-bold">Masculino</span>
- </div>
+      {/* BARRA DE FERRAMENTAS STICKY */}
+      <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-sm border-t border-b border-black/10">
+        <div className="w-full px-5 md:px-12 py-3 flex justify-between items-center">
+          <Suspense fallback={<div className="h-4 w-24 bg-zinc-100 animate-pulse" />}>
+            <ProductCounter filters={activeFilters} />
+          </Suspense>
+          <FilterDrawer />
+        </div>
+      </div>
 
- <div className="flex flex-col md:flex-row justify-between items-end gap-8">
- <div className="max-w-2xl">
- {/* Título Impactante (Estilo Suíço) */}
- <h1 className="text-4xl md:text-6xl font-black text-hooke-900 tracking-tighter leading-[0.9] mb-6">
- Hooke<br /> Menswear
- </h1>
+      {/* GRADE DE PRODUTOS */}
+      <div className="w-full px-5 md:px-12 py-10">
+        <Suspense fallback={<ProductGridSkeleton />} key={JSON.stringify(activeFilters)}>
+          <ProductGrid filters={activeFilters} />
+        </Suspense>
+      </div>
 
- {/* Descrição */}
- <p className="font-sans text-sm text-gray-500 leading-relaxed max-w-lg">
- O básico elevado à perfeição. Desenvolvido com Suedine 240g, Algodão Egípcio e Silhuetas Boxy.
- </p>
- </div>
- </div>
- </div>
-
-  {/* 2. BARRA DE FERRAMENTAS (Static Shell) */}
-  <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-sm border-t border-b border-gray-100">
-  <div className="w-full px-6 md:px-12 py-4 flex justify-between items-center">
-
-   <Suspense fallback={<div className="h-4 text-xs bg-gray-50 w-20 animate-pulse" />}>
-    <ProductCounter filters={activeFilters} />
-   </Suspense>
-
-   <FilterDrawer />
-  </div>
-  </div>
-
-  {/* 3. GRADE DE PRODUTOS (Dynamic Hole for PPR) */}
-  <div className="w-full px-6 md:px-12 py-12">
-    <Suspense fallback={<ProductGridSkeleton />} key={JSON.stringify(activeFilters)}>
-      <ProductGrid filters={activeFilters} />
-    </Suspense>
-  </div>
-
- {/* 4. BANNER FINAL (Rodapé da Categoria) */}
- <div className="w-full px-6 md:px-12 mt-12">
- <div className="bg-white border border-hooke-100 py-16 text-center">
- <h3 className="text-xl font-bold tracking-tight mb-2 text-hooke-900">
- Engineering Basics
- </h3>
- <p className="text-gray-500 text-xs mb-0 tracking-widest uppercase">
- Feito no Brasil com Algodão Sustentável Responsável
- </p>
- </div>
- </div>
-
-  </div>
+      {/* RODAPÉ EDITORIAL */}
+      <div className="w-full px-5 md:px-12 mt-4">
+        <div className="border-2 border-black/10 py-12 text-center">
+          <p className="text-[9px] font-black tracking-[0.4em] uppercase text-zinc-400 mb-2">HOOKE · ESSENCIALISMO BRASILEIRO</p>
+          <h3 className="text-xl font-black uppercase tracking-tighter text-black">Feito no Brasil com Algodão Sustentável</h3>
+        </div>
+      </div>
+    </div>
   );
 }
-
-// --- COMPONENTES AUXILIARES PARA PPR (DYNAMIC HOLES) ---
 
 async function ProductCounter({ filters }: { filters: any }) {
   const products = await getFilteredProductsAdmin(filters);
   return (
-    <span className="text-xs font-black tracking-[0.2em] text-hooke-500 font-sans uppercase">
-      {products.length} Equipamentos
+    <span className="text-[9px] font-black tracking-[0.3em] text-zinc-400 uppercase">
+      {products.length} {products.length === 1 ? "peça" : "peças"}
     </span>
   );
 }
@@ -108,21 +95,17 @@ async function ProductGrid({ filters }: { filters: any }) {
 
   if (products.length === 0) {
     return (
-      <div className="py-24 border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center text-center">
-        <span className="text-[10px] font-black tracking-[0.4em] text-zinc-300 uppercase mb-4">
-          Nenhum resultado encontrado
-        </span>
-        <p className="text-xs text-zinc-400 max-w-xs">
-          Tente ajustar seus filtros ou limpar a seleção para ver o arsenal completo.
-        </p>
+      <div className="py-24 border-2 border-dashed border-zinc-100 flex flex-col items-center justify-center text-center">
+        <p className="text-[9px] font-black tracking-[0.4em] text-zinc-300 uppercase mb-3">Nenhum resultado</p>
+        <p className="text-xs text-zinc-400 max-w-xs">Tente ajustar os filtros para ver mais peças.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-8">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-12 md:gap-x-8 md:gap-y-20">
       {products.map((product, index) => (
-        <ProductCard key={product.id} product={product} priority={index < 4} />
+        <GalleryCard key={product.id} product={product} priority={index < 4} />
       ))}
     </div>
   );
@@ -130,9 +113,9 @@ async function ProductGrid({ filters }: { filters: any }) {
 
 function ProductGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
       {[...Array(8)].map((_, i) => (
-        <div key={i} className="aspect-[4/5] bg-gray-50 animate-pulse" />
+        <div key={i} className="aspect-[2/3] bg-zinc-100 animate-pulse" />
       ))}
     </div>
   );
