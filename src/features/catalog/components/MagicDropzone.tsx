@@ -67,16 +67,27 @@ export function MagicDropzone({ onAnalysisComplete }: MagicDropzoneProps) {
       
       const base64Image = await compressImage(file);
       
-      // 1. Envia a imagem real para o Cloudinary primeiro
+      // 1. Envia a imagem real para o Cloudinary primeiro direto via Client (Unsigned Upload)
       toast.loading("Enviando para a nuvem da Hooke...", { id: "vision-loading" });
-      const uploadRes = await fetch("/api/upload/cloudinary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image }),
-      });
       
-      if (!uploadRes.ok) throw new Error("Falha ao salvar no Cloudinary");
-      const { url: cloudinaryUrl } = await uploadRes.json();
+      const formData = new FormData();
+      formData.append("file", base64Image);
+      formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "rsjrcxrg");
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dnzplmjfo"}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      
+      if (!uploadRes.ok) {
+        const errorData = await uploadRes.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Falha ao salvar no Cloudinary");
+      }
+      
+      const { secure_url: cloudinaryUrl } = await uploadRes.json();
 
       // 2. Envia para a IA analisar
       toast.loading("Analisando arquitetura têxtil via IA...", { id: "vision-loading" });
@@ -93,10 +104,10 @@ export function MagicDropzone({ onAnalysisComplete }: MagicDropzoneProps) {
         toast.error(result.error || "A IA não conseguiu decifrar este equipamento.");
         setPreview(null);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("[MagicDropzone] Erro no processamento:", error);
       toast.dismiss("vision-loading");
-      toast.error("Falha crítica no sistema de visão.");
+      toast.error(`Falha crítica no sistema de visão: ${error?.message || error}`);
       setPreview(null);
     } finally {
       setIsAnalyzing(false);
