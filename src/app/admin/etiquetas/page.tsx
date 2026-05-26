@@ -113,13 +113,13 @@ const LabelGeneratorContent: React.FC = () => {
     <div className="min-h-screen bg-[#F5F5F5] font-['Inter'] antialiased text-black">
       
       {/* PAINEL WEB DE OPERAÇÃO - OCULTADO NA IMPRESSÃO */}
-      <div className="no-print max-w-[1400px] mx-auto p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="no-print max-w-[1400px] mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* COLUNA ESQUERDA: EDITOR E HISTÓRICO */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           
           {/* CONTROLADOR PRINCIPAL (ESTILO HOOKE) */}
-          <div className="bg-white p-8 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] rounded-none">
+          <div className="bg-white p-5 sm:p-8 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] rounded-none">
             <div className="flex justify-between items-center mb-6">
               <h1 className="font-['Jost'] text-xl font-bold uppercase tracking-wider">Gerador de Etiquetas</h1>
               <button 
@@ -182,7 +182,7 @@ const LabelGeneratorContent: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase">Cidade - UF</label>
                   <input
@@ -218,7 +218,7 @@ const LabelGeneratorContent: React.FC = () => {
 
           {/* HISTÓRICO RECENTE (OFFLINE CACHE) */}
           {savedLabels.length > 0 && (
-            <div className="bg-white p-6 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] rounded-none">
+            <div className="bg-white p-5 sm:p-6 border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] rounded-none">
               <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Últimas Etiquetas Emitidas</h2>
               <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto pr-2">
                 {savedLabels.map((label) => (
@@ -240,12 +240,12 @@ const LabelGeneratorContent: React.FC = () => {
         </div>
 
         {/* COLUNA DIREITA: LIVE PREVIEW DA ETIQUETA REAL */}
-        <div className="lg:col-span-7 flex justify-center items-start sticky top-8">
-          <div className="bg-white p-4 border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)]">
-            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold mb-2 text-center">Preview em Tela (100x150mm)</p>
+        <div className="lg:col-span-7 flex justify-center items-start lg:sticky lg:top-8 mt-4 lg:mt-0 max-w-full overflow-hidden">
+          <div className="bg-white p-4 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] lg:shadow-[8px_8px_0px_rgba(0,0,0,1)] max-w-full overflow-x-auto flex flex-col items-center">
+            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold mb-2 text-center min-w-[100mm]">Preview em Tela (100x150mm)</p>
             
             {/* CANVAS REAL DA ETIQUETA */}
-            <div className="thermal-canvas">
+            <div className="thermal-canvas mx-auto">
               <div className="t-header">
                 <div className="t-brand">
                   <div className="t-logo">hooke</div>
