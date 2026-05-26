@@ -28,8 +28,31 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
   const [isAdding, setIsAdding] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
 
-  const imageUrl = product.imageUrl || "";
   const sizes = product.sizes || ["P", "M", "G", "GG"];
+  
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
+
+  const prepareImage = (src: string) => {
+    if (!src) return { src: '', deliveryType: 'upload' as const };
+    
+    // Se for URL completa do Cloudinary
+    if (src.includes('res.cloudinary.com')) {
+      const parts = src.split('/');
+      const filename = parts[parts.length - 1];
+      const publicId = filename.split('.')[0];
+      return { src: publicId, deliveryType: 'upload' as const };
+    }
+    
+    // Se for caminho local (ex: /images/mock1.png)
+    if (src.startsWith('/')) {
+      return { src: `${siteUrl}${src}`, deliveryType: 'fetch' as const };
+    }
+    
+    // Outras URLs
+    return { src, deliveryType: 'fetch' as const };
+  };
+
+  const imageProps = prepareImage(product.imageUrl || "");
 
   const formatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -68,14 +91,14 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
         onClick={() => setIsRevealed((p) => !p)}
       >
         <Link href={`/produto/${product.slug || product.id}`} onClick={(e) => isRevealed && e.preventDefault()}>
-          {imageUrl ? (
+          {imageProps.src ? (
             <CldImage
-              src={imageUrl}
+              src={imageProps.src}
               alt={product.name}
               fill
               className="object-cover object-top transition-transform duration-[1800ms] group-hover:scale-105"
               priority={priority}
-              deliveryType="fetch"
+              deliveryType={imageProps.deliveryType}
               format="avif"
               quality="auto"
             />
