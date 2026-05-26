@@ -341,22 +341,46 @@ const LabelGeneratorContent: React.FC = () => {
 
         /* REGRAS ESTRITAS DE DISPARO DA IMPRESSORA */
         @media print {
+          /* Esconder toda a interface que não seja a etiqueta */
           .no-print {
             display: none !important;
           }
-          body {
+          
+          /* Forçar ocultação de elementos do Layout Global do Admin (Sidebar, Bottom Nav) */
+          nav, aside, header, footer {
+            display: none !important;
+          }
+          
+          /* Mira específica em nav bars inferiores que usam Tailwind */
+          [class*="fixed bottom-0"] {
+            display: none !important;
+          }
+
+          body, html {
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
           }
-          .thermal-canvas {
-            border: none !important;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100mm;
-            height: 150mm;
+
+          /* Anular qualquer overflow hidden de pais que possa "cortar" a etiqueta */
+          * {
+            overflow: visible !important;
           }
+
+          /* A Etiqueta Térmica: Quebra o dom e fixa no canto superior esquerdo do papel */
+          .thermal-canvas {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100mm !important;
+            height: 150mm !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 6mm !important;
+            background: #ffffff !important;
+            z-index: 999999 !important;
+          }
+          
           @page {
             size: 100mm 150mm;
             margin: 0;
