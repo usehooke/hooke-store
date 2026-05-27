@@ -146,8 +146,9 @@ export function MagicStudio() {
     const validData = data as ProductSchema;
     try {
       if (!db) throw new Error("Database not initialized");
-      const docRef = doc(db, "produtos", validData.id);
-      await setDoc(docRef, { ...validData, createdAt: Date.now() });
+      const productId = validData.id || `prod-${Date.now()}`;
+      const docRef = doc(db, "produtos", productId);
+      await setDoc(docRef, { ...validData, id: productId, createdAt: Date.now() });
       toast.success("Produto Publicado com Sucesso!");
       setStep('upload');
       setPreview(null);

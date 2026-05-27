@@ -44,13 +44,17 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchema) as any,
     defaultValues: {
+      id: '',
+      name: '',
+      price: undefined,
+      category: '',
+      description: '',
+      imageUrl: '/hero-preta.avif',
       images: [],
       sizes: [],
       featured: false,
       isNew: true,
       department: Department.MASCULINO,
-      id: '',
-      imageUrl: '/hero-preta.avif', // Fallback estético
       seo: {
         altText: '',
         metaDescription: ''
@@ -264,6 +268,26 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     }
   };
 
+  const handleFormError = (errors: any) => {
+    console.error("[ProductForm] Validação Zod falhou:", errors);
+    toast.error("Validação falhou! Corrija os campos obrigatórios destacados.");
+    
+    // Toasts dinâmicos detalhados
+    Object.keys(errors).forEach((key) => {
+      const error = errors[key];
+      if (error?.message) {
+        toast.error(`${error.message}`);
+      } else if (typeof error === 'object') {
+        Object.keys(error).forEach((subKey) => {
+          const subError = error[subKey];
+          if (subError?.message) {
+            toast.error(`${subError.message}`);
+          }
+        });
+      }
+    });
+  };
+
   const glowStyles = "ring-2 ring-amber-400/50 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-1000";
 
   return (
@@ -355,7 +379,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
         )}
       </AnimatePresence>
 
-      <form id="product-form" onSubmit={handleSubmit(handleFormSubmit)} className="space-y-10">
+      <form id="product-form" onSubmit={handleSubmit(handleFormSubmit, handleFormError)} className="space-y-10">
         <input type="hidden" {...register('id')} />
         <input type="hidden" {...register('imageUrl')} />
         <input type="hidden" {...register('isHeroBanner')} />
@@ -390,6 +414,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                 className={`${errors.price ? 'border-red-500' : ''} ${aiGlowFields.has('price') ? glowStyles : ''}`}
               />
             </motion.div>
+            {errors.price && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.price.message}</p>}
           </div>
 
           {/* DEPARTAMENTO */}
@@ -397,12 +422,13 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Departamento</label>
             <select
               {...register('department')}
-              className="w-full h-[50px] px-4 border-2 border-black font-mono text-xs uppercase tracking-widest bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none"
+              className={`w-full h-[50px] px-4 border-2 border-black font-mono text-xs uppercase tracking-widest bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none ${errors.department ? 'border-red-500' : ''}`}
             >
               <option value={Department.MASCULINO}>Masculino</option>
               <option value={Department.FEMININO}>Feminino</option>
               <option value={Department.UNISSEX}>Unissex</option>
             </select>
+            {errors.department && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.department.message}</p>}
           </div>
 
           {/* CATEGORIA — select com valores válidos do enum */}
@@ -411,6 +437,8 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
             <select
               {...register('category')}
               className={`w-full h-[50px] px-4 border-2 border-black font-mono text-xs uppercase tracking-widest bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none ${
+                errors.category ? 'border-red-500' : ''
+              } ${
                 aiGlowFields.has('category') ? glowStyles : ''
               }`}
             >
@@ -419,6 +447,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
+            {errors.category && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.category.message}</p>}
           </div>
 
           {/* TAMANHOS — obrigatório para produto aparecer no site */}
@@ -451,7 +480,10 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                 );
               })}
             </div>
-            {(watch('sizes') || []).length === 0 && (
+            {errors.sizes && (
+              <p className="text-[10px] text-red-500 font-bold uppercase mt-1">{errors.sizes.message}</p>
+            )}
+            {(watch('sizes') || []).length === 0 && !errors.sizes && (
               <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest">⚠ Selecione ao menos 1 tamanho para publicar</p>
             )}
           </div>
@@ -473,11 +505,14 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
             <textarea 
               {...register('description')}
               className={`w-full min-h-[140px] p-6 border-2 border-black bg-white focus:outline-none text-xs font-mono leading-relaxed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                errors.description ? 'border-red-500' : ''
+              } ${
                 aiGlowFields.has('description') ? glowStyles : ''
               }`}
               placeholder="Escreva sobre o caimento estruturado, tecidos e diferencial da peça..."
             />
           </motion.div>
+          {errors.description && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.description.message}</p>}
         </div>
 
         {/* META DESCRIPTION (GOOGLE) */}
@@ -525,6 +560,9 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
           </div>
 
           {/* GRID DE FOTOS DA GALERIA */}
+          {errors.images && (
+            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest my-2">{errors.images.message}</p>
+          )}
           {watchedImages.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-black/5">
               {watchedImages.map((url, i) => (
