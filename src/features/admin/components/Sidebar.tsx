@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 
 const menuItems = [
     { label: 'Voltar ao Site', href: '/', icon: Store },
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { label: 'PDV Elite', href: '/admin/pdv', icon: Zap },
     { label: 'Catálogo', href: '/admin/produtos', icon: Package },
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },

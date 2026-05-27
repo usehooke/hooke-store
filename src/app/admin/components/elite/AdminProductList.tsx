@@ -15,6 +15,8 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { LookbookPDF } from "@/features/admin/components/pdf/LookbookPDF";
 import { createLookbook } from "@/actions/lookbook";
 import { toast } from "sonner";
+import { StoryComposer } from "@/features/admin/produtos/components/StoryComposer";
+
 interface AdminProductListProps {
   products: Product[];
   isLoading?: boolean;
@@ -39,6 +41,7 @@ export function AdminProductList({
   // Seleção em lote para o Lookbook
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [isComposerOpen, setIsComposerOpen] = useState(false);
 
   const toggleSelect = (id: string) => {
     const newSet = new Set(selectedIds);
@@ -171,6 +174,13 @@ export function AdminProductList({
               <span className="text-xs font-black uppercase tracking-widest text-zinc-300">Selecionados para Lookbook</span>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <button 
+                onClick={() => setIsComposerOpen(true)}
+                className="px-4 py-2 bg-black border border-white text-white font-mono text-[10px] uppercase hover:bg-white hover:text-black transition-all"
+              >
+                [ GERAR WEB STORY ]
+              </button>
+
               <button 
                 onClick={handleGenerateLink}
                 disabled={isGeneratingLink}
@@ -334,6 +344,14 @@ export function AdminProductList({
           <p className="text-[10px] font-black tracking-[0.4em] text-zinc-300 uppercase">Fim da arqueologia operacional</p>
         </div>
       )}
+      <StoryComposer
+        isOpen={isComposerOpen}
+        onClose={() => setIsComposerOpen(false)}
+        selectedProducts={selectedProductsData}
+        onSuccess={() => {
+          setSelectedIds(new Set());
+        }}
+      />
     </div>
   );
 }

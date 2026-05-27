@@ -117,6 +117,26 @@ export const CouponRequestSchema = z.object({
   code: z.string().min(3, "Código muito curto").max(20),
 });
 
+export const StoryPageSchema = z.object({
+  id: z.string(),
+  mediaType: z.enum(["image", "video"]),
+  mediaUrl: z.string().url("URL de mídia inválida"),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  ctaLink: z.string().url("URL de CTA inválida").optional(),
+  ctaText: z.string().optional().default("ADQUIRIR PEÇA"),
+});
+
+export const StorySchema = z.object({
+  slug: z.string().min(3, "Slug muito curto").max(50, "Slug muito longo"),
+  title: z.string().min(3, "Título muito curto").max(40, "Título muito longo (máx 40 caracteres)"),
+  description: z.string().optional().default("Uma obra de arte contemporânea do design editorial Hooke."),
+  poster: z.string().url("URL do pôster inválida"),
+  publisher: z.string().optional().default("Hooke Atelier"),
+  publisherLogo: z.string().optional().default("https://usehooke.com.br/favicon.ico"),
+  pages: z.array(StoryPageSchema).min(1, "O Story deve conter pelo menos 1 página/lâmina"),
+});
+
 export type ProductType = z.infer<typeof ProductSchema>;
 export type CustomerType = z.infer<typeof CustomerSchema>;
 export type OrderType = z.infer<typeof OrderSchema>;
@@ -124,3 +144,6 @@ export type OrderItemType = z.infer<typeof OrderItemSchema>;
 export type ShippingRequestType = z.infer<typeof ShippingRequestSchema>;
 export type CheckoutRequestType = z.infer<typeof CheckoutRequestSchema>;
 export type CouponRequestType = z.infer<typeof CouponRequestSchema>;
+export type StoryType = z.infer<typeof StorySchema>;
+export type StoryPageType = z.infer<typeof StoryPageSchema>;
+

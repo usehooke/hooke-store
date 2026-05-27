@@ -11,6 +11,22 @@ import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
 initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY || 'TEST-mock-key', { locale: 'pt-BR' });
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
+
+const prepareImage = (src: string) => {
+  if (!src) return { src: '', deliveryType: 'upload' as const };
+  if (src.includes('res.cloudinary.com')) {
+    const parts = src.split('/');
+    const filename = parts[parts.length - 1];
+    const publicId = filename.split('.')[0];
+    return { src: publicId, deliveryType: 'upload' as const };
+  }
+  if (src.startsWith('/')) {
+    return { src: `${siteUrl}${src}`, deliveryType: 'fetch' as const };
+  }
+  return { src, deliveryType: 'fetch' as const };
+};
+
 interface SsenseProductViewProps {
   product: Product;
 }
@@ -35,7 +51,8 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const installment = (product.price / 3).toFixed(2).replace('.', ',');
-  const images = (product.images && product.images.length > 0 ? product.images : [product.imageUrl]).filter(Boolean);
+  const rawImages = (product.images && product.images.length > 0 ? product.images : [product.imageUrl]).filter(Boolean);
+  const images = rawImages.map(img => prepareImage(img));
 
   // Dispara view_item GA4
   const trackEcommerceEvent = (eventName: string, size?: string) => {
@@ -128,12 +145,12 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               className="absolute inset-0"
             >
               <CldImage
-                src={images[activeSlide]}
+                src={images[activeSlide].src}
                 alt={`${product.name} - Vista ${activeSlide + 1}`}
                 fill
                 className="object-cover object-top"
                 priority
-                deliveryType="fetch"
+                deliveryType={images[activeSlide].deliveryType}
                 format="avif"
                 quality="auto"
               />
@@ -366,7 +383,7 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
 
           {/* COL 2: GALERIA (CENTER SCROLL) */}
           <div className="col-span-6 space-y-6">
-            {images.map((img: string, idx: number) => (
+            {images.map((img: { src: string; deliveryType: 'fetch' | 'upload' }, idx: number) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 40 }}
@@ -376,12 +393,12 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                 className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
               >
                 <CldImage
-                  src={img}
+                  src={img.src}
                   alt={`${product.name} - Vista ${idx + 1}`}
                   fill
                   className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
                   priority={idx === 0}
-                  deliveryType="fetch"
+                  deliveryType={img.deliveryType}
                   format="avif"
                   quality="auto"
                 />

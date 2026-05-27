@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PackagePlus, ShoppingBag, Search, Store } from 'lucide-react';
+import { LayoutDashboard, PackagePlus, ShoppingBag, Search, Store, Zap } from 'lucide-react';
 
 /**
  * Hooke HQ: Titanium Bottom Navigation
@@ -15,8 +15,8 @@ export function AdminBottomNav() {
 
   const navItems = [
     { label: 'Site', icon: Store, href: '/', color: 'bg-zinc-100' },
-    { label: 'Radar', icon: LayoutDashboard, href: '/admin', color: 'bg-zinc-100' },
-    { label: 'Balcão', icon: ShoppingBag, href: '/admin/produtos', color: 'bg-zinc-100' }, 
+    { label: 'PDV', icon: Zap, href: '/admin/pdv', color: 'bg-zinc-100' },
+    { label: 'Produtos', icon: PackagePlus, href: '/admin/produtos', color: 'bg-zinc-100' }, 
   ];
 
   return (
