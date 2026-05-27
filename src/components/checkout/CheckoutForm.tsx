@@ -22,7 +22,7 @@ type ShippingOption = {
   days: string;
 };
 
-export default function CheckoutForm() {
+export default function CheckoutForm({ expressProduct, expressSize }: { expressProduct?: any; expressSize?: string }) {
   const router = useRouter();
   const {
     items,
@@ -36,6 +36,7 @@ export default function CheckoutForm() {
     shippingMethod,
     setShipping,
     appliedCoupon,
+    addItem
   } = useCartStore();
 
   const subtotal = useCartStore(selectCartSubTotal);
@@ -50,18 +51,60 @@ export default function CheckoutForm() {
   const [isFetchingShipping, setIsFetchingShipping] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [hasInitializedExpress, setHasInitializedExpress] = useState(false);
 
-  // Redireciona se carrinho vazio
+  const handleChangeItemSize = (item: any, newSize: string) => {
+    // Remove o item com tamanho antigo do carrinho
+    removeItem(item.cartItemId);
+    
+    // Calcula a nova chave única do item no carrinho
+    const uniqueId = item.selectedColor ? `${item.id}-${item.selectedColor}-${newSize}` : `${item.id}-${newSize}`;
+    
+    const currentItems = useCartStore.getState().items;
+    const filtered = currentItems.filter(x => x.cartItemId !== item.cartItemId);
+    const existing = filtered.find(x => x.cartItemId === uniqueId);
+    
+    if (existing) {
+      existing.quantity += item.quantity;
+      useCartStore.setState({ items: [...filtered] });
+    } else {
+      const newItem = {
+        ...item,
+        selectedSize: newSize,
+        cartItemId: uniqueId,
+      };
+      useCartStore.setState({ items: [...filtered, newItem] });
+    }
+    toast.success(`Tamanho alterado para ${newSize}`, {
+      style: { borderRadius: 0, background: "#000", color: "#fff", border: "none" }
+    });
+  };
+
+  // Inicialização atômica do Checkout Express
   useEffect(() => {
-    if (items.length === 0) {
+    async function initExpress() {
+      // 1. Força a reidratação do Zustand do IndexedDB
+      await useCartStore.persist.rehydrate();
+      
+      // 2. Se temos produto express do Swipe Up do Story, injeta no carrinho
+      if (expressProduct) {
+        console.log("[Checkout Express] Injetando produto no carrinho Zustand:", expressProduct.name);
+        clearCart();
+        addItem(expressProduct, expressSize || "G");
+      }
+      
+      setHasInitializedExpress(true);
+    }
+    
+    initExpress();
+  }, [expressProduct, expressSize]);
+
+  // Redireciona se carrinho vazio (apenas após inicializar e hidratar)
+  useEffect(() => {
+    if (hasInitializedExpress && items.length === 0) {
       router.push("/");
     }
-  }, [items, router]);
-
-  // Hidrata o store no client
-  useEffect(() => {
-    useCartStore.persist.rehydrate();
-  }, []);
+  }, [items, hasInitializedExpress, router]);
 
   const handleCepFetch = async (rawCep: string) => {
     const clean = rawCep.replace(/\D/g, "");
@@ -223,7 +266,18 @@ export default function CheckoutForm() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <p className="text-[11px] font-black uppercase tracking-tight leading-tight truncate">{item.name}</p>
-                      <p className="text-[10px] text-zinc-500 mt-0.5">Tamanho: <strong>{item.selectedSize}</strong></p>
+                      <div className="flex items-center gap-2 mt-1 mb-1">
+                        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Tamanho:</span>
+                        <select
+                          value={item.selectedSize}
+                          onChange={(e) => handleChangeItemSize(item, e.target.value)}
+                          className="rounded-none border border-black text-[10px] font-black uppercase px-2 py-0.5 bg-white focus:outline-none cursor-pointer hover:bg-zinc-50 transition-colors"
+                        >
+                          {(item.department === "feminino" ? ["PP", "P", "M", "G", "GG"] : ["P", "M", "G", "GG", "XG", "G1", "G2"]).map((sz) => (
+                            <option key={sz} value={sz}>{sz}</option>
+                          ))}
+                        </select>
+                      </div>
                       <p className="text-[11px] font-black mt-1">{formatter.format(item.price)}</p>
 
                       {/* Controles de Quantidade */}
