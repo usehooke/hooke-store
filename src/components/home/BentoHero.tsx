@@ -19,7 +19,7 @@ export default function BentoHero({ banners = [] }: { banners?: Product[] }) {
   const femaleBanner = banners.find(p => p.department === "feminino");
 
   // Dados do Banner Masculino
-  const maleImage = maleBanner?.heroImageUrl || maleBanner?.imageUrl || "/produtos/hk_elite_heavy_black_v2.png";
+  const maleImage = maleBanner?.heroImageUrl || maleBanner?.imageUrl || "/produtos/HK_ELITE_HEAVY_BLACK_V2.png";
   const maleTitle = maleBanner ? maleBanner.name : "Estrutura";
   const maleSubtitle = maleBanner ? "Atemporal" : "Atemporal";
   const maleDesc = maleBanner 

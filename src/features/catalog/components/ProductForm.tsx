@@ -355,7 +355,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-10">
+      <form id="product-form" onSubmit={handleSubmit(handleFormSubmit)} className="space-y-10">
         <input type="hidden" {...register('id')} />
         <input type="hidden" {...register('imageUrl')} />
         <input type="hidden" {...register('isHeroBanner')} />

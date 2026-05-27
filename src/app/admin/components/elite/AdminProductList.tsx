@@ -158,6 +158,18 @@ export function AdminProductList({
         </div>
       </div>
 
+      {/* AVISO DE USABILIDADE - AÇÕES EM LOTE ELITE */}
+      <div className="p-5 border-2 border-dashed border-black bg-zinc-50 flex items-center justify-between gap-4 rounded-none">
+        <div className="flex items-center gap-3">
+          <span className="bg-black text-white font-mono text-[9px] font-black px-2.5 py-1.5 uppercase tracking-wider shrink-0 shadow-[2px_2px_0px_#000] border border-white">
+            Protocolo Lote
+          </span>
+          <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest leading-relaxed">
+            Selecione produtos abaixo usando as <strong className="text-black underline underline-offset-2">caixas de seleção (checkboxes)</strong> nos cards para ativar a barra preta de ações em lote e liberar os botões <strong className="text-black font-mono">[ GERAR WEB STORY ]</strong> e <strong className="text-black">1. GERAR LINK INTERATIVO</strong>.
+          </p>
+        </div>
+      </div>
+
       {/* BARRA DE AÇÕES EM LOTE (LOOKBOOK) */}
       <AnimatePresence>
         {selectedIds.size > 0 && (
