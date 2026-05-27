@@ -85,6 +85,65 @@ async function seed() {
     ]
   };
 
+  // STORY 3: O Guia da Camiseta Masculina para Encontros
+  const story3 = {
+    title: "Guia da Camiseta para Encontros",
+    publisher: "Hooke Atelier",
+    publisherLogo: "https://usehooke.com.br/favicon.ico",
+    poster: "https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=640&auto=format&fit=crop",
+    description: "Menos é mais. O guia cirúrgico do visual masculino essencial de presença para o primeiro encontro.",
+    slug: "guia-camiseta-encontros",
+    createdAt: Date.now(),
+    pages: [
+      {
+        id: "encontros-slide-1",
+        mediaUrl: "https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=720&auto=format&fit=crop",
+        mediaType: "image",
+        title: "Menos é muito mais",
+        description: "Para um primeiro encontro, o maior erro do homem é tentar chamar atenção pelo excesso. Descubra o que elas reparam.",
+      },
+      {
+        id: "encontros-slide-2",
+        mediaUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=720&auto=format&fit=crop",
+        mediaType: "image",
+        title: "O Poder do Básico",
+        description: "A camiseta lisa passa sensação de homem seguro. Cores sóbrias como Preto, Branco, Cinza e Verde Militar dominam.",
+        ctaLink: "https://usehooke.com.br/?utm_source=discover&utm_medium=stories_encontros",
+        ctaText: "ARMAREI MEU LOOK"
+      },
+      {
+        id: "encontros-slide-3",
+        mediaUrl: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=720&auto=format&fit=crop",
+        mediaType: "image",
+        title: "O Perigo do Excesso",
+        description: "Elas NÃO curtem gola V super profunda. Passa uma vibe datada. A Gola Careca grossa e alinhada segue imbatível.",
+      },
+      {
+        id: "encontros-slide-4",
+        mediaUrl: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=720&auto=format&fit=crop",
+        mediaType: "image",
+        title: "Maturidade nas Estampas",
+        description: "Fuja de estampas genéricas que infantilizam o visual. Escolha temas vintage minimalistas e sóbrios de personalidade.",
+      },
+      {
+        id: "encontros-slide-5",
+        mediaUrl: "https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=720&auto=format&fit=crop",
+        mediaType: "image",
+        title: "O Toque Henley",
+        description: "A gola Henley traz botões que conferem refino casual maduro, dando aquela estética de 'me arrumei sem forçar a barra'.",
+      },
+      {
+        id: "encontros-slide-6",
+        mediaUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=720&auto=format&fit=crop",
+        mediaType: "image",
+        title: "A Geometria Perfeita",
+        description: "Vista estrutura. Vista o caimento pesado definitivo da Hooke. Tecido premium que não deforma após a lavagem.",
+        ctaLink: "https://usehooke.com.br/?utm_source=discover&utm_medium=stories_encontros",
+        ctaText: "ARMAREI MEU LOOK"
+      }
+    ]
+  };
+
   try {
     // Grava o Story 1
     await db.collection("stories").doc(story1.slug).set(story1);
@@ -93,6 +152,10 @@ async function seed() {
     // Grava o Story 2
     await db.collection("stories").doc(story2.slug).set(story2);
     console.log("✓ Story 2 (Street Kombi) injetado com sucesso!");
+
+    // Grava o Story 3
+    await db.collection("stories").doc(story3.slug).set(story3);
+    console.log("✓ Story 3 (Guia Encontros) injetado com sucesso!");
 
     console.log("🎉 [Hooke Stories Seed] Todos os stories conceituais foram injetados com absoluto sucesso no Firestore!");
   } catch (error) {
