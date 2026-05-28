@@ -179,6 +179,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   const watchedImageUrl = watch('imageUrl') || '/hero-preta.avif';
   const watchedIsHero = watch('isHeroBanner');
   const watchedHeroUrl = watch('heroImageUrl');
+  const watchedFabric = watch('details.fabric') || '';
 
   // Geração do SKU Base e Slug em Tempo Real para a etiqueta e formulário (Feedback Reativo)
   const [computedSku, setComputedSku] = useState('');
@@ -208,7 +209,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       
       const currentMeta = getValues('seo.metaDescription') || '';
       const cat = (watchedCategory || '').toLowerCase();
-      const currentFabric = getValues('details.fabric') || '';
+      const currentFabric = watchedFabric || getValues('details.fabric') || '';
       const currentModel = getValues('details.model') || '';
       
       let generatedMeta = `Equipamento premium Hooke: ${watchedName}. Design de alto padrão`;
@@ -216,27 +217,35 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       let suggestedModel = '';
       
       const nameLower = watchedName.toLowerCase();
-      if (cat.includes('conjunto') || nameLower.includes('conjunto')) {
-        generatedMeta = `Conjunto exclusivo Hooke: ${watchedName}. Modelagem refinada de caimento impecável e toque extremamente sofisticado no corpo.`;
-        suggestedFabric = 'Viscose nobre de alta gramatura com toque frio';
+      const fabricLower = currentFabric.toLowerCase();
+      
+      if (fabricLower.includes('viscose') || cat.includes('conjunto') || nameLower.includes('conjunto')) {
+        generatedMeta = `Conjunto exclusivo Hooke: ${watchedName}. Confeccionado em viscose nobre de caimento impecável e toque fluido extremamente macio.`;
+        suggestedFabric = 'Viscose Nobre';
         suggestedModel = 'Relaxed Elegant Fit';
-      } else if (cat.includes('camiseta') || cat.includes('oversized') || nameLower.includes('camiseta')) {
-        generatedMeta = `Camiseta premium Hooke: ${watchedName}. Algodão nobre de alta gramatura com caimento estruturado perfeito e longevidade superior.`;
-        suggestedFabric = 'Algodão Premium 260g (Heavyweight)';
+      } else if (fabricLower.includes('heavyweight') || cat.includes('oversized') || nameLower.includes('camiseta')) {
+        generatedMeta = `Camiseta premium Hooke: ${watchedName}. Algodão de gramatura robusta 260g com caimento estruturado e alta longevidade.`;
+        suggestedFabric = 'Algodão Heavyweight 260g';
         suggestedModel = 'Boxy Oversized Fit';
-      } else if (cat.includes('regata') || nameLower.includes('regata')) {
-        generatedMeta = `Regata nobre Hooke: ${watchedName}. Toque macio de alta durabilidade e caimento anatômico elegante para o dia a dia.`;
-        suggestedFabric = 'Algodão Penteado Nobre Fio 30.1';
-        suggestedModel = 'Anatomic Fit';
+      } else if (fabricLower.includes('pima')) {
+        generatedMeta = `Camiseta nobre Hooke: ${watchedName}. Confeccionada em algodão Pima peruano de fibra extra-longa para suavidade incomparável.`;
+        suggestedFabric = 'Algodão Pima';
+        suggestedModel = 'Standard Structured Fit';
+      } else if (fabricLower.includes('linho')) {
+        generatedMeta = `Equipamento sofisticado Hooke: ${watchedName}. Linho premium selecionado com excelente respirabilidade e elegância natural.`;
+        suggestedFabric = 'Linho Premium';
+        suggestedModel = 'Modern Classic Fit';
       }
 
-      // Detecção de divergências de termos genéricos (se contiver Pima, Classic Navy, etc. mas o nome for outro)
+      // Detecção de divergências de termos genéricos (se contiver Pima, Classic Navy, etc. mas o tecido atual for outro)
       const hasMismatchedTerms = 
         currentMeta.includes('T-Shirt Pima') || 
         currentMeta.includes('Classic Navy') ||
         currentMeta.includes('algodão robusto') ||
         currentMeta.trim() === '' ||
-        (cat.includes('conjunto') && currentMeta.toLowerCase().includes('camiseta')) ||
+        (fabricLower.includes('viscose') && currentMeta.toLowerCase().includes('algodão')) ||
+        (fabricLower.includes('heavyweight') && currentMeta.toLowerCase().includes('pima')) ||
+        (fabricLower.includes('linho') && currentMeta.toLowerCase().includes('algodão')) ||
         (watchedName && !currentMeta.includes(watchedName.slice(0, 15)));
 
       if (hasMismatchedTerms) {
@@ -256,13 +265,14 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       const hasMismatchedModel = 
         currentModel.trim() === '' || 
         currentModel === 'Structured Fit' ||
-        (cat.includes('conjunto') && currentModel.toLowerCase().includes('structured'));
+        (fabricLower.includes('viscose') && currentModel.toLowerCase().includes('boxy')) ||
+        (fabricLower.includes('heavyweight') && currentModel.toLowerCase().includes('relaxed'));
 
       if (hasMismatchedModel && suggestedModel) {
         setValue('details.model', suggestedModel, { shouldDirty: true });
       }
     }
-  }, [watchedName, watchedCategory, setValue]);
+  }, [watchedName, watchedCategory, watchedFabric, setValue]);
 
   // Auditoria de Qualidade em tempo real (Fórmula Padrão Elite)
   const issues: string[] = [];
@@ -347,6 +357,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   const handleSemanticRefine = () => {
     const name = getValues('name');
     const category = getValues('category') || '';
+    const selectedFabric = getValues('details.fabric') || '';
 
     if (!name || name.trim().length < 2) {
       toast.error("Preencha a Designação (Nome) do produto antes de refinar.");
@@ -360,21 +371,24 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     let refinedDesc = "";
     let refinedMeta = "";
 
-    const cleanCategory = category.toLowerCase();
-    const cleanName = name.toLowerCase();
+    const fabricLower = selectedFabric.toLowerCase();
 
-    if (cleanCategory.includes('conjunto') || cleanName.includes('conjunto') || cleanName.includes('viscose')) {
-      refinedDesc = `Conjunto de alta costura contemporânea desenvolvido em viscose nobre de alta gramatura, proporcionando caimento fluido impecável, toque frio incomparável e excelente conforto térmico. Composto por peças minimalistas de design atemporal e costuras internas reforçadas em viés, é o equipamento perfeito que combina sofisticação brutalista e máxima usabilidade diária.`;
-      refinedMeta = `Compre o ${name} Hooke. Conjunto contemporâneo em tecido nobre com toque frio e caimento fluido extremamente sofisticado.`;
-    } else if (cleanCategory.includes('oversized') || cleanCategory.includes('camiseta') || cleanName.includes('camiseta')) {
-      refinedDesc = `Camiseta de caimento estruturado e amplo desenvolvida em algodão nobre de gramatura robusta de 260g, garantindo conforto térmico ideal e caimento impecável. Possui gola encorpada de 3cm de costuras reforçadas que não deforma com o uso e etiqueta em alta definição aplicada na barra como assinatura visual. Uma peça essencial de apelo minimalista e máxima longevidade.`;
-      refinedMeta = `Compre a ${name} Hooke. Camiseta de algodão premium de alta gramatura e caimento impecável. Conforto e sofisticação minimalista.`;
-    } else if (cleanCategory.includes('regata') || cleanName.includes('regata')) {
-      refinedDesc = `Regata desenvolvida em malha de algodão premium com toque aveludado e caimento anatômico perfeito. Possui costuras duplas e acabamento em viés de alta qualidade para máximo conforto durante o uso. Apresenta assinatura sutil e design contemporâneo focado na alta durabilidade e estilo minimalista elegante.`;
-      refinedMeta = `Compre a ${name} Hooke. Regata premium de caimento anatômico e tecido extremamente macio. Durabilidade e elegância no dia a dia.`;
+    if (fabricLower.includes('viscose')) {
+      refinedDesc = `Conjunto de alta costura contemporânea desenvolvido em ${selectedFabric}, proporcionando caimento fluido impecável, toque frio incomparável e excelente conforto térmico. Composto por peças minimalistas de design atemporal e costuras internas reforçadas em viés, é o equipamento perfeito que combina sofisticação brutalista e máxima usabilidade diária.`;
+      refinedMeta = `Compre o ${name} Hooke. Conjunto contemporâneo confeccionado em ${selectedFabric} com caimento fluido elegante e toque frio de alto padrão.`;
+    } else if (fabricLower.includes('heavyweight')) {
+      refinedDesc = `Camiseta de caimento estruturado e amplo desenvolvida em ${selectedFabric}, garantindo conforto térmico ideal e caimento encorpado impecável. Possui gola robusta de 3cm com costuras reforçadas de alta definição que não deformam com o uso e nossa etiqueta Woven Label aplicada na barra como assinatura visual. Uma peça pesada e essencial de máxima longevidade.`;
+      refinedMeta = `Compre a ${name} Hooke. Camiseta de algodão pesado de gramatura robusta em ${selectedFabric}. Gola de 3cm, caimento boxy estruturado e longevidade.`;
+    } else if (fabricLower.includes('pima')) {
+      refinedDesc = `Camiseta de altíssimo nível produzida a partir de ${selectedFabric} de fibra extra-longa selecionada, garantindo suavidade extraordinária ao toque e brilho sutil extremamente elegante. Apresenta costuras internas reforçadas e caimento clássico impecável que não encolhe após lavagem. O básico refinado definitivo com durabilidade superior.`;
+      refinedMeta = `Compre a ${name} Hooke. Confeccionada em nobre ${selectedFabric} peruano, proporcionando toque aveludado, caimento alinhado impecável e conforto.`;
+    } else if (fabricLower.includes('linho')) {
+      refinedDesc = `Peça contemporânea sofisticada produzida em ${selectedFabric} selecionado de alta qualidade, garantindo conforto térmico superior, alta respirabilidade e caimento leve alinhado com naturalidade elegante. Possui modelagem moderna minimalista com acabamento brutalista de costuras rebatidas de altíssima longevidade.`;
+      refinedMeta = `Compre o ${name} Hooke. Equipamento de alfaiataria em ${selectedFabric} com excelente respirabilidade e estética minimalista moderna.`;
     } else {
-      refinedDesc = `Peça exclusiva da coleção Hooke, produzida a partir de fibras nobres selecionadas com toque de alto padrão. O design apresenta linhas limpas e estrutura contemporânea com acabamentos internos e costuras reforçadas em viés. Uma expressão pura de sofisticação essencial que valoriza o caimento natural no corpo.`;
-      refinedMeta = `Equipamento Premium Hooke: ${name}. Tecido nobre de caimento impecável, toque suave e acabamento de altíssimo nível.`;
+      const fabricText = selectedFabric ? `em ${selectedFabric}` : "em fibras selecionadas";
+      refinedDesc = `Peça exclusiva da coleção Hooke, produzida ${fabricText} de altíssimo padrão com toque sofisticado. O design apresenta linhas limpas e estrutura contemporânea com acabamentos internos e costuras reforçadas. Uma expressão pura de sofisticação essencial que valoriza o caimento natural no corpo.`;
+      refinedMeta = `Equipamento Premium Hooke: ${name}. Confeccionado ${fabricText} de caimento impecável, toque suave e acabamento de altíssimo nível.`;
     }
 
     setValue('description', refinedDesc, { shouldDirty: true });
@@ -741,7 +755,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                       </motion.div>
                       {errors.price && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.price.message}</p>}
                     </div>
-
+ 
                     {/* DEPARTAMENTO */}
                     <div className="space-y-2">
                       <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Departamento</label>
@@ -755,7 +769,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                       </select>
                     </div>
                   </div>
-
+ 
                   {/* CATEGORIA */}
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Categoria</label>
@@ -772,31 +786,23 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                     </select>
                     {errors.category && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.category.message}</p>}
                   </div>
-
-                  {/* SLUG */}
+ 
+                  {/* TECIDO / COMPOSIÇÃO DROPDOWN */}
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Slug (URL)</label>
-                    <input 
-                      type="text" 
-                      placeholder="slug-do-produto" 
-                      {...register('slug')}
-                      className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-zinc-50"
-                    />
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tecido / Composição</label>
+                    <select 
+                      {...register('details.fabric')}
+                      className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
+                    >
+                      <option value="">Selecione o Tecido...</option>
+                      <option value="Algodão Heavyweight 260g">Algodão Heavyweight 260g</option>
+                      <option value="Viscose Nobre">Viscose Nobre</option>
+                      <option value="Linho Premium">Linho Premium</option>
+                      <option value="Algodão Pima">Algodão Pima</option>
+                    </select>
                   </div>
-
-                  {/* DETALHES DE TECIDO E MODELAGEM */}
+ 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                    {/* TECIDO / COMPOSIÇÃO */}
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tecido / Composição</label>
-                      <input 
-                        type="text" 
-                        placeholder="Ex: Viscose nobre de alta gramatura" 
-                        {...register('details.fabric')}
-                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-sans text-xs focus:outline-none transition-colors uppercase tracking-wider font-bold"
-                      />
-                    </div>
-
                     {/* CORTE / MODELAGEM */}
                     <div className="space-y-2">
                       <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Corte / Modelagem</label>
@@ -807,8 +813,19 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                         className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-sans text-xs focus:outline-none transition-colors uppercase tracking-wider font-bold"
                       />
                     </div>
+ 
+                    {/* SLUG */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Slug (URL)</label>
+                      <input 
+                        type="text" 
+                        placeholder="slug-do-produto" 
+                        {...register('slug')}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-zinc-50"
+                      />
+                    </div>
                   </div>
-
+ 
                   <div className="pt-4 flex justify-end">
                     <button
                       type="button"
