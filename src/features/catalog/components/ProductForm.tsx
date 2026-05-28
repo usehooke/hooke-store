@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useImperativeHandle, forwardRef, useState, useEffect } from 'react';
+import React, { useImperativeHandle, forwardRef, useState, useEffect, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductSchema } from '../schemas';
@@ -65,6 +65,67 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   const [snapshot, setSnapshot] = useState<ProductSchema | null>(null);
   const [aiGlowFields, setAiGlowFields] = useState<Set<string>>(new Set());
   const [newImageUrl, setNewImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isIdManuallyEdited, setIsIdManuallyEdited] = useState(false);
+
+  const handleCloudinaryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onloadend = async () => {
+      const base64data = reader.result as string;
+
+      try {
+        const res = await fetch("/api/upload/cloudinary", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ image: base64data }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Erro na requisição ao servidor de upload.");
+        }
+
+        const result = await res.json();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (result.url) {
+          const currentImages = getValues("images") || [];
+          const updatedImages = [...currentImages, result.url];
+          setValue("images", updatedImages, { shouldDirty: true });
+
+          // Se for a primeira imagem, define também como capa (imageUrl)
+          if (updatedImages.length === 1) {
+            setValue("imageUrl", result.url, { shouldDirty: true });
+          }
+
+          toast.success("Imagem enviada para o Cloudinary e adicionada à galeria!");
+        }
+      } catch (err: any) {
+        console.error("Erro no upload para o Cloudinary:", err);
+        toast.error(err.message || "Erro desconhecido ao carregar foto.");
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    };
+
+    reader.onerror = () => {
+      setIsUploading(false);
+      toast.error("Erro ao ler o arquivo selecionado.");
+    };
+  };
   
   // Controle de Abas Operacionais (Painel Atelier)
   const [activeTab, setActiveTab] = useState<'identidade' | 'grade' | 'midia' | 'seo'>('identidade');
@@ -129,13 +190,18 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       const sku = `${watchedModelId.trim().toUpperCase()}-${colorSigla}`;
       setComputedSku(sku);
       
-      // Auto-sincroniza o ID e Slug reativamente no formulário para feedback visual em tempo real!
-      setValue('id', sku, { shouldDirty: true });
-      setValue('slug', sku.toLowerCase(), { shouldDirty: true });
+      if (!isIdManuallyEdited) {
+        // Auto-sincroniza o ID e Slug reativamente no formulário para feedback visual em tempo real!
+        setValue('id', sku, { shouldDirty: true });
+        setValue('slug', sku.toLowerCase(), { shouldDirty: true });
+      }
     } else {
       setComputedSku('');
+      if (!watchedModelId || !watchedColor) {
+        setIsIdManuallyEdited(false);
+      }
     }
-  }, [watchedModelId, watchedColor, setValue]);
+  }, [watchedModelId, watchedColor, setValue, isIdManuallyEdited]);
 
   // Auditoria de Qualidade em tempo real (Fórmula Padrão Elite)
   const issues: string[] = [];
@@ -315,48 +381,48 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     const colorVal = data.color || '';
     const modelIdVal = (data.modelId || '').trim().toUpperCase();
     
-    let generatedId = data.id;
-    let generatedSlug = data.slug;
-    
-    if (modelIdVal && colorVal) {
+    // Se o ID foi preenchido (gerado ou customizado manualmente), nós priorizamos!
+    let generatedId = (data.id || '').trim().toUpperCase();
+    if (!generatedId && modelIdVal && colorVal) {
       const colorSigla = getColorCode(colorVal);
       generatedId = `${modelIdVal}-${colorSigla}`;
-      
-      if (!generatedSlug) {
-        generatedSlug = generatedId.toLowerCase();
-      }
-    } else {
-      generatedId = data.id || data.slug || `prod-${Date.now()}`;
-      if (!generatedSlug) {
-        generatedSlug = generatedId.toLowerCase();
-      }
+    }
+    if (!generatedId) {
+      generatedId = `PROD-${Date.now()}`;
     }
     
-    // Gerar SKUs por tamanho
+    let generatedSlug = (data.slug || '').trim().toLowerCase();
+    if (!generatedSlug) {
+      generatedSlug = generatedId.toLowerCase();
+    }
+    
+    // Coleta blindada e infalível diretamente do getValues()
+    const selectedSizes = getValues("sizes") || [];
+    const currentStock = getValues("stock") || {};
+
+    // Gerar SKUs por tamanho baseados no ID final de verdade
     const generatedSkus: Record<string, string> = {};
-    if (modelIdVal && colorVal && data.sizes && data.sizes.length > 0) {
-      const colorSigla = getColorCode(colorVal);
-      data.sizes.forEach((size: string) => {
-        generatedSkus[size] = `${modelIdVal}-${colorSigla}-${size}`;
+    if (selectedSizes.length > 0) {
+      selectedSizes.forEach((size: string) => {
+        generatedSkus[size] = `${generatedId}-${size}`;
       });
     }
 
-    // Filtrar estoque órfão
+    // Filtrar estoque órfão e calcular total de unidades
     const filteredStock: Record<string, number> = {};
     let totalStock = 0;
-    if (data.sizes && data.stock) {
-      data.sizes.forEach((size: string) => {
-        const qty = data.stock[size] ?? 0;
-        filteredStock[size] = qty;
-        totalStock += qty;
-      });
-    }
+    selectedSizes.forEach((size: string) => {
+      const qty = parseInt(String(currentStock[size] ?? 0), 10) || 0;
+      filteredStock[size] = qty;
+      totalStock += qty;
+    });
 
     try {
       const finalData = {
         ...data,
         id: generatedId,
         slug: generatedSlug,
+        sizes: selectedSizes,
         skus: generatedSkus,
         stock: filteredStock,
         totalStock: totalStock,
@@ -515,7 +581,6 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
           {/* FORMULÁRIO */}
           <form id="product-form" onSubmit={handleSubmit(handleFormSubmit, handleFormError)} className="p-8 md:p-10 space-y-8">
-            <input type="hidden" {...register('id')} />
             <input type="hidden" {...register('imageUrl')} />
             <input type="hidden" {...register('isHeroBanner')} />
             <input type="hidden" {...register('heroImageUrl')} />
@@ -556,12 +621,26 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                     </div>
                   </div>
 
-                  {computedSku && (
-                    <div className="p-3 border border-black/5 bg-zinc-50/50 flex justify-between items-center animate-fadeIn font-mono text-[10px]">
-                      <span className="text-zinc-400 uppercase font-black">SKU Base:</span>
-                      <span className="font-bold text-black tracking-widest">{computedSku}</span>
-                    </div>
-                  )}
+                  {/* SKU BASE EDITÁVEL */}
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">SKU Base (ID Físico)</label>
+                    <input 
+                      type="text" 
+                      placeholder="Ex: CAM-VINT-FUSCA-PTO" 
+                      {...register('id')}
+                      onChange={(e) => {
+                        setIsIdManuallyEdited(true);
+                        const val = e.target.value.toUpperCase().replace(/\s/g, '');
+                        setValue('id', val, { shouldDirty: true });
+                        setValue('slug', val.toLowerCase(), { shouldDirty: true });
+                      }}
+                      className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors uppercase ${errors.id ? 'border-red-500' : ''}`}
+                    />
+                    {errors.id && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.id.message}</p>}
+                    <p className="text-[8px] text-zinc-400 font-mono uppercase tracking-widest leading-normal">
+                      ID Físico único do produto. É gerado reativamente a partir de Model ID e Cor do anúncio, mas permite qualquer edição manual pelo lojista.
+                    </p>
+                  </div>
 
                   {/* NOME */}
                   <div className="space-y-2">
@@ -797,21 +876,51 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                   <div className="space-y-4">
                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Estúdio de Imagens (Galeria)</label>
                     
-                    <div className="flex gap-2">
-                      <input 
-                        type="text" 
-                        value={newImageUrl}
-                        onChange={(e) => setNewImageUrl(e.target.value)}
-                        placeholder="Cole a URL da foto ou arquivo aqui..."
-                        className="flex-1 h-11 px-4 border border-zinc-200 text-xs font-mono focus:border-black focus:outline-none bg-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={addImage}
-                        className="px-5 py-3 bg-black text-white hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
-                      >
-                        <Plus size={12} /> Injetar
-                      </button>
+                    <div className="flex flex-col sm:flex-row gap-3 items-center">
+                      <div className="flex-1 w-full flex gap-2">
+                        <input 
+                          type="text" 
+                          value={newImageUrl}
+                          onChange={(e) => setNewImageUrl(e.target.value)}
+                          placeholder="Cole a URL da foto ou arquivo aqui..."
+                          className="flex-1 h-11 px-4 border border-zinc-200 text-xs font-mono focus:border-black focus:outline-none bg-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={addImage}
+                          className="px-5 py-3 bg-black text-white hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                        >
+                          <Plus size={12} /> Injetar
+                        </button>
+                      </div>
+                      
+                      <div className="w-full sm:w-auto flex items-center gap-2">
+                        <input 
+                          type="file" 
+                          ref={fileInputRef}
+                          onChange={handleCloudinaryUpload}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                        <button
+                          type="button"
+                          disabled={isUploading}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full sm:w-auto px-5 py-3 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-x-px active:translate-y-px transition-all"
+                        >
+                          {isUploading ? (
+                            <>
+                              <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Carregando...
+                            </>
+                          ) : (
+                            <>
+                              <Upload size={12} />
+                              Carregar Foto (Cloudinary)
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
 
                     {errors.images && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.images.message}</p>}
