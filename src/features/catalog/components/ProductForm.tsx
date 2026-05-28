@@ -5,13 +5,17 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductSchema } from '../schemas';
 import { Input, Button } from '@/components/ui';
-import { collection, doc, updateDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIProductAnalysis } from '@/lib/ai/visionService';
 import { toast } from "sonner";
-import { Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, Plus, Trash2, HelpCircle, Star } from "lucide-react";
+import { 
+  Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, 
+  Plus, Trash2, HelpCircle, Star, LayoutGrid, Package, 
+  Upload, FileText, ChevronRight, Eye, Ruler, Zap 
+} from "lucide-react";
 import { Department, Size } from '@/types/enums';
 import { saveProduct } from '@/app/admin/actions/products';
+import { QRCodeSVG } from 'qrcode.react';
 
 // Helper para normalização e conversão de cores para sigla
 function getColorCode(color: string): string {
@@ -39,6 +43,14 @@ const VALID_CATEGORIES = ["Kits", "Oversized", "Regatas", "Vintage", "Lifestyle"
 const SIZES_MASC = [Size.P, Size.M, Size.G, Size.GG, Size.XG, Size.G1, Size.G2];
 const SIZES_FEM  = [Size.PP, Size.P, Size.M, Size.G, Size.GG];
 
+// Tabela de medidas para o guia do preview
+const SIZE_GUIDE_PREVIEW: Record<string, { peito: string; comprimento: string }> = {
+  'P':  { peito: '96cm', comprimento: '68cm' },
+  'M':  { peito: '102cm', comprimento: '70cm' },
+  'G':  { peito: '108cm', comprimento: '72cm' },
+  'GG': { peito: '116cm', comprimento: '74cm' },
+};
+
 export interface ProductFormHandle {
   setValuesFromAI: (data: AIProductAnalysis) => void;
   setValues: (data: any) => void;
@@ -53,6 +65,12 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   const [snapshot, setSnapshot] = useState<ProductSchema | null>(null);
   const [aiGlowFields, setAiGlowFields] = useState<Set<string>>(new Set());
   const [newImageUrl, setNewImageUrl] = useState("");
+  
+  // Controle de Abas Operacionais (Painel Atelier)
+  const [activeTab, setActiveTab] = useState<'identidade' | 'grade' | 'midia' | 'seo'>('identidade');
+  
+  // Controle de Visualização do Preview (Painel Vitrine)
+  const [previewMode, setPreviewMode] = useState<'vitrine' | 'detalhes' | 'seo' | 'etiqueta'>('vitrine');
 
   const {
     register,
@@ -60,7 +78,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     setValue,
     getValues,
     watch,
-    formState: { errors, isSubmitting, dirtyFields },
+    formState: { errors, isSubmitting },
     reset
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchema) as any,
@@ -87,34 +105,52 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     }
   });
 
-  // Watchers em tempo real para auditoria do Padrão Elite
-  const watchedName = watch('name');
-  const watchedCategory = watch('category');
-  const watchedDepartment = watch('department');
-  const watchedDescription = watch('description');
-  const watchedMetaDesc = watch('seo.metaDescription');
+  // Watchers em tempo real para sincronização do Live Preview
+  const watchedName = watch('name') || '';
+  const watchedPrice = watch('price');
+  const watchedCategory = watch('category') || '';
+  const watchedDepartment = watch('department') || Department.MASCULINO;
+  const watchedColor = watch('color') || '';
+  const watchedModelId = watch('modelId') || '';
+  const watchedSizes = watch('sizes') || [];
+  const watchedStock = watch('stock') || {};
+  const watchedDescription = watch('description') || '';
+  const watchedMetaDesc = watch('seo.metaDescription') || '';
   const watchedImages = watch('images') || [];
+  const watchedImageUrl = watch('imageUrl') || '/hero-preta.avif';
   const watchedIsHero = watch('isHeroBanner');
   const watchedHeroUrl = watch('heroImageUrl');
 
+  // Geração do SKU Base em Tempo Real para a etiqueta
+  const [computedSku, setComputedSku] = useState('');
+  useEffect(() => {
+    if (watchedModelId && watchedColor) {
+      const colorSigla = getColorCode(watchedColor);
+      setComputedSku(`${watchedModelId.toUpperCase()}-${colorSigla}`);
+    } else {
+      setComputedSku('');
+    }
+  }, [watchedModelId, watchedColor]);
+
   // Auditoria de Qualidade em tempo real (Fórmula Padrão Elite)
   const issues: string[] = [];
-  if (!watchedDepartment) {
-    issues.push("Sem departamento definido");
-  }
+  if (!watchedDepartment) issues.push("Sem departamento");
   if (!watchedImages || watchedImages.length < 4) {
     issues.push(`Poucas fotos na galeria (${watchedImages.length}/4)`);
   }
   if (!watchedDescription || watchedDescription.length < 100) {
-    issues.push(`Narrativa da marca muito curta (${watchedDescription?.length || 0}/100 crt)`);
+    issues.push(`Narrativa muito curta (${watchedDescription.length}/100 crt)`);
   }
   if (!watchedMetaDesc || watchedMetaDesc.length < 50) {
-    issues.push(`Meta Description Google curta (${watchedMetaDesc?.length || 0}/50 crt)`);
+    issues.push(`Meta Description Google curta (${watchedMetaDesc.length}/50 crt)`);
   }
+  if (!watchedModelId) issues.push("ID do Modelo ausente");
+  if (!watchedColor) issues.push("Cor do anúncio ausente");
 
   const isElite = issues.length === 0;
+  const qualityScore = Math.max(0, Math.round(((6 - issues.length) / 6) * 100));
 
-  // Função para limpar o glow após alguns segundos
+  // Limpeza de glows após alguns segundos
   useEffect(() => {
     if (aiGlowFields.size > 0) {
       const timer = setTimeout(() => setAiGlowFields(new Set()), 4000);
@@ -125,7 +161,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   useImperativeHandle(ref, () => ({
     setValuesFromAI: (data: AIProductAnalysis) => {
       console.log("[ProductForm] Criando snapshot para rollback...");
-      setSnapshot(getValues()); // Salva estado atual antes da IA
+      setSnapshot(getValues()); 
       
       const newGlow = new Set(['name', 'category', 'price', 'description', 'seo.metaDescription']);
       setAiGlowFields(newGlow);
@@ -137,7 +173,6 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       setValue('imageUrl', data.imageUrl || '/hero-preta.avif', { shouldDirty: true });
       setValue('slug', data.title.toLowerCase().replace(/ /g, '-'), { shouldDirty: true });
       
-      // Auto-injetar fotos fictícias se faltar no vision AI para acelerar
       const defaultGallery = [
         data.imageUrl || '/hero-preta.avif',
         '/hero-preta.avif',
@@ -149,7 +184,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       if (!getValues('seo')) {
         setValue('seo', {}, { shouldDirty: true });
       }
-      setValue('seo.metaDescription', `Equipamento premium Hooke: ${data.title}. Design soft brutalist de altíssimo padrão, costuras reforçadas e caimento perfeito.`, { shouldDirty: true });
+      setValue('seo.metaDescription', `Equipamento premium Hooke: ${data.title}. Design de alto padrão em algodão robusto com caimento impecável.`, { shouldDirty: true });
       setValue('seo.altText', data.title, { shouldDirty: true });
 
       setValue('details', {
@@ -176,14 +211,13 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     }
   };
 
-  // Motor Semântico Elite Local
+  // Motor Semântico Elite Local (Em português robusto, sem estrangeirismos)
   const handleSemanticRefine = () => {
     const name = getValues('name');
     const category = getValues('category') || '';
-    const department = getValues('department') || Department.MASCULINO;
 
     if (!name || name.trim().length < 2) {
-      toast.error("Preencha a Designação (Nome) do produto antes de refinar semanticamente.");
+      toast.error("Preencha a Designação (Nome) do produto antes de refinar.");
       return;
     }
 
@@ -210,7 +244,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     setValue('seo.metaDescription', refinedMeta, { shouldDirty: true });
     setValue('seo.altText', name, { shouldDirty: true });
 
-    // Auto-preencher galeria se estiver vazia ou com poucas fotos
+    // Auto-preencher galeria se vazia
     const currentImgs = getValues('images') || [];
     if (currentImgs.length < 4) {
       const fallbackUrl = getValues('imageUrl') || '/hero-preta.avif';
@@ -223,7 +257,18 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       setValue('images', mockImgs, { shouldDirty: true });
     }
 
-    toast.success("🪄 Descrição rica e SEO metaDescription refinados com sucesso!");
+    toast.success("Descrições refinadas com sucesso puramente em português!");
+  };
+
+  const handleQuickStockFill = (amount: number) => {
+    if (watchedSizes.length === 0) {
+      toast.warning("Selecione pelo menos um tamanho na grade primeiro.");
+      return;
+    }
+    watchedSizes.forEach((size) => {
+      setValue(`stock.${size}`, amount, { shouldDirty: true });
+    });
+    toast.success(`Estoque em lote (${amount} unidades) injetado com sucesso!`);
   };
 
   const addImage = () => {
@@ -248,7 +293,6 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     const updated = current.filter((_, i) => i !== index);
     setValue('images', updated, { shouldDirty: true });
     
-    // Se a imagem removida era a Hero, limpa a flag
     if (getValues('heroImageUrl') === urlToRemove) {
       setValue('isHeroBanner', false, { shouldDirty: true });
       setValue('heroImageUrl', '', { shouldDirty: true });
@@ -263,9 +307,6 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   };
 
   const handleFormSubmit: SubmitHandler<any> = async (data) => {
-    const productData = data as ProductSchema;
-    
-    // Normalização e geração inteligente do SKU
     const colorVal = data.color || '';
     const modelIdVal = (data.modelId || '').trim().toUpperCase();
     
@@ -286,7 +327,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       }
     }
     
-    // Autogerar SKUs por tamanho
+    // Gerar SKUs por tamanho
     const generatedSkus: Record<string, string> = {};
     if (modelIdVal && colorVal && data.sizes && data.sizes.length > 0) {
       const colorSigla = getColorCode(colorVal);
@@ -322,7 +363,6 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
         return;
       }
 
-      // 2. Tenta salvar via Server Action (Revalidação Automática e Resiliente na Vercel)
       const result = await saveProduct(finalData, 'admin@hooke.com');
       
       if (!result.success) {
@@ -330,7 +370,6 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       }
       
       toast.success(data.id ? "Produto atualizado com sucesso" : "Novo produto cadastrado na coleção");
-      
       if (!data.id) reset();
       
     } catch (err: any) {
@@ -341,9 +380,8 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
   const handleFormError = (errors: any) => {
     console.error("[ProductForm] Validação Zod falhou:", errors);
-    toast.error("Validação falhou! Corrija os campos obrigatórios destacados.");
+    toast.error("Validação falhou! Corrija os campos obrigatórios destacados nas abas.");
     
-    // Toasts dinâmicos detalhados
     Object.keys(errors).forEach((key) => {
       const error = errors[key];
       if (error?.message) {
@@ -359,435 +397,863 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     });
   };
 
-  const glowStyles = "ring-2 ring-amber-400/50 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-1000";
+  const glowStyles = "ring-2 ring-amber-400/50 border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all duration-1000";
 
   return (
-    <div className="space-y-8 relative">
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-140px)] w-full gap-8 relative select-none">
       
-      {/* PÍLULA FLUTUANTE / BARRA DE STATUS ELITE INTERATIVA */}
-      <div className="relative">
-        <AnimatePresence mode="wait">
-          {isElite ? (
-            <motion.div
-              key="elite-status"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="p-6 border-2 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 shadow-sharp shadow-green-500/20 flex flex-col md:flex-row justify-between items-center gap-4 text-green-900"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center animate-pulse shadow-md">
-                  <CheckCircle2 size={24} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-black tracking-widest uppercase">🏆 PADRÃO ELITE CONCLUÍDO</h4>
-                  <p className="text-[10px] uppercase font-bold text-green-700 tracking-wider">Este produto atende a 100% das métricas de alta conversão Hooke</p>
-                </div>
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-widest bg-green-600 text-white px-3 py-1.5 border border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">APROVADO 100%</span>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="pending-status"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="p-6 border-2 border-black bg-zinc-50 shadow-sharp flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
-            >
-              <div className="space-y-2 flex-1">
-                <div className="flex items-center gap-2 text-amber-600">
-                  <AlertTriangle size={16} />
-                  <h4 className="text-xs font-black tracking-widest uppercase text-black">AUDITORIA DE QUALIDADE EM TEMPO REAL</h4>
-                </div>
-                <div className="flex flex-wrap gap-x-6 gap-y-2">
-                  <span className="text-[9px] font-bold text-zinc-500 uppercase flex items-center gap-1.5">
-                    {watchedDepartment ? <span className="text-green-500">✓</span> : <span className="text-red-500">✗</span>} Dept
-                  </span>
-                  <span className="text-[9px] font-bold text-zinc-500 uppercase flex items-center gap-1.5">
-                    {watchedImages.length >= 4 ? <span className="text-green-500">✓</span> : <span className="text-red-500">✗</span>} Galeria ({watchedImages.length}/4)
-                  </span>
-                  <span className="text-[9px] font-bold text-zinc-500 uppercase flex items-center gap-1.5">
-                    {watchedDescription?.length >= 100 ? <span className="text-green-500">✓</span> : <span className="text-red-500">✗</span>} Descrição ({watchedDescription?.length || 0}/100)
-                  </span>
-                  <span className="text-[9px] font-bold text-zinc-500 uppercase flex items-center gap-1.5">
-                    {(watchedMetaDesc?.length ?? 0) >= 50 ? <span className="text-green-500">✓</span> : <span className="text-red-500">✗</span>} SEO ({watchedMetaDesc?.length || 0}/50)
-                  </span>
-                </div>
-              </div>
-              <div className="w-full md:w-auto">
-                <button
-                  type="button"
-                  onClick={handleSemanticRefine}
-                  className="w-full md:w-auto px-6 py-3 border-2 border-black bg-yellow-300 hover:bg-black hover:text-white text-[10px] font-black uppercase tracking-widest shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-2"
-                >
-                  <Sparkles size={13} /> Refinar Semântica & SEO
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* IMPRESSÃO DE ETIQUETA - PRINT CSS DINÂMICO */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #printable-tag, #printable-tag * {
+            visibility: visible;
+          }
+          #printable-tag {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            transform: translateX(-50%);
+            width: 70mm !important;
+            height: 100mm !important;
+            border: 2px solid black !important;
+            padding: 20px !important;
+            background: white !important;
+            box-shadow: none !important;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+        }
+      `}</style>
 
+      {/* ROLLBACK FLOATING BANNER */}
       <AnimatePresence>
         {snapshot && (
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="flex items-center justify-between p-4 bg-amber-50 border-2 border-amber-200 text-amber-900"
+            className="absolute top-[-50px] left-0 right-0 z-50 flex items-center justify-between p-4 bg-amber-50 border-2 border-amber-200 text-amber-900 shadow-sharp"
           >
             <div className="flex items-center gap-3">
-              <Sparkles size={18} className="text-amber-600" />
-              <p className="text-[10px] font-black uppercase tracking-widest">IA modificou este formulário</p>
+              <Sparkles size={18} className="text-amber-600 animate-pulse" />
+              <p className="text-[10px] font-black uppercase tracking-widest">Estado original salvo antes da refinação semântica.</p>
             </div>
             <button 
+              type="button"
               onClick={handleUndo}
               className="flex items-center gap-2 px-4 py-2 bg-amber-900 text-white text-[9px] font-black uppercase tracking-widest hover:bg-black transition-colors"
             >
-              <Undo2 size={14} /> Desfazer Magia
+              <Undo2 size={14} /> Desfazer Refinação
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <form id="product-form" onSubmit={handleSubmit(handleFormSubmit, handleFormError)} className="space-y-10">
-        <input type="hidden" {...register('id')} />
-        <input type="hidden" {...register('imageUrl')} />
-        <input type="hidden" {...register('isHeroBanner')} />
-        <input type="hidden" {...register('heroImageUrl')} />
-        
-        {/* GRID PRINCIPAL */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          
-          {/* ID DO MODELO */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">ID do Modelo (Model ID)</label>
-            </div>
-            <Input 
-              {...register('modelId')} 
-              variant="brutalist" 
-              placeholder="Ex: CAM-VINT-FUSCA"
-              className={`${errors.modelId ? 'border-red-500' : ''}`}
-            />
-            {errors.modelId && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.modelId.message}</p>}
-          </div>
+      {/* TOP 2px QUALITY PROGRESS INDICATOR */}
+      <div className="absolute top-[-16px] left-0 right-0 h-1 bg-zinc-200">
+        <div 
+          className="h-full bg-black transition-all duration-700 ease-out" 
+          style={{ width: `${qualityScore}%`, backgroundColor: qualityScore === 100 ? '#10b981' : '#000000' }}
+        />
+      </div>
 
-          {/* COR */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Cor do Anúncio</label>
-            <Input 
-              {...register('color')} 
-              variant="brutalist" 
-              placeholder="Ex: Preta"
-              className={`${errors.color ? 'border-red-500' : ''}`}
-            />
-            {errors.color && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.color.message}</p>}
-          </div>
-          
-          {/* NOME */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Designação (Nome)</label>
-            <motion.div animate={aiGlowFields.has('name') ? { scale: [1, 1.02, 1] } : {}}>
-              <Input 
-                {...register('name')} 
-                variant="brutalist" 
-                placeholder="Ex: T-Shirt Boxy Alpha"
-                className={`${errors.name ? 'border-red-500' : ''} ${aiGlowFields.has('name') ? glowStyles : ''}`}
-              />
-            </motion.div>
-            {errors.name && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.name.message}</p>}
-          </div>
-
-          {/* PREÇO */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Valor (BRL)</label>
-            <motion.div animate={aiGlowFields.has('price') ? { scale: [1, 1.02, 1] } : {}}>
-              <Input 
-                {...register('price', { valueAsNumber: true })} 
-                variant="brutalist" 
-                type="number" 
-                step="0.01"
-                className={`${errors.price ? 'border-red-500' : ''} ${aiGlowFields.has('price') ? glowStyles : ''}`}
-              />
-            </motion.div>
-            {errors.price && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.price.message}</p>}
-          </div>
-
-          {/* DEPARTAMENTO */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Departamento</label>
-            <select
-              {...register('department')}
-              className={`w-full h-[50px] px-4 border-2 border-black font-mono text-xs uppercase tracking-widest bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none ${errors.department ? 'border-red-500' : ''}`}
-            >
-              <option value={Department.MASCULINO}>Masculino</option>
-              <option value={Department.FEMININO}>Feminino</option>
-              <option value={Department.UNISSEX}>Unissex</option>
-            </select>
-            {errors.department && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.department.message}</p>}
-          </div>
-
-          {/* CATEGORIA — select com valores válidos do enum */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Categoria</label>
-            <select
-              {...register('category')}
-              className={`w-full h-[50px] px-4 border-2 border-black font-mono text-xs uppercase tracking-widest bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] focus:outline-none ${
-                errors.category ? 'border-red-500' : ''
-              } ${
-                aiGlowFields.has('category') ? glowStyles : ''
-              }`}
-            >
-              <option value="">— Selecione a categoria —</option>
-              {VALID_CATEGORIES.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            {errors.category && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.category.message}</p>}
-          </div>
-
-          {/* TAMANHOS — obrigatório para produto aparecer no site */}
-          <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
-              Tamanhos Disponíveis <span className="text-red-500">*</span>
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {(watchedDepartment === Department.FEMININO ? SIZES_FEM : SIZES_MASC).map(size => {
-                const isSelected = (watch('sizes') || []).includes(size);
-                return (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => {
-                      const current = getValues('sizes') || [];
-                      const updated = isSelected
-                        ? current.filter(s => s !== size)
-                        : [...current, size];
-                      setValue('sizes', updated, { shouldDirty: true });
-                    }}
-                    className={`w-12 h-12 text-xs font-black border-2 transition-all shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 ${
-                      isSelected
-                        ? 'bg-black text-white border-black shadow-none translate-x-0.5 translate-y-0.5'
-                        : 'bg-white text-black border-black hover:bg-zinc-100'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                );
-              })}
-            </div>
-            {errors.sizes && (
-              <p className="text-[10px] text-red-500 font-bold uppercase mt-1">{errors.sizes.message}</p>
-            )}
-            {(watch('sizes') || []).length === 0 && !errors.sizes && (
-              <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest">⚠ Selecione ao menos 1 tamanho para publicar</p>
-            )}
-          </div>
-
-          {/* GERENCIAMENTO DE ESTOQUE GRANULAR (OTIMIZADO PARA TOUCH) */}
-          {(watch('sizes') || []).length > 0 && (
-            <div className="col-span-1 md:col-span-2 space-y-4 p-5 border-2 border-black bg-zinc-50 shadow-[4px_4px_0px_rgba(0,0,0,1)] animate-fadeIn">
-              <div>
-                <h3 className="text-[10px] font-black tracking-widest uppercase">Estoque por Variante</h3>
-                <p className="text-[8px] uppercase font-bold text-zinc-400 tracking-wider">Ajuste o estoque numérico de cada tamanho (Confortável para dedão)</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {(watch('sizes') || []).map((size) => {
-                  const currentStock = watch(`stock.${size}`) ?? 0;
-                  return (
-                    <div key={size} className="flex items-center justify-between border-2 border-black bg-white p-3 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                      <span className="text-xs font-black w-8 text-center">{size}</span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const val = Math.max(0, currentStock - 1);
-                            setValue(`stock.${size}`, val, { shouldDirty: true });
-                          }}
-                          className="w-12 h-12 flex items-center justify-center border-2 border-black bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 text-base font-black transition-all shadow-[1px_1px_0px_rgba(0,0,0,1)] select-none"
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          min="0"
-                          value={currentStock}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value) || 0;
-                            setValue(`stock.${size}`, Math.max(0, val), { shouldDirty: true });
-                          }}
-                          className="w-16 h-12 border-2 border-black text-center font-mono text-xs font-bold focus:outline-none bg-white text-black"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const val = currentStock + 1;
-                            setValue(`stock.${size}`, val, { shouldDirty: true });
-                          }}
-                          className="w-12 h-12 flex items-center justify-center border-2 border-black bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 text-base font-black transition-all shadow-[1px_1px_0px_rgba(0,0,0,1)] select-none"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* SLUG */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Slug (URL)</label>
-            <Input {...register('slug')} variant="luxury" className="bg-zinc-50" placeholder="slug-do-produto" />
-          </div>
-        </div>
-
-        {/* NARRATIVA SEO (DESCRIÇÃO) */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Narrativa Premium (Descrição)</label>
-            <span className="text-[9px] font-mono text-zinc-400 uppercase">{watchedDescription?.length || 0}/100 crt min</span>
-          </div>
-          <motion.div animate={aiGlowFields.has('description') ? { scale: [1, 1.01, 1] } : {}}>
-            <textarea 
-              {...register('description')}
-              className={`w-full min-h-[140px] p-6 border-2 border-black bg-white focus:outline-none text-xs font-mono leading-relaxed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${
-                errors.description ? 'border-red-500' : ''
-              } ${
-                aiGlowFields.has('description') ? glowStyles : ''
-              }`}
-              placeholder="Escreva sobre o caimento estruturado, tecidos e diferencial da peça..."
-            />
-          </motion.div>
-          {errors.description && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.description.message}</p>}
-        </div>
-
-        {/* META DESCRIPTION (GOOGLE) */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Google Meta Description (SEO)</label>
-            <span className="text-[9px] font-mono text-zinc-400 uppercase">{watchedMetaDesc?.length || 0}/50 crt min</span>
-          </div>
-          <motion.div animate={aiGlowFields.has('seo.metaDescription') ? { scale: [1, 1.01, 1] } : {}}>
-            <textarea 
-              {...register('seo.metaDescription')}
-              className={`w-full min-h-[80px] p-4 border-2 border-black bg-white focus:outline-none text-xs font-mono leading-relaxed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${
-                aiGlowFields.has('seo.metaDescription') ? glowStyles : ''
-              }`}
-              placeholder="Digite um resumo chamativo para buscas no Google..."
-            />
-          </motion.div>
-        </div>
-
-        {/* GALERIA DE FOTOS DO PRODUTO */}
-        <div className="space-y-4 p-6 border-2 border-black bg-zinc-50/50 shadow-sharp">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-xs font-black tracking-widest uppercase">Arsenal de Imagens (Galeria)</h3>
-              <p className="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">O Padrão Elite exige no mínimo 4 fotos cadastradas</p>
-            </div>
-            <span className="text-[10px] font-black bg-black text-white px-2 py-1">{watchedImages.length} fotos</span>
-          </div>
-
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={newImageUrl}
-              onChange={(e) => setNewImageUrl(e.target.value)}
-              placeholder="Cole a URL da imagem aqui..."
-              className="flex-1 px-4 border-2 border-black text-xs font-mono focus:outline-none bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)]"
-            />
-            <button
+      {/* COLUNA ESQUERDA: O ATELIER (FORMULÁRIO POR ETAPAS) */}
+      <div className="w-full lg:w-[55%] bg-white border border-black/10 flex flex-col justify-between shadow-[4px_4px_0px_rgba(0,0,0,0.05)]">
+        <div>
+          {/* ABAS OPERACIONAIS BRUTALISTAS */}
+          <div className="flex border-b border-black/10 bg-zinc-50 select-none">
+            <button 
               type="button"
-              onClick={addImage}
-              className="px-6 py-3 border-2 border-black bg-black text-white hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5"
+              onClick={() => setActiveTab('identidade')}
+              className={`flex-1 py-4 px-2 text-center text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 border-r border-black/5 transition-all ${
+                activeTab === 'identidade' ? 'bg-white border-b-2 border-b-black text-black' : 'text-zinc-400 hover:text-zinc-700'
+              }`}
             >
-              <Plus size={14} className="inline mr-1" /> Acoplar
+              <LayoutGrid size={12} />
+              Identidade
+            </button>
+            <button 
+              type="button"
+              onClick={() => setActiveTab('grade')}
+              className={`flex-1 py-4 px-2 text-center text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 border-r border-black/5 transition-all ${
+                activeTab === 'grade' ? 'bg-white border-b-2 border-b-black text-black' : 'text-zinc-400 hover:text-zinc-700'
+              }`}
+            >
+              <Package size={12} />
+              Grade & Estoque
+            </button>
+            <button 
+              type="button"
+              onClick={() => setActiveTab('midia')}
+              className={`flex-1 py-4 px-2 text-center text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 border-r border-black/5 transition-all ${
+                activeTab === 'midia' ? 'bg-white border-b-2 border-b-black text-black' : 'text-zinc-400 hover:text-zinc-700'
+              }`}
+            >
+              <Upload size={12} />
+              Mídia
+            </button>
+            <button 
+              type="button"
+              onClick={() => setActiveTab('seo')}
+              className={`flex-1 py-4 px-2 text-center text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                activeTab === 'seo' ? 'bg-white border-b-2 border-b-black text-black' : 'text-zinc-400 hover:text-zinc-700'
+              }`}
+            >
+              <FileText size={12} />
+              Editorial & SEO
             </button>
           </div>
 
-          {/* GRID DE FOTOS DA GALERIA */}
-          {errors.images && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest my-2">{errors.images.message}</p>
-          )}
-          {watchedImages.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-black/5">
-              {watchedImages.map((url, i) => (
-                <div 
-                  key={i} 
-                  className={`relative group aspect-square border-2 bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)] overflow-hidden transition-all duration-300 ${
-                    watchedIsHero && watchedHeroUrl === url
-                      ? "border-amber-400 ring-2 ring-amber-400/50"
-                      : "border-black"
-                  }`}
+          {/* FORMULÁRIO */}
+          <form id="product-form" onSubmit={handleSubmit(handleFormSubmit, handleFormError)} className="p-8 md:p-10 space-y-8">
+            <input type="hidden" {...register('id')} />
+            <input type="hidden" {...register('imageUrl')} />
+            <input type="hidden" {...register('isHeroBanner')} />
+            <input type="hidden" {...register('heroImageUrl')} />
+            
+            <AnimatePresence mode="wait">
+              {activeTab === 'identidade' && (
+                <motion.div
+                  key="identidade"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
                 >
-                  {watchedIsHero && watchedHeroUrl === url && (
-                    <div className="absolute top-1.5 right-1.5 bg-amber-500 text-white text-[7px] font-black px-1.5 py-0.5 border border-black uppercase tracking-wider flex items-center gap-1 z-10 shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
-                      <Star size={8} className="fill-white text-white" /> Hero
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* MODEL ID */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">ID do Modelo (Model ID)</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: CAM-VINT-FUSCA" 
+                        {...register('modelId')}
+                        className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors uppercase ${errors.modelId ? 'border-red-500' : ''}`}
+                      />
+                      {errors.modelId && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.modelId.message}</p>}
+                    </div>
+
+                    {/* COR */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Cor do Anúncio</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: Preta" 
+                        {...register('color')}
+                        className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-sans text-xs focus:outline-none transition-colors ${errors.color ? 'border-red-500' : ''}`}
+                      />
+                      {errors.color && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.color.message}</p>}
+                    </div>
+                  </div>
+
+                  {computedSku && (
+                    <div className="p-3 border border-black/5 bg-zinc-50/50 flex justify-between items-center animate-fadeIn font-mono text-[10px]">
+                      <span className="text-zinc-400 uppercase font-black">SKU Base:</span>
+                      <span className="font-bold text-black tracking-widest">{computedSku}</span>
                     </div>
                   )}
 
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt={`Galeria ${i+1}`} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const isCurrentlyHero = watchedIsHero && watchedHeroUrl === url;
-                        if (isCurrentlyHero) {
-                          setValue('isHeroBanner', false, { shouldDirty: true });
-                          setValue('heroImageUrl', '', { shouldDirty: true });
-                          toast.info("Removido do Hero Banner da Home.");
-                        } else {
-                          setValue('isHeroBanner', true, { shouldDirty: true });
-                          setValue('heroImageUrl', url, { shouldDirty: true });
-                          toast.success("Definida como imagem do Hero Banner da Home!");
-                        }
-                      }}
-                      className={`p-2 border border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-none text-white transition-colors ${
-                        watchedIsHero && watchedHeroUrl === url
-                          ? "bg-amber-500 hover:bg-amber-600"
-                          : "bg-zinc-850 hover:bg-zinc-700"
+                  {/* NOME */}
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Designação (Nome do Produto)</label>
+                    <motion.div animate={aiGlowFields.has('name') ? { scale: [1, 1.01, 1] } : {}}>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: Camiseta Vintage Fusca" 
+                        {...register('name')}
+                        className={`w-full h-11 border border-zinc-200 focus:border-black px-4 text-xs font-bold uppercase tracking-wider focus:outline-none transition-colors ${
+                          errors.name ? 'border-red-500' : ''
+                        } ${aiGlowFields.has('name') ? glowStyles : ''}`}
+                      />
+                    </motion.div>
+                    {errors.name && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.name.message}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* PREÇO */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Valor em BRL</label>
+                      <motion.div animate={aiGlowFields.has('price') ? { scale: [1, 1.01, 1] } : {}}>
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          placeholder="199.90" 
+                          {...register('price', { valueAsNumber: true })}
+                          className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors ${
+                            errors.price ? 'border-red-500' : ''
+                          } ${aiGlowFields.has('price') ? glowStyles : ''}`}
+                        />
+                      </motion.div>
+                      {errors.price && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.price.message}</p>}
+                    </div>
+
+                    {/* DEPARTAMENTO */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Departamento</label>
+                      <select 
+                        {...register('department')}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest"
+                      >
+                        <option value={Department.MASCULINO}>Masculino</option>
+                        <option value={Department.FEMININO}>Feminino</option>
+                        <option value={Department.UNISSEX}>Unissex</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* CATEGORIA */}
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Categoria</label>
+                    <select 
+                      {...register('category')}
+                      className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest ${
+                        errors.category ? 'border-red-500' : ''
                       }`}
-                      title={watchedIsHero && watchedHeroUrl === url ? "Remover flag Hero" : "Marcar como Hero Banner"}
                     >
-                      <Star size={14} className={watchedIsHero && watchedHeroUrl === url ? "fill-white" : ""} />
-                    </button>
+                      <option value="">Selecione...</option>
+                      {VALID_CATEGORIES.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    {errors.category && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.category.message}</p>}
+                  </div>
+
+                  {/* SLUG */}
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Slug (URL)</label>
+                    <input 
+                      type="text" 
+                      placeholder="slug-do-produto" 
+                      {...register('slug')}
+                      className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-zinc-50"
+                    />
+                  </div>
+
+                  <div className="pt-4 flex justify-end">
                     <button
                       type="button"
-                      onClick={() => removeImage(i)}
-                      className="p-2 bg-red-600 hover:bg-red-800 text-white rounded-none border border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]"
-                      title="Excluir imagem"
+                      onClick={() => setActiveTab('grade')}
+                      className="px-6 py-3 bg-black hover:bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-x-px active:translate-y-px transition-all"
                     >
-                      <Trash2 size={14} />
+                      Grade & Estoque <ChevronRight size={12} />
                     </button>
                   </div>
-                  <span className="absolute bottom-1 left-1 bg-black text-white text-[8px] font-bold px-1 py-0.5 uppercase tracking-widest">
-                    {i === 0 ? "Principal" : `Foto ${i+1}`}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center text-zinc-400 border border-dashed border-black/20 flex flex-col items-center justify-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider">A galeria está vazia</span>
-              <p className="text-[8px] uppercase tracking-widest">Cole URLs acima ou utilize o Refinador Mágico para gerar fallbacks</p>
-            </div>
-          )}
+                </motion.div>
+              )}
+
+              {activeTab === 'grade' && (
+                <motion.div
+                  key="grade"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
+                >
+                  {/* GRADE DE TAMANHOS */}
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tamanhos Disponíveis na Grade</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(watchedDepartment === Department.FEMININO ? SIZES_FEM : SIZES_MASC).map(size => {
+                        const isSelected = watchedSizes.includes(size);
+                        return (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => {
+                              const current = getValues('sizes') || [];
+                              const updated = isSelected
+                                ? current.filter(s => s !== size)
+                                : [...current, size];
+                              setValue('sizes', updated, { shouldDirty: true });
+                            }}
+                            className={`w-12 h-12 text-xs font-black border transition-all ${
+                              isSelected
+                                ? 'bg-black text-white border-black'
+                                : 'bg-white text-black border-zinc-200 hover:border-black'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {errors.sizes && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.sizes.message}</p>}
+                  </div>
+
+                  {/* ESTOQUE GRANULAR OTIMIZADO PARA MOBILE */}
+                  {watchedSizes.length > 0 && (
+                    <div className="space-y-6 pt-6 border-t border-black/5 animate-fadeIn">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                          <h4 className="text-[10px] font-black uppercase tracking-wider">Inventário de Unidades</h4>
+                          <p className="text-[8px] text-zinc-400 uppercase tracking-widest font-mono font-bold">Ajustes tácteis confortáveis</p>
+                        </div>
+
+                        {/* DISTRIBUIÇÃO RÁPIDA */}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[8px] font-mono font-black uppercase text-zinc-400 mr-1.5">Preencher Grade:</span>
+                          <button 
+                            type="button"
+                            onClick={() => handleQuickStockFill(5)}
+                            className="px-3 py-1.5 border border-zinc-200 hover:border-black text-[9px] font-mono bg-white active:bg-zinc-50"
+                          >
+                            +5 un
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => handleQuickStockFill(10)}
+                            className="px-3 py-1.5 border border-zinc-200 hover:border-black text-[9px] font-mono bg-white active:bg-zinc-50"
+                          >
+                            +10 un
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {watchedSizes.map(size => {
+                          const currentQty = watchedStock[size] ?? 0;
+                          return (
+                            <div key={size} className="flex items-center justify-between border border-zinc-200 p-3 bg-zinc-50/50">
+                              <span className="text-xs font-mono font-black w-8 text-center">{size}</span>
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const val = Math.max(0, currentQty - 1);
+                                    setValue(`stock.${size}`, val, { shouldDirty: true });
+                                  }}
+                                  className="w-12 h-12 flex items-center justify-center border border-zinc-200 bg-white hover:border-black font-black text-sm active:bg-zinc-150 transition-colors"
+                                >
+                                  -
+                                </button>
+                                <input 
+                                  type="number" 
+                                  min="0"
+                                  value={currentQty}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value) || 0;
+                                    setValue(`stock.${size}`, Math.max(0, val), { shouldDirty: true });
+                                  }}
+                                  className="w-16 h-12 border border-zinc-200 text-center font-mono text-xs focus:outline-none bg-white text-black"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const val = currentQty + 1;
+                                    setValue(`stock.${size}`, val, { shouldDirty: true });
+                                  }}
+                                  className="w-12 h-12 flex items-center justify-center border border-zinc-200 bg-white hover:border-black font-black text-sm active:bg-zinc-150 transition-colors"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('identidade')}
+                      className="px-5 py-3 border border-zinc-200 hover:border-black text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('midia')}
+                      className="px-6 py-3 bg-black hover:bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-x-px active:translate-y-px transition-all"
+                    >
+                      Mídia <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'midia' && (
+                <motion.div
+                  key="midia"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
+                >
+                  {/* ESTÚDIO DE IMAGENS */}
+                  <div className="space-y-4">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Estúdio de Imagens (Galeria)</label>
+                    
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        placeholder="Cole a URL da foto ou arquivo aqui..."
+                        className="flex-1 h-11 px-4 border border-zinc-200 text-xs font-mono focus:border-black focus:outline-none bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={addImage}
+                        className="px-5 py-3 bg-black text-white hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                      >
+                        <Plus size={12} /> Injetar
+                      </button>
+                    </div>
+
+                    {errors.images && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.images.message}</p>}
+
+                    {watchedImages.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                        {watchedImages.map((url, i) => {
+                          const isHero = watchedIsHero && watchedHeroUrl === url;
+                          return (
+                            <div 
+                              key={i} 
+                              className={`relative group aspect-[3/4] border bg-white overflow-hidden transition-all ${
+                                isHero ? "border-amber-400 ring-2 ring-amber-400/30" : "border-zinc-200"
+                              }`}
+                            >
+                              <img src={url} alt={`Galeria ${i+1}`} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (isHero) {
+                                      setValue('isHeroBanner', false, { shouldDirty: true });
+                                      setValue('heroImageUrl', '', { shouldDirty: true });
+                                    } else {
+                                      setValue('isHeroBanner', true, { shouldDirty: true });
+                                      setValue('heroImageUrl', url, { shouldDirty: true });
+                                    }
+                                  }}
+                                  className={`p-1.5 border border-black text-white transition-colors ${
+                                    isHero ? "bg-amber-500" : "bg-black/85 hover:bg-black"
+                                  }`}
+                                  title="Marcar como Hero Banner Home"
+                                >
+                                  <Star size={12} className={isHero ? "fill-white" : ""} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeImage(i)}
+                                  className="p-1.5 bg-red-600 border border-black hover:bg-red-700 text-white"
+                                  title="Excluir do Arsenal"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                              <span className="absolute bottom-1 left-1 bg-black text-white text-[7px] font-black px-1.5 uppercase tracking-widest">
+                                {i === 0 ? "CAPA" : `FOTO ${i+1}`}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="py-8 text-center text-zinc-400 text-[9px] uppercase tracking-widest font-black border border-dashed border-zinc-200 bg-zinc-50/30">
+                        Galeria de fotos vazia
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('grade')}
+                      className="px-5 py-3 border border-zinc-200 hover:border-black text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('seo')}
+                      className="px-6 py-3 bg-black hover:bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] active:translate-x-px active:translate-y-px transition-all"
+                    >
+                      Editorial & SEO <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'seo' && (
+                <motion.div
+                  key="seo"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
+                >
+                  {/* NARRATIVA PREMIUM */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Narrativa Premium (Descrição)</label>
+                      <span className="text-[8px] font-mono text-zinc-400">{watchedDescription.length}/100 crt min</span>
+                    </div>
+                    <motion.div animate={aiGlowFields.has('description') ? { scale: [1, 1.01, 1] } : {}}>
+                      <textarea 
+                        {...register('description')}
+                        className={`w-full h-32 p-4 border border-zinc-200 focus:border-black text-xs font-mono focus:outline-none transition-colors leading-relaxed ${
+                          errors.description ? 'border-red-500' : ''
+                        } ${aiGlowFields.has('description') ? glowStyles : ''}`}
+                        placeholder="Descreva o caimento, as costuras refinadas e a gramatura em português elegante..."
+                      />
+                    </motion.div>
+                    {errors.description && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.description.message}</p>}
+                  </div>
+
+                  {/* GOOGLE META DESCRIPTION */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Google Meta Description (SEO)</label>
+                      <span className="text-[8px] font-mono text-zinc-400">{watchedMetaDesc.length}/50 crt min</span>
+                    </div>
+                    <motion.div animate={aiGlowFields.has('seo.metaDescription') ? { scale: [1, 1.01, 1] } : {}}>
+                      <textarea 
+                        {...register('seo.metaDescription')}
+                        className={`w-full h-20 p-4 border border-zinc-200 focus:border-black text-xs font-mono focus:outline-none transition-colors leading-relaxed ${
+                          aiGlowFields.has('seo.metaDescription') ? glowStyles : ''
+                        }`}
+                        placeholder="Resumo chamativo em português de alto padrão para buscas orgânicas no Google..."
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* REFINADOR SEMÂNTICO LOCAL */}
+                  <div className="p-4 border border-black/5 bg-zinc-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex items-center gap-2 text-zinc-600">
+                      <Sparkles size={14} className="text-amber-500" />
+                      <span className="text-[9px] font-black uppercase tracking-wider">Refinar Editorial & SEO em Português Puro</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSemanticRefine}
+                      className="px-4 py-2 border border-black bg-amber-100 hover:bg-amber-200 text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                    >
+                      <Sparkles size={10} /> Executar IA
+                    </button>
+                  </div>
+
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('midia')}
+                      className="px-5 py-3 border border-zinc-200 hover:border-black text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+                    >
+                      Voltar
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </form>
         </div>
 
-        {/* SUBMIT BUTTON */}
-        <Button 
-          type="submit" 
-          variant="brutalist" 
-          className="w-full py-8 text-sm font-black uppercase tracking-[0.5em] bg-black text-white hover:bg-zinc-900 disabled:opacity-50 border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Sincronizando no Arsenal...' : 'Publicar no Catálogo'}
-        </Button>
-      </form>
+        {/* RODAPÉ DO FORMULÁRIO BRUTALISTA COM BOTAO DE SUBMIT */}
+        <div className="p-8 border-t border-black/10 bg-white">
+          <Button 
+            type="submit"
+            form="product-form"
+            variant="brutalist" 
+            className="w-full py-7 text-xs font-black uppercase tracking-[0.4em] bg-black text-white hover:bg-zinc-900 disabled:opacity-50 border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <span className="animate-pulse">Sincronizando no Arsenal...</span>
+            ) : (
+              <>
+                <ShieldCheck size={15} />
+                Publicar no Catálogo
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* COLUNA DIREITA: A VITRINE (LIVE PREVIEW PERSISTENTE & ETIQUETADOR COM QR CODE) */}
+      <div className="w-full lg:w-[45%] bg-[#f4f4f5] border border-black/10 p-8 flex flex-col justify-between shadow-[4px_4px_0px_rgba(0,0,0,0.05)] overflow-y-auto max-h-[calc(100vh-140px)] select-none">
+        <div className="space-y-6">
+          
+          {/* ABAS DO PREVIEW */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-black/5 pb-4">
+            <span className="text-[10px] font-black tracking-[0.2em] text-zinc-400 uppercase">VITRINE CONCEITUAL</span>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setPreviewMode('vitrine')}
+                className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest border transition-all ${
+                  previewMode === 'vitrine' ? 'bg-black text-white border-black' : 'bg-white text-black border-zinc-200 hover:border-black'
+                }`}
+              >
+                Card
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('detalhes')}
+                className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest border transition-all ${
+                  previewMode === 'detalhes' ? 'bg-black text-white border-black' : 'bg-white text-black border-zinc-200 hover:border-black'
+                }`}
+              >
+                PDP
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('seo')}
+                className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest border transition-all ${
+                  previewMode === 'seo' ? 'bg-black text-white border-black' : 'bg-white text-black border-zinc-200 hover:border-black'
+                }`}
+              >
+                Google
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('etiqueta')}
+                className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest border transition-all flex items-center gap-1 ${
+                  previewMode === 'etiqueta' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-black border-zinc-200 hover:border-black'
+                }`}
+              >
+                <Zap size={9} /> Etiqueta
+              </button>
+            </div>
+          </div>
+
+          {/* RENDERIZADOR DOS PREVIEWS */}
+          <div className="flex justify-center items-center py-6 min-h-[420px]">
+            <AnimatePresence mode="wait">
+              
+              {/* CARD PREVIEW */}
+              {previewMode === 'vitrine' && (
+                <motion.div
+                  key="vitrine-prev"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full max-w-[280px] bg-white border-2 border-black p-4 shadow-[6px_6px_0px_rgba(0,0,0,1)] flex flex-col gap-3"
+                >
+                  <div className="aspect-[3/4] bg-zinc-150 border border-black overflow-hidden relative">
+                    <img 
+                      src={watchedImageUrl} 
+                      alt="Capa Preview" 
+                      className="w-full h-full object-cover grayscale contrast-[1.1]"
+                    />
+                    {watchedCategory && (
+                      <span className="absolute top-2 left-2 bg-black text-white text-[7px] font-black px-2 py-0.5 tracking-widest uppercase">
+                        {watchedCategory}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <h4 className="text-xs font-black tracking-tight uppercase leading-none truncate">
+                      {watchedName || 'DESIGN DESIGNATION'}
+                    </h4>
+                    <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">
+                      CROMO: {watchedColor || 'COR'}
+                    </p>
+                    <div className="flex justify-between items-end mt-2 pt-2 border-t border-zinc-100">
+                      <span className="text-[11px] font-black uppercase tracking-wider">
+                        {watchedPrice ? `R$ ${parseFloat(watchedPrice.toString()).toFixed(2)}` : 'R$ 0.00'}
+                      </span>
+                      <span className="text-[7px] font-mono text-zinc-400">HOOKE</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* PDP PREVIEW */}
+              {previewMode === 'detalhes' && (
+                <motion.div
+                  key="detalhes-prev"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full bg-white border border-black p-6 flex flex-col md:flex-row gap-5 max-w-[520px] shadow-[4px_4px_0px_rgba(0,0,0,0.1)]"
+                >
+                  <div className="w-full md:w-1/2 aspect-[3/4] bg-zinc-100 border border-zinc-200 overflow-hidden">
+                    <img 
+                      src={watchedImageUrl} 
+                      alt="Capa PDP Preview" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  <div className="w-full md:w-1/2 flex flex-col justify-between gap-4">
+                    <div className="space-y-3.5">
+                      <div className="space-y-0.5">
+                        <p className="text-[7px] font-mono font-bold text-zinc-400 uppercase tracking-widest leading-none">
+                          {watchedDepartment} // {watchedCategory || 'Coleção'}
+                        </p>
+                        <h3 className="text-sm font-black uppercase tracking-tight leading-tight">
+                          {watchedName || 'EQUIPAMENTO HOOKE'}
+                        </h3>
+                        <p className="text-[9px] font-mono text-zinc-500">
+                          CROMO: {watchedColor || 'Não definido'}
+                        </p>
+                      </div>
+
+                      <div className="text-xs font-black">
+                        {watchedPrice ? `R$ ${parseFloat(watchedPrice.toString()).toFixed(2)}` : 'R$ 0.00'}
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Tamanho Selecionado</p>
+                        <div className="flex flex-wrap gap-1">
+                          {watchedSizes.length > 0 ? watchedSizes.map(s => (
+                            <span key={s} className="w-6 h-6 text-[8px] font-mono font-black flex items-center justify-center border border-black bg-white">
+                              {s}
+                            </span>
+                          )) : (
+                            <span className="text-[8px] font-mono text-red-500 font-bold uppercase tracking-widest">Nenhum</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-0.5">
+                        <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Editorial</p>
+                        <p className="text-[8px] font-mono text-zinc-500 leading-normal line-clamp-4">
+                          {watchedDescription || 'Aguardando preenchimento da narrativa conceitual em português brasileiro no painel.'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <button type="button" disabled className="w-full py-2.5 bg-black text-white text-[8px] font-black uppercase tracking-widest border border-black mt-2">
+                      Adicionar à Sacola
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* GOOGLE PREVIEW */}
+              {previewMode === 'seo' && (
+                <motion.div
+                  key="seo-prev"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full max-w-[420px] bg-white border border-zinc-200 p-5 flex flex-col gap-1 font-sans shadow-[2px_2px_10px_rgba(0,0,0,0.03)]"
+                >
+                  <div className="text-[10px] text-zinc-500 font-mono tracking-widest truncate leading-none">
+                    https://usehooke.com.br/produto/{computedSku.toLowerCase() || 'slug-do-equipamento'}
+                  </div>
+                  <h3 className="text-sm text-[#1a0dab] font-sans font-medium hover:underline leading-tight mt-0.5">
+                    {watchedName || 'Nova Peça'} • Arsenal Hooke Elite
+                  </h3>
+                  <p className="text-[11px] text-[#4d5156] font-normal leading-normal mt-0.5">
+                    {watchedMetaDesc || 'Aguardando preenchimento do resumo editorial de SEO no painel. Otimize o CTR visualizando o comportamento orgânico da busca em tempo real.'}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* ETIQUETA ELITE BRUTALISTA COM QR CODE */}
+              {previewMode === 'etiqueta' && (
+                <motion.div
+                  key="etiqueta-prev"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full max-w-[280px] bg-white border-2 border-black p-6 shadow-[8px_8px_0px_rgba(0,0,0,1)] flex flex-col gap-5 items-center print:border-none print:shadow-none print:p-0"
+                  id="printable-tag"
+                >
+                  {/* Logotipo da Hooke */}
+                  <div className="text-center space-y-0.5">
+                    <h3 className="text-xs font-black tracking-[0.45em] uppercase leading-none">HOOKE</h3>
+                    <p className="text-[6.5px] font-mono tracking-widest text-zinc-400 font-bold">ATELIER CONCEITUAL</p>
+                  </div>
+
+                  {/* Divisor brutalista */}
+                  <div className="w-full border-t border-dashed border-black" />
+
+                  {/* Detalhes do Produto */}
+                  <div className="w-full text-center space-y-0.5">
+                    <p className="text-[8.5px] font-black uppercase tracking-wider truncate px-1">{watchedName || 'Nome do Anúncio'}</p>
+                    <p className="text-[9.5px] font-mono font-bold tracking-widest text-zinc-500">{computedSku || 'AGUARDANDO-SKU'}</p>
+                    <p className="text-sm font-black mt-1.5">{watchedPrice ? `R$ ${parseFloat(watchedPrice.toString()).toFixed(2)}` : 'R$ 0.00'}</p>
+                  </div>
+
+                  {/* QR Code Real Gerado */}
+                  <div className="p-2 border-2 border-black bg-white flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.15)]">
+                    {computedSku ? (
+                      <QRCodeSVG value={computedSku} size={110} level="H" includeMargin={false} />
+                    ) : (
+                      <div className="w-[110px] h-[110px] bg-zinc-50 flex items-center justify-center text-center p-2 text-[7.5px] font-mono uppercase text-zinc-400">
+                        Preencha ID e Cor
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer de Instrução */}
+                  <div className="text-center space-y-0.5 pt-1">
+                    <p className="text-[6.5px] font-mono font-bold uppercase tracking-widest text-black flex items-center justify-center gap-1 animate-pulse">
+                      <Zap size={7} className="fill-black" /> Leitura Imediata no PDV
+                    </p>
+                    <p className="text-[5.5px] text-zinc-400 uppercase tracking-widest leading-none">Aponte a câmera do celular no balcão</p>
+                  </div>
+
+                  {/* Botão de Impressão */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!computedSku) {
+                        toast.error("Preencha o Model ID e a Cor para gerar o SKU antes de imprimir.");
+                        return;
+                      }
+                      window.print();
+                    }}
+                    className="w-full py-2 bg-black hover:bg-zinc-800 text-white text-[9px] font-black uppercase tracking-widest border border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-px active:translate-y-px transition-all print:hidden"
+                  >
+                    Imprimir Etiqueta
+                  </button>
+                </motion.div>
+              )}
+
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* BOX DE DIRETRIZES PENDENTES */}
+        <div className="bg-white p-5 border border-black/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">MÉTRICAS DE QUALIDADE PENDENTES ({issues.length})</h4>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {issues.length > 0 ? issues.slice(0, 3).map((issue, idx) => (
+                <span key={idx} className="text-[8px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 uppercase tracking-wide">
+                  ⚠ {issue}
+                </span>
+              )) : (
+                <span className="text-[8px] font-mono font-bold bg-green-50 text-green-800 border border-green-200 px-2 py-0.5 uppercase tracking-wide flex items-center gap-1">
+                  ✓ PADRÃO ELITE CONCLUÍDO
+                </span>
+              )}
+              {issues.length > 3 && (
+                <span className="text-[8px] font-mono font-bold bg-zinc-100 text-zinc-500 border border-zinc-200 px-2 py-0.5 uppercase">
+                  +{issues.length - 3} itens
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div className="text-right">
+            <span className="text-[9px] font-mono font-bold uppercase text-zinc-400 block tracking-widest">Nível de Conversão</span>
+            <span className={`text-sm font-black font-mono ${qualityScore === 100 ? 'text-emerald-500' : 'text-black'}`}>
+              {qualityScore}%
+            </span>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   );
 });
