@@ -29,6 +29,9 @@ export const productSchema = z.object({
     metaDescription: z.string().optional(),
   }).optional(),
   stock: z.record(z.string(), z.number()).optional(),
+  skus: z.record(z.string(), z.string()).optional(),
+  modelId: z.string().optional(),
+  color: z.string().optional(),
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;

@@ -1,4 +1,4 @@
-import { getProductBySlugAdmin } from "@/lib/productServiceAdmin";
+import { getProductBySlugAdmin, getProductsByModelIdAdmin } from "@/lib/productServiceAdmin";
 import { notFound } from "next/navigation";
 import SsenseProductView from "@/components/shop/SsenseProductView";
 import React, { Suspense } from "react";
@@ -59,6 +59,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProductBySlugAdmin(slug);
 
   if (!product) notFound();
+
+  // Buscar variantes de cores baseadas no modelId
+  let variants: any[] = [];
+  if (product.modelId) {
+    variants = await getProductsByModelIdAdmin(product.modelId);
+  }
 
   // Gemini-First: Estruturação Semântica de Alta Densidade (JSON-LD Schema.org)
   const productUrl = `https://www.usehooke.com.br/produto/${slug}`;
@@ -193,7 +199,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Suspense fallback={<ProductSkeleton />}>
-        <SsenseProductView product={product} />
+        <SsenseProductView product={product} variants={variants} />
       </Suspense>
     </>
   );

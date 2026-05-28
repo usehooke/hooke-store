@@ -29,6 +29,7 @@ const prepareImage = (src: string) => {
 
 interface SsenseProductViewProps {
   product: Product;
+  variants?: Product[];
 }
 
 // Tabela de medidas para o guia contextual
@@ -39,7 +40,7 @@ const SIZE_GUIDE: Record<string, { peito: string; comprimento: string; ombro: st
   'GG': { peito: '116cm', comprimento: '74cm', ombro: '48cm' },
 };
 
-const SsenseProductView = ({ product }: SsenseProductViewProps) => {
+const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -204,6 +205,32 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
             </div>
           </div>
 
+          {/* SELEÇÃO DE VARIANTES DE COR (MOBILE) */}
+          {variants && variants.length > 1 && (
+            <div className="space-y-3">
+              <p className="text-[11px] font-black tracking-[0.2em] text-black uppercase">Cores Disponíveis</p>
+              <div className="flex flex-wrap gap-2">
+                {variants.map((v) => {
+                  const isActive = v.id === product.id;
+                  const variantColor = v.color || v.name.split(' ').pop() || 'Cor';
+                  return (
+                    <a
+                      key={v.id}
+                      href={`/produto/${v.slug}`}
+                      className={`px-4 py-2.5 text-[10px] font-black border-2 transition-all uppercase tracking-wider ${
+                        isActive
+                          ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                          : 'bg-white text-black border-black hover:bg-zinc-100'
+                      }`}
+                    >
+                      {variantColor}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* SELEÇÃO DE TAMANHO ONE-TAP */}
           <div ref={stickyRef}>
             <div className="flex justify-between items-center mb-3">
@@ -218,19 +245,25 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
             </div>
 
             <div className="grid grid-cols-4 gap-2">
-              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`h-14 text-sm font-black border-2 transition-all uppercase ${
-                    selectedSize === size
-                      ? 'bg-black text-white border-black'
-                      : 'bg-white text-black border-black hover:bg-zinc-50'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
+              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
+                const isOutOfStock = product.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
+                return (
+                  <button
+                    key={size}
+                    onClick={() => !isOutOfStock && setSelectedSize(size)}
+                    disabled={isOutOfStock}
+                    className={`h-14 text-sm font-black border-2 transition-all uppercase ${
+                      isOutOfStock
+                        ? 'bg-zinc-100 text-zinc-400 border-zinc-200 line-through cursor-not-allowed shadow-none'
+                        : selectedSize === size
+                          ? 'bg-black text-white border-black'
+                          : 'bg-white text-black border-black hover:bg-zinc-50'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Guia de Medidas Contextual (dica do fundador) */}
@@ -426,6 +459,32 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               </div>
             </div>
 
+            {/* SELEÇÃO DE VARIANTES DE COR (DESKTOP) */}
+            {variants && variants.length > 1 && (
+              <div className="space-y-3 mb-4">
+                <p className="text-[10px] font-black tracking-[0.2em] uppercase">Cores Disponíveis</p>
+                <div className="flex flex-wrap gap-2">
+                  {variants.map((v) => {
+                    const isActive = v.id === product.id;
+                    const variantColor = v.color || v.name.split(' ').pop() || 'Cor';
+                    return (
+                      <a
+                        key={v.id}
+                        href={`/produto/${v.slug}`}
+                        className={`px-3 py-2 text-[9px] font-black border-2 transition-all uppercase tracking-wider ${
+                          isActive
+                            ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white text-black border-black hover:bg-zinc-100'
+                        }`}
+                      >
+                        {variantColor}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Tamanho ONE-TAP */}
             <div>
               <div className="flex justify-between items-center mb-3">
@@ -438,17 +497,25 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
                 </button>
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`h-12 text-[11px] font-black border-2 transition-all uppercase ${
-                      selectedSize === size ? 'bg-black text-white border-black' : 'bg-white text-black border-black hover:bg-zinc-50'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
+                  const isOutOfStock = product.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => !isOutOfStock && setSelectedSize(size)}
+                      disabled={isOutOfStock}
+                      className={`h-12 text-[11px] font-black border-2 transition-all uppercase ${
+                        isOutOfStock
+                          ? 'bg-zinc-100 text-zinc-400 border-zinc-200 line-through cursor-not-allowed shadow-none'
+                          : selectedSize === size
+                            ? 'bg-black text-white border-black'
+                            : 'bg-white text-black border-black hover:bg-zinc-50'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  );
+                })}
               </div>
               <p className="text-[9px] text-zinc-400 mt-2">Fernando (1,82m · 82kg) veste <strong className="text-black">M</strong>.</p>
 
@@ -550,15 +617,25 @@ const SsenseProductView = ({ product }: SsenseProductViewProps) => {
               <p className="text-[11px] font-black text-black">{formatter.format(product.price)}</p>
             </div>
             <div className="flex gap-2">
-              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`w-10 h-10 text-[10px] font-black border-2 border-black uppercase transition-all ${selectedSize === size ? 'bg-black text-white' : 'bg-white text-black'}`}
-                >
-                  {size}
-                </button>
-              ))}
+              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
+                const isOutOfStock = product.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
+                return (
+                  <button
+                    key={size}
+                    onClick={() => !isOutOfStock && setSelectedSize(size)}
+                    disabled={isOutOfStock}
+                    className={`w-10 h-10 text-[10px] font-black border-2 border-black uppercase transition-all ${
+                      isOutOfStock
+                        ? 'bg-zinc-100 text-zinc-400 border-zinc-250 line-through cursor-not-allowed shadow-none'
+                        : selectedSize === size
+                          ? 'bg-black text-white'
+                          : 'bg-white text-black'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
             </div>
             <button
               onClick={handleAddToCart}

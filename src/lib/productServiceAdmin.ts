@@ -14,11 +14,35 @@ const mapToProduct = (docId: string, data: any): Product | null => {
             ...data 
         };
         const validation = ProductSchema.safeParse(rawBody);
-        return validation.success ? (validation.data as Product) : null;
+        if (validation.success) {
+            return validation.data as Product;
+        } else {
+            console.warn(`⚠️ [ProductServiceAdmin] Produto ${docId} falhou na validação estrita, usando fallback parcial:`, validation.error.format());
+            return rawBody as unknown as Product;
+        }
     } catch (err) {
+        console.error(`🔥 [ProductServiceAdmin] Erro extremo ao mapear produto ${docId}:`, err);
         return null;
     }
 };
+
+export async function getProductsByModelIdAdmin(modelId: string): Promise<Product[]> {
+    if (!adminDb || !modelId) return [];
+    try {
+        const query = adminDb.collection(COLLECTION_NAME).where("modelId", "==", modelId);
+        const snapshot = await query.get();
+        const products: Product[] = [];
+        snapshot.forEach((doc: any) => {
+            const data = doc.data();
+            const p = mapToProduct(doc.id, data);
+            if (data.isActive !== false && p) products.push(p);
+        });
+        return products;
+    } catch (error) {
+        console.error("⚠️ [getProductsByModelIdAdmin] Falha:", error);
+        return [];
+    }
+}
 
 export async function getProductsAdmin(category?: string): Promise<Product[]> {
     if (!adminDb) return [];

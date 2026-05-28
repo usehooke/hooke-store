@@ -13,6 +13,27 @@ import { Undo2, Sparkles, AlertTriangle, CheckCircle2, ShieldCheck, Plus, Trash2
 import { Department, Size } from '@/types/enums';
 import { saveProduct } from '@/app/admin/actions/products';
 
+// Helper para normalização e conversão de cores para sigla
+function getColorCode(color: string): string {
+  const normalized = color.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  if (normalized.includes("preta") || normalized.includes("preto")) return "PTO";
+  if (normalized.includes("branca") || normalized.includes("branco")) return "BRC";
+  if (normalized.includes("cinza")) return "CNZ";
+  if (normalized.includes("salvia") || normalized.includes("verde")) return "VDE";
+  if (normalized.includes("azul")) return "AZL";
+  if (normalized.includes("vermelha") || normalized.includes("vermelho")) return "VMH";
+  if (normalized.includes("amarela") || normalized.includes("amarelo")) return "AML";
+  if (normalized.includes("rosa")) return "ROS";
+  if (normalized.includes("bege")) return "BGE";
+  if (normalized.includes("marrom")) return "MRM";
+  if (normalized.includes("kombi")) return "KMB";
+  if (normalized.includes("fusca")) return "FSC";
+  
+  const noVowels = normalized.replace(/[aeiou]/g, "").toUpperCase();
+  if (noVowels.length >= 3) return noVowels.slice(0, 3);
+  return normalized.slice(0, 3).toUpperCase().padEnd(3, 'X');
+}
+
 // Valores válidos do ProductCategorySchema (lib/schemas.ts)
 const VALID_CATEGORIES = ["Kits", "Oversized", "Regatas", "Vintage", "Lifestyle", "Conjuntos", "Camisetas", "Cropped", "Top"] as const;
 const SIZES_MASC = [Size.P, Size.M, Size.G, Size.GG, Size.XG, Size.G1, Size.G2];
@@ -58,7 +79,11 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       seo: {
         altText: '',
         metaDescription: ''
-      }
+      },
+      modelId: '',
+      color: '',
+      stock: {},
+      skus: {}
     }
   });
 
@@ -171,14 +196,14 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
     const cleanCategory = category.toLowerCase();
     if (cleanCategory.includes('oversized') || cleanCategory.includes('camiseta')) {
-      refinedDesc = `Camiseta modelagem Boxy estruturada em algodão premium 260g (heavyweight), proporcionando caimento impecável e estruturado. Possui acabamento peletizado soft-touch de toque aveludado, gola canelada de 3cm que mantém a forma original e etiqueta Woven minimalista tecida em alta definição na barra. Costuras duplas reforçadas reforçam a durabilidade e estilo industrial minimalista.`;
-      refinedMeta = `Compre a ${name} Hooke. Camiseta oversized boxy em algodão premium heavyweight 260g. Caimento estruturado, toque soft e etiqueta elite.`;
+      refinedDesc = `Camiseta de caimento estruturado e amplo desenvolvida em algodão nobre de gramatura robusta de 260g, garantindo conforto térmico ideal e caimento impecável. Possui gola encorpada de 3cm de costuras reforçadas que não deforma com o uso e etiqueta em alta definição aplicada na barra como assinatura visual. Uma peça essencial de apelo minimalista e máxima longevidade.`;
+      refinedMeta = `Compre a ${name} Hooke. Camiseta de algodão premium de alta gramatura e caimento impecável. Conforto e sofisticação minimalista.`;
     } else if (cleanCategory.includes('regata')) {
-      refinedDesc = `Regata esportiva de alta gramatura Hooke Elite, confeccionada em blend nobre de algodão premium e elastano, promovendo elasticidade, respirabilidade e resistência superiores. Cavas perfeitamente delineadas com acabamento em viés confortável, ideais para treinos pesados ou produções casuais urbanas. Logo em micro-tom termocolante de alta fixação.`;
-      refinedMeta = `Regata ${name} Hooke: Modelagem atlética premium com cavas anatômicas e algodão elastano de alto padrão. Perfeita para treino e rua.`;
+      refinedDesc = `Regata desenvolvida em malha de algodão premium com toque aveludado e caimento anatômico perfeito. Possui costuras duplas e acabamento em viés de alta qualidade para máximo conforto durante o uso. Apresenta assinatura sutil e design contemporâneo focado na alta durabilidade e estilo minimalista elegante.`;
+      refinedMeta = `Compre a ${name} Hooke. Regata premium de caimento anatômico e tecido extremamente macio. Durabilidade e elegância no dia a dia.`;
     } else {
-      refinedDesc = `Equipamento de elite do Arsenal Hooke, desenvolvido com modelagem ergonômica avançada e tecido nobre de alta gramatura. Acabamento peletizado premium com toque aveludado e costuras reforçadas em viés de ombro a ombro. Inclui etiqueta interna tecida (Woven label) de alta definição e design minimalista contemporâneo focado na longevidade urbana.`;
-      refinedMeta = `Equipamento Premium Hooke: ${name}. Tecido de alta gramatura com toque extra soft, modelagem estruturada e acabamento Elite.`;
+      refinedDesc = `Peça exclusiva da coleção Hooke, produzida a partir de fibras nobres selecionadas de algodão com toque de alto padrão. O design apresenta linhas limpas e estrutura contemporânea com acabamentos internos e costuras reforçadas em viés. Uma expressão pura de sofisticação essencial que valoriza o caimento natural no corpo.`;
+      refinedMeta = `Equipamento Premium Hooke: ${name}. Tecido nobre de caimento impecável, toque suave e acabamento de altíssimo nível.`;
     }
 
     setValue('description', refinedDesc, { shouldDirty: true });
@@ -239,17 +264,63 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
   const handleFormSubmit: SubmitHandler<any> = async (data) => {
     const productData = data as ProductSchema;
-    if (externalOnSubmit) {
-      await (externalOnSubmit as any)(productData);
-      return;
+    
+    // Normalização e geração inteligente do SKU
+    const colorVal = data.color || '';
+    const modelIdVal = (data.modelId || '').trim().toUpperCase();
+    
+    let generatedId = data.id;
+    let generatedSlug = data.slug;
+    
+    if (modelIdVal && colorVal) {
+      const colorSigla = getColorCode(colorVal);
+      generatedId = `${modelIdVal}-${colorSigla}`;
+      
+      if (!generatedSlug) {
+        generatedSlug = generatedId.toLowerCase();
+      }
+    } else {
+      generatedId = data.id || data.slug || `prod-${Date.now()}`;
+      if (!generatedSlug) {
+        generatedSlug = generatedId.toLowerCase();
+      }
+    }
+    
+    // Autogerar SKUs por tamanho
+    const generatedSkus: Record<string, string> = {};
+    if (modelIdVal && colorVal && data.sizes && data.sizes.length > 0) {
+      const colorSigla = getColorCode(colorVal);
+      data.sizes.forEach((size: string) => {
+        generatedSkus[size] = `${modelIdVal}-${colorSigla}-${size}`;
+      });
+    }
+
+    // Filtrar estoque órfão
+    const filteredStock: Record<string, number> = {};
+    let totalStock = 0;
+    if (data.sizes && data.stock) {
+      data.sizes.forEach((size: string) => {
+        const qty = data.stock[size] ?? 0;
+        filteredStock[size] = qty;
+        totalStock += qty;
+      });
     }
 
     try {
       const finalData = {
         ...data,
-        id: data.id || data.slug || `prod-${Date.now()}`,
+        id: generatedId,
+        slug: generatedSlug,
+        skus: generatedSkus,
+        stock: filteredStock,
+        totalStock: totalStock,
         isActive: true,
       };
+
+      if (externalOnSubmit) {
+        await (externalOnSubmit as any)(finalData);
+        return;
+      }
 
       // 2. Tenta salvar via Server Action (Revalidação Automática e Resiliente na Vercel)
       const result = await saveProduct(finalData, 'admin@hooke.com');
@@ -388,6 +459,32 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
         {/* GRID PRINCIPAL */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
+          {/* ID DO MODELO */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">ID do Modelo (Model ID)</label>
+            </div>
+            <Input 
+              {...register('modelId')} 
+              variant="brutalist" 
+              placeholder="Ex: CAM-VINT-FUSCA"
+              className={`${errors.modelId ? 'border-red-500' : ''}`}
+            />
+            {errors.modelId && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.modelId.message}</p>}
+          </div>
+
+          {/* COR */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Cor do Anúncio</label>
+            <Input 
+              {...register('color')} 
+              variant="brutalist" 
+              placeholder="Ex: Preta"
+              className={`${errors.color ? 'border-red-500' : ''}`}
+            />
+            {errors.color && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.color.message}</p>}
+          </div>
+          
           {/* NOME */}
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Designação (Nome)</label>
@@ -487,6 +584,58 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
               <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest">⚠ Selecione ao menos 1 tamanho para publicar</p>
             )}
           </div>
+
+          {/* GERENCIAMENTO DE ESTOQUE GRANULAR (OTIMIZADO PARA TOUCH) */}
+          {(watch('sizes') || []).length > 0 && (
+            <div className="col-span-1 md:col-span-2 space-y-4 p-5 border-2 border-black bg-zinc-50 shadow-[4px_4px_0px_rgba(0,0,0,1)] animate-fadeIn">
+              <div>
+                <h3 className="text-[10px] font-black tracking-widest uppercase">Estoque por Variante</h3>
+                <p className="text-[8px] uppercase font-bold text-zinc-400 tracking-wider">Ajuste o estoque numérico de cada tamanho (Confortável para dedão)</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {(watch('sizes') || []).map((size) => {
+                  const currentStock = watch(`stock.${size}`) ?? 0;
+                  return (
+                    <div key={size} className="flex items-center justify-between border-2 border-black bg-white p-3 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                      <span className="text-xs font-black w-8 text-center">{size}</span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const val = Math.max(0, currentStock - 1);
+                            setValue(`stock.${size}`, val, { shouldDirty: true });
+                          }}
+                          className="w-12 h-12 flex items-center justify-center border-2 border-black bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 text-base font-black transition-all shadow-[1px_1px_0px_rgba(0,0,0,1)] select-none"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          value={currentStock}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            setValue(`stock.${size}`, Math.max(0, val), { shouldDirty: true });
+                          }}
+                          className="w-16 h-12 border-2 border-black text-center font-mono text-xs font-bold focus:outline-none bg-white text-black"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const val = currentStock + 1;
+                            setValue(`stock.${size}`, val, { shouldDirty: true });
+                          }}
+                          className="w-12 h-12 flex items-center justify-center border-2 border-black bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 text-base font-black transition-all shadow-[1px_1px_0px_rgba(0,0,0,1)] select-none"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* SLUG */}
           <div className="space-y-2">
