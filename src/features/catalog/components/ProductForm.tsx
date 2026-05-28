@@ -152,6 +152,11 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
         altText: '',
         metaDescription: ''
       },
+      details: {
+        fabric: '',
+        model: '',
+        wash: 'Padrão Hooke'
+      },
       modelId: '',
       color: '',
       stock: {},
@@ -196,23 +201,33 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     }
   }, [watchedModelId, watchedColor, setValue, isIdManuallyEdited]);
 
-  // Auto-sincroniza Alt Text e Meta Description de forma inteligente e reativa se contiver termos genéricos/defasados
+  // Auto-sincroniza Alt Text, Meta Description, Tecido e Corte de forma inteligente e reativa se contiver termos genéricos/defasados
   useEffect(() => {
     if (watchedName) {
       setValue('seo.altText', watchedName, { shouldDirty: true });
       
       const currentMeta = getValues('seo.metaDescription') || '';
       const cat = (watchedCategory || '').toLowerCase();
-      let generatedMeta = `Equipamento premium Hooke: ${watchedName}. Design de alto padrão`;
+      const currentFabric = getValues('details.fabric') || '';
+      const currentModel = getValues('details.model') || '';
       
-      if (cat.includes('conjunto') || watchedName.toLowerCase().includes('conjunto')) {
+      let generatedMeta = `Equipamento premium Hooke: ${watchedName}. Design de alto padrão`;
+      let suggestedFabric = '';
+      let suggestedModel = '';
+      
+      const nameLower = watchedName.toLowerCase();
+      if (cat.includes('conjunto') || nameLower.includes('conjunto')) {
         generatedMeta = `Conjunto exclusivo Hooke: ${watchedName}. Modelagem refinada de caimento impecável e toque extremamente sofisticado no corpo.`;
-      } else if (cat.includes('camiseta') || cat.includes('oversized') || watchedName.toLowerCase().includes('camiseta')) {
+        suggestedFabric = 'Viscose nobre de alta gramatura com toque frio';
+        suggestedModel = 'Relaxed Elegant Fit';
+      } else if (cat.includes('camiseta') || cat.includes('oversized') || nameLower.includes('camiseta')) {
         generatedMeta = `Camiseta premium Hooke: ${watchedName}. Algodão nobre de alta gramatura com caimento estruturado perfeito e longevidade superior.`;
-      } else if (cat.includes('regata') || watchedName.toLowerCase().includes('regata')) {
+        suggestedFabric = 'Algodão Premium 260g (Heavyweight)';
+        suggestedModel = 'Boxy Oversized Fit';
+      } else if (cat.includes('regata') || nameLower.includes('regata')) {
         generatedMeta = `Regata nobre Hooke: ${watchedName}. Toque macio de alta durabilidade e caimento anatômico elegante para o dia a dia.`;
-      } else {
-        generatedMeta = `Equipamento exclusivo Hooke: ${watchedName}. Produzido com fibras nobres selecionadas, acabamento de alto padrão e caimento perfeito.`;
+        suggestedFabric = 'Algodão Penteado Nobre Fio 30.1';
+        suggestedModel = 'Anatomic Fit';
       }
 
       // Detecção de divergências de termos genéricos (se contiver Pima, Classic Navy, etc. mas o nome for outro)
@@ -226,6 +241,25 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
       if (hasMismatchedTerms) {
         setValue('seo.metaDescription', generatedMeta, { shouldDirty: true });
+      }
+
+      // Se o tecido ou corte estiverem vazios ou contiverem dados de outros tecidos
+      const hasMismatchedFabric = 
+        currentFabric.trim() === '' || 
+        currentFabric === '100% Algodão Pima Peruano' ||
+        (cat.includes('conjunto') && currentFabric.toLowerCase().includes('algodão'));
+        
+      if (hasMismatchedFabric && suggestedFabric) {
+        setValue('details.fabric', suggestedFabric, { shouldDirty: true });
+      }
+
+      const hasMismatchedModel = 
+        currentModel.trim() === '' || 
+        currentModel === 'Structured Fit' ||
+        (cat.includes('conjunto') && currentModel.toLowerCase().includes('structured'));
+
+      if (hasMismatchedModel && suggestedModel) {
+        setValue('details.model', suggestedModel, { shouldDirty: true });
       }
     }
   }, [watchedName, watchedCategory, setValue]);
@@ -748,6 +782,31 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                       {...register('slug')}
                       className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-zinc-50"
                     />
+                  </div>
+
+                  {/* DETALHES DE TECIDO E MODELAGEM */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    {/* TECIDO / COMPOSIÇÃO */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tecido / Composição</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: Viscose nobre de alta gramatura" 
+                        {...register('details.fabric')}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-sans text-xs focus:outline-none transition-colors uppercase tracking-wider font-bold"
+                      />
+                    </div>
+
+                    {/* CORTE / MODELAGEM */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Corte / Modelagem</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: Relaxed Elegant Fit" 
+                        {...register('details.model')}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-sans text-xs focus:outline-none transition-colors uppercase tracking-wider font-bold"
+                      />
+                    </div>
                   </div>
 
                   <div className="pt-4 flex justify-end">
