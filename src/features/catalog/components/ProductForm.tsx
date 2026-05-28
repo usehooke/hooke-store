@@ -74,57 +74,50 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     if (!file) return;
 
     setIsUploading(true);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
 
-    reader.onloadend = async () => {
-      const base64data = reader.result as string;
+    try {
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dnzplmjfo";
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "rsjrcxrg";
 
-      try {
-        const res = await fetch("/api/upload/cloudinary", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ image: base64data }),
-        });
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
 
-        if (!res.ok) {
-          throw new Error("Erro na requisição ao servidor de upload.");
-        }
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
 
-        const result = await res.json();
-        if (result.error) {
-          throw new Error(result.error);
-        }
-
-        if (result.url) {
-          const currentImages = getValues("images") || [];
-          const updatedImages = [...currentImages, result.url];
-          setValue("images", updatedImages, { shouldDirty: true });
-
-          // Se for a primeira imagem, define também como capa (imageUrl)
-          if (updatedImages.length === 1) {
-            setValue("imageUrl", result.url, { shouldDirty: true });
-          }
-
-          toast.success("Imagem enviada para o Cloudinary e adicionada à galeria!");
-        }
-      } catch (err: any) {
-        console.error("Erro no upload para o Cloudinary:", err);
-        toast.error(err.message || "Erro desconhecido ao carregar foto.");
-      } finally {
-        setIsUploading(false);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+      if (!res.ok) {
+        throw new Error("Falha ao se comunicar com o servidor do Cloudinary.");
       }
-    };
 
-    reader.onerror = () => {
+      const result = await res.json();
+      if (result.error) {
+        throw new Error(result.error.message || "Erro no upload do Cloudinary.");
+      }
+
+      if (result.secure_url) {
+        const currentImages = getValues("images") || [];
+        const updatedImages = [...currentImages, result.secure_url];
+        setValue("images", updatedImages, { shouldDirty: true });
+
+        // Se for a primeira imagem, define também como capa (imageUrl)
+        if (updatedImages.length === 1) {
+          setValue("imageUrl", result.secure_url, { shouldDirty: true });
+        }
+
+        toast.success("Imagem enviada com sucesso para o Cloudinary e adicionada à galeria!");
+      }
+    } catch (err: any) {
+      console.error("Erro no upload para o Cloudinary:", err);
+      toast.error(err.message || "Erro ao carregar foto.");
+    } finally {
       setIsUploading(false);
-      toast.error("Erro ao ler o arquivo selecionado.");
-    };
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
   
   // Controle de Abas Operacionais (Painel Atelier)
@@ -202,6 +195,40 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       }
     }
   }, [watchedModelId, watchedColor, setValue, isIdManuallyEdited]);
+
+  // Auto-sincroniza Alt Text e Meta Description de forma inteligente e reativa se contiver termos genéricos/defasados
+  useEffect(() => {
+    if (watchedName) {
+      setValue('seo.altText', watchedName, { shouldDirty: true });
+      
+      const currentMeta = getValues('seo.metaDescription') || '';
+      const cat = (watchedCategory || '').toLowerCase();
+      let generatedMeta = `Equipamento premium Hooke: ${watchedName}. Design de alto padrão`;
+      
+      if (cat.includes('conjunto') || watchedName.toLowerCase().includes('conjunto')) {
+        generatedMeta = `Conjunto exclusivo Hooke: ${watchedName}. Modelagem refinada de caimento impecável e toque extremamente sofisticado no corpo.`;
+      } else if (cat.includes('camiseta') || cat.includes('oversized') || watchedName.toLowerCase().includes('camiseta')) {
+        generatedMeta = `Camiseta premium Hooke: ${watchedName}. Algodão nobre de alta gramatura com caimento estruturado perfeito e longevidade superior.`;
+      } else if (cat.includes('regata') || watchedName.toLowerCase().includes('regata')) {
+        generatedMeta = `Regata nobre Hooke: ${watchedName}. Toque macio de alta durabilidade e caimento anatômico elegante para o dia a dia.`;
+      } else {
+        generatedMeta = `Equipamento exclusivo Hooke: ${watchedName}. Produzido com fibras nobres selecionadas, acabamento de alto padrão e caimento perfeito.`;
+      }
+
+      // Detecção de divergências de termos genéricos (se contiver Pima, Classic Navy, etc. mas o nome for outro)
+      const hasMismatchedTerms = 
+        currentMeta.includes('T-Shirt Pima') || 
+        currentMeta.includes('Classic Navy') ||
+        currentMeta.includes('algodão robusto') ||
+        currentMeta.trim() === '' ||
+        (cat.includes('conjunto') && currentMeta.toLowerCase().includes('camiseta')) ||
+        (watchedName && !currentMeta.includes(watchedName.slice(0, 15)));
+
+      if (hasMismatchedTerms) {
+        setValue('seo.metaDescription', generatedMeta, { shouldDirty: true });
+      }
+    }
+  }, [watchedName, watchedCategory, setValue]);
 
   // Auditoria de Qualidade em tempo real (Fórmula Padrão Elite)
   const issues: string[] = [];
@@ -300,14 +327,19 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     let refinedMeta = "";
 
     const cleanCategory = category.toLowerCase();
-    if (cleanCategory.includes('oversized') || cleanCategory.includes('camiseta')) {
+    const cleanName = name.toLowerCase();
+
+    if (cleanCategory.includes('conjunto') || cleanName.includes('conjunto') || cleanName.includes('viscose')) {
+      refinedDesc = `Conjunto de alta costura contemporânea desenvolvido em viscose nobre de alta gramatura, proporcionando caimento fluido impecável, toque frio incomparável e excelente conforto térmico. Composto por peças minimalistas de design atemporal e costuras internas reforçadas em viés, é o equipamento perfeito que combina sofisticação brutalista e máxima usabilidade diária.`;
+      refinedMeta = `Compre o ${name} Hooke. Conjunto contemporâneo em tecido nobre com toque frio e caimento fluido extremamente sofisticado.`;
+    } else if (cleanCategory.includes('oversized') || cleanCategory.includes('camiseta') || cleanName.includes('camiseta')) {
       refinedDesc = `Camiseta de caimento estruturado e amplo desenvolvida em algodão nobre de gramatura robusta de 260g, garantindo conforto térmico ideal e caimento impecável. Possui gola encorpada de 3cm de costuras reforçadas que não deforma com o uso e etiqueta em alta definição aplicada na barra como assinatura visual. Uma peça essencial de apelo minimalista e máxima longevidade.`;
       refinedMeta = `Compre a ${name} Hooke. Camiseta de algodão premium de alta gramatura e caimento impecável. Conforto e sofisticação minimalista.`;
-    } else if (cleanCategory.includes('regata')) {
+    } else if (cleanCategory.includes('regata') || cleanName.includes('regata')) {
       refinedDesc = `Regata desenvolvida em malha de algodão premium com toque aveludado e caimento anatômico perfeito. Possui costuras duplas e acabamento em viés de alta qualidade para máximo conforto durante o uso. Apresenta assinatura sutil e design contemporâneo focado na alta durabilidade e estilo minimalista elegante.`;
       refinedMeta = `Compre a ${name} Hooke. Regata premium de caimento anatômico e tecido extremamente macio. Durabilidade e elegância no dia a dia.`;
     } else {
-      refinedDesc = `Peça exclusiva da coleção Hooke, produzida a partir de fibras nobres selecionadas de algodão com toque de alto padrão. O design apresenta linhas limpas e estrutura contemporânea com acabamentos internos e costuras reforçadas em viés. Uma expressão pura de sofisticação essencial que valoriza o caimento natural no corpo.`;
+      refinedDesc = `Peça exclusiva da coleção Hooke, produzida a partir de fibras nobres selecionadas com toque de alto padrão. O design apresenta linhas limpas e estrutura contemporânea com acabamentos internos e costuras reforçadas em viés. Uma expressão pura de sofisticação essencial que valoriza o caimento natural no corpo.`;
       refinedMeta = `Equipamento Premium Hooke: ${name}. Tecido nobre de caimento impecável, toque suave e acabamento de altíssimo nível.`;
     }
 
