@@ -33,7 +33,12 @@ const mapToProduct = (docId: string, data: DocumentData): Product | null => {
             ...data 
         };
         const validation = ProductSchema.safeParse(rawBody);
-        return validation.success ? (validation.data as Product) : null;
+        if (validation.success) {
+            return validation.data as Product;
+        } else {
+            console.warn(`⚠️ [ProductService] Produto ${docId} falhou na validação estrita, usando fallback parcial:`, validation.error.format());
+            return rawBody as unknown as Product; // Fallback tolerante para não sumir do catálogo público
+        }
     } catch (err) {
         return null;
     }

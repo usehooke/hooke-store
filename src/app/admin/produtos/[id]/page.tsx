@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef, useTransition } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { saveProduct } from '../../actions/products';
+import { saveProduct, deleteProduct } from '../../actions/products';
 import { ProductForm, ProductFormHandle } from '@/features/catalog/components/ProductForm';
 import { MagicDropzone } from '@/features/catalog/components/MagicDropzone';
 import { Button } from '@/components/ui/button';
@@ -56,7 +56,25 @@ export default function EditarProdutoPage() {
   const handleSubmit = async (data: any) => {
     startTransition(async () => {
       try {
-        const result = await saveProduct({ ...data, id });
+        const newId = data.id || id;
+        
+        let result;
+        if (newId !== id) {
+          // Lojista alterou o SKU inteligente (ID do produto)
+          // 1. Salva com o novo ID
+          result = await saveProduct({ ...data, id: newId });
+          if (result.success) {
+            // 2. Apaga o documento com o ID antigo
+            await deleteProduct(id, data.name || "Produto antigo");
+            toast.success('Equipamento recodificado com novo SKU!');
+            router.push(`/admin/produtos/${newId}`);
+            return;
+          }
+        } else {
+          // Salvamento normal (mesmo ID)
+          result = await saveProduct({ ...data, id });
+        }
+        
         if (result.success) {
           toast.success('Equipamento atualizado no arsenal.');
           router.push('/admin/produtos');

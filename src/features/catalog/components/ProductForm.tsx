@@ -121,16 +121,21 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
   const watchedIsHero = watch('isHeroBanner');
   const watchedHeroUrl = watch('heroImageUrl');
 
-  // Geração do SKU Base em Tempo Real para a etiqueta
+  // Geração do SKU Base e Slug em Tempo Real para a etiqueta e formulário (Feedback Reativo)
   const [computedSku, setComputedSku] = useState('');
   useEffect(() => {
     if (watchedModelId && watchedColor) {
       const colorSigla = getColorCode(watchedColor);
-      setComputedSku(`${watchedModelId.toUpperCase()}-${colorSigla}`);
+      const sku = `${watchedModelId.trim().toUpperCase()}-${colorSigla}`;
+      setComputedSku(sku);
+      
+      // Auto-sincroniza o ID e Slug reativamente no formulário para feedback visual em tempo real!
+      setValue('id', sku, { shouldDirty: true });
+      setValue('slug', sku.toLowerCase(), { shouldDirty: true });
     } else {
       setComputedSku('');
     }
-  }, [watchedModelId, watchedColor]);
+  }, [watchedModelId, watchedColor, setValue]);
 
   // Auditoria de Qualidade em tempo real (Fórmula Padrão Elite)
   const issues: string[] = [];
