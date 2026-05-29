@@ -32,8 +32,8 @@ export default function ShippingSection() {
     setError("");
     setIsCalculating(true);
 
-    const weight = Math.max(0.3, items.reduce((acc, item) => acc + ((item.weight || 0.3) * item.quantity), 0));
-    const volumeTotal = items.reduce((acc, item) => acc + ((item.weight ? (item.weight * 1000) : 300) * item.quantity), 0);
+    const weight = Math.max(0.3, items.reduce((acc, item) => acc + (((item.shipping?.weight || item.weight) || 0.3) * item.quantity), 0));
+    const volumeTotal = items.reduce((acc, item) => acc + (((item.shipping?.weight || item.weight) ? ((item.shipping?.weight || item.weight || 0.3) * 1000) : 300) * item.quantity), 0);
     // Aproximação grosseira para dimensões caso frontend seja responsável (mas a API exige cm)
     // O ideal: enviar weight, altura, largura, comprimento. Vamos usar um tamanho flexivel.
     const height = Math.max(2, items.reduce((acc, item) => acc + (2 * item.quantity), 0));

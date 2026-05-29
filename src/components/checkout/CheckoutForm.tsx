@@ -115,7 +115,7 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
     setSelectedShipping(null);
 
     try {
-      const weight = Math.max(0.3, items.reduce((acc, item) => acc + ((item.weight || 0.3) * item.quantity), 0));
+      const weight = Math.max(0.3, items.reduce((acc, item) => acc + (((item.shipping?.weight || item.weight) || 0.3) * item.quantity), 0));
       const height = Math.max(2, items.reduce((acc, item) => acc + (2 * item.quantity), 0));
       
       const res = await fetch("/api/shipping", {

@@ -6,13 +6,20 @@ import { ShippingRequestSchema } from "@/lib/schemas";
 
 // Função para simular fallback funcional dinâmico
 async function getFallbackShipping(cepDestino: string, pesoFinal: string): Promise<{ nome: string; valor: string; prazo: string }[]> {
-    // Regra simples: Estado de SP e arredores (CEPs iniciados em 0 ou 1) vs Resto do Brasil
     const isSP = cepDestino.startsWith("0") || cepDestino.startsWith("1");
     
-    const valorPAC = isSP ? "18.90" : "34.50";
+    // Extrai o peso numérico
+    const pesoNum = parseFloat(pesoFinal) || 0.3;
+    
+    // Regra: Para SP Base PAC é 18.90, Resto 34.50 (Até 1kg). Acima de 1kg adiciona valor por kg extra.
+    const kgsExtras = Math.max(0, pesoNum - 1);
+    const extraPAC = isSP ? (kgsExtras * 6.5) : (kgsExtras * 12.0);
+    const extraSedex = isSP ? (kgsExtras * 9.5) : (kgsExtras * 18.0);
+    
+    const valorPAC = (isSP ? 18.90 + extraPAC : 34.50 + extraPAC).toFixed(2);
     const prazoPAC = isSP ? "3" : "8";
     
-    const valorSedex = isSP ? "24.90" : "68.50";
+    const valorSedex = (isSP ? 24.90 + extraSedex : 68.50 + extraSedex).toFixed(2);
     const prazoSedex = isSP ? "1" : "4";
 
     return [
