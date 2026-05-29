@@ -33,6 +33,12 @@ export const ProductSchema = z.object({
   seoAltText: z.string().optional(),
   totalStock: z.number().optional(),
   weight: z.number().optional(),
+  shipping: z.object({
+    weight: z.number().min(0.05),
+    width: z.number().min(1),
+    height: z.number().min(1),
+    length: z.number().min(1),
+  }).optional(),
   rating: z.number().optional(),
   reviewsCount: z.number().optional(),
   isNew: z.preprocess((val) => val === 'true' || val === true, z.boolean()).optional(),
@@ -103,6 +109,9 @@ export const OrderSchema = z.object({
 export const ShippingRequestSchema = z.object({
   cepDestino: z.string().min(8, "CEP inválido").max(9),
   peso: z.string().optional().default("0.3"),
+  comprimento: z.string().optional().default("20"),
+  altura: z.string().optional().default("10"),
+  largura: z.string().optional().default("15"),
 });
 
 export const CheckoutRequestSchema = z.object({

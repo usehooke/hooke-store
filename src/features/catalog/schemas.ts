@@ -32,6 +32,12 @@ export const productSchema = z.object({
   skus: z.record(z.string(), z.string()).optional(),
   modelId: z.string().optional(),
   color: z.string().optional(),
+  shipping: z.object({
+    weight: z.number().min(0.05, "O peso mínimo é 50g"),
+    width: z.number().min(1),
+    height: z.number().min(1),
+    length: z.number().min(1),
+  }).optional(),
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;

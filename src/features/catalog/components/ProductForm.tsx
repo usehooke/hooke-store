@@ -160,7 +160,13 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
       modelId: '',
       color: '',
       stock: {},
-      skus: {}
+      skus: {},
+      shipping: {
+        weight: 0.32,
+        width: 25,
+        height: 2,
+        length: 20
+      }
     }
   });
 
@@ -270,6 +276,19 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
 
       if (hasMismatchedModel && suggestedModel) {
         setValue('details.model', suggestedModel, { shouldDirty: true });
+      }
+      
+      // AUTO-PREENCHIMENTO LOGÍSTICO REATIVO (PESO E DIMENSÕES)
+      if (suggestedFabric === 'Algodão Heavyweight 260g') {
+         setValue('shipping.weight', 0.32, { shouldDirty: true });
+         setValue('shipping.width', 25, { shouldDirty: true });
+         setValue('shipping.height', 2, { shouldDirty: true });
+         setValue('shipping.length', 20, { shouldDirty: true });
+      } else if (suggestedFabric === 'Viscose Nobre' || cat.includes('conjunto') || nameLower.includes('conjunto')) {
+         setValue('shipping.weight', 0.55, { shouldDirty: true });
+         setValue('shipping.width', 30, { shouldDirty: true });
+         setValue('shipping.height', 4, { shouldDirty: true });
+         setValue('shipping.length', 22, { shouldDirty: true });
       }
     }
   }, [watchedName, watchedCategory, watchedFabric, setValue]);
@@ -792,6 +811,17 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tecido / Composição</label>
                     <select 
                       {...register('details.fabric')}
+                      onChange={(e) => {
+                        const fabric = e.target.value;
+                        setValue('details.fabric', fabric);
+                        // Default logic based on fabric selection
+                        if (fabric === 'Algodão Heavyweight 260g') {
+                          setValue('shipping.weight', 0.4);
+                          setValue('shipping.width', 25);
+                          setValue('shipping.height', 2);
+                          setValue('shipping.length', 35);
+                        }
+                      }}
                       className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
                     >
                       <option value="">Selecione o Tecido...</option>
@@ -823,6 +853,47 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                         {...register('slug')}
                         className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-zinc-50"
                       />
+                    </div>
+                  </div>
+                  
+                  {/* DADOS LOGÍSTICOS (BLINDAGEM DE FRETE) */}
+                  <div className="pt-6 border-t border-black/10">
+                    <h3 className="text-[10px] font-black tracking-widest uppercase mb-4 flex items-center gap-2">
+                      <Package size={14} /> Cubagem e Peso Real (Logística)
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Peso (kg)</label>
+                        <input 
+                          type="number" step="0.01"
+                          {...register('shipping.weight', { valueAsNumber: true })}
+                          className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors ${errors.shipping?.weight ? 'border-red-500' : ''}`}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Larg. (cm)</label>
+                        <input 
+                          type="number" step="0.1"
+                          {...register('shipping.width', { valueAsNumber: true })}
+                          className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors ${errors.shipping?.width ? 'border-red-500' : ''}`}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Alt. (cm)</label>
+                        <input 
+                          type="number" step="0.1"
+                          {...register('shipping.height', { valueAsNumber: true })}
+                          className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors ${errors.shipping?.height ? 'border-red-500' : ''}`}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Comp. (cm)</label>
+                        <input 
+                          type="number" step="0.1"
+                          {...register('shipping.length', { valueAsNumber: true })}
+                          className={`w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors ${errors.shipping?.length ? 'border-red-500' : ''}`}
+                        />
+                      </div>
                     </div>
                   </div>
  

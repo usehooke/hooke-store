@@ -33,13 +33,16 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
-        const { cepDestino, peso } = validation.data;
+        const { cepDestino, peso, comprimento, altura, largura } = validation.data;
 
         // Remover traços ou pontos do CEP
         const sCepDestino = cepDestino.replace(/\D/g, "");
 
         // Validar e Formatar Peso (mínimo exigido pelos correios é 0.3kg)
         const pesoFinal = peso ? Math.max(0.3, parseFloat(peso)).toString() : "0.3";
+        const comprimentoFinal = comprimento ? Math.max(16, parseFloat(comprimento)).toString() : "20"; // Min correios = 16
+        const alturaFinal = altura ? Math.max(2, parseFloat(altura)).toString() : "10"; // Min correios = 2
+        const larguraFinal = largura ? Math.max(11, parseFloat(largura)).toString() : "15"; // Min correios = 11
 
         // Dados base da loja Hooke (Caixa Genérica de 1 Camiseta)
         const cepOrigemLoja = "03031000"; // CEP da Loja no Brás (Tiers, 184)
@@ -59,11 +62,11 @@ export async function POST(req: Request) {
         const args = {
             sCepOrigem: cepOrigemLoja,
             sCepDestino: sCepDestino,
-            nVlPeso: pesoFinal,  // Peso repassado do frontend
+            nVlPeso: pesoFinal,
             nCdFormato: "1", // 1 para caixa / pacote
-            nVlComprimento: "20",
-            nVlAltura: "10",
-            nVlLargura: "15",
+            nVlComprimento: comprimentoFinal,
+            nVlAltura: alturaFinal,
+            nVlLargura: larguraFinal,
             nCdServico: ["03298", "04014"],
             nVlDiametro: "0",
         };

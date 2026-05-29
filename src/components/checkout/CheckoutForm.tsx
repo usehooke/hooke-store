@@ -115,18 +115,38 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
     setSelectedShipping(null);
 
     try {
+      const weight = Math.max(0.3, items.reduce((acc, item) => acc + ((item.weight || 0.3) * item.quantity), 0));
+      const height = Math.max(2, items.reduce((acc, item) => acc + (2 * item.quantity), 0));
+      
       const res = await fetch("/api/shipping", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cep: clean, items }),
+        body: JSON.stringify({ 
+           cepDestino: clean, 
+           peso: weight.toString(),
+           altura: height.toString(),
+           largura: "25",
+           comprimento: "20"
+        }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        const options: ShippingOption[] = data.options || [
-          { method: "SEDEX", label: "SEDEX (1-3 dias úteis)", cost: data.sedex || 29.9, days: "1-3 dias úteis" },
-          { method: "PAC", label: "PAC (5-10 dias úteis)", cost: data.pac || 14.9, days: "5-10 dias úteis" },
-        ];
+        let options: ShippingOption[] = [];
+        
+        if (data.fretes && data.fretes.length > 0) {
+          options = data.fretes.map((f: any) => ({
+            method: f.nome,
+            label: `${f.nome} (até ${f.prazo} dias úteis)`,
+            cost: parseFloat(f.valor),
+            days: `até ${f.prazo} dias úteis`
+          }));
+        } else {
+          options = data.options || [
+            { method: "SEDEX", label: "SEDEX (1-3 dias úteis)", cost: data.sedex || 29.9, days: "1-3 dias úteis" },
+            { method: "PAC", label: "PAC (5-10 dias úteis)", cost: data.pac || 14.9, days: "5-10 dias úteis" },
+          ];
+        }
         setShippingOptions(options);
         // Auto-seleciona o mais barato
         const cheapest = options.reduce((a, b) => (a.cost <= b.cost ? a : b));
