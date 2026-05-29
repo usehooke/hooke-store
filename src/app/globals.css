@@ -59,12 +59,10 @@
   /* NO ALL CAPS RULE (GLOBAL) */
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight font-light;
-    text-transform: none !important;
   }
 
   button, input, select, textarea {
     @apply tracking-wide rounded-none font-light;
-    text-transform: none !important;
   }
 }
 

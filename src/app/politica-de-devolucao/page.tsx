@@ -23,7 +23,7 @@ export default function PoliticaDevolucao() {
 
           <h3 className="text-xl font-semibold text-gray-900 pt-4">2. Como Solicitar</h3>
           <p>
-            Para iniciar o processo, entre em contato conosco através do e-mail <strong>contato@usehooke.com.br</strong> 
+            Para iniciar o processo, entre em contato conosco através do e-mail <strong>hooke.rugby@outlook.com</strong> 
             informando o número do pedido e o motivo da devolução. Nossa equipe retornará em até 24 horas úteis com as instruções de envio.
           </p>
 

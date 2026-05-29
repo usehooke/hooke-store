@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Gerenciamento de Catálogo Elite',
 };
 
-import { connection } from 'next/server';
+
 
 export const dynamic = 'force-dynamic';
 

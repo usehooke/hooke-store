@@ -86,9 +86,9 @@ export default function Navbar() {
             {/* 2. CENTRO - LOGO */}
             <div className="flex-1 flex justify-center">
               <Link href="/" className="group text-center relative z-10 inline-block cursor-pointer">
-                <h1 className="font-heading text-4xl md:text-[2.75rem] font-bold tracking-[-0.05em] text-hooke-900 lowercase group-hover:tracking-[-0.02em] transition-all duration-500">
+                <span className="font-heading text-4xl md:text-[2.75rem] font-bold tracking-[-0.05em] text-hooke-900 lowercase group-hover:tracking-[-0.02em] transition-all duration-500">
                   hooke
-                </h1>
+                </span>
                 <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-hooke-900 group-hover:w-full transition-all duration-500" />
               </Link>
             </div>

@@ -90,13 +90,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       suggestedGender: product.department === "feminino" ? "female" : product.department === "masculino" ? "male" : "unisex"
     },
     itemCondition: "https://schema.org/NewCondition",
-    
-    // Ratings reais (Base mínima sólida para alavancar listagens)
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "15"
-    },
 
     // Oferta Base (Fallback)
     offers: {

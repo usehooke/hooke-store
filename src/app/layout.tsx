@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Inter, Jost } from "next/font/google";
 import "@/app/globals.css"; // Importação absoluta para garantir carregamento
@@ -77,6 +77,17 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: baseUrl,
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: '#111827',
 };
 
 export default function RootLayout({
@@ -130,7 +141,7 @@ export default function RootLayout({
               ],
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+55-11-99999-9999", // Exemplo
+                "telephone": "+55-11-97590-2528",
                 "contactType": "Customer Service"
               }
             })

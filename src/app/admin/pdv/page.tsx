@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'Ponto de Venda de Alta Performance',
 };
 
-import { connection } from 'next/server';
+
 
 export const dynamic = 'force-dynamic';
 

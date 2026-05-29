@@ -41,7 +41,7 @@ export default function PoliticaDeTrocas() {
 
  <h3 className="text-xl font-bold tracking-tighter text-hooke-900 mt-8 mb-4">Como Solicitar</h3>
  <p>
- Para iniciar o seu processo, entre em contato com nossa equipe de atendimento através do nosso WhatsApp oficial ou pelo e-mail suporte@hooke.com.br, informando seu número de pedido e o motivo da troca/devolução. Nossa equipe enviará o código de autorização de postagem.
+ Para iniciar o seu processo, entre em contato com nossa equipe de atendimento através do nosso WhatsApp oficial ou pelo e-mail hooke.rugby@outlook.com, informando seu número de pedido e o motivo da troca/devolução. Nossa equipe enviará o código de autorização de postagem.
  </p>
  </div>
  </div>

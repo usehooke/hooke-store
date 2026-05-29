@@ -114,7 +114,7 @@ export default function BentoHero({ banners = [] }: { banners?: Product[] }) {
               {femaleTag}
             </span>
 
-            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-[-0.04em] mb-4 drop-shadow-lg uppercase leading-[0.9]">
+            <h2 className="text-3xl md:text-5xl font-heading font-black tracking-[-0.04em] mb-4 drop-shadow-lg uppercase leading-[0.9]">
               {femaleBanner ? (
                 <>
                   {femaleBanner.name.split(" ")[0]} <br />
@@ -125,13 +125,13 @@ export default function BentoHero({ banners = [] }: { banners?: Product[] }) {
                   Lore V2: <br /> <span className="opacity-70">A Fluidez</span>
                 </>
               )}
-            </h1>
+            </h2>
 
             <p className="text-white/80 text-[10px] tracking-[0.25em] max-w-xs mb-8 leading-relaxed uppercase font-medium drop-shadow-sm">
               {femaleDesc}
             </p>
 
-            <Link href={femaleLink} className="group/link flex items-center gap-4 text-[10px] font-black tracking-[0.4em] uppercase border-b border-white/50 pb-2 hover:text-white hover:border-white transition-all w-max inline-flex">
+            <Link href={femaleLink} className="group/link flex items-center gap-3 text-[10px] font-bold tracking-[0.3em] uppercase bg-white text-black px-8 py-5 hover:bg-gray-200 transition-all w-max inline-flex">
               {femaleLinkText} <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
             </Link>
           </div>

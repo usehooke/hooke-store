@@ -69,11 +69,31 @@ export default function Footer() {
  <p className="text-xs text-gray-400 mb-4">
  Cadastre-se para receber acesso antecipado aos lançamentos.
  </p>
- <form className="flex flex-col gap-2">
+ <form className="flex flex-col gap-2" onSubmit={(e) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+  const input = form.querySelector('input[type="email"]') as HTMLInputElement;
+  const email = input?.value?.trim();
+  if (!email) return;
+  // Salva localmente (futuro: enviar para API/Mailchimp)
+  const existing = JSON.parse(localStorage.getItem('hooke-newsletter') || '[]');
+  if (!existing.includes(email)) {
+    existing.push(email);
+    localStorage.setItem('hooke-newsletter', JSON.stringify(existing));
+  }
+  input.value = '';
+  // Feedback visual
+  const btn = form.querySelector('button') as HTMLButtonElement;
+  if (btn) {
+    btn.innerHTML = '✓';
+    setTimeout(() => { btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>'; }, 2000);
+  }
+ }}>
  <div className="relative">
  <input
  type="email"
  placeholder="SEU E-MAIL"
+ required
  className="w-full bg-transparent font-heading border-b border-gray-700 py-3 text-xs font-bold tracking-wide placeholder:text-gray-600 focus:outline-none focus:border-white transition-colors text-white"
  />
  <button

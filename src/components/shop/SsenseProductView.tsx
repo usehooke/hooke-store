@@ -9,7 +9,14 @@ import { toast } from 'sonner';
 import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler } from 'lucide-react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
-initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY || 'TEST-mock-key', { locale: 'pt-BR' });
+// Lazy: inicializa MP SDK apenas uma vez quando necessário
+let mpInitialized = false;
+function ensureMercadoPago() {
+  if (!mpInitialized) {
+    initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY || 'TEST-mock-key', { locale: 'pt-BR' });
+    mpInitialized = true;
+  }
+}
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
 
@@ -70,7 +77,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
     }
   };
 
-  useEffect(() => { trackEcommerceEvent('view_item'); }, []);
+  useEffect(() => { ensureMercadoPago(); trackEcommerceEvent('view_item'); }, []);
 
   // Sticky Buy Button ao scrollar
   useEffect(() => {

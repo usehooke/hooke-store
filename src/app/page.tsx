@@ -32,7 +32,21 @@ export default async function Home() {
       {/* 2. BARRA */}
       <BrandMarquee />
 
-      {/* 3. GALERIA DE PRODUTOS — VITRINE COMPLETA */}
+      {/* 2.5 BANNER PROMOÇÃO KIT */}
+      <section className="w-full px-5 md:px-12 lg:px-20 py-6">
+        <div className="border-2 border-black bg-black text-white p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col gap-1 text-center md:text-left">
+            <span className="text-[9px] font-black tracking-[0.4em] text-zinc-400 uppercase">Oferta Exclusiva</span>
+            <p className="text-lg md:text-xl font-black tracking-tight uppercase">
+              LEVE 3 PEÇAS POR <span className="text-emerald-400">R$ 199,90</span>
+            </p>
+            <span className="text-[10px] text-zinc-400 tracking-wider">ou 5 peças por R$ 299,90 · Desconto automático no carrinho</span>
+          </div>
+          <a href="#colecao" className="text-[10px] font-black tracking-[0.3em] uppercase bg-white text-black px-8 py-4 hover:bg-zinc-200 transition-all inline-flex items-center gap-2 whitespace-nowrap">
+            Montar Kit →
+          </a>
+        </div>
+      </section>
       <section id="colecao" className="py-20 px-5 md:px-12 lg:px-20 w-full">
 
         {/* Cabeçalho da Seção */}

@@ -33,7 +33,7 @@ export function InteractivePDV({ initialProducts }: InteractivePDVProps) {
       window.navigator.vibrate(50);
     }
     addItem(product, size);
-    toast.success(`${product.name} (${size}) ADCIONADO.`, {
+    toast.success(`${product.name} (${size}) ADICIONADO.`, {
       style: { borderRadius: 0, border: '2px solid black', background: 'black', color: 'white' }
     });
   };
@@ -46,7 +46,7 @@ export function InteractivePDV({ initialProducts }: InteractivePDVProps) {
     
     if (product) {
       // Determine size from barcode if possible, else default to 'M'
-      const possibleSizes = ["P", "M", "G", "GG"];
+      const possibleSizes = ["PP", "P", "M", "G", "GG", "XG", "XGG", "G1", "G2", "G3"];
       const sizeFromCode = possibleSizes.find(s => decodedText.endsWith(`-${s}`));
       const size = sizeFromCode || "M";
 
@@ -117,7 +117,7 @@ export function InteractivePDV({ initialProducts }: InteractivePDVProps) {
                         onClick={() => handleAddWithSize(product, 'UN')}
                         className="w-full h-12 flex items-center justify-center bg-zinc-100 border-2 border-black text-black text-[10px] font-black uppercase tracking-widest active:bg-black active:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
                       >
-                        ADCIONAR (UN)
+                        ADICIONAR (UN)
                       </button>
                     )}
                   </div>
