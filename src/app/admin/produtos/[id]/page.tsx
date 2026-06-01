@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function EditarProdutoPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const id = params?.id as string;
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [isMagicMode, setIsMagicMode] = useState(false);
