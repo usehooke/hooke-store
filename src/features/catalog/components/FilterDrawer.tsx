@@ -36,7 +36,7 @@ export function FilterDrawer() {
   }, [searchParams]);
 
   const applyFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || "");
     
     if (selectedCategory) params.set("category", selectedCategory);
     else params.delete("category");
