@@ -31,12 +31,12 @@ const LabelGeneratorContent: React.FC = () => {
   const [isFlashing, setIsFlashing] = useState(false);
 
   useEffect(() => {
-    const nome = searchParams.get('nome');
-    const cep = searchParams.get('cep');
-    const rua = searchParams.get('rua');
-    const cidade = searchParams.get('cidade');
-    const rastreio = searchParams.get('rastreio');
-    const metodo = searchParams.get('metodo');
+    const nome = searchParams?.get('nome');
+    const cep = searchParams?.get('cep');
+    const rua = searchParams?.get('rua');
+    const cidade = searchParams?.get('cidade');
+    const rastreio = searchParams?.get('rastreio');
+    const metodo = searchParams?.get('metodo');
 
     if (nome || cep || rua || cidade || rastreio || metodo) {
       setActiveLabel(prev => ({
