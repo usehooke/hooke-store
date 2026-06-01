@@ -22,17 +22,17 @@ const SIZES = Object.values(Size);
 export function FilterDrawer() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get("category"));
-  const [selectedSize, setSelectedSize] = useState<string | null>(searchParams.get("size"));
-  const [minPrice, setMinPrice] = useState<string>(searchParams.get("minPrice") || "");
-  const [maxPrice, setMaxPrice] = useState<string>(searchParams.get("maxPrice") || "");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams?.get("category") || null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(searchParams?.get("size") || null);
+  const [minPrice, setMinPrice] = useState<string>(searchParams?.get("minPrice") || "");
+  const [maxPrice, setMaxPrice] = useState<string>(searchParams?.get("maxPrice") || "");
 
   // Sincroniza estado interno quando a URL muda (ex: botão limpar)
   useEffect(() => {
-    setSelectedCategory(searchParams.get("category"));
-    setSelectedSize(searchParams.get("size"));
-    setMinPrice(searchParams.get("minPrice") || "");
-    setMaxPrice(searchParams.get("maxPrice") || "");
+    setSelectedCategory(searchParams?.get("category") || null);
+    setSelectedSize(searchParams?.get("size") || null);
+    setMinPrice(searchParams?.get("minPrice") || "");
+    setMaxPrice(searchParams?.get("maxPrice") || "");
   }, [searchParams]);
 
   const applyFilters = () => {

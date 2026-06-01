@@ -11,8 +11,8 @@ import Image from "next/image";
 
 function MyOrdersContent() {
  const searchParams = useSearchParams();
- const rawEmail = searchParams.get("email") || "";
- const rawId = searchParams.get("id") || "";
+ const rawEmail = searchParams?.get("email") || "";
+ const rawId = searchParams?.get("id") || "";
 
  const [email, setEmail] = useState(rawEmail);
  const [phone, setPhone] = useState("");
