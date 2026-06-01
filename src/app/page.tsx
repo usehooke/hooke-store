@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <main className="bg-white min-h-screen pb-24 md:pb-0">
       {/* Cabeçalho Minimalista da Loja */}
-      <section className="py-8 px-5 md:px-12 lg:px-20 border-b border-zinc-200">
+      <section className="pt-6 pb-8 px-5 md:px-12 lg:px-20 border-b border-zinc-200">
         <h1 className="text-3xl md:text-5xl font-black text-black uppercase tracking-tighter">
           HOOKE STORE
         </h1>

@@ -49,7 +49,7 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
   };
 
   return (
-    <article className="flex flex-col gap-3 border border-zinc-200 p-2 bg-white">
+    <article className="flex flex-col h-full gap-3 border border-zinc-200 p-2 bg-white">
       {/* Foto (Direta, sem zoom) */}
       <Link href={`/produto/${product.slug || product.id}`} className="block relative w-full aspect-[2/3] bg-zinc-100">
         {imageProps.src ? (
@@ -71,7 +71,7 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
       </Link>
 
       {/* Meta Dados */}
-      <div className="flex flex-col gap-1 text-center mt-2">
+      <div className="flex flex-col gap-1 text-center mt-2 flex-grow">
         <h2 className="text-sm font-black uppercase text-black leading-tight">
           {product.name}
         </h2>
@@ -80,31 +80,34 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
         </p>
       </div>
 
-      {/* Seleção de Tamanho Permanente (Sem hover escondendo) */}
-      <div className="grid grid-cols-4 gap-1 mt-1">
-        {sizes.map((s) => (
-          <button
-            key={s}
-            onClick={() => setSelectedSize(s)}
-            className={`py-2 text-xs font-bold uppercase border ${
-              selectedSize === s
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-zinc-300"
-            }`}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      {/* Container de Ações (Fixo no fundo) */}
+      <div className="mt-auto">
+        {/* Seleção de Tamanho Permanente (Sem hover escondendo) */}
+        <div className="grid grid-cols-4 gap-1 mt-1">
+          {sizes.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSelectedSize(s)}
+              className={`py-2 text-xs font-bold uppercase border ${
+                selectedSize === s
+                  ? "bg-black text-white border-black"
+                  : "bg-white text-black border-zinc-300"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
 
-      {/* Botão de Compra Direta */}
-      <button
-        onClick={handleBuyNow}
-        disabled={isAdding}
-        className="w-full mt-2 py-4 bg-black text-white text-sm font-black uppercase tracking-widest hover:bg-zinc-800 transition-colors"
-      >
-        {isAdding ? "Processando..." : "Comprar Agora →"}
-      </button>
+        {/* Botão de Compra Direta */}
+        <button
+          onClick={handleBuyNow}
+          disabled={isAdding}
+          className="w-full mt-2 py-4 bg-black text-white text-sm font-black uppercase tracking-widest hover:bg-zinc-800 transition-colors"
+        >
+          {isAdding ? "Processando..." : "Comprar Agora →"}
+        </button>
+      </div>
     </article>
   );
 }
