@@ -64,7 +64,9 @@ export default async function CollectionPage({
     <ProductCounter filters={activeFilters} />
    </Suspense>
 
-   <FilterDrawer />
+          <Suspense fallback={<div className="h-10 w-24 bg-gray-200 animate-pulse"></div>}>
+            <FilterDrawer />
+          </Suspense>
  </div>
  </div>
 

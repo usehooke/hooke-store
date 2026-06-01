@@ -59,7 +59,9 @@ export default async function MasculinoPage({
           <Suspense fallback={<div className="h-4 w-24 bg-zinc-100 animate-pulse" />}>
             <ProductCounter filters={activeFilters} />
           </Suspense>
-          <FilterDrawer />
+          <Suspense fallback={<div className="h-10 w-24 bg-gray-200 animate-pulse"></div>}>
+            <FilterDrawer />
+          </Suspense>
         </div>
       </div>
 
