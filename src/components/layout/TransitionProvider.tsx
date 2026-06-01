@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 export default function TransitionProvider({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const [prevPath, setPrevPath] = useState(pathname);
   
   useEffect(() => {

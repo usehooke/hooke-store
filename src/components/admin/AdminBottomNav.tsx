@@ -11,7 +11,7 @@ import { LayoutDashboard, PackagePlus, ShoppingBag, Search, Store, Zap } from 'l
  * Botões grandes, textos claros e feedback visual óbvio.
  */
 export function AdminBottomNav() {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
 
   const navItems = [
     { label: 'Site', icon: Store, href: '/', color: 'bg-zinc-100' },

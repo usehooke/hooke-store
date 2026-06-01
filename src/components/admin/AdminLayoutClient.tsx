@@ -9,7 +9,7 @@ import { GlobalCommand } from '@/components/admin/GlobalCommand';
 import { NotificationPulse } from '@/components/admin/NotificationPulse';
 
 export function AdminLayoutClient({ children, userEmail }: { children: React.ReactNode, userEmail: string }) {
-    const pathname = usePathname();
+    const pathname = usePathname() || "";
 
     // Rotas que exigem foco total (Zen Mode)
     const isZenMode = pathname?.includes('/admin/pdv') || pathname?.includes('/admin/produtos/novo');

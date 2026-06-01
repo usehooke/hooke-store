@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
 export default function DepartmentFAB() {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
 
   // O botão só faz sentido aparecer dentro das rotas de loja principal, 
   // mas como os departamentos são a base, aparecerá em "masculino", "feminino".

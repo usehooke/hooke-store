@@ -34,7 +34,7 @@ const menuItems = [
 ];
 
 export function Sidebar({ user }: { user: User }) {
-    const pathname = usePathname();
+    const pathname = usePathname() || "";
     const router = useRouter();
     const [isCollapsed, setIsCollapsed] = React.useState(false);
 

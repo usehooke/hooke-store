@@ -20,7 +20,7 @@ declare global {
 }
 
 function PixelEvents() {
-    const pathname = usePathname();
+    const pathname = usePathname() || "";
     const searchParams = useSearchParams();
 
     // Este useEffect rastreia todas as trocas de rotas e dispara o evento PageView

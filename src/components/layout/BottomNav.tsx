@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 ];
 
 export default function BottomNav() {
-    const pathname = usePathname();
+    const pathname = usePathname() || "";
 
     return (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#F5F5F5]/80 backdrop-blur-md border-t border-white shadow-[0_-4px_10px_rgba(209,209,209,0.3)]">

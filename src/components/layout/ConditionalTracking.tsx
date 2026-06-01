@@ -11,7 +11,7 @@ interface ConditionalTrackingProps {
 }
 
 export default function ConditionalTracking({ gaId }: ConditionalTrackingProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
 
   // Rotas preparadas para ultra-velocidade (sem scripts pesados)
   const isUltraFastRoute = pathname?.startsWith("/oferta-direta");
