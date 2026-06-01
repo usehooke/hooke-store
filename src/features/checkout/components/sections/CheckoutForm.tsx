@@ -36,6 +36,10 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
+  
+  // Campos de endereço rápido
+  const [street, setStreet] = useState("");
+  const [number, setNumber] = useState("");
 
   // Totais (Cálculo Seguro) - Nota: O desconto de cupom será aplicado aqui se necessário
   // Por enquanto mantendo a lógica de valor fixo ou percentual vindo da store/api
@@ -96,19 +100,23 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
       setError("Calcule e selecione um frete primeiro.");
       return;
     }
+    if (!street || !number) {
+      setError("Preencha a rua e o número para a entrega.");
+      return;
+    }
 
     setError("");
     setIsProcessing(true);
 
     try {
       const payload = {
-        customer: { ...customer, address: { zip_code: shippingZipCode, street_name: "", street_number: "", neighborhood: "", city: "", state: "" } },
+        customer: { ...customer, address: { zip_code: shippingZipCode, street_name: street, street_number: number, neighborhood: "", city: "", state: "" } },
         shippingValue: shippingCost,
         shippingMethod,
         shippingZipcode: shippingZipCode,
         discountValue: promoDiscount,
         couponCode: appliedCoupon || "",
-        items: items.map(item => ({ ...item, id: item.id, title: item.name, unit_price: item.price, quantity: item.quantity }))
+        items: items.map(item => ({ ...item, id: item.id, title: item.name, unit_price: item.price, quantity: item.quantity, size: item.selectedSize }))
       };
 
       const res = await fetch("/api/checkout", {
@@ -181,6 +189,33 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           {(!shippingMethod || !shippingCost) && (
             <div className="animate-in fade-in slide-in-from-top-2">
               <ShippingSection />
+            </div>
+          )}
+
+          {(shippingMethod && shippingCost) && (
+            <div className="flex gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="flex-1 space-y-1.5">
+                <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Rua / Avenida</label>
+                <input
+                  type="text"
+                  required
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
+                  placeholder="Ex: Av. Paulista"
+                />
+              </div>
+              <div className="w-1/3 space-y-1.5">
+                <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Número</label>
+                <input
+                  type="text"
+                  required
+                  value={number}
+                  onChange={(e) => setNumber(e.target.value)}
+                  className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
+                  placeholder="Ex: 1000"
+                />
+              </div>
             </div>
           )}
 

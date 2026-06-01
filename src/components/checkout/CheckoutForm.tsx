@@ -179,9 +179,8 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
   const validateForm = () => {
     const errors: Record<string, string> = {};
     if (!customer.name.trim()) errors.name = "Nome obrigatório";
-    if (!customer.email.trim() || !/\S+@\S+\.\S+/.test(customer.email)) errors.email = "E-mail inválido";
-    if (!customer.phone.trim() || customer.phone.replace(/\D/g, "").length < 10) errors.phone = "Telefone inválido";
-    if (!selectedShipping) errors.shipping = "Selecione uma opção de frete";
+    if (!customer.phone.trim()) errors.phone = "WhatsApp obrigatório";
+    if (!selectedShipping) errors.shipping = "Selecione o frete";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -398,9 +397,9 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
 
               <div className="flex flex-col gap-4">
                 {[
-                  { key: "name", label: "Nome Completo", type: "text", placeholder: "Fernando Vautier" },
-                  { key: "email", label: "E-mail", type: "email", placeholder: "seu@email.com" },
-                  { key: "phone", label: "Telefone / WhatsApp", type: "tel", placeholder: "(11) 99999-9999" },
+                  { key: "name", label: "Nome Completo", type: "text", placeholder: "Nome completo" },
+                  { key: "phone", label: "WhatsApp (Obrigatório)", type: "tel", placeholder: "(11) 99999-9999" },
+                  { key: "email", label: "E-mail (Opcional)", type: "email", placeholder: "Opcional" },
                 ].map(({ key, label, type, placeholder }) => (
                   <div key={key} className="flex flex-col gap-1">
                     <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">{label}</label>
