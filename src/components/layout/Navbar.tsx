@@ -21,6 +21,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
+  const [isBouncing, setIsBouncing] = useState(false);
   const openCart = useCartStore((state) => state.openCart);
   const items = useCartStore((state) => state.items);
 
@@ -38,6 +39,14 @@ export default function Navbar() {
   }, []);
 
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  useEffect(() => {
+    if (totalItems > 0) {
+      setIsBouncing(true);
+      const timer = setTimeout(() => setIsBouncing(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [totalItems]);
 
   const navLinks = [
     { name: 'Masculino', href: '/masculino' },
@@ -59,7 +68,7 @@ export default function Navbar() {
             <div className="flex-1 flex items-center justify-start">
               <button 
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden text-hooke-900 -ml-2 p-2 hover:text-gray-600 transition-colors"
+                className="md:hidden text-hooke-900 -ml-2 w-11 h-11 flex items-center justify-center hover:text-gray-600 transition-colors"
                 aria-label="Abrir Menu"
               >
                 <Menu strokeWidth={1.5} size={24} />
@@ -97,19 +106,19 @@ export default function Navbar() {
             <div className="flex-1 flex items-center justify-end gap-4 md:gap-6">
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="hidden md:block text-hooke-900 hover:text-gray-500 transition-colors"
+                className="hidden md:flex w-11 h-11 items-center justify-center text-hooke-900 hover:text-gray-500 transition-colors"
                 aria-label="Buscar"
               >
                 <Search strokeWidth={1.5} size={20} />
               </button>
 
-              <Link href="/meus-pedidos" className="hidden md:flex text-hooke-900 hover:text-gray-500 transition-colors">
+              <Link href="/meus-pedidos" className="hidden md:flex w-11 h-11 items-center justify-center text-hooke-900 hover:text-gray-500 transition-colors">
                 <User strokeWidth={1.5} size={20} />
               </Link>
 
               <button 
                 onClick={openCart}
-                className="hidden md:flex relative text-hooke-900 hover:text-gray-500 transition-colors group p-1"
+                className={`hidden md:flex relative w-11 h-11 items-center justify-center text-hooke-900 hover:text-gray-500 transition-transform duration-200 group ${isBouncing ? 'scale-125' : 'scale-100'}`}
                 aria-label="Abrir Sacola"
               >
                 <ShoppingBag strokeWidth={1.5} size={20} />

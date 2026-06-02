@@ -59,6 +59,7 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
             fill
             className="object-cover object-top"
             priority={priority}
+            loading={priority ? undefined : "lazy"}
             deliveryType={imageProps.deliveryType}
             format="avif"
             quality="auto"
@@ -91,7 +92,7 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
               className={`py-2 text-xs font-bold uppercase border ${
                 selectedSize === s
                   ? "bg-black text-white border-black"
-                  : "bg-white text-black border-zinc-300"
+                  : "bg-white text-black border-zinc-200 hover:border-black"
               }`}
             >
               {s}

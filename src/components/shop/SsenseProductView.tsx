@@ -6,7 +6,7 @@ import { Product } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler } from 'lucide-react';
+import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X } from 'lucide-react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 
 // Lazy: inicializa MP SDK apenas uma vez quando necessário
@@ -224,10 +224,10 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     <a
                       key={v.id}
                       href={`/produto/${v.slug}`}
-                      className={`px-4 py-2.5 text-[10px] font-black border-2 transition-all uppercase tracking-wider ${
+                      className={`px-4 py-2.5 text-[10px] font-black border transition-all uppercase tracking-wider ${
                         isActive
                           ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-white text-black border-black hover:bg-zinc-100'
+                          : 'bg-white text-black border-zinc-200 hover:border-black'
                       }`}
                     >
                       {variantColor}
@@ -259,12 +259,12 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     key={size}
                     onClick={() => !isOutOfStock && setSelectedSize(size)}
                     disabled={isOutOfStock}
-                    className={`h-14 text-sm font-black border-2 transition-all uppercase ${
+                    className={`h-14 text-sm font-black border transition-all uppercase ${
                       isOutOfStock
-                        ? 'bg-zinc-100 text-zinc-400 border-zinc-200 line-through cursor-not-allowed shadow-none'
+                        ? 'bg-zinc-50 text-zinc-300 border-zinc-100 line-through cursor-not-allowed shadow-none'
                         : selectedSize === size
                           ? 'bg-black text-white border-black'
-                          : 'bg-white text-black border-black hover:bg-zinc-50'
+                          : 'bg-white text-black border-zinc-200 hover:border-black hover:bg-zinc-50'
                     }`}
                   >
                     {size}
@@ -278,40 +278,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               Fernando (1,82m, 82kg) veste <span className="font-black text-black underline">M</span>.
             </p>
 
-            {/* Accordion de Medidas */}
-            <AnimatePresence>
-              {showSizeGuide && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden mt-3"
-                >
-                  <div className="border-2 border-black p-3">
-                    <table className="w-full text-[11px]">
-                      <thead>
-                        <tr className="border-b border-black">
-                          <th className="text-left font-black uppercase pb-2">Tam</th>
-                          <th className="font-black uppercase pb-2">Peito</th>
-                          <th className="font-black uppercase pb-2">Comp.</th>
-                          <th className="font-black uppercase pb-2">Ombro</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(SIZE_GUIDE).map(([size, m]) => (
-                          <tr key={size} className={`border-b border-black/10 ${selectedSize === size ? 'bg-black text-white' : ''}`}>
-                            <td className="font-black py-2">{size}</td>
-                            <td className="text-center py-2">{m.peito}</td>
-                            <td className="text-center py-2">{m.comprimento}</td>
-                            <td className="text-center py-2">{m.ombro}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Modal de Medidas (Mobile/Desktop compartilhado abaixo) */}
           </div>
 
           {/* BOTÃO COMPRAR (visível no scroll normal) */}
@@ -478,10 +445,10 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       <a
                         key={v.id}
                         href={`/produto/${v.slug}`}
-                        className={`px-3 py-2 text-[9px] font-black border-2 transition-all uppercase tracking-wider ${
+                        className={`px-3 py-2 text-[9px] font-black border transition-all uppercase tracking-wider ${
                           isActive
                             ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white text-black border-black hover:bg-zinc-100'
+                            : 'bg-white text-black border-zinc-200 hover:border-black'
                         }`}
                       >
                         {variantColor}
@@ -511,12 +478,12 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       key={size}
                       onClick={() => !isOutOfStock && setSelectedSize(size)}
                       disabled={isOutOfStock}
-                      className={`h-12 text-[11px] font-black border-2 transition-all uppercase ${
+                      className={`h-12 text-[11px] font-black border transition-all uppercase ${
                         isOutOfStock
-                          ? 'bg-zinc-100 text-zinc-400 border-zinc-200 line-through cursor-not-allowed shadow-none'
+                          ? 'bg-zinc-50 text-zinc-300 border-zinc-100 line-through cursor-not-allowed shadow-none'
                           : selectedSize === size
                             ? 'bg-black text-white border-black'
-                            : 'bg-white text-black border-black hover:bg-zinc-50'
+                            : 'bg-white text-black border-zinc-200 hover:border-black'
                       }`}
                     >
                       {size}
@@ -526,31 +493,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               </div>
               <p className="text-[9px] text-zinc-400 mt-2">Fernando (1,82m · 82kg) veste <strong className="text-black">M</strong>.</p>
 
-              <AnimatePresence>
-                {showSizeGuide && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden mt-3"
-                  >
-                    <div className="border-2 border-black p-3">
-                      <table className="w-full text-[10px]">
-                        <thead><tr className="border-b border-black"><th className="text-left font-black pb-1">Tam</th><th className="font-black pb-1">Peito</th><th className="font-black pb-1">Comp.</th></tr></thead>
-                        <tbody>
-                          {Object.entries(SIZE_GUIDE).map(([sz, m]) => (
-                            <tr key={sz} className={`border-b border-black/10 ${selectedSize === sz ? 'bg-black text-white' : ''}`}>
-                              <td className="font-black py-1">{sz}</td>
-                              <td className="text-center py-1">{m.peito}</td>
-                              <td className="text-center py-1">{m.comprimento}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Modal será renderizado fora deste escopo para ficar por cima de tudo */}
             </div>
 
             {/* Botões de Compra */}
@@ -612,11 +555,11 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
       <AnimatePresence>
         {isSticky && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
+            initial={{ y: 120, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t-2 border-black px-4 py-3 flex gap-3 items-center"
+            exit={{ y: 120, opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-md border-t border-zinc-200 px-4 py-3 flex gap-3 items-center shadow-[0_-10px_40px_rgba(0,0,0,0.05)]"
             style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
           >
             <div className="flex-1 min-w-0">
@@ -631,12 +574,12 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     key={size}
                     onClick={() => !isOutOfStock && setSelectedSize(size)}
                     disabled={isOutOfStock}
-                    className={`w-10 h-10 text-[10px] font-black border-2 border-black uppercase transition-all ${
+                    className={`w-10 h-10 text-[10px] font-black border uppercase transition-all ${
                       isOutOfStock
-                        ? 'bg-zinc-100 text-zinc-400 border-zinc-250 line-through cursor-not-allowed shadow-none'
+                        ? 'bg-zinc-50 text-zinc-300 border-zinc-100 line-through cursor-not-allowed shadow-none'
                         : selectedSize === size
-                          ? 'bg-black text-white'
-                          : 'bg-white text-black'
+                          ? 'bg-black text-white border-black'
+                          : 'bg-white text-black border-zinc-200 hover:border-black'
                     }`}
                   >
                     {size}
@@ -652,6 +595,62 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               {isAdding ? '...' : 'COMPRAR'}
             </button>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ============================================
+          SIZE GUIDE MODAL
+          ============================================ */}
+      <AnimatePresence>
+        {showSizeGuide && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSizeGuide(false)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-sm bg-white p-6 shadow-2xl"
+            >
+              <button 
+                onClick={() => setShowSizeGuide(false)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-black"
+              >
+                <X size={20} />
+              </button>
+              
+              <h3 className="font-heading text-lg font-black tracking-widest uppercase mb-6">Guia de Medidas</h3>
+              
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-black">
+                    <th className="text-left font-black uppercase pb-3">Tam</th>
+                    <th className="font-black uppercase pb-3">Peito</th>
+                    <th className="font-black uppercase pb-3">Comp.</th>
+                    <th className="font-black uppercase pb-3">Ombro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(SIZE_GUIDE).map(([sz, m]) => (
+                    <tr key={sz} className={`border-b border-zinc-100 ${selectedSize === sz ? 'bg-zinc-50' : ''}`}>
+                      <td className="font-black py-4">{sz}</td>
+                      <td className="text-center py-4 text-zinc-600">{m.peito}</td>
+                      <td className="text-center py-4 text-zinc-600">{m.comprimento}</td>
+                      <td className="text-center py-4 text-zinc-600">{m.ombro}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-[10px] text-zinc-400 mt-6 text-center italic">
+                As medidas podem variar em até 2cm devido ao processo de lavagem e encolhimento natural do algodão.
+              </p>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

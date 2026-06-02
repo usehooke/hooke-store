@@ -38,7 +38,7 @@ export default function AboutPage() {
  Não é apenas <br /> uma camiseta.
  </h1>
 
- <div className="space-y-6 text-sm md:text-base text-gray-600 leading-relaxed font-sans">
+ <div className="space-y-6 text-base md:text-lg text-gray-600 leading-relaxed font-sans">
  <p>
  A Hooke nasceu de uma frustração comum: encontrar uma camiseta básica que não parecesse velha após a terceira lavagem.
  </p>

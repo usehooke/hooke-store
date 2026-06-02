@@ -148,7 +148,10 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           <h3 className="text-3xl font-black text-hooke-900 tracking-tighter leading-none mb-3">
             Finalize seu <br/> Pedido de Elite
           </h3>
-          <p className="text-sm text-gray-500 font-medium"> Total estimado: <strong className="text-black">{formatter.format(totalGeral)}</strong></p>
+          <div className="bg-gray-50 border border-gray-100 p-5 mt-6 flex flex-col gap-1">
+            <span className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Total a pagar</span>
+            <span className="text-4xl font-black text-hooke-900 tracking-tighter">{formatter.format(totalGeral)}</span>
+          </div>
         </header>
 
         <button
@@ -244,7 +247,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           <button
             type="submit"
             disabled={isProcessing}
-            className="w-full bg-black text-white px-8 py-5 flex items-center justify-center gap-3 rounded-none text-xs font-black tracking-[0.3em] uppercase hover:bg-hooke-900 transition-all disabled:opacity-50"
+            className="w-full bg-black text-white px-8 py-5 flex items-center justify-center gap-3 rounded-none text-xs font-black tracking-[0.3em] uppercase hover:bg-hooke-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_15px_30px_rgba(0,0,0,0.2)]"
           >
             {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
             {isProcessing ? 'PROCESSANDO...' : 'FINALIZAR PAGAMENTO'}

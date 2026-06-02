@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { Send } from "lucide-react";
+import { Send, ChevronDown } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { brandConfig } from "@/config/brandConfig";
 
@@ -36,31 +38,50 @@ export default function Footer() {
 
  {/* Coluna 2: Shop */}
  <div>
- <h3 className="font-heading text-xs font-bold tracking-[0.2em] mb-6 text-gray-500">Shop</h3>
- <ul className="space-y-4 text-xs font-medium tracking-wide">
- <li><Link href="/colecao" className="hover:text-gray-300 transition-colors">Ver Tudo</Link></li>
- <li><Link href="/lancamento" className="hover:text-gray-300 transition-colors">Lançamentos</Link></li>
- <li><Link href="/colecao" className="hover:text-gray-300 transition-colors">Kits Promocionais</Link></li>
- <li><Link href="/colecao" className="hover:text-gray-300 transition-colors">Best Sellers</Link></li>
- </ul>
+   {/* Desktop */}
+   <div className="hidden md:block">
+     <h3 className="font-heading text-xs font-bold tracking-[0.2em] mb-6 text-gray-500">Shop</h3>
+     <ul className="space-y-4 text-xs font-medium tracking-wide">
+       <li><Link href="/colecao" className="hover:text-gray-300 transition-colors">Ver Tudo</Link></li>
+       <li><Link href="/lancamento" className="hover:text-gray-300 transition-colors">Lançamentos</Link></li>
+     </ul>
+   </div>
+   {/* Mobile */}
+   <details className="md:hidden group border-b border-gray-800">
+     <summary className="font-heading text-xs font-bold tracking-[0.2em] py-4 text-gray-500 cursor-pointer list-none flex justify-between items-center">
+       Shop <ChevronDown size={14} className="group-open:rotate-180 transition-transform" />
+     </summary>
+     <ul className="space-y-4 text-xs font-medium tracking-wide pb-4">
+       <li><Link href="/colecao" className="hover:text-gray-300 transition-colors">Ver Tudo</Link></li>
+       <li><Link href="/lancamento" className="hover:text-gray-300 transition-colors">Lançamentos</Link></li>
+     </ul>
+   </details>
  </div>
 
  {/* Coluna 3: Suporte */}
  <div>
- <h3 className="font-heading text-xs font-bold tracking-[0.2em] mb-6 text-gray-500">Suporte</h3>
- <ul className="space-y-4 text-xs font-medium tracking-wide">
- <li><Link href="/meus-pedidos" className="hover:text-gray-300 transition-colors">Minha Conta</Link></li>
- <li><Link href="/contato" className="hover:text-gray-300 transition-colors">Fale Conosco</Link></li>
- <li><Link href="/cartao-virtual" className="hover:text-gray-300 transition-colors font-bold">Cartão VIP Hooke</Link></li>
- <li><Link href="/politica-de-trocas" className="hover:text-gray-300 transition-colors">Trocas e Devoluções</Link></li>
- <li><Link href="/guia-medidas" className="hover:text-gray-300 transition-colors">Guia de Medidas</Link></li>
- <li className="pt-2">
- <Link href="/hq" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-[10px] uppercase font-bold tracking-widest">
- <span className="w-1.5 h-1.5 bg-emerald-500 rounded-none animate-pulse blur-[1px] group-hover:blur-none transition-all" />
- Conheça o QG Virtual da Hooke, onde tudo acontece!
- </Link>
- </li>
- </ul>
+   {/* Desktop */}
+   <div className="hidden md:block">
+     <h3 className="font-heading text-xs font-bold tracking-[0.2em] mb-6 text-gray-500">Suporte</h3>
+     <ul className="space-y-4 text-xs font-medium tracking-wide">
+       <li><Link href="/meus-pedidos" className="hover:text-gray-300 transition-colors">Minha Conta</Link></li>
+       <li><Link href="/contato" className="hover:text-gray-300 transition-colors">Fale Conosco</Link></li>
+       <li><Link href="/guia-medidas" className="hover:text-gray-300 transition-colors">Guia de Medidas</Link></li>
+       <li><Link href="/politica-de-trocas" className="hover:text-gray-300 transition-colors">Trocas</Link></li>
+     </ul>
+   </div>
+   {/* Mobile */}
+   <details className="md:hidden group border-b border-gray-800">
+     <summary className="font-heading text-xs font-bold tracking-[0.2em] py-4 text-gray-500 cursor-pointer list-none flex justify-between items-center">
+       Suporte <ChevronDown size={14} className="group-open:rotate-180 transition-transform" />
+     </summary>
+     <ul className="space-y-4 text-xs font-medium tracking-wide pb-4">
+       <li><Link href="/meus-pedidos" className="hover:text-gray-300 transition-colors">Minha Conta</Link></li>
+       <li><Link href="/contato" className="hover:text-gray-300 transition-colors">Fale Conosco</Link></li>
+       <li><Link href="/guia-medidas" className="hover:text-gray-300 transition-colors">Guia de Medidas</Link></li>
+       <li><Link href="/politica-de-trocas" className="hover:text-gray-300 transition-colors">Trocas</Link></li>
+     </ul>
+   </details>
  </div>
 
  {/* Coluna 4: Newsletter */}

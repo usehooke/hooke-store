@@ -1,5 +1,5 @@
 import { getFilteredProductsAdmin } from "@/lib/productServiceAdmin";
-import { FilterDrawer } from "@/features/catalog";
+import QuickFilters from "@/features/catalog/components/QuickFilters";
 import GalleryCard from "@/components/shop/GalleryCard";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -60,7 +60,7 @@ export default async function FemininoPage({
             <ProductCounter filters={activeFilters} />
           </Suspense>
           <Suspense fallback={<div className="h-10 w-24 bg-gray-200 animate-pulse"></div>}>
-            <FilterDrawer />
+            <QuickFilters />
           </Suspense>
         </div>
       </div>

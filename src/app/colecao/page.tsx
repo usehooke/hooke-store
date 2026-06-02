@@ -1,5 +1,6 @@
 import { getFilteredProductsAdmin } from "@/lib/productServiceAdmin";
-import { ProductCard, FilterDrawer } from "@/features/catalog";
+import { ProductCard } from "@/features/catalog";
+import QuickFilters from "@/features/catalog/components/QuickFilters";
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
@@ -65,7 +66,7 @@ export default async function CollectionPage({
    </Suspense>
 
           <Suspense fallback={<div className="h-10 w-24 bg-gray-200 animate-pulse"></div>}>
-            <FilterDrawer />
+            <QuickFilters />
           </Suspense>
  </div>
  </div>
