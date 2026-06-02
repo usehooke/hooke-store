@@ -39,7 +39,7 @@ export default async function SearchPage({
   return (
     <div className="bg-white min-h-screen pb-24">
       {/* CABEÇALHO DA BUSCA */}
-      <div className="w-full px-5 md:px-12 pt-6 md:pt-10 pb-10 border-b border-black/10">
+      <div className="w-full px-5 md:px-12 pt-3 md:pt-5 pb-8 border-b border-black/10">
         <div className="flex items-center gap-2 text-[9px] tracking-[0.3em] text-zinc-400 mb-6 uppercase font-black">
           <Link href="/" className="hover:text-black transition-colors">Home</Link>
           <ChevronRight size={9} />

@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
 import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X } from 'lucide-react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import Link from 'next/link';
 
 // Lazy: inicializa MP SDK apenas uma vez quando necessário
 let mpInitialized = false;
@@ -226,7 +227,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                   const isActive = v.id === product.id;
                   const variantColor = v.color || v.name.split(' ').pop() || 'Cor';
                   return (
-                    <a
+                    <Link
                       key={v.id}
                       href={`/produto/${v.slug}`}
                       className={`px-4 py-2.5 text-[10px] font-black border transition-all uppercase tracking-wider ${
@@ -236,7 +237,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       }`}
                     >
                       {variantColor}
-                    </a>
+                    </Link>
                   );
                 })}
               </div>
@@ -447,7 +448,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     const isActive = v.id === product.id;
                     const variantColor = v.color || v.name.split(' ').pop() || 'Cor';
                     return (
-                      <a
+                      <Link
                         key={v.id}
                         href={`/produto/${v.slug}`}
                         className={`px-3 py-2 text-[9px] font-black border transition-all uppercase tracking-wider ${
@@ -457,7 +458,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                         }`}
                       >
                         {variantColor}
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
