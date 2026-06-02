@@ -1,6 +1,5 @@
 import { getProductsAdmin } from "@/lib/productServiceAdmin";
 import GalleryCard from "@/components/shop/GalleryCard";
-import CampaignBanner from "@/components/home/CampaignBanner";
 import React from "react";
 import { headers } from "next/headers";
 
@@ -21,9 +20,6 @@ export default async function Home() {
           Conforto Premium · Preço Justo de Fábrica
         </p>
       </section>
-
-      {/* Banner de Campanha Grayscale Hover */}
-      <CampaignBanner />
 
       {/* Grade de Produtos — Edge-to-Edge */}
       <section className="py-4 md:py-8 px-3 md:px-6 lg:px-10 w-full">
