@@ -72,6 +72,48 @@ export async function POST(req: Request) {
             });
 
             console.log(`✅ [Hooke Webhook] Pedido ${externalReference} atualizado para ${orderStatus}`);
+
+            // INÍCIO: NOTIFICAÇÃO WHATSAPP DE NOVA VENDA
+            if (orderStatus === 'approved') {
+                try {
+                    const orderDoc = await orderRef.get();
+                    if (orderDoc.exists) {
+                        const orderData = orderDoc.data();
+                        
+                        const nome = orderData?.customer?.name || "Cliente Hooke";
+                        const whatsapp = orderData?.customer?.phone || "Não informado";
+                        const cep = orderData?.shipping?.zipCode || "Não informado";
+                        const produto = orderData?.items?.[0]?.name || "Produto(s) da loja";
+                        const tamanho = orderData?.items?.[0]?.size || "-";
+                        const valor_total = Number(orderData?.total || paymentData.transaction_amount || 0).toFixed(2).replace('.', ',');
+
+                        const message = `💸 HOOKE STORE - NOVA VENDA! 💸\n\n👤 Cliente: ${nome}\n📱 WhatsApp: ${whatsapp}\n📍 CEP: ${cep}\n\n📦 Pedido: ${produto} (Tamanho: ${tamanho})\n💰 Valor: R$ ${valor_total}\n\nChame o cliente para combinar a entrega!`;
+
+                        const waApiUrl = process.env.WHATSAPP_API_URL;
+                        const waNotifyNumber = process.env.WHATSAPP_NOTIFY_NUMBER;
+
+                        if (waApiUrl) {
+                            // Disparo agnóstico (Funciona com Z-API, Evolution, Make, etc)
+                            await fetch(waApiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    number: waNotifyNumber,
+                                    text: message,
+                                    message: message // Enviamos ambas as chaves para máxima compatibilidade
+                                })
+                            }).catch(e => console.warn(`⚠️ Falha na API do WhatsApp:`, e.message));
+                            
+                            console.log(`✅ [Hooke Webhook] Notificação de Venda disparada!`);
+                        } else {
+                            console.log(`⚠️ [Hooke Webhook] WHATSAPP_API_URL não configurada. Venda não notificada.`);
+                        }
+                    }
+                } catch (notifyErr) {
+                    console.error("❌ [Hooke Webhook] Erro na fiação do WhatsApp:", notifyErr);
+                }
+            }
+            // FIM: NOTIFICAÇÃO WHATSAPP
         }
 
         return NextResponse.json({ success: true }, { status: 200 });
