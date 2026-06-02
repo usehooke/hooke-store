@@ -129,7 +129,11 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
       label: '⚡ O Manifesto',
       content: product.description
         ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')
-        : 'Cada peça Hooke é um protocolo de essencialismo. Feita para durar mais do que qualquer tendência. O básico refeito como declaração.'
+    },
+    {
+      key: 'sustentabilidade',
+      label: '🌱 Sustentabilidade e Origem da Malha',
+      content: 'Nossas camisetas são confeccionadas com malhas feitas de algodão certificado pela Better Cotton Initiative (BCI). Isso garante um cultivo sustentável com redução do uso de água, melhoria real nas condições de trabalho no campo e total transparência. Através de um sistema rigoroso de transferência de créditos rastreados por nota fiscal, garantimos que a matéria-prima do seu conforto cumpre os mais altos critérios globais de sustentabilidade e responsabilidade.'
     },
   ];
 
