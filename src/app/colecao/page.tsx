@@ -33,7 +33,7 @@ export default async function CollectionPage({
  <div className="bg-white min-h-screen pb-20">
 
  {/* 1. CABEÇALHO (Full Width & Editorial) */}
- <div className="w-full px-6 md:px-12 pt-12 md:pt-24 pb-12">
+ <div className="w-full px-6 md:px-12 pt-6 md:pt-10 pb-10">
 
  {/* Caminho (Breadcrumb) - Alinhado à esquerda */}
  <div className="flex items-center gap-2 text-[10px] tracking-widest text-hooke-400 mb-6 font-sans">

@@ -32,7 +32,7 @@ export default async function FemininoPage({
   return (
     <div className="bg-white min-h-screen pb-24">
       {/* CABEÇALHO EDITORIAL */}
-      <div className="w-full px-5 md:px-12 pt-28 md:pt-32 pb-10">
+      <div className="w-full px-5 md:px-12 pt-6 md:pt-10 pb-10">
         <div className="flex items-center gap-2 text-[9px] tracking-[0.3em] text-zinc-400 mb-6 uppercase font-black">
           <Link href="/" className="hover:text-black transition-colors">Home</Link>
           <ChevronRight size={9} />
