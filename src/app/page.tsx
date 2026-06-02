@@ -13,20 +13,18 @@ export default async function Home() {
 
   return (
     <main className="bg-white min-h-screen pb-24 md:pb-0">
-      {/* Cabeçalho Minimalista da Loja */}
-      <section className="pt-6 pb-8 px-5 md:px-12 lg:px-20 border-b border-zinc-200">
-        <h1 className="text-3xl md:text-5xl font-black text-black uppercase tracking-tighter">
-          HOOKE STORE
-        </h1>
-        <p className="text-sm text-zinc-500 mt-2">
-          Conforto Premium. Preço Justo de Fábrica.
+
+      {/* Subtítulo Discreto (Sem duplicar o logo) */}
+      <section className="pt-3 pb-3 px-4 md:px-8 lg:px-12 border-b border-zinc-100">
+        <p className="text-[10px] md:text-xs font-bold tracking-[0.25em] text-zinc-400 uppercase">
+          Conforto Premium · Preço Justo de Fábrica
         </p>
       </section>
 
-      {/* Grade de Produtos */}
-      <section className="py-12 px-5 md:px-12 lg:px-20 w-full max-w-7xl mx-auto">
+      {/* Grade de Produtos — Edge-to-Edge */}
+      <section className="py-4 md:py-8 px-3 md:px-6 lg:px-10 w-full">
         {allProducts.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4">
             {allProducts.map((product, index) => (
               <GalleryCard
                 key={product.id}
