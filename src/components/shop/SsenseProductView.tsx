@@ -129,6 +129,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
       label: '⚡ O Manifesto',
       content: product.description
         ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')
+        : 'Cada peça Hooke é um protocolo de essencialismo. Feita para durar mais do que qualquer tendência. O básico refeito como declaração.'
     },
     {
       key: 'sustentabilidade',
