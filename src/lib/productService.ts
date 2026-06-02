@@ -18,6 +18,7 @@ export interface FilterOptions {
     category?: string;
     department?: string;
     size?: string;
+    color?: string;
     minPrice?: number;
     maxPrice?: number;
     featured?: boolean;
@@ -135,7 +136,7 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
     );
 }
 export async function getFilteredProducts(filters: FilterOptions): Promise<Product[]> {
-    const { category, department, size, minPrice, maxPrice, featured, limitCount } = filters;
+    const { category, department, size, color, minPrice, maxPrice, featured, limitCount } = filters;
     
     // Cache key baseada nos filtros para granularidade máxima
     const cacheKey = `filtered-products-v2-${JSON.stringify(filters)}`;
@@ -143,6 +144,7 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
     if (category) tags.push(`category-${category}`);
     if (department) tags.push(`department-${department}`);
     if (size) tags.push(`size-${size}`);
+    if (color) tags.push(`color-${color}`);
 
     return executeResilientCached(
         "getFilteredProducts",
@@ -155,6 +157,7 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
             if (category) conditions.push(where("category", "==", category));
             if (department) conditions.push(where("department", "==", department));
             if (size) conditions.push(where("sizes", "array-contains", size));
+            if (color) conditions.push(where("color", "==", color));
             if (featured !== undefined) conditions.push(where("featured", "==", featured));
             
             // Filtros de Preço (Requerem Índice Composto se usados com outros filtros)

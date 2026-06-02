@@ -102,7 +102,7 @@ export async function getFeaturedProductsAdmin(limitCount: number = 8): Promise<
 export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<Product[]> {
     if (!adminDb) return [];
     
-    const { category, department, size, minPrice, maxPrice, featured, limitCount } = filters;
+    const { category, department, size, color, minPrice, maxPrice, featured, limitCount } = filters;
     
     try {
         let query: any = adminDb.collection(COLLECTION_NAME);
@@ -110,6 +110,7 @@ export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<
         if (category) query = query.where("category", "==", category);
         if (department) query = query.where("department", "==", department);
         if (size) query = query.where("sizes", "array-contains", size);
+        if (color) query = query.where("color", "==", color);
         if (featured !== undefined) query = query.where("featured", "==", featured);
         if (minPrice !== undefined) query = query.where("price", ">=", minPrice);
         if (maxPrice !== undefined) query = query.where("price", "<=", maxPrice);

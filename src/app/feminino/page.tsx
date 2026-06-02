@@ -23,6 +23,7 @@ export default async function FemininoPage({
     department: "feminino",
     category: typeof params.category === "string" ? params.category : undefined,
     size: typeof params.size === "string" ? params.size : undefined,
+    color: typeof params.color === "string" ? params.color : undefined,
     minPrice: typeof params.minPrice === "string" ? Number(params.minPrice) : undefined,
     maxPrice: typeof params.maxPrice === "string" ? Number(params.maxPrice) : undefined,
   };
