@@ -4,6 +4,7 @@ import { Product } from "@/types";
 import { MOCK_PRODUCTS } from "./mockData";
 import { unstable_cache } from "next/cache";
 import { ProductSchema } from "./schemas";
+import { getColorFamily } from "@/utils/colorMap";
 
 export const COLLECTION_NAME = "produtos";
 
@@ -157,7 +158,6 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
             if (category) conditions.push(where("category", "==", category));
             if (department) conditions.push(where("department", "==", department));
             if (size) conditions.push(where("sizes", "array-contains", size));
-            if (color) conditions.push(where("color", "==", color));
             if (featured !== undefined) conditions.push(where("featured", "==", featured));
             
             // Filtros de Preço (Requerem Índice Composto se usados com outros filtros)
@@ -180,10 +180,15 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
                 if (data.isActive !== false && p) products.push(p);
             });
             
-            // Ordenação em Memória (Bypass no Composite Index do Firebase)
-            products.sort((a, b) => a.price - b.price);
+            let finalProducts = products;
+            if (color) {
+                finalProducts = finalProducts.filter(p => getColorFamily(p.color) === color);
+            }
             
-            return products;
+            // Ordenação em Memória (Bypass no Composite Index do Firebase)
+            finalProducts.sort((a, b) => a.price - b.price);
+            
+            return finalProducts;
         },
         [] as Product[]
     );

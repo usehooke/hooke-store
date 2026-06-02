@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { headers } from "next/headers";
+import { getColorFamily } from "@/utils/colorMap";
 
 export const metadata: Metadata = {
   title: "Masculino | Hooke",
@@ -61,7 +62,7 @@ export default async function MasculinoPage({
             <ProductCounter filters={activeFilters} />
           </Suspense>
           <Suspense fallback={<div className="h-10 w-24 bg-gray-200 animate-pulse"></div>}>
-            <QuickFilters />
+            <QuickFiltersWrapper baseFilters={{ department: "masculino", category: activeFilters.category }} />
           </Suspense>
         </div>
       </div>
@@ -91,6 +92,18 @@ async function ProductCounter({ filters }: { filters: any }) {
       {products.length} {products.length === 1 ? "peça" : "peças"}
     </span>
   );
+}
+
+async function QuickFiltersWrapper({ baseFilters }: { baseFilters: any }) {
+  // Busca produtos ignorando os filtros de tamanho e cor atuais para mapear TODAS as opções disponíveis
+  const allProducts = await getFilteredProductsAdmin(baseFilters);
+  const colorsSet = new Set<string>();
+  allProducts.forEach(p => {
+    if (p.color) colorsSet.add(getColorFamily(p.color));
+  });
+  const dynamicColors = Array.from(colorsSet).sort();
+  
+  return <QuickFilters availableColors={dynamicColors} />;
 }
 
 async function ProductGrid({ filters }: { filters: any }) {

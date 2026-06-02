@@ -2,6 +2,7 @@ import { adminDb } from "@/lib/firebase-admin";
 import { Product } from "@/types";
 import { ProductSchema } from "./schemas";
 import { FilterOptions } from "./productService";
+import { getColorFamily } from "@/utils/colorMap";
 
 export const COLLECTION_NAME = "produtos";
 
@@ -110,7 +111,6 @@ export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<
         if (category) query = query.where("category", "==", category);
         if (department) query = query.where("department", "==", department);
         if (size) query = query.where("sizes", "array-contains", size);
-        if (color) query = query.where("color", "==", color);
         if (featured !== undefined) query = query.where("featured", "==", featured);
         if (minPrice !== undefined) query = query.where("price", ">=", minPrice);
         if (maxPrice !== undefined) query = query.where("price", "<=", maxPrice);
@@ -125,8 +125,13 @@ export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<
             if (data.isActive !== false && p) products.push(p);
         });
         
-        products.sort((a, b) => a.price - b.price);
-        return products;
+        let finalProducts = products;
+        if (color) {
+            finalProducts = finalProducts.filter(p => getColorFamily(p.color) === color);
+        }
+        
+        finalProducts.sort((a, b) => a.price - b.price);
+        return finalProducts;
     } catch (error) {
         console.error("⚠️ [getFilteredProductsAdmin] Falha:", error);
         return [];

@@ -4,6 +4,7 @@ import QuickFilters from "@/features/catalog/components/QuickFilters";
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
+import { getColorFamily } from "@/utils/colorMap";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 
@@ -67,7 +68,7 @@ export default async function CollectionPage({
    </Suspense>
 
           <Suspense fallback={<div className="h-10 w-24 bg-gray-200 animate-pulse"></div>}>
-            <QuickFilters />
+            <QuickFiltersWrapper baseFilters={{ category: activeFilters.category }} />
           </Suspense>
  </div>
  </div>
@@ -100,6 +101,17 @@ async function ProductCounter({ filters }: { filters: any }) {
       {products.length} Equipamentos
     </span>
   );
+}
+
+async function QuickFiltersWrapper({ baseFilters }: { baseFilters: any }) {
+  const allProducts = await getFilteredProductsAdmin(baseFilters);
+  const colorsSet = new Set<string>();
+  allProducts.forEach(p => {
+    if (p.color) colorsSet.add(getColorFamily(p.color));
+  });
+  const dynamicColors = Array.from(colorsSet).sort();
+  
+  return <QuickFilters availableColors={dynamicColors} />;
 }
 
 async function ProductGrid({ filters }: { filters: any }) {

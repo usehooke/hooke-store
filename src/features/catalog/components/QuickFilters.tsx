@@ -4,15 +4,20 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
 const SIZES = ["Todos", "P", "M", "G", "GG"];
-const COLORS = ["Todas", "Preto", "Branco", "Off-White", "Marinho", "Cinza", "Areia"];
 
-export default function QuickFilters() {
+interface QuickFiltersProps {
+  availableColors?: string[];
+}
+
+export default function QuickFilters({ availableColors = [] }: QuickFiltersProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   const currentSize = searchParams?.get("size") || "Todos";
   const currentColor = searchParams?.get("color") || "Todas";
+
+  const FINAL_COLORS = ["Todas", ...availableColors.filter(c => c !== "Todas")];
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -50,9 +55,10 @@ export default function QuickFilters() {
         </div>
 
         {/* Cores */}
-        <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
-          <span className="text-[9px] font-black tracking-widest uppercase text-gray-400 shrink-0">Cor</span>
-          {COLORS.map((color) => (
+        {FINAL_COLORS.length > 1 && (
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
+            <span className="text-[9px] font-black tracking-widest uppercase text-gray-400 shrink-0">Cor</span>
+            {FINAL_COLORS.map((color) => (
             <button
               key={color}
               onClick={() => router.push(`${pathname}?${createQueryString("color", color)}`, { scroll: false })}
@@ -65,7 +71,8 @@ export default function QuickFilters() {
               {color}
             </button>
           ))}
-        </div>
+          </div>
+        )}
 
       </div>
     </div>
