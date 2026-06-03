@@ -60,6 +60,7 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
             className="object-cover object-top"
             priority={priority}
             loading={priority ? undefined : "lazy"}
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
             deliveryType={imageProps.deliveryType}
             format="avif"
             quality="auto"
