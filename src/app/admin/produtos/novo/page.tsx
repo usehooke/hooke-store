@@ -1,12 +1,48 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { MagicDropzone } from '@/features/catalog/components/MagicDropzone';
 import { ProductForm, ProductFormHandle } from '@/features/catalog/components/ProductForm';
-import { ShieldCheck, Zap } from 'lucide-react';
+import { ShieldCheck, Zap, Copy } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { toast } from 'sonner';
 
-export default function NewProductPage() {
+function NewProductContent() {
   const formRef = useRef<ProductFormHandle>(null);
+  const searchParams = useSearchParams();
+  const copyFromId = searchParams.get('copyFrom');
+  const [isLoadingCopy, setIsLoadingCopy] = useState(!!copyFromId);
+
+  useEffect(() => {
+    async function loadCopiedProduct() {
+      if (!copyFromId || !db) return;
+      try {
+        const docRef = doc(db, 'produtos', copyFromId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          // Remove campos sensíveis da cópia (id, sku, quantidade zerada, etc se precisar)
+          const productCopy = { ...data, id: '' };
+          
+          setTimeout(() => {
+            if (formRef.current) {
+              formRef.current.setValues(productCopy);
+              toast.success('Modelo carregado para cópia!');
+            }
+          }, 500);
+        } else {
+          toast.error('Produto de origem não encontrado.');
+        }
+      } catch (e) {
+        toast.error('Erro ao carregar cópia.');
+      } finally {
+        setIsLoadingCopy(false);
+      }
+    }
+    loadCopiedProduct();
+  }, [copyFromId]);
 
   const handleAnalysisComplete = (data: any) => {
     if (formRef.current) {
@@ -22,7 +58,7 @@ export default function NewProductPage() {
           <div className="flex items-center gap-4">
             <span className="w-12 h-0.5 bg-black" />
             <p className="text-[10px] font-black tracking-[0.5em] uppercase text-black flex items-center gap-2">
-              Arsenal Hooke • Cadastro Mágico
+              Arsenal Hooke • {copyFromId ? 'Clonagem de Modelo' : 'Cadastro Mágico'}
               <Zap size={10} className="text-black fill-black" />
             </p>
           </div>
@@ -65,5 +101,13 @@ export default function NewProductPage() {
         <span className="text-[8px] font-black uppercase tracking-[0.5em]">Hooke OS v15.0 // AI Orchestration</span>
       </footer>
     </div>
+  );
+}
+
+export default function NewProductPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center uppercase font-black text-xs">Carregando Módulo...</div>}>
+      <NewProductContent />
+    </Suspense>
   );
 }

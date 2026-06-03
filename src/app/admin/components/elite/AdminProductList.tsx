@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import { 
   Eye, EyeOff, Edit3, Trash2, 
-  Search, Plus, 
+  Search, Plus, Copy,
   CheckCircle2, RefreshCw,
   LayoutList, Grid3X3
 } from "lucide-react";
@@ -263,9 +263,10 @@ export function AdminProductList({
                           />
                         </div>
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
-                            <button onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform">{p.isActive ? <Eye size={18} /> : <EyeOff size={18} />}</button>
-                            <button onClick={(e) => { e.stopPropagation(); onEdit(p); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform"><Edit3 size={18} /></button>
-                            <button onClick={(e) => { e.stopPropagation(); onDelete(p.id, p.name); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-red-500 hover:scale-110 transition-transform"><Trash2 size={18} /></button>
+                            <button onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform" title="Visibilidade">{p.isActive ? <Eye size={18} /> : <EyeOff size={18} />}</button>
+                            <button onClick={(e) => { e.stopPropagation(); onEdit(p); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform" title="Editar"><Edit3 size={18} /></button>
+                            <button onClick={(e) => { e.stopPropagation(); window.location.href = `/admin/produtos/novo?copyFrom=${p.id}`; }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-black hover:scale-110 transition-transform" title="Duplicar Modelo"><Copy size={18} /></button>
+                            <button onClick={(e) => { e.stopPropagation(); onDelete(p.id, p.name); }} className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-red-500 hover:scale-110 transition-transform" title="Excluir"><Trash2 size={18} /></button>
                         </div>
                       </div>
                       <div className="p-4 flex-1 flex flex-col justify-between border-t border-black/[0.05]">
@@ -337,6 +338,7 @@ export function AdminProductList({
                       <div className="flex items-center gap-2 pr-4 border-l border-black/[0.03] pl-4 ml-4">
                         <button onClick={() => onToggleActive(p.id, p.isActive !== false)} title="Status" className="p-2 text-zinc-300 hover:text-black transition-colors">{p.isActive ? <Eye size={14} /> : <EyeOff size={14} />}</button>
                         <button onClick={() => onEdit(p)} title="Editar" className="p-2 text-zinc-300 hover:text-black transition-colors"><Edit3 size={14} /></button>
+                        <button onClick={() => window.location.href = `/admin/produtos/novo?copyFrom=${p.id}`} title="Duplicar Modelo" className="p-2 text-zinc-300 hover:text-black transition-colors"><Copy size={14} /></button>
                         <button onClick={() => onSync(p)} title="Sincronizar" className="p-2 text-zinc-300 hover:text-amber-500 transition-colors"><RefreshCw size={14} className={(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''} /></button>
                         <button onClick={() => onDelete(p.id, p.name)} title="Excluir" className="p-2 text-zinc-200 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                       </div>
