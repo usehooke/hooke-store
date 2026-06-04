@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { brandConfig } from '@/config/brandConfig';
+import crypto from 'crypto';
 
 
 
@@ -23,6 +24,20 @@ export async function POST(req: Request) {
       }, { status: 200 }); // Retornamos 200 para o frontend não tratar como falha de rede
     }
 
+    let hashedEm = userData?.em;
+    let hashedPh = userData?.ph;
+
+    // Se houver email e não parecer um hash (hash sha256 tem 64 chars)
+    if (hashedEm && hashedEm.length !== 64) {
+      hashedEm = crypto.createHash('sha256').update(hashedEm.trim().toLowerCase()).digest('hex');
+    }
+    
+    // Se houver phone e não parecer um hash
+    if (hashedPh && hashedPh.length !== 64) {
+      const cleanPhone = hashedPh.replace(/\D/g, "");
+      hashedPh = cleanPhone ? crypto.createHash('sha256').update(cleanPhone).digest('hex') : undefined;
+    }
+
     const payload = {
       data: [
         {
@@ -34,7 +49,9 @@ export async function POST(req: Request) {
           user_data: {
             client_ip_address: req.headers.get('x-forwarded-for') || '127.0.0.1',
             client_user_agent: req.headers.get('user-agent'),
-            ...userData
+            ...userData,
+            em: hashedEm,
+            ph: hashedPh,
           },
           custom_data: customData,
         },
@@ -43,7 +60,7 @@ export async function POST(req: Request) {
     };
 
     const response = await fetch(
-      `https://graph.facebook.com/v18.0/${pixelId}/events?access_token=${accessToken}`,
+      `https://graph.facebook.com/v22.0/${pixelId}/events?access_token=${accessToken}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

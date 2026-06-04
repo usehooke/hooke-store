@@ -44,7 +44,8 @@ export const metadata: Metadata = {
   },
   description: brandConfig.description,
   keywords: [
-    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino", "algodão egípcio", "oversized premium"
+    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino", "algodão egípcio", "oversized premium",
+    "Camiseta Básica Premium", "Algodão Sustentável", "Direto de Fábrica"
   ],
   verification: {
     google: "F1l-lLTgz0IA50BtjKavSlVt3WTmh3DANMB5gr2bmnk",

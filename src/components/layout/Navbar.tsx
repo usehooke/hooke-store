@@ -56,13 +56,13 @@ export default function Navbar() {
 
   return (
     <>
-      <nav 
+      <header 
         className={`sticky top-0 z-40 w-full bg-white transition-all duration-300 ${
           isScrolled ? "border-b border-gray-100 shadow-sm" : "border-b border-transparent"
         }`}
       >
         <div className="w-full px-6 md:px-12">
-          <div className="flex justify-between items-center h-20">
+          <nav className="flex justify-between items-center h-20" aria-label="Navegação Principal">
             
             {/* 1. ESQUERDA */}
             <div className="flex-1 flex items-center justify-start">
@@ -112,7 +112,7 @@ export default function Navbar() {
                 <Search strokeWidth={1.5} size={20} />
               </button>
 
-              <Link href="/meus-pedidos" className="hidden md:flex w-11 h-11 items-center justify-center text-hooke-900 hover:text-gray-500 transition-colors">
+              <Link href="/meus-pedidos" aria-label="Minha Conta" className="hidden md:flex w-11 h-11 items-center justify-center text-hooke-900 hover:text-gray-500 transition-colors">
                 <User strokeWidth={1.5} size={20} />
               </Link>
 
@@ -130,9 +130,9 @@ export default function Navbar() {
               </button>
             </div>
 
-          </div>
+          </nav>
         </div>
-      </nav>
+      </header>
 
       {/* MENU MOBILE */}
       <div className={`fixed inset-0 z-50 flex ${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>

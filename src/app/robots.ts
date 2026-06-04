@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api', '/checkout', '/login', '/hq'],
+        disallow: ['/admin', '/api', '/checkout', '/login', '/hq', '/meus-pedidos'],
       },
     ],
     sitemap: 'https://www.usehooke.com.br/sitemap.xml',

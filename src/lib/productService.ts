@@ -86,6 +86,7 @@ export async function getProducts(category?: string): Promise<Product[]> {
                 const p = mapToProduct(doc.id, data);
                 if (data.isActive !== false && p) products.push(p);
             });
+            products.sort((a, b) => (a.order || 0) - (b.order || 0));
             return products;
         },
         [] as Product[]
@@ -131,6 +132,7 @@ export async function getFeaturedProducts(limitCount: number = 8): Promise<Produ
                 const p = mapToProduct(doc.id, data);
                 if (data.isActive !== false && p) products.push(p);
             });
+            products.sort((a, b) => (a.order || 0) - (b.order || 0));
             return products;
         },
         [] as Product[]
@@ -185,8 +187,13 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
                 finalProducts = finalProducts.filter(p => getColorFamily(p.color) === color);
             }
             
-            // Ordenação em Memória (Bypass no Composite Index do Firebase)
-            finalProducts.sort((a, b) => a.price - b.price);
+            // Ordenação em Memória: Primeiro por order, depois por preço
+            finalProducts.sort((a, b) => {
+                if (a.order !== b.order) {
+                    return (a.order || 0) - (b.order || 0);
+                }
+                return a.price - b.price;
+            });
             
             return finalProducts;
         },

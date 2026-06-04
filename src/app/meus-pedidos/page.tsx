@@ -8,6 +8,7 @@ import { Order } from "@/types/order";
 import { Package, Search, ChevronLeft, CreditCard } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import PurchaseTracker from "./PurchaseTracker";
 
 function MyOrdersContent() {
  const searchParams = useSearchParams();
@@ -290,6 +291,7 @@ export default function MyOrdersPage() {
  </div>
  }>
  <MyOrdersContent />
+ <PurchaseTracker />
  </Suspense>
  );
 }

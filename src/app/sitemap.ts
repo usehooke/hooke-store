@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 1. Gera links para todos os produtos automaticamente
   const productUrls = products.map((product) => ({
     url: `${baseUrl}/produto/${product.slug || product.id}`,
-    lastModified: new Date(),
+    lastModified: product.updatedAt ? new Date(product.updatedAt) : (product.createdAt ? new Date(product.createdAt) : new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));

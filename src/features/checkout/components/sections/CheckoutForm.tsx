@@ -49,15 +49,15 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
   useEffect(() => {
     if (customer.phone.length >= 14 && items.length > 0) {
        const timer = setTimeout(() => {
-          fetch("/api/analytics/capi", {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({
-               eventName: "InitiateCheckout",
-               userData: { phone: customer.phone.replace(/\D/g, ''), em: customer.email, fn: customer.name },
-               customData: { value: totalGeral, currency: "BRL", content_ids: items.map(i => i.id) }
-             })
-          }).catch(() => {});
+          trackEvent("InitiateCheckout", {
+             content_ids: items.map(i => i.id),
+             value: totalGeral,
+             userData: {
+                phone: customer.phone.replace(/\D/g, ''),
+                em: customer.email,
+                fn: customer.name
+             }
+          });
        }, 2500);
        return () => clearTimeout(timer);
     }

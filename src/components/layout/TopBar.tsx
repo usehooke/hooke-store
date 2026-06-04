@@ -1,6 +1,6 @@
 export default function TopBar() {
  return (
- <div suppressHydrationWarning className="bg-hooke-900 text-white overflow-hidden relative z-50 border-b border-gray-800">
+ <div suppressHydrationWarning className="bg-hooke-900 text-white overflow-hidden relative z-50 border-b border-gray-800 h-9">
  {/* Container que desliza */}
  <div suppressHydrationWarning className="animate-marquee flex gap-12 min-w-full items-center py-2.5">
 

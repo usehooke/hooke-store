@@ -6,11 +6,28 @@ import Link from "next/link";
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import { getColorFamily } from "@/utils/colorMap";
 import { Metadata } from "next";
-import { headers } from "next/headers";
 
 export const metadata: Metadata = {
  title: "Coleção Completa | Hooke",
  description: "Descubra a coleção completa de camisetas oversized, regatas e kits premium.",
+ alternates: {
+   canonical: "https://www.usehooke.com.br/colecao",
+ },
+ openGraph: {
+   title: "Coleção Completa | Hooke",
+   description: "Descubra a coleção completa de camisetas oversized, regatas e kits premium.",
+   url: "https://www.usehooke.com.br/colecao",
+   siteName: "Hooke",
+   images: [{ url: "/banner-home.jpg", width: 1200, height: 630 }],
+   locale: "pt_BR",
+   type: "website",
+ },
+ twitter: {
+   card: "summary_large_image",
+   title: "Coleção Completa | Hooke",
+   description: "Descubra a coleção completa de camisetas oversized, regatas e kits premium.",
+   images: ["/banner-home.jpg"],
+ },
 };
 
 
@@ -19,7 +36,6 @@ export default async function CollectionPage({
 }: { 
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
 }) {
-  headers();
   const params = await searchParams;
   const activeFilters = {
     category: typeof params.category === 'string' ? params.category : undefined,
@@ -130,12 +146,25 @@ async function ProductGrid({ filters }: { filters: any }) {
     );
   }
 
+  const itemListLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": products.map((product, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://www.usehooke.com.br/produto/${product.slug || product.id}`
+    }))
+  };
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-8">
-      {products.map((product, index) => (
-        <ProductCard key={product.id} product={product} priority={index < 4} />
-      ))}
-    </div>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-8">
+        {products.map((product, index) => (
+          <ProductCard key={product.id} product={product} priority={index < 4} />
+        ))}
+      </div>
+    </>
   );
 }
 

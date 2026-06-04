@@ -22,14 +22,14 @@ export default function BottomNav() {
     const pathname = usePathname() || "";
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#F5F5F5]/80 backdrop-blur-md border-t border-white shadow-[0_-4px_10px_rgba(209,209,209,0.3)]">
+        <nav aria-label="Navegação Principal Mobile" className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#F5F5F5]/80 backdrop-blur-md border-t border-white shadow-[0_-4px_10px_rgba(209,209,209,0.3)]">
             <div className="flex justify-between items-center px-6 py-4 max-w-md mx-auto">
                 {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href;
                     const Icon = item.icon;
 
                     return (
-                        <Link key={item.name} href={item.href} className="relative flex flex-col items-center">
+                        <Link key={item.name} href={item.href} aria-label={item.name} className="relative flex flex-col items-center">
                             <motion.div
                                 whileTap={{ scale: 0.9 }}
                                 className={`

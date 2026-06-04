@@ -21,9 +21,14 @@ export async function getAdminProducts(): Promise<Product[]> {
       if (p) products.push(p);
     });
 
-    // Ordenação em memória: mais recentes primeiro (pode ser ajustado)
-    // Se houver updatedAt, usamos ele, senão pelo preço
+    // Ordenação em memória: respeitar a ordenação manual (order), ou fallback para data
     products.sort((a, b) => {
+      const orderA = (a as any).order || 0;
+      const orderB = (b as any).order || 0;
+      if (orderA !== orderB) {
+        return orderA - orderB; // Ascendente por padrão (0, 1, 2, 3...)
+      }
+      // Fallback para updatedAt se a ordem for igual
       const timeA = (a as any).updatedAt ? new Date((a as any).updatedAt).getTime() : 0;
       const timeB = (b as any).updatedAt ? new Date((b as any).updatedAt).getTime() : 0;
       return timeB - timeA;
@@ -69,6 +74,7 @@ function mapToProduct(docId: string, data: any): Product | null {
       isActive: data.isActive !== false, // Default true se não existir
       slug: data.slug || docId,
       tags: Array.isArray(data.tags) ? data.tags : [],
+      order: typeof data.order === 'number' ? data.order : 0,
     };
 
     const validation = productSchema.safeParse(rawBody);

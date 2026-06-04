@@ -4,6 +4,8 @@ import SsenseProductView from "@/components/shop/SsenseProductView";
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 
+export const revalidate = 3600; // SSG/ISR para o produto
+
 // Interface para os parâmetros da página (Promise no Next 15)
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -36,7 +38,11 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
         },
       ],
       locale: "pt_BR",
-      type: "website",
+      type: "product" as any,
+    },
+    other: {
+      "product:price:amount": product.price.toString(),
+      "product:price:currency": "BRL"
     },
     twitter: {
       card: "summary_large_image",
@@ -83,7 +89,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       "@type": "Brand",
       name: "HOOKE"
     },
-    material: product.details?.fabric || "Algodão Premium Heavyweight 260g",
+    material: product.details?.fabric || "Algodão Certificado BCI",
     color: (product.details as any)?.color || "Preto",
     audience: {
       "@type": "PeopleAudience",
@@ -105,6 +111,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         sku: `${product.id}-${size}`,
         priceCurrency: "BRL",
         price: product.price.toFixed(2),
+        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
         itemCondition: "https://schema.org/NewCondition",
@@ -148,6 +155,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         "@type": "Offer",
         priceCurrency: "BRL",
         price: product.price.toFixed(2),
+        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
         itemCondition: "https://schema.org/NewCondition"

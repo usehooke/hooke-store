@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CldImage } from "next-cloudinary";
+import Image from "next/image";
 import { useCartStore } from "@/store/cart-store";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types";
@@ -29,7 +30,7 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
       const publicId = filename.split('.')[0];
       return { src: publicId, deliveryType: 'upload' as const };
     }
-    if (src.startsWith('/')) return { src: `${siteUrl}${src}`, deliveryType: 'fetch' as const };
+    if (src.startsWith('/')) return { src: src, deliveryType: 'local' as const };
     return { src, deliveryType: 'fetch' as const };
   };
 
@@ -53,18 +54,29 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
       {/* Foto (Direta, sem zoom) */}
       <Link href={`/produto/${product.slug || product.id}`} className="block relative w-full aspect-[2/3] bg-zinc-100">
         {imageProps.src ? (
-          <CldImage
-            src={imageProps.src}
-            alt={product.name}
-            fill
-            className="object-cover object-top"
-            priority={priority}
-            loading={priority ? undefined : "lazy"}
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-            deliveryType={imageProps.deliveryType}
-            format="avif"
-            quality="auto"
-          />
+          imageProps.deliveryType === 'local' ? (
+            <Image
+              src={imageProps.src}
+              alt={product.name}
+              fill
+              className="object-cover object-top"
+              priority={priority}
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+            />
+          ) : (
+            <CldImage
+              src={imageProps.src}
+              alt={product.name}
+              fill
+              className="object-cover object-top"
+              priority={priority}
+              loading={priority ? undefined : "lazy"}
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+              deliveryType={imageProps.deliveryType as any}
+              format="avif"
+              quality="auto"
+            />
+          )
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-zinc-400 text-xs font-bold uppercase">Sem Foto</span>

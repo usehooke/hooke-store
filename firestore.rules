@@ -10,7 +10,7 @@ service cloud.firestore {
     
     // 📦 Pedidos: Cliente cria, Admin gerencia
     match /pedidos/{order} {
-      allow read: if request.auth != null && (resource.data.customerEmail == request.auth.token.email || request.auth.token.admin == true);
+      allow read: if request.auth != null && (resource.data.customer.email == request.auth.token.email || request.auth.token.admin == true);
       allow create: if true; // Permitimos criação anônima para checkout rápido
       allow update, delete: if request.auth != null && request.auth.token.admin == true;
     }

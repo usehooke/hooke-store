@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 function NewProductContent() {
   const formRef = useRef<ProductFormHandle>(null);
   const searchParams = useSearchParams();
-  const copyFromId = searchParams.get('copyFrom');
+  const copyFromId = searchParams?.get('copyFrom');
   const [isLoadingCopy, setIsLoadingCopy] = useState(!!copyFromId);
 
   useEffect(() => {

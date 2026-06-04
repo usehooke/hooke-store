@@ -89,3 +89,32 @@ export async function saveProduct(data: Partial<Product>, userEmail: string = 's
         return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
     }
 }
+
+export async function updateProductOrder(updates: { id: string; order: number }[], userEmail: string = 'system') {
+    if (!adminDb) return { success: false, message: "Admin DB indisponível" };
+
+    try {
+        const batch = adminDb!.batch();
+        
+        updates.forEach(({ id, order }) => {
+            const ref = adminDb!.collection('produtos').doc(id);
+            batch.update(ref, { order });
+        });
+
+        await batch.commit();
+
+        await logAdminAction('UPDATE_PRODUCT_ORDER', { updatedCount: updates.length }, userEmail);
+
+        // Elite Revalidation
+        // @ts-ignore
+        revalidateTag('products');
+        revalidatePath('/admin/produtos');
+        revalidatePath('/', 'layout');
+        revalidatePath('/colecao');
+
+        return { success: true };
+    } catch (err: unknown) {
+        console.error("❌ [Hooke System] Falha ao reordenar produtos:", err);
+        return { success: false, message: (err instanceof Error ? err.message : "Unknown error") };
+    }
+}

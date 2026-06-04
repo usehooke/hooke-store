@@ -14,7 +14,7 @@ const idempotencyCache = new Map<string, number>();
 function cleanIdempotencyCache() {
   const now = Date.now();
   for (const [key, timestamp] of idempotencyCache.entries()) {
-    if (now - timestamp > 15000) {
+    if (now - timestamp > 60000) {
       idempotencyCache.delete(key);
     }
   }
@@ -55,11 +55,56 @@ export async function POST(req: Request) {
         // (Já declarado acima do bloco de idempotency cache)
 
         // 1. Gera o ID temporário (Reference do Pedido na Hooke)
-        // Uma abordagem segura e leve para gerar IDs parecidos com chaves (ex: hooke-1708940...)
         const orderId = `hooke-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const subtotal = items.reduce((acc, item) => acc + item.unit_price * item.quantity, 0);
-        const totalAmount = subtotal + (shippingValue || 0) - (discountValue || 0);
+        // ==========================================
+        // 🔒 SECURITY ELITE: Recálculo Server-Side
+        // ==========================================
+        let calculatedSubtotal = 0;
+        const verifiedItems = [];
+
+        if (!adminDb) {
+            console.warn("⚠️ [Hooke System] Firebase ausente. Gerando link do Mercado Pago em Modo Standalone. PREÇOS NÃO VERIFICADOS.");
+            // Fallback (Inseguro, apenas para ambiente sem setup)
+            for (const item of items) {
+                calculatedSubtotal += item.unit_price * item.quantity;
+                verifiedItems.push(item);
+            }
+        } else {
+            // Verificação rigorosa contra manipulação de payload
+            for (const item of items) {
+                const productDoc = await adminDb.collection("produtos").doc(item.id).get();
+                
+                if (!productDoc.exists) {
+                    return NextResponse.json({ message: `Produto inválido ou indisponível: ${item.id}` }, { status: 400 });
+                }
+
+                const productData = productDoc.data();
+                const realPrice = Number(productData?.price || 0);
+
+                calculatedSubtotal += realPrice * item.quantity;
+
+                verifiedItems.push({
+                    ...item,
+                    unit_price: realPrice,
+                    title: productData?.name || item.title
+                });
+            }
+        }
+
+        // ==========================================
+        // 🎟️ VALIDAÇÃO ESTÁTICA DE CUPONS
+        // ==========================================
+        let calculatedDiscount = 0;
+        const upperCoupon = couponCode ? couponCode.toUpperCase().trim() : "";
+
+        if (upperCoupon === "HOOKE10") {
+            calculatedDiscount = calculatedSubtotal * 0.10; // 10% OFF
+        } else if (upperCoupon === "BEMVINDO5") {
+            calculatedDiscount = calculatedSubtotal * 0.05; // 5% OFF
+        }
+
+        const totalAmount = calculatedSubtotal + (shippingValue || 0) - calculatedDiscount;
 
         // 2. Prepara o Documento Inicial (Pending) no Firestore
         // MVP Pragmatismo Brutal: Firebase Desativado Localmente para Checkout 
@@ -70,14 +115,14 @@ export async function POST(req: Request) {
         const orderData: Order = {
             id: orderId,
             customer,
-            items,
+            items: verifiedItems,
             totalAmount,
             status: "pending",
             shippingValue: shippingValue || 0,
             shippingMethod: shippingMethod || "",
             shippingZipcode: shippingZipcode || "",
-            discountValue: discountValue || 0,
-            couponCode: couponCode || "",
+            discountValue: calculatedDiscount,
+            couponCode: calculatedDiscount > 0 ? upperCoupon : "",
             createdAt: Date.now(),
             updatedAt: Date.now()
         };
@@ -91,9 +136,9 @@ export async function POST(req: Request) {
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
         // MP não aceita itens negativos facilmente. Aplicar desconto sobre o unit_price proporcionalmente.
-        const discountMultiplier = discountValue ? (1 - (discountValue / subtotal)) : 1;
+        const discountMultiplier = calculatedDiscount ? (1 - (calculatedDiscount / calculatedSubtotal)) : 1;
 
-        const mpItems = items.map((i) => ({
+        const mpItems = verifiedItems.map((i) => ({
             id: i.id,
             title: `${i.title} (Tamanho: ${i.size})`,
             quantity: i.quantity,

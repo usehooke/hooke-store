@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { CldImage } from 'next-cloudinary';
+import Image from 'next/image';
 import { Product } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
@@ -30,7 +31,7 @@ const prepareImage = (src: string) => {
     return { src: publicId, deliveryType: 'upload' as const };
   }
   if (src.startsWith('/')) {
-    return { src: `${siteUrl}${src}`, deliveryType: 'fetch' as const };
+    return { src: src, deliveryType: 'local' as const };
   }
   return { src, deliveryType: 'fetch' as const };
 };
@@ -158,16 +159,26 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               transition={{ duration: 0.3 }}
               className="absolute inset-0"
             >
-              <CldImage
-                src={images[activeSlide].src}
-                alt={`${product.name} - Vista ${activeSlide + 1}`}
-                fill
-                className="object-cover object-top"
-                priority
-                deliveryType={images[activeSlide].deliveryType}
-                format="avif"
-                quality="auto"
-              />
+              {images[activeSlide].deliveryType === 'local' ? (
+                <Image
+                  src={images[activeSlide].src}
+                  alt={`${product.name} - Vista ${activeSlide + 1}`}
+                  fill
+                  className="object-cover object-top"
+                  priority
+                />
+              ) : (
+                <CldImage
+                  src={images[activeSlide].src}
+                  alt={`${product.name} - Vista ${activeSlide + 1}`}
+                  fill
+                  className="object-cover object-top"
+                  priority
+                  deliveryType={images[activeSlide].deliveryType as any}
+                  format="avif"
+                  quality="auto"
+                />
+              )}
             </motion.div>
           </AnimatePresence>
 
@@ -405,16 +416,26 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                 transition={{ duration: 0.7, delay: idx * 0.1 }}
                 className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
               >
-                <CldImage
-                  src={img.src}
-                  alt={`${product.name} - Vista ${idx + 1}`}
-                  fill
-                  className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
-                  priority={idx === 0}
-                  deliveryType={img.deliveryType}
-                  format="avif"
-                  quality="auto"
-                />
+                {img.deliveryType === 'local' ? (
+                  <Image
+                    src={img.src}
+                    alt={`${product.name} - Vista ${idx + 1}`}
+                    fill
+                    className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
+                    priority={idx === 0}
+                  />
+                ) : (
+                  <CldImage
+                    src={img.src}
+                    alt={`${product.name} - Vista ${idx + 1}`}
+                    fill
+                    className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
+                    priority={idx === 0}
+                    deliveryType={img.deliveryType as any}
+                    format="avif"
+                    quality="auto"
+                  />
+                )}
                 {idx === 0 && product.category && (
                   <div className="absolute top-4 left-4">
                     <span className="bg-black text-white text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1">

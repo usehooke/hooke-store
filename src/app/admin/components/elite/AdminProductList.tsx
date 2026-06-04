@@ -16,6 +16,24 @@ import { LookbookPDF } from "@/features/admin/components/pdf/LookbookPDF";
 import { createLookbook } from "@/actions/lookbook";
 import { toast } from "sonner";
 import { StoryComposer } from "@/features/admin/produtos/components/StoryComposer";
+import { updateProductOrder } from "../../actions/products";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableItem } from "./SortableItem";
 
 interface AdminProductListProps {
   products: Product[];
@@ -38,10 +56,52 @@ export function AdminProductList({
   const [activeTab, setActiveTab] = useState<"todos" | "masculino" | "feminino">("todos");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   
+  // Estado local para permitir Drag and Drop instantâneo
+  const [localProducts, setLocalProducts] = useState(products);
+
+  // Sincroniza props -> local quando produtos carregam, apenas se não estivermos movendo ativamente
+  useMemo(() => {
+    setLocalProducts(products);
+  }, [products]);
+  
   // Seleção em lote para o Lookbook
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [isComposerOpen, setIsComposerOpen] = useState(false);
+
+  // DnD Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const isDndEnabled = searchInput.trim() === "" && activeTab === "todos";
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const oldIndex = localProducts.findIndex((p) => p.id === active.id);
+      const newIndex = localProducts.findIndex((p) => p.id === over.id);
+      
+      const reordered = arrayMove(localProducts, oldIndex, newIndex);
+      
+      // Atualizar local
+      setLocalProducts(reordered);
+      
+      // Prepara o payload para envio. Mapeia a ordem absoluta.
+      const updates = reordered.map((p, index) => ({ id: p.id, order: index }));
+      
+      toast.promise(
+        updateProductOrder(updates),
+        {
+          loading: "Salvando a nova ordem...",
+          success: "Vitrine organizada!",
+          error: "Falha ao salvar a nova ordem.",
+        }
+      );
+    }
+  };
 
   const toggleSelect = (id: string) => {
     const newSet = new Set(selectedIds);
@@ -70,10 +130,10 @@ export function AdminProductList({
     return products.filter(p => selectedIds.has(p.id));
   }, [products, selectedIds]);
 
-  // Filtragem local instantânea super-otimizada com useMemo (0ms de latência)
+  // Filtragem local instantânea super-otimizada
   const filteredProducts = useMemo(() => {
     const term = searchInput.toLowerCase().trim();
-    return products.filter(p => {
+    return localProducts.filter(p => {
       const matchesSearch = !term || 
                            p.name.toLowerCase().includes(term) || 
                            p.id.toLowerCase().includes(term) ||
@@ -81,7 +141,7 @@ export function AdminProductList({
       const matchesTab = activeTab === "todos" || p.department === activeTab;
       return matchesSearch && matchesTab;
     });
-  }, [products, searchInput, activeTab]);
+  }, [localProducts, searchInput, activeTab]);
 
   const SkeletonItem = ({ mode }: { mode: "list" | "grid" }) => (
     <div className={`bg-white border border-black/[0.03] animate-pulse ${
@@ -227,8 +287,17 @@ export function AdminProductList({
           {[...Array(6)].map((_, i) => <SkeletonItem key={i} mode={viewMode} />)}
         </div>
       ) : (
-        <AnimatePresence mode="popLayout">
-          {viewMode === "grid" ? (
+        <DndContext 
+          sensors={sensors} 
+          collisionDetection={closestCenter} 
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext 
+            items={filteredProducts.map(p => p.id)}
+            strategy={viewMode === "grid" ? rectSortingStrategy : verticalListSortingStrategy}
+          >
+            <AnimatePresence mode="popLayout">
+              {viewMode === "grid" ? (
             /* Modo GRID Original Modernizado */
             <motion.div 
               initial={{ opacity: 0 }}
@@ -241,11 +310,10 @@ export function AdminProductList({
                 if (!p || !p.id || !p.name) return null;
 
                 try {
-                  return (
+                  const content = (
                     <motion.div 
                       layout
-                      key={p.id} 
-                      className={`group bg-white border border-black/[0.05] flex flex-col hover:border-black/20 transition-all ${!p.isActive ? "opacity-40 grayscale" : ""}`}
+                      className={`group bg-white border border-black/[0.05] flex flex-col hover:border-black/20 transition-all h-full ${!p.isActive ? "opacity-40 grayscale" : ""}`}
                     >
                       <div onClick={() => onEdit(p)} className="relative aspect-[3/4] bg-zinc-50 overflow-hidden cursor-pointer">
                         {p.imageUrl ? (
@@ -276,12 +344,22 @@ export function AdminProductList({
                         </div>
                         <div className="mt-3 flex items-center justify-between">
                           <span className="text-xs font-serif text-zinc-900">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.price)}</span>
-                          <button onClick={() => onSync(p)} className="p-1.5 border border-black/[0.05] hover:bg-zinc-50">
+                          <button onClick={() => onSync(p)} className="p-1.5 border border-black/[0.05] hover:bg-zinc-50 cursor-pointer pointer-events-auto">
                             {(p as Product & { syncStatus?: string }).syncStatus === 'synced' ? <CheckCircle2 size={12} className="text-emerald-500" /> : <RefreshCw size={12} className={`text-zinc-300 ${(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin text-amber-500' : ''}`} />}
                           </button>
                         </div>
                       </div>
                     </motion.div>
+                  );
+
+                  return isDndEnabled ? (
+                    <SortableItem key={p.id} id={p.id} isGrid={true}>
+                      {content}
+                    </SortableItem>
+                  ) : (
+                    <div key={p.id} className="h-full">
+                      {content}
+                    </div>
                   );
                 } catch (e) {
                   console.error("🔥 Crash silenciado no item:", p.id, e);
@@ -301,14 +379,14 @@ export function AdminProductList({
                 if (!p || !p.id || !p.name) return null;
                 
                 try {
-                  return (
-                    <div key={p.id} className={`flex items-center p-3 gap-6 hover:bg-zinc-50 transition-colors group ${!p.isActive ? "opacity-30 grayscale" : ""}`}>
+                  const content = (
+                    <div className={`flex items-center p-3 gap-6 hover:bg-zinc-50 transition-colors group ${!p.isActive ? "opacity-30 grayscale" : ""}`}>
                       <div className="relative h-16 w-12 bg-zinc-50 flex-shrink-0 cursor-pointer overflow-hidden border border-black/[0.05]" onClick={() => onEdit(p)}>
                         {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform" />}
                       </div>
                       
                       {/* Checkbox Brutalista para Lookbook */}
-                      <div className="flex-shrink-0 flex items-center justify-center">
+                      <div className="flex-shrink-0 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
                         <input 
                           type="checkbox" 
                           checked={selectedIds.has(p.id)}
@@ -335,13 +413,23 @@ export function AdminProductList({
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 pr-4 border-l border-black/[0.03] pl-4 ml-4">
-                        <button onClick={() => onToggleActive(p.id, p.isActive !== false)} title="Status" className="p-2 text-zinc-300 hover:text-black transition-colors">{p.isActive ? <Eye size={14} /> : <EyeOff size={14} />}</button>
-                        <button onClick={() => onEdit(p)} title="Editar" className="p-2 text-zinc-300 hover:text-black transition-colors"><Edit3 size={14} /></button>
-                        <button onClick={() => window.location.href = `/admin/produtos/novo?copyFrom=${p.id}`} title="Duplicar Modelo" className="p-2 text-zinc-300 hover:text-black transition-colors"><Copy size={14} /></button>
-                        <button onClick={() => onSync(p)} title="Sincronizar" className="p-2 text-zinc-300 hover:text-amber-500 transition-colors"><RefreshCw size={14} className={(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''} /></button>
-                        <button onClick={() => onDelete(p.id, p.name)} title="Excluir" className="p-2 text-zinc-200 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                      <div className="flex items-center gap-2 pr-4 border-l border-black/[0.03] pl-4 ml-4 pointer-events-auto">
+                        <button onClick={(e) => { e.stopPropagation(); onToggleActive(p.id, p.isActive !== false); }} title="Status" className="p-2 text-zinc-300 hover:text-black transition-colors">{p.isActive ? <Eye size={14} /> : <EyeOff size={14} />}</button>
+                        <button onClick={(e) => { e.stopPropagation(); onEdit(p); }} title="Editar" className="p-2 text-zinc-300 hover:text-black transition-colors"><Edit3 size={14} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); window.location.href = `/admin/produtos/novo?copyFrom=${p.id}`; }} title="Duplicar Modelo" className="p-2 text-zinc-300 hover:text-black transition-colors"><Copy size={14} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); onSync(p); }} title="Sincronizar" className="p-2 text-zinc-300 hover:text-amber-500 transition-colors"><RefreshCw size={14} className={(p as Product & { syncStatus?: string }).syncStatus === 'pending' ? 'animate-spin' : ''} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); onDelete(p.id, p.name); }} title="Excluir" className="p-2 text-zinc-200 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                       </div>
+                    </div>
+                  );
+
+                  return isDndEnabled ? (
+                    <SortableItem key={p.id} id={p.id}>
+                      {content}
+                    </SortableItem>
+                  ) : (
+                    <div key={p.id}>
+                      {content}
                     </div>
                   );
                 } catch (e) {
@@ -350,7 +438,9 @@ export function AdminProductList({
               })}
             </motion.div>
           )}
-        </AnimatePresence>
+            </AnimatePresence>
+          </SortableContext>
+        </DndContext>
       )}
 
       {filteredProducts.length === 0 && !isLoading && (

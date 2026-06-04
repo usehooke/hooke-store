@@ -1,18 +1,35 @@
 import { getProductsAdmin } from "@/lib/productServiceAdmin";
 import GalleryCard from "@/components/shop/GalleryCard";
 import React from "react";
-import { headers } from "next/headers";
+
+export const revalidate = 3600; // Atualiza o cache no Edge a cada 1 hora (ou quando forçar via Painel Admin)
 
 /**
  * Hooke MVP - Modo Conversão Direta
  * Vitrine simplificada apenas com produtos e botão de compra.
  */
 export default async function Home() {
-  headers(); // Opt-out do static rendering para revalidar produtos em tempo real
   const allProducts = await getProductsAdmin();
 
+  const websiteLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Hooke",
+    "url": "https://www.usehooke.com.br",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://www.usehooke.com.br/colecao?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
-    <main className="bg-white min-h-screen pb-24 md:pb-0">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
+      <main className="bg-white min-h-screen pb-24 md:pb-0">
 
       {/* Subtítulo Discreto (Sem duplicar o logo) */}
       <section className="pt-3 pb-3 px-4 md:px-8 lg:px-12 border-b border-zinc-100">
@@ -42,5 +59,6 @@ export default async function Home() {
         )}
       </section>
     </main>
+    </>
   );
 }

@@ -57,23 +57,24 @@ export const ProductSchema = z.object({
   }).optional(),
   stock: z.record(z.string(), z.number()).optional(),
   skus: z.record(z.string(), z.string()).optional(),
+  order: z.number().optional(),
 });
 
 export const OrderStatusSchema = z.enum(["pending", "approved", "in_process", "rejected", "cancelled", "sent", "paid", "shipped"]);
 
 export const CustomerSchema = z.object({
-  name: z.string().min(3, "Nome muito curto"),
-  email: z.string().email("Email inválido").optional().or(z.literal("")),
-  phone: z.string().min(10, "WhatsApp inválido").optional().or(z.literal("")),
+  name: z.string().trim().min(3, "Nome muito curto"),
+  email: z.string().trim().email("Email inválido").optional().or(z.literal("")),
+  phone: z.string().trim().min(10, "WhatsApp inválido").optional().or(z.literal("")),
   isVip: z.boolean().optional().default(false),
-  document: z.string().optional(),
+  document: z.string().trim().optional(),
   address: z.object({
-    zip_code: z.string(),
-    street_name: z.string().optional().default(""),
-    street_number: z.string().optional().default(""),
-    neighborhood: z.string().optional().default(""),
-    city: z.string().optional().default(""),
-    state: z.string().optional().default(""),
+    zip_code: z.string().trim(),
+    street_name: z.string().trim().optional().default(""),
+    street_number: z.string().trim().optional().default(""),
+    neighborhood: z.string().trim().optional().default(""),
+    city: z.string().trim().optional().default(""),
+    state: z.string().trim().optional().default(""),
   }).optional(),
 });
 
