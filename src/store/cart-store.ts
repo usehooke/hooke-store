@@ -28,6 +28,12 @@ export interface CustomerData {
   email: string;
   phone: string;
   isVip: boolean;
+  address?: {
+    street: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+  };
 }
 
 interface CartState {
@@ -67,7 +73,7 @@ export const useCartStore = create<CartState>()(
       shippingCost: null,
       shippingMethod: null,
       appliedCoupon: null,
-      customer: { name: "", email: "", phone: "", isVip: true },
+      customer: { name: "", email: "", phone: "", isVip: true, address: { street: "", neighborhood: "", city: "", state: "" } },
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),

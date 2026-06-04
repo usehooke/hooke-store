@@ -11,7 +11,7 @@ const formatter = new Intl.NumberFormat('pt-BR', {
 
 export default function ShippingSection() {
   const items = useCartStore(state => state.items);
-  const { shippingZipCode, shippingMethod, setShipping } = useCartStore();
+  const { shippingZipCode, shippingMethod, setShipping, setCustomer } = useCartStore();
   
   const [zipInput, setZipInput] = useState(shippingZipCode || "");
   const [isCalculating, setIsCalculating] = useState(false);
@@ -60,6 +60,22 @@ export default function ShippingSection() {
         throw new Error(data.message || "Erro ao calcular");
       }
 
+      // Busca ViaCEP Paralela para UX Zero Fricção
+      fetch(`https://viacep.com.br/ws/${zipInput}/json/`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.erro) {
+            setCustomer({
+              address: {
+                street: data.logradouro,
+                neighborhood: data.bairro,
+                city: data.localidade,
+                state: data.uf
+              }
+            });
+          }
+        }).catch(() => {}); // Ignora erros do ViaCEP silenciosamente
+
       setOptions(data.fretes);
     } catch (err) {
       setError("Serviço de frete instável. Tente novamente ou use o WhatsApp.");
@@ -78,7 +94,9 @@ export default function ShippingSection() {
       
       <div className="flex gap-2 mb-3">
         <input
-          type="text"
+          type="tel"
+          inputMode="numeric"
+          autoComplete="postal-code"
           placeholder="00000-000"
           value={zipInput}
           onChange={handleZipChange}

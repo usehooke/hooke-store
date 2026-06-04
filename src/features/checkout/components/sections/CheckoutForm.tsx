@@ -40,12 +40,27 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
   // Campos de endereço rápido
   const [street, setStreet] = useState("");
   const [number, setNumber] = useState("");
+  const numberInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Sincroniza a rua com o ViaCEP quando disponível
+  useEffect(() => {
+    if (customer.address?.street) {
+      setStreet(customer.address.street);
+    }
+  }, [customer.address?.street]);
+
+  // Autofocus no número assim que o frete for escolhido e a rua estiver preenchida
+  useEffect(() => {
+    if (shippingMethod && street) {
+      setTimeout(() => numberInputRef.current?.focus(), 100);
+    }
+  }, [shippingMethod, street]);
 
   // Totais (Cálculo Seguro) - Nota: O desconto de cupom será aplicado aqui se necessário
   // Por enquanto mantendo a lógica de valor fixo ou percentual vindo da store/api
   const totalGeral = subtotal - promoDiscount + (shippingCost || 0);
 
-  // --- PERSISTÊNCIA REATIVA (META CAPI ABANDONMENT) ---
+  // --- PERSISTÊNCIA REATIVA (META CAPI & ABANDONED CART) ---
   useEffect(() => {
     if (customer.phone.length >= 14 && items.length > 0) {
        const timer = setTimeout(() => {
@@ -62,6 +77,17 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
        return () => clearTimeout(timer);
     }
   }, [customer.phone, items, totalGeral, customer.name, customer.email]);
+
+  const saveDraftOrder = () => {
+    if (customer.phone.length >= 14 && items.length > 0) {
+      // Dispara silenciosamente o draft order no Firestore para recuperação futura
+      fetch("/api/checkout/abandoned", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer, items, total: totalGeral }),
+      }).catch(() => {});
+    }
+  };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -170,6 +196,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
             <input
               type="text"
               required
+              autoComplete="name"
               value={customer.name}
               onChange={(e) => setCustomer({ name: e.target.value })}
               className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
@@ -182,8 +209,11 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
             <input
               type="tel"
               required
+              inputMode="numeric"
+              autoComplete="tel-national"
               value={customer.phone}
               onChange={handlePhoneChange}
+              onBlur={saveDraftOrder}
               className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
               placeholder="(11) 90000-0000"
             />
@@ -202,6 +232,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
                 <input
                   type="text"
                   required
+                  autoComplete="address-line1"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
                   className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
@@ -211,8 +242,11 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
               <div className="w-1/3 space-y-1.5">
                 <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Número</label>
                 <input
-                  type="text"
+                  ref={numberInputRef}
+                  type="tel"
+                  inputMode="numeric"
                   required
+                  autoComplete="address-line2"
                   value={number}
                   onChange={(e) => setNumber(e.target.value)}
                   className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
@@ -244,18 +278,24 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isProcessing}
-            className="w-full bg-black text-white px-8 py-5 flex items-center justify-center gap-3 rounded-none text-xs font-black tracking-[0.3em] uppercase hover:bg-hooke-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_15px_30px_rgba(0,0,0,0.2)]"
-          >
-            {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-            {isProcessing ? 'PROCESSANDO...' : 'FINALIZAR PAGAMENTO'}
-          </button>
-          
-          <p className="text-center text-[9px] text-gray-400 font-bold uppercase tracking-widest opacity-60">
-            Checkout Seguro & Criptografado
-          </p>
+          <div className="space-y-1 mt-4">
+             <button
+               type="submit"
+               disabled={isProcessing}
+               className="w-full bg-black text-white px-8 py-5 flex items-center justify-center gap-3 rounded-none text-xs font-black tracking-[0.3em] uppercase hover:bg-hooke-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_15px_30px_rgba(0,0,0,0.2)]"
+             >
+               {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
+               {isProcessing ? 'PROCESSANDO...' : 'FINALIZAR PAGAMENTO'}
+             </button>
+             <div className="flex flex-col gap-0.5 mt-2">
+               <p className="text-center text-[9px] text-gray-500 font-bold uppercase tracking-widest flex justify-center items-center gap-1">
+                 🔐 Ambiente seguro Mercado Pago
+               </p>
+               <p className="text-center text-[9px] text-green-600 font-bold uppercase tracking-widest flex justify-center items-center gap-1">
+                 ✓ Estoque reservado por 20 minutos
+               </p>
+             </div>
+          </div>
         </form>
       </div>
     </div>

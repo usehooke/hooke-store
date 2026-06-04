@@ -10,7 +10,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Importações dos Componentes de Layout Globais
-import { Toaster } from "sonner";
+import dynamic from "next/dynamic";
+const Toaster = dynamic(() => import("sonner").then((mod) => mod.Toaster), { ssr: false });
 import { brandConfig } from "@/config/brandConfig";
 import TransitionProvider from "@/components/layout/TransitionProvider";
 import Providers from "@/components/layout/Providers";
@@ -116,7 +117,7 @@ export default function RootLayout({
         {GTM_ID && (
           <Script
             id="gtm-script"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
             dangerouslySetInnerHTML={{
               __html: `
                 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
