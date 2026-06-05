@@ -11,6 +11,8 @@ import { brandConfig } from "@/config/brandConfig";
  * Processa notificações de pagamento e atualiza o Firestore usando o Admin SDK.
  */
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const MPNotificationSchema = z.object({
     type: z.literal("payment"),
     "data.id": z.string().min(1)
@@ -49,10 +51,10 @@ export async function POST(req: Request) {
                     return NextResponse.json({ error: "Unauthorized. Invalid Signature." }, { status: 401 });
                 }
             } else {
-                console.warn("⚠️ [Hooke Security] Assinatura malformada.");
+                if (isDev) console.warn("⚠️ [Hooke Security] Assinatura malformada.");
             }
         } else {
-            console.warn("⚠️ [Hooke Security] Validação de assinatura ignorada (Faltam chaves ou headers).");
+            if (isDev) console.warn("⚠️ [Hooke Security] Validação de assinatura ignorada (Faltam chaves ou headers).");
         }
         // ==========================================
         
@@ -115,7 +117,7 @@ export async function POST(req: Request) {
                 
                 // Evitar duplo processamento (Idempotência a nível de banco)
                 if (currentData?.status === 'approved' && orderStatus === 'approved') {
-                    console.log(`[Hooke Webhook] Pedido ${externalReference} já estava aprovado. Ignorando baixa dupla.`);
+                    if (isDev) console.log(`[Hooke Webhook] Pedido ${externalReference} já estava aprovado. Ignorando baixa dupla.`);
                     return;
                 }
 
@@ -152,7 +154,7 @@ export async function POST(req: Request) {
                 });
             });
 
-            console.log(`✅ [Hooke Webhook] Pedido ${externalReference} atualizado para ${orderStatus}`);
+            if (isDev) console.log(`✅ [Hooke Webhook] Pedido ${externalReference} atualizado para ${orderStatus}`);
 
             // INÍCIO: NOTIFICAÇÃO WHATSAPP DE NOVA VENDA
             if (orderStatus === 'approved') {
@@ -183,11 +185,11 @@ export async function POST(req: Request) {
                                     text: message,
                                     message: message // Enviamos ambas as chaves para máxima compatibilidade
                                 })
-                            }).catch(e => console.warn(`⚠️ Falha na API do WhatsApp:`, e.message));
+                            }).catch(e => { if (isDev) console.warn(`⚠️ Falha na API do WhatsApp:`, e.message); });
                             
-                            console.log(`✅ [Hooke Webhook] Notificação de Venda disparada!`);
+                            if (isDev) console.log(`✅ [Hooke Webhook] Notificação de Venda disparada!`);
                         } else {
-                            console.log(`⚠️ [Hooke Webhook] WHATSAPP_API_URL não configurada. Venda não notificada.`);
+                            if (isDev) console.log(`⚠️ [Hooke Webhook] WHATSAPP_API_URL não configurada. Venda não notificada.`);
                         }
                     }
                 } catch (notifyErr) {
@@ -247,7 +249,7 @@ export async function POST(req: Request) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(payload),
                             });
-                            console.log(`✅ [Hooke Webhook] Evento Purchase enviado para Meta CAPI (Pedido: ${externalReference})`);
+                            if (isDev) console.log(`✅ [Hooke Webhook] Evento Purchase enviado para Meta CAPI (Pedido: ${externalReference})`);
                         }
                     }
                 } catch (metaErr) {
@@ -259,8 +261,9 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ success: true }, { status: 200 });
 
-    } catch (error: any) {
-        console.error("❌ [Hooke Webhook Error] Falha no processamento:", error?.message || error);
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error("❌ [Hooke Webhook Error] Falha no processamento:", errorMessage);
         return NextResponse.json({ error: "Internal processing error" }, { status: 500 });
     }
 }
