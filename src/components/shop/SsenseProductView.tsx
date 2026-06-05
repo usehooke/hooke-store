@@ -60,9 +60,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
   const addItem = useCartStore((state) => state.addItem);
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-  const installment = (product.price / 3).toFixed(2).replace('.', ',');
-  const rawImages = (product.images && product.images.length > 0 ? product.images : [product.imageUrl]).filter(Boolean);
-  const images = rawImages.map(img => prepareImage(img));
+  const installment = ((product?.price || 0) / 3).toFixed(2).replace('.', ',');
+  const rawImages = (product?.images?.length ? product.images : [product?.imageUrl || '/placeholder.png']).filter(Boolean);
+  const images = rawImages.length > 0 ? rawImages.map(img => prepareImage(img as string)) : [{ src: '/placeholder.png', deliveryType: 'local' as const }];
 
   // Dispara view_item GA4
   const trackEcommerceEvent = (eventName: string, size?: string) => {
@@ -72,8 +72,8 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
         event: eventName,
         ecommerce: {
           currency: 'BRL',
-          value: product.price,
-          items: [{ item_id: product.id, item_name: product.name, item_brand: 'HOOKE', item_category: product.category, price: product.price, item_variant: size || 'N/A', quantity: 1 }]
+          value: product?.price || 0,
+          items: [{ item_id: product?.id, item_name: product?.name, item_brand: 'HOOKE', item_category: product?.category, price: product?.price || 0, item_variant: size || 'N/A', quantity: 1 }]
         }
       });
     }
@@ -221,10 +221,10 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
           {/* Nome + Preço */}
           <div>
             <h1 className="text-2xl font-black tracking-tighter text-black uppercase leading-tight">
-              {product.name}
+              {product?.name || 'Produto'}
             </h1>
             <div className="flex items-baseline gap-3 mt-2">
-              <span className="text-2xl font-black text-black">{formatter.format(product.price)}</span>
+              <span className="text-2xl font-black text-black">{formatter.format(product?.price || 0)}</span>
               <span className="text-xs text-zinc-500">ou 3x de R$ {installment}</span>
             </div>
           </div>
@@ -234,9 +234,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <div className="space-y-3">
               <p className="text-[11px] font-black tracking-[0.2em] text-black uppercase">Cores Disponíveis</p>
               <div className="flex flex-wrap gap-2">
-                {variants.map((v) => {
-                  const isActive = v.id === product.id;
-                  const variantColor = v.color || v.name.split(' ').pop() || 'Cor';
+                {(variants || []).map((v) => {
+                  const isActive = v?.id === product?.id;
+                  const variantColor = v?.color || v?.name?.split(' ').pop() || 'Cor';
                   return (
                     <Link
                       key={v.id}
@@ -269,8 +269,8 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             </div>
 
             <div className="grid grid-cols-4 gap-2">
-              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
-                const isOutOfStock = product.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
+              {(product?.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
+                const isOutOfStock = product?.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
                 return (
                   <button
                     key={size}
@@ -367,7 +367,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-zinc-400">SKU</span>
-              <span className="truncate">{product.id}</span>
+              <span className="truncate">{product?.id || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -452,10 +452,10 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
 
             {/* Título + Preço */}
             <div className="border-b-2 border-black pb-5">
-              <span className="text-[9px] font-black tracking-[0.3em] uppercase text-zinc-400">{product.category}</span>
-              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none mt-2">{product.name}</h1>
+              <span className="text-[9px] font-black tracking-[0.3em] uppercase text-zinc-400">{product?.category || ''}</span>
+              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none mt-2">{product?.name || 'Produto'}</h1>
               <div className="flex items-baseline gap-3 mt-4">
-                <p className="text-2xl font-black text-black">{formatter.format(product.price)}</p>
+                <p className="text-2xl font-black text-black">{formatter.format(product?.price || 0)}</p>
                 <p className="text-[11px] text-zinc-500">3x R$ {installment}</p>
               </div>
             </div>
@@ -465,9 +465,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               <div className="space-y-3 mb-4">
                 <p className="text-[10px] font-black tracking-[0.2em] uppercase">Cores Disponíveis</p>
                 <div className="flex flex-wrap gap-2">
-                  {variants.map((v) => {
-                    const isActive = v.id === product.id;
-                    const variantColor = v.color || v.name.split(' ').pop() || 'Cor';
+                  {(variants || []).map((v) => {
+                    const isActive = v?.id === product?.id;
+                    const variantColor = v?.color || v?.name?.split(' ').pop() || 'Cor';
                     return (
                       <Link
                         key={v.id}
@@ -498,8 +498,8 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                 </button>
               </div>
               <div className="grid grid-cols-4 gap-2">
-                {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
-                  const isOutOfStock = product.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
+                {(product?.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
+                  const isOutOfStock = product?.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
                   return (
                     <button
                       key={size}
@@ -590,12 +590,12 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
           >
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black text-black uppercase truncate">{product.name}</p>
-              <p className="text-[11px] font-black text-black">{formatter.format(product.price)}</p>
+              <p className="text-[10px] font-black text-black uppercase truncate">{product?.name || 'Produto'}</p>
+              <p className="text-[11px] font-black text-black">{formatter.format(product?.price || 0)}</p>
             </div>
             <div className="flex gap-2">
-              {(product.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
-                const isOutOfStock = product.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
+              {(product?.sizes || ['P', 'M', 'G', 'GG']).map((size: string) => {
+                const isOutOfStock = product?.stock ? (product.stock[size] !== undefined && product.stock[size] <= 0) : false;
                 return (
                   <button
                     key={size}

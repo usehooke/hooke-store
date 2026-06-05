@@ -22,11 +22,11 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const previewImage = product.imageUrl || '/banner-home.jpg';
 
   return {
-    title: `${product.name} | Hooke Elite`,
-    description: product.description || "Equipamento premium projetado para a permanência absoluta.",
+    title: product?.name ? `${product.name} | Hooke Elite` : 'Produto Exclusivo | Hooke Elite',
+    description: product?.description || "Equipamento premium projetado para a permanência absoluta.",
     openGraph: {
-      title: product.name,
-      description: product.description,
+      title: product?.name || 'Hooke Elite',
+      description: product?.description || 'Equipamento premium',
       url: `https://www.usehooke.com.br/produto/${slug}`,
       siteName: "Hooke",
       images: [
@@ -34,20 +34,20 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
           url: previewImage,
           width: 1200,
           height: 630,
-          alt: product.name,
+          alt: product?.name || 'Hooke',
         },
       ],
       locale: "pt_BR",
       type: "product" as any,
     },
     other: {
-      "product:price:amount": product.price.toString(),
+      "product:price:amount": (product?.price || 0).toString(),
       "product:price:currency": "BRL"
     },
     twitter: {
       card: "summary_large_image",
-      title: product.name,
-      description: product.description,
+      title: product?.name || 'Hooke Elite',
+      description: product?.description || 'Equipamento premium',
       images: [previewImage],
     },
   };
@@ -80,20 +80,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const jsonLd: any = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
-    image: product.imageUrl,
-    description: product.description || "Equipamento premium projetado para a permanência absoluta.",
-    sku: product.id,
-    mpn: product.id,
+    name: product?.name || 'Produto',
+    image: product?.imageUrl || '',
+    description: product?.description || "Equipamento premium projetado para a permanência absoluta.",
+    sku: product?.id || 'SKU',
+    mpn: product?.id || 'MPN',
     brand: {
       "@type": "Brand",
       name: "HOOKE"
     },
-    material: product.details?.fabric || "Algodão Certificado BCI",
-    color: (product.details as any)?.color || "Preto",
+    material: product?.details?.fabric || "Algodão Certificado BCI",
+    color: (product?.details as any)?.color || "Preto",
     audience: {
       "@type": "PeopleAudience",
-      suggestedGender: product.department === "feminino" ? "female" : product.department === "masculino" ? "male" : "unisex"
+      suggestedGender: product?.department === "feminino" ? "female" : product?.department === "masculino" ? "male" : "unisex"
     },
     itemCondition: "https://schema.org/NewCondition",
 
@@ -102,15 +102,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
       "@type": "AggregateOffer",
       url: productUrl,
       priceCurrency: "BRL",
-      lowPrice: product.price.toFixed(2),
-      highPrice: product.price.toFixed(2),
-      offerCount: product.sizes?.length || 1,
-      offers: (product.sizes && product.sizes.length > 0) ? product.sizes.map(size => ({
+      lowPrice: (product?.price || 0).toFixed(2),
+      highPrice: (product?.price || 0).toFixed(2),
+      offerCount: product?.sizes?.length || 1,
+      offers: (product?.sizes && product.sizes.length > 0) ? product.sizes.map(size => ({
         "@type": "Offer",
-        name: `${product.name} - Tamanho ${size}`,
-        sku: `${product.id}-${size}`,
+        name: `${product?.name || 'Produto'} - Tamanho ${size}`,
+        sku: `${product?.id || 'ID'}-${size}`,
         priceCurrency: "BRL",
-        price: product.price.toFixed(2),
+        price: (product?.price || 0).toFixed(2),
         priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
@@ -154,7 +154,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       })) : [{
         "@type": "Offer",
         priceCurrency: "BRL",
-        price: product.price.toFixed(2),
+        price: (product?.price || 0).toFixed(2),
         priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
@@ -177,13 +177,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {
         "@type": "ListItem",
         position: 2,
-        name: product.department ? product.department.charAt(0).toUpperCase() + product.department.slice(1) : "Loja",
-        item: product.department ? `https://www.usehooke.com.br/${product.department}` : "https://www.usehooke.com.br"
+        name: product?.department ? product.department.charAt(0).toUpperCase() + product.department.slice(1) : "Loja",
+        item: product?.department ? `https://www.usehooke.com.br/${product.department}` : "https://www.usehooke.com.br"
       },
       {
         "@type": "ListItem",
         position: 3,
-        name: product.name,
+        name: product?.name || 'Produto',
         item: productUrl
       }
     ]
