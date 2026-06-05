@@ -317,7 +317,7 @@ export function AdminProductList({
                     >
                       <div onClick={() => onEdit(p)} className="relative aspect-[3/4] bg-zinc-50 overflow-hidden cursor-pointer">
                         {p.imageUrl ? (
-                          <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                          <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-zinc-200"><Plus size={32} strokeWidth={1} /></div>
                         )}
@@ -382,7 +382,7 @@ export function AdminProductList({
                   const content = (
                     <div className={`flex items-center p-3 gap-6 hover:bg-zinc-50 transition-colors group ${!p.isActive ? "opacity-30 grayscale" : ""}`}>
                       <div className="relative h-16 w-12 bg-zinc-50 flex-shrink-0 cursor-pointer overflow-hidden border border-black/[0.05]" onClick={() => onEdit(p)}>
-                        {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill className="object-cover group-hover:scale-110 transition-transform" />}
+                        {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-110 transition-transform" />}
                       </div>
                       
                       {/* Checkbox Brutalista para Lookbook */}

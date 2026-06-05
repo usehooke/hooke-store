@@ -101,6 +101,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
       <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" />
         <script dangerouslySetInnerHTML={{ __html: `
           if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
