@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
         },
       ],
       locale: "pt_BR",
-      type: "product" as any,
+      type: "website",
     },
     other: {
       "product:price:amount": (product?.price || 0).toString(),
