@@ -148,62 +148,54 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
           ============================================ */}
       <div className="md:hidden">
 
-        {/* CARROSSEL FULL-WIDTH */}
-        <div className="relative w-full aspect-[3/4] bg-zinc-100 overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSlide}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0"
-            >
-              {images[activeSlide].deliveryType === 'local' ? (
-                <Image
-                  src={images[activeSlide].src}
-                  alt={`${product.name} - Vista ${activeSlide + 1}`}
-                  fill
-                  className="object-cover object-top"
-                  priority
-                />
-              ) : (
-                <CldImage
-                  src={images[activeSlide].src}
-                  alt={`${product.name} - Vista ${activeSlide + 1}`}
-                  fill
-                  className="object-cover object-top"
-                  priority
-                  deliveryType={images[activeSlide].deliveryType as any}
-                  format="avif"
-                  quality="auto"
-                />
-              )}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navegação do Carrossel */}
-          {images.length > 1 && (
-            <>
-              <button onClick={prevSlide} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 backdrop-blur-sm flex items-center justify-center border border-black/10 shadow">
-                <ChevronLeft size={18} />
-              </button>
-              <button onClick={nextSlide} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 backdrop-blur-sm flex items-center justify-center border border-black/10 shadow">
-                <ChevronRight size={18} />
-              </button>
-            </>
-          )}
-
-          {/* Progress Dots */}
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveSlide(i)}
-                className={`h-1.5 transition-all duration-300 ${i === activeSlide ? 'w-6 bg-black' : 'w-1.5 bg-black/30'}`}
-              />
+        {/* CARROSSEL FULL-WIDTH (SWIPE NATIVO) */}
+        <div className="relative w-full aspect-[3/4] bg-zinc-100 overflow-hidden group">
+          
+          <div 
+            className="flex w-full h-full overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            onScroll={(e) => {
+              const scrollLeft = e.currentTarget.scrollLeft;
+              const width = e.currentTarget.clientWidth;
+              if(width > 0) setActiveSlide(Math.round(scrollLeft / width));
+            }}
+          >
+            {images.map((img: any, i: number) => (
+              <div key={i} className="flex-none w-full h-full snap-start relative">
+                {img.deliveryType === 'local' ? (
+                  <Image
+                    src={img.src}
+                    alt={`${product?.name || 'Produto'} - Vista ${i + 1}`}
+                    fill
+                    className="object-cover object-top"
+                    priority={i === 0}
+                  />
+                ) : (
+                  <CldImage
+                    src={img.src}
+                    alt={`${product?.name || 'Produto'} - Vista ${i + 1}`}
+                    fill
+                    className="object-cover object-top"
+                    priority={i === 0}
+                    deliveryType={img.deliveryType as any}
+                    format="avif"
+                    quality="auto"
+                  />
+                )}
+              </div>
             ))}
           </div>
+
+          {/* Navegação do Carrossel (Apenas visível se forçando uso no mobile, mas focamos no swipe. Vamos esconder por padrão e focar nas bolinhas) */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+              {images.map((_: any, i: number) => (
+                <div
+                  key={i}
+                  className={`h-1 transition-all duration-300 rounded-full ${i === activeSlide ? 'w-8 bg-black' : 'w-2 bg-black/20'}`}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Tag VIP */}
           {product.category && (
@@ -639,14 +631,19 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-sm bg-white p-6 shadow-2xl"
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="absolute bottom-0 left-0 right-0 w-full max-w-lg mx-auto bg-white p-6 shadow-2xl rounded-t-2xl md:relative md:max-w-sm md:rounded-none md:bottom-auto md:left-auto md:right-auto md:mt-10"
             >
+              {/* Puxador para fechar (Mobile Bottom Sheet) */}
+              <div className="w-12 h-1.5 bg-zinc-200 rounded-full mx-auto mb-6 md:hidden"></div>
+              
               <button 
                 onClick={() => setShowSizeGuide(false)}
-                className="absolute top-4 right-4 text-zinc-400 hover:text-black"
+                className="absolute top-4 right-4 text-zinc-400 hover:text-black md:hidden"
+                aria-label="Fechar Guia"
               >
                 <X size={20} />
               </button>
