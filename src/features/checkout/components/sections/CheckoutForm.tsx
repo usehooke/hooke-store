@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CreditCard, Loader2, X, Truck, Check } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
 import { signInWithPopup } from "firebase/auth";
@@ -40,7 +40,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
   // Campos de endereço rápido
   const [street, setStreet] = useState("");
   const [number, setNumber] = useState("");
-  const numberInputRef = React.useRef<HTMLInputElement>(null);
+  const numberInputRef = useRef<HTMLInputElement>(null);
 
   // Sincroniza a rua com o ViaCEP quando disponível
   useEffect(() => {
