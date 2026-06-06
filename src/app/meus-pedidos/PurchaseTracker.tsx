@@ -6,8 +6,8 @@ import { trackEvent } from "@/lib/analytics";
 
 export default function PurchaseTracker() {
   const searchParams = useSearchParams();
-  const status = searchParams.get("status");
-  const eventId = searchParams.get("id"); // ID da compra retornado na URL
+  const status = searchParams ? searchParams.get("status") : null;
+  const eventId = searchParams ? searchParams.get("id") : null; // ID da compra retornado na URL
   const hasTracked = useRef(false);
 
   useEffect(() => {

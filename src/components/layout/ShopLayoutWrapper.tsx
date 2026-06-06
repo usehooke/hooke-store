@@ -29,11 +29,17 @@ export default function ShopLayoutWrapper({ children }: ShopLayoutWrapperProps) 
 
   return (
     <>
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-black focus:text-white focus:px-4 focus:py-2 focus:border-2 focus:border-black focus:outline-none font-bold tracking-widest text-[10px] uppercase shadow-sharp"
+      >
+        Pular para o conteúdo principal
+      </a>
       <TopBar />
       <Navbar />
       <DynamicCart />
       
-      <main className="flex-grow w-full bg-white">
+      <main id="main-content" className="flex-grow w-full bg-white outline-none" tabIndex={-1}>
         {children}
       </main>
 

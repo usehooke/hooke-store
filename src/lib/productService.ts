@@ -55,8 +55,18 @@ async function executeResilientCached<T>(
     emptyFallback: T
 ): Promise<T> {
     try {
-        const result = await firestoreQuery();
-        return result || emptyFallback;
+        const cachedQuery = unstable_cache(
+            async () => {
+                const result = await firestoreQuery();
+                return result || emptyFallback;
+            },
+            [cacheKey],
+            {
+                tags: tags,
+                revalidate: 3600 // Cache por 1h (ISR/Data Cache híbrido)
+            }
+        );
+        return await cachedQuery();
     } catch (error) {
         console.warn(`⚠️ [Hooke DB] Falha em ${operationName}. Retornando fallback vazio.`, error);
         return emptyFallback;
@@ -68,6 +78,9 @@ async function executeResilientCached<T>(
  */
 
 export async function getProducts(category?: string): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
+    }
     return executeResilientCached(
         "getProducts",
         `products-v2-${category || 'all'}`,
@@ -94,6 +107,9 @@ export async function getProducts(category?: string): Promise<Product[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
+    }
     return executeResilientCached(
         "getProductBySlug",
         `product-slug-${slug}`,
@@ -116,7 +132,36 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     );
 }
 
+export async function getProductsByModelId(modelId: string): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.filter(p => p.modelId === modelId);
+    }
+    return executeResilientCached(
+        "getProductsByModelId",
+        `products-model-${modelId}`,
+        ['products', `model-${modelId}`],
+        async () => {
+            const productsRef = collection(db!, COLLECTION_NAME);
+            const q = query(productsRef, where("modelId", "==", modelId));
+            const snapshot = await getDocs(q);
+            
+            const products: Product[] = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const p = mapToProduct(doc.id, data);
+                if (data.isActive !== false && p) products.push(p);
+            });
+            products.sort((a, b) => (a.order || 0) - (b.order || 0));
+            return products;
+        },
+        [] as Product[]
+    );
+}
+
 export async function getFeaturedProducts(limitCount: number = 8): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
+    }
     return executeResilientCached(
         "getFeaturedProducts",
         `featured-products-v2-${limitCount}`,
@@ -148,6 +193,20 @@ export async function getFilteredProducts(filters: FilterOptions): Promise<Produ
     if (department) tags.push(`department-${department}`);
     if (size) tags.push(`size-${size}`);
     if (color) tags.push(`color-${color}`);
+
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        let prods = [...MOCK_PRODUCTS];
+        if (category) prods = prods.filter(p => p.category === category);
+        if (department) prods = prods.filter(p => p.department === department);
+        if (size) prods = prods.filter(p => p.sizes?.includes(size as any));
+        if (color) prods = prods.filter(p => getColorFamily(p.color || "") === color);
+        if (minPrice !== undefined) prods = prods.filter(p => p.price >= minPrice);
+        if (maxPrice !== undefined) prods = prods.filter(p => p.price <= maxPrice);
+        if (featured !== undefined) prods = prods.filter(p => p.featured === featured);
+        if (limitCount) prods = prods.slice(0, limitCount);
+        prods.sort((a, b) => a.price - b.price);
+        return prods;
+    }
 
     return executeResilientCached(
         "getFilteredProducts",

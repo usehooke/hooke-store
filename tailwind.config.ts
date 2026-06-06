@@ -90,6 +90,9 @@ const config: Config = {
                 'subtle': '0 2px 10px rgba(0,0,0,0.02)',
                 'editorial': '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
                 'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                'brutal-sm': '2px 2px 0px 0px #000',
+                'brutal': '4px 4px 0px 0px #000',
+                'brutal-lg': '8px 8px 0px 0px #000',
             },
         }
     },

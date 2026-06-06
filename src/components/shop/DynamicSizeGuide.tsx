@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -12,10 +12,23 @@ interface DynamicSizeGuideProps {
 }
 
 export default function DynamicSizeGuide({ show, onClose, selectedSize, sizeGuideData }: DynamicSizeGuideProps) {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && show) onClose();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [show, onClose]);
+
   return (
     <AnimatePresence>
       {show && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="size-guide-title"
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -35,13 +48,13 @@ export default function DynamicSizeGuide({ show, onClose, selectedSize, sizeGuid
             
             <button 
               onClick={onClose}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-black md:hidden"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               aria-label="Fechar Guia"
             >
-              <X size={20} />
+              <X size={20} aria-hidden="true" />
             </button>
             
-            <h3 className="font-heading text-lg font-black tracking-widest uppercase mb-6">Guia de Medidas</h3>
+            <h3 id="size-guide-title" className="font-heading text-lg font-black tracking-widest uppercase mb-6">Guia de Medidas</h3>
             
             <table className="w-full text-xs">
               <thead>

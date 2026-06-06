@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProductsAdmin } from "@/lib/productServiceAdmin";
+import { getProducts } from "@/lib/productService";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const allProducts = await getProductsAdmin();
+    const allProducts = await getProducts();
 
     const results = allProducts.filter((p) => {
       const haystack = [

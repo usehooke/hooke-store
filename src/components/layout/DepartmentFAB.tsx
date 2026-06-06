@@ -35,14 +35,16 @@ export default function DepartmentFAB() {
 
         <Link 
           href="/masculino" 
-          className="relative z-10 w-28 text-center py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
+          aria-current={!isFeminino ? "page" : undefined}
+          className="relative z-10 w-28 text-center py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
           style={{ color: !isFeminino ? "white" : "black" }}
         >
           Masculino
         </Link>
         <Link 
           href="/feminino" 
-          className="relative z-10 w-28 text-center py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors"
+          aria-current={isFeminino ? "page" : undefined}
+          className="relative z-10 w-28 text-center py-2.5 text-[10px] font-bold tracking-[0.2em] uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
           style={{ color: isFeminino ? "white" : "black" }}
         >
           Feminino

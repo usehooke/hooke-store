@@ -1,10 +1,9 @@
-import { getProductBySlugAdmin, getProductsByModelIdAdmin } from "@/lib/productServiceAdmin";
+import { getProductBySlug, getProductsByModelId } from "@/lib/productService";
 import { notFound } from "next/navigation";
 import SsenseProductView from "@/components/shop/SsenseProductView";
 import React, { Suspense } from "react";
+import Link from "next/link";
 import { Metadata } from "next";
-
-export const revalidate = 3600; // SSG/ISR para o produto
 
 // Interface para os parâmetros da página (Promise no Next 15)
 interface ProductPageProps {
@@ -14,7 +13,7 @@ interface ProductPageProps {
 /** 🚀 SEO Dinâmico: Geração de Metadados para Social Share */
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlugAdmin(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) return { title: 'Produto não encontrado' };
 
@@ -62,14 +61,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   
   // Fetch direto no servidor - 100% SEO e zero delay de hidratação inicial
-  const product = await getProductBySlugAdmin(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) notFound();
 
   // Buscar variantes de cores baseadas no modelId
   let variants: any[] = [];
   if (product.modelId) {
-    variants = await getProductsByModelIdAdmin(product.modelId);
+    variants = await getProductsByModelId(product.modelId);
   }
 
   // Gemini-First: Estruturação Semântica de Alta Densidade (JSON-LD Schema.org)

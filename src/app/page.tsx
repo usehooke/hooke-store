@@ -1,15 +1,14 @@
-import { getProductsAdmin } from "@/lib/productServiceAdmin";
+import { getProducts } from "@/lib/productService";
 import GalleryCard from "@/components/shop/GalleryCard";
+import Script from 'next/script';
 import React from "react";
-
-export const revalidate = 3600; // Atualiza o cache no Edge a cada 1 hora (ou quando forçar via Painel Admin)
 
 /**
  * Hooke MVP - Modo Conversão Direta
  * Vitrine simplificada apenas com produtos e botão de compra.
  */
 export default async function Home() {
-  const allProducts = await getProductsAdmin();
+  const allProducts = await getProducts();
 
   const websiteLd = {
     "@context": "https://schema.org",
@@ -30,6 +29,7 @@ export default async function Home() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
       <main className="bg-white min-h-screen pb-24 md:pb-0">
+        <h1 className="sr-only">Hooke Store - Roupas Masculinas Premium e Minimalistas</h1>
 
       {/* Subtítulo Discreto (Sem duplicar o logo) */}
       <section className="pt-3 pb-3 px-4 md:px-8 lg:px-12 border-b border-zinc-100">

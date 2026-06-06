@@ -23,10 +23,10 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
-      className="fixed bottom-6 right-6 z-50 group flex items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700"
+      className="fixed bottom-6 right-6 z-50 group flex items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-hooke-900 focus-visible:ring-offset-2"
     >
-      {/* Tooltip que aparece no hover */}
-      <span className="absolute right-16 bg-white text-hooke-900 text-xs font-bold px-3 py-1.5 rounded-none shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+      {/* Tooltip que aparece no hover ou foco */}
+      <span className="absolute right-16 bg-white text-hooke-900 text-xs font-bold px-3 py-1.5 rounded-none shadow-md opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
         Fale Conosco
       </span>
 

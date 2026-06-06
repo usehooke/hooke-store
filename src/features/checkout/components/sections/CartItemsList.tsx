@@ -35,7 +35,7 @@ export default function CartItemsList() {
             <div className="flex justify-between">
               <div>
                 <h3 className="text-base font-bold text-hooke-900">
-                  <Link href={`/produto/${item.id}`} className="hover:underline">{item.name}</Link>
+                  <Link href={`/produto/${item.id}`} className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black rounded-sm">{item.name}</Link>
                 </h3>
                 <p className="mt-1 text-sm text-hooke-500">
                   Tamanho: {item.selectedSize}
@@ -51,24 +51,27 @@ export default function CartItemsList() {
                 <button
                   onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                   disabled={item.quantity <= 1}
-                  className="p-2 text-hooke-500 hover:text-hooke-900 disabled:opacity-30 transition-colors"
+                  className="p-2 text-hooke-500 hover:text-hooke-900 disabled:opacity-30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
+                  aria-label={`Diminuir quantidade de ${item.name}`}
                 >
-                  <Minus size={14} />
+                  <Minus size={14} aria-hidden="true" />
                 </button>
-                <span className="px-3 font-bold text-hooke-900 min-w-8 text-center">{item.quantity}</span>
+                <span className="px-3 font-bold text-hooke-900 min-w-8 text-center" aria-live="polite" aria-atomic="true">{item.quantity}</span>
                 <button
                   onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
-                  className="p-2 text-hooke-500 hover:text-hooke-900 transition-colors"
+                  className="p-2 text-hooke-500 hover:text-hooke-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
+                  aria-label={`Aumentar quantidade de ${item.name}`}
                 >
-                  <Plus size={14} />
+                  <Plus size={14} aria-hidden="true" />
                 </button>
               </div>
               <button
                 type="button"
                 onClick={() => removeItem(item.cartItemId)}
-                className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-700 transition-colors uppercase tracking-widest"
+                className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-700 transition-colors uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                aria-label={`Remover ${item.name} da sacola`}
               >
-                <Trash2 size={14} />
+                <Trash2 size={14} aria-hidden="true" />
                 <span>Remover</span>
               </button>
             </div>

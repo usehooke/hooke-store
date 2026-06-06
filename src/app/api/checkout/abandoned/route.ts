@@ -17,6 +17,10 @@ export async function POST(req: Request) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 48);
 
+    if (!adminDb) {
+      return NextResponse.json({ message: "Serviço de Banco de Dados Admin indisponível" }, { status: 500 });
+    }
+
     await adminDb.collection("pedidos").doc(`draft_${phoneId}`).set({
       customer,
       items,

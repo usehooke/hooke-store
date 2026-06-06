@@ -57,8 +57,11 @@ export function CartSheet() {
       <SheetHeader className="border-b border-hooke-100 flex-shrink-0 px-6 py-6 pb-4 flex flex-row items-center justify-between">
         <SheetTitle className="text-xl font-bold text-hooke-900 uppercase tracking-tighter">Sacola</SheetTitle>
         <SheetDescription className="sr-only">Seu carrinho de compras Hooke.</SheetDescription>
-        <SheetClose className="opacity-70 hover:opacity-100 transition-opacity">
-          <X className="h-6 w-6" />
+        <SheetClose 
+          className="opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          aria-label="Fechar Sacola"
+        >
+          <X className="h-6 w-6" aria-hidden="true" />
         </SheetClose>
       </SheetHeader>
 
@@ -73,7 +76,7 @@ export function CartSheet() {
               <p className="text-sm text-gray-400 font-medium">O minimalismo essencial te espera.</p>
             </div>
             <SheetClose asChild>
-              <button className="bg-hooke-900 text-white px-8 py-3 text-xs font-black tracking-widest uppercase hover:bg-black transition-all">
+              <button className="bg-hooke-900 text-white px-8 py-3 text-xs font-black tracking-widest uppercase hover:bg-black transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2">
                 Explorar Coleção
               </button>
             </SheetClose>
@@ -103,15 +106,15 @@ export function CartSheet() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => setIsCheckoutOpen(true)}
-                className="w-full h-16 bg-black text-white flex items-center justify-center gap-3 text-sm font-bold tracking-[0.2em] uppercase hover:bg-zinc-900 transition-all border border-black shadow-sharp"
+                className="w-full h-16 bg-black text-white flex items-center justify-center gap-3 text-sm font-bold tracking-[0.2em] uppercase hover:bg-zinc-900 transition-all border border-black shadow-sharp focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               >
-                <CreditCard size={18} />
+                <CreditCard size={18} aria-hidden="true" />
                 Finalizar Compra
               </button>
               
               <button
                 onClick={handleWhatsAppCheckout}
-                className="w-full py-4 text-black border border-black/10 text-[9px] font-bold tracking-[0.2em] uppercase hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 text-black border border-black/10 text-[9px] font-bold tracking-[0.2em] uppercase hover:bg-gray-50 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
               >
                 WhatsApp Checkout
               </button>

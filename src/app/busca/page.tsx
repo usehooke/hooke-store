@@ -1,4 +1,4 @@
-import { getProductsAdmin } from "@/lib/productServiceAdmin";
+import { getProducts } from "@/lib/productService";
 import GalleryCard from "@/components/shop/GalleryCard";
 import Link from "next/link";
 import { ChevronRight, SearchX } from "lucide-react";
@@ -21,7 +21,7 @@ export default async function SearchPage({
 
   let results: any[] = [];
   if (query.length >= 2) {
-    const allProducts = await getProductsAdmin();
+    const allProducts = await getProducts();
     results = allProducts.filter((p) => {
       const haystack = [
         p.name,

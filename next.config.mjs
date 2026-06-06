@@ -3,6 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig = {
   experimental: {
+    cacheComponents: true,
     serverActions: {
       bodySizeLimit: '10mb',
     },

@@ -9,6 +9,8 @@
     "lint": "next lint --strict && tsc --noEmit --strict",
     "lint-elite": "next lint --strict && tsc --noEmit --strict",
     "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "type-check": "tsc --noEmit",
     "security:audit": "npm audit --audit-level=high",
     "build:analyze": "ANALYZE=true next build",

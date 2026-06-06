@@ -1,17 +1,15 @@
 import { getAdminProducts } from '@/features/admin/services/adminProductService';
 import { AdminProductsView } from './AdminProductsView';
 import { Metadata } from 'next';
+import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: 'Inventário | Hooke Command Center',
   description: 'Gerenciamento de Catálogo Elite',
 };
 
-
-
-export const dynamic = 'force-dynamic';
-
 export default async function AdminProductsPage() {
+  await connection(); // Opt into dynamic rendering (Dynamic I/O)
   // Leitura com privilégios de Admin direto no Firebase Admin SDK
   const products = await getAdminProducts();
 

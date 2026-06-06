@@ -164,9 +164,10 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
     <div className="flex flex-col h-full bg-white p-6 md:p-10 animate-in slide-in-from-bottom-8 duration-500">
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 p-2 text-gray-400 hover:text-black transition-colors"
+        aria-label="Fechar checkout"
+        className="absolute top-6 right-6 p-2 text-gray-400 hover:text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
       >
-        <X size={24} />
+        <X size={24} aria-hidden="true" />
       </button>
 
       <div className="max-w-md mx-auto w-full flex-1 flex flex-col justify-center">
@@ -184,29 +185,32 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           type="button"
           onClick={handleFacebookCheckoutFill}
           disabled={isFacebookLoading}
-          className="w-full flex items-center justify-center gap-3 bg-[#1877F2] text-white font-black tracking-widest py-4 mb-8 text-[10px] uppercase hover:bg-[#145dbf] transition-all shadow-lg shadow-blue-900/10 disabled:opacity-50"
+          aria-label="Preencher formulário com dados do Facebook"
+          className="w-full flex items-center justify-center gap-3 bg-[#1877F2] text-white font-black tracking-widest py-4 mb-8 text-[10px] uppercase hover:bg-[#145dbf] transition-all shadow-lg shadow-blue-900/10 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1877F2] focus-visible:ring-offset-2"
         >
-          <FaFacebook size={18} />
+          <FaFacebook size={18} aria-hidden="true" />
           {isFacebookLoading ? "Puxando dados..." : "Preenchimento 1-Clique (Meta)"}
         </button>
 
         <form onSubmit={handleMercadoPagoCheckout} className="space-y-6">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Seu Nome Completo</label>
+            <label htmlFor="checkout-name" className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Seu Nome Completo</label>
             <input
+              id="checkout-name"
               type="text"
               required
               autoComplete="name"
               value={customer.name}
               onChange={(e) => setCustomer({ name: e.target.value })}
-              className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
+              className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-black transition-colors bg-transparent rounded-none font-bold"
               placeholder="Ex: Nando Hooke"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">WhatsApp</label>
+            <label htmlFor="checkout-phone" className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">WhatsApp</label>
             <input
+              id="checkout-phone"
               type="tel"
               required
               inputMode="numeric"
@@ -214,7 +218,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
               value={customer.phone}
               onChange={handlePhoneChange}
               onBlur={saveDraftOrder}
-              className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
+              className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-black transition-colors bg-transparent rounded-none font-bold"
               placeholder="(11) 90000-0000"
             />
           </div>
@@ -228,20 +232,22 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           {(shippingMethod && shippingCost) && (
             <div className="flex gap-3 animate-in fade-in slide-in-from-top-2">
               <div className="flex-1 space-y-1.5">
-                <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Rua / Avenida</label>
+                <label htmlFor="checkout-street" className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Rua / Avenida</label>
                 <input
+                  id="checkout-street"
                   type="text"
                   required
                   autoComplete="address-line1"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
-                  className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
+                  className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-black transition-colors bg-transparent rounded-none font-bold"
                   placeholder="Ex: Av. Paulista"
                 />
               </div>
               <div className="w-1/3 space-y-1.5">
-                <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Número</label>
+                <label htmlFor="checkout-number" className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase">Número</label>
                 <input
+                  id="checkout-number"
                   ref={numberInputRef}
                   type="tel"
                   inputMode="numeric"
@@ -249,7 +255,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
                   autoComplete="address-line2"
                   value={number}
                   onChange={(e) => setNumber(e.target.value)}
-                  className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-hooke-500 transition-colors bg-transparent rounded-none font-bold"
+                  className="w-full border-b-2 border-hooke-900 px-0 py-3 text-sm focus:outline-none focus:border-black transition-colors bg-transparent rounded-none font-bold"
                   placeholder="Ex: 1000"
                 />
               </div>
@@ -273,7 +279,7 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           </div>
 
           {error && (
-            <div className="bg-red-50 p-3 border-l-4 border-red-500">
+            <div className="bg-red-50 p-3 border-l-4 border-red-500" role="alert" aria-live="assertive">
                <p className="text-[10px] text-red-600 font-black uppercase tracking-widest">{error}</p>
             </div>
           )}
@@ -282,9 +288,9 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
              <button
                type="submit"
                disabled={isProcessing}
-               className="w-full bg-black text-white px-8 py-5 flex items-center justify-center gap-3 rounded-none text-xs font-black tracking-[0.3em] uppercase hover:bg-hooke-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_15px_30px_rgba(0,0,0,0.2)]"
+               className="w-full bg-black text-white px-8 py-5 flex items-center justify-center gap-3 rounded-none text-xs font-black tracking-[0.3em] uppercase hover:bg-hooke-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_15px_30px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
              >
-               {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
+               {isProcessing ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <CreditCard size={18} aria-hidden="true" />}
                {isProcessing ? 'PROCESSANDO...' : 'FINALIZAR PAGAMENTO'}
              </button>
              <div className="flex flex-col gap-0.5 mt-2">

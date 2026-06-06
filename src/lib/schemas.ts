@@ -58,6 +58,8 @@ export const ProductSchema = z.object({
   stock: z.record(z.string(), z.number()).optional(),
   skus: z.record(z.string(), z.string()).optional(),
   order: z.number().optional(),
+  createdAt: z.any().optional(),
+  updatedAt: z.any().optional(),
 });
 
 export const OrderStatusSchema = z.enum(["pending", "approved", "in_process", "rejected", "cancelled", "sent", "paid", "shipped"]);
@@ -75,19 +77,19 @@ export const CustomerSchema = z.object({
     neighborhood: z.string().trim().optional().default(""),
     city: z.string().trim().optional().default(""),
     state: z.string().trim().optional().default(""),
-  }).optional(),
-});
+  }).strict().optional(),
+}).strict();
 
 export const OrderItemSchema = z.object({
   cartItemId: z.string(),
   id: z.string(),
   title: z.string(),
-  unit_price: z.number(),
+  unit_price: z.number().positive(),
   quantity: z.number().int().positive(),
   size: z.string(),
   color: z.string().optional(),
   imageUrl: z.string().optional(),
-});
+}).strict();
 
 export const OrderSchema = z.object({
   id: z.string(),
@@ -113,7 +115,7 @@ export const ShippingRequestSchema = z.object({
   comprimento: z.string().optional().default("20"),
   altura: z.string().optional().default("10"),
   largura: z.string().optional().default("15"),
-});
+}).strict();
 
 export const CheckoutRequestSchema = z.object({
   items: z.array(OrderItemSchema).min(1),
@@ -123,7 +125,12 @@ export const CheckoutRequestSchema = z.object({
   shippingZipcode: z.string().optional().default(""),
   discountValue: z.number().optional().default(0),
   couponCode: z.string().optional().default(""),
-});
+}).strict();
+
+export const MPNotificationSchema = z.object({
+  type: z.literal("payment"),
+  "data.id": z.string().min(1)
+}).strict();
 
 export const CouponRequestSchema = z.object({
   code: z.string().min(3, "Código muito curto").max(20),

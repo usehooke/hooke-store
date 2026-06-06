@@ -1,13 +1,13 @@
 import { NextRequest } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
-
-export const dynamic = "force-dynamic";
+import { connection } from "next/server";
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
 }
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
+  await connection();
   const { slug } = await params;
 
   if (!adminDb) {

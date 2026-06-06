@@ -5,6 +5,7 @@ import { adminDb } from "@/lib/firebase-admin";
 import { z } from "zod";
 import crypto from "crypto";
 import { brandConfig } from "@/config/brandConfig";
+import { MPNotificationSchema } from "@/lib/schemas";
 
 /**
  * Hooke Elite: Mercado Pago Webhook (Production Ready)
@@ -12,11 +13,6 @@ import { brandConfig } from "@/config/brandConfig";
  */
 
 const isDev = process.env.NODE_ENV === 'development';
-
-const MPNotificationSchema = z.object({
-    type: z.literal("payment"),
-    "data.id": z.string().min(1)
-});
 
 export async function POST(req: Request) {
     try {

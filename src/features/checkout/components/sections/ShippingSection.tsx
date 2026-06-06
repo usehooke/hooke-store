@@ -88,12 +88,13 @@ export default function ShippingSection() {
 
   return (
     <div className="border-t border-hooke-100 pt-6 mt-4">
-      <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase block mb-3">
+      <label htmlFor="shipping-zip" className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase block mb-3">
         Simular Frete
       </label>
       
       <div className="flex gap-2 mb-3">
         <input
+          id="shipping-zip"
           type="tel"
           inputMode="numeric"
           autoComplete="postal-code"
@@ -105,14 +106,14 @@ export default function ShippingSection() {
         <button
           onClick={calculateShipping}
           disabled={isCalculating || zipInput.length < 9}
-          className="bg-hooke-900 text-white px-6 py-3 text-[10px] font-black tracking-[0.2em] uppercase disabled:opacity-50 hover:bg-black transition-all rounded-none whitespace-nowrap min-w-[120px]"
+          className="bg-hooke-900 text-white px-6 py-3 text-[10px] font-black tracking-[0.2em] uppercase disabled:opacity-50 hover:bg-black transition-all rounded-none whitespace-nowrap min-w-[120px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
         >
-          {isCalculating ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Calcular"}
+          {isCalculating ? <Loader2 size={16} className="animate-spin mx-auto" aria-hidden="true" /> : "Calcular"}
         </button>
       </div>
 
       {error && error !== "FALLBACK_WHATSAPP" && (
-        <p className="text-[10px] text-red-500 font-bold mb-3 animate-in fade-in">{error}</p>
+        <p className="text-[10px] text-red-500 font-bold mb-3 animate-in fade-in" role="alert" aria-live="assertive">{error}</p>
       )}
 
       {error === "FALLBACK_WHATSAPP" && (
@@ -131,7 +132,9 @@ export default function ShippingSection() {
               <button
                 key={idx}
                 onClick={() => setShipping(zipInput, Number(opt.valor), opt.nome)}
-                className={`w-full flex items-center justify-between p-4 border text-left bg-white transition-all cursor-pointer rounded-none group
+                role="radio"
+                aria-checked={selected}
+                className={`w-full flex items-center justify-between p-4 border text-left bg-white transition-all cursor-pointer rounded-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset
                 ${selected ? 'border-hooke-900 bg-white ring-1 ring-hooke-900' : 'border-hooke-200 hover:border-hooke-400'}
                 `}
               >

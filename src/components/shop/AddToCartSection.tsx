@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Product } from "@/types"; import { Size } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { ShoppingBag, Check, Ruler } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import SizeGuideModal from "./SizeGuideModal";
 import SizeQuizModal from "./SizeQuizModal";
@@ -184,18 +185,13 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
         selectedColor={selectedColor} 
       />
 
-      <button
+      <Button
+        variant={isAdded ? "checkout" : !selectedSize ? "luxury" : "buy"}
+        size="xl"
+        fullWidth
         onClick={handleAddToCart}
         disabled={!selectedSize || isAdded}
-        className={`
-          w-full flex items-center justify-center gap-3 px-6 py-5 text-base font-bold tracking-widest transition-all duration-300
-          ${isAdded
-            ? "bg-green-600 text-white cursor-default"
-            : !selectedSize
-            ? "bg-gray-100 text-hooke-400 cursor-not-allowed"
-            : "bg-hooke-900 text-white hover:bg-hooke-800 hover:shadow-lg active:scale-[0.98]"
-          }
-        `}
+        className="gap-3"
       >
         {isAdded ? (
           <>
@@ -208,7 +204,7 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
             {selectedSize ? "Adicionar à Sacola" : "Selecione um Tamanho"}
           </>
         )}
-      </button>
+      </Button>
 
       <div className={`
         fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] transition-all duration-500 md:hidden
@@ -219,17 +215,16 @@ export default function AddToCartSection({ product }: AddToCartSectionProps) {
             <h4 className="text-[10px] font-bold text-gray-400 tracking-widest truncate uppercase">{product.name}</h4>
             <p className="text-sm font-black text-hooke-900">R$ {product.price.toFixed(2).replace('.', ',')}</p>
           </div>
-          <button
+          <Button
+            variant={isAdded ? "checkout" : !selectedSize ? "luxury" : "buy"}
+            size="sm"
             onClick={handleAddToCart}
             disabled={!selectedSize || isAdded}
-            className={`
-              flex-1 flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold tracking-widest transition-all
-              ${isAdded ? "bg-green-600 text-white" : !selectedSize ? "bg-gray-100 text-hooke-400" : "bg-hooke-900 text-white active:scale-95"}
-            `}
+            className="flex-1 gap-2"
           >
             {isAdded ? <Check size={14} /> : <ShoppingBag size={14} />}
             {isAdded ? "Na Sacola" : selectedSize ? "Comprar" : "Selecione Tam"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

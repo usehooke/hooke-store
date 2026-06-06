@@ -275,7 +275,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     key={size}
                     onClick={() => !isOutOfStock && setSelectedSize(size)}
                     disabled={isOutOfStock}
-                    className={`h-14 text-sm font-black border transition-all uppercase ${
+                    aria-pressed={selectedSize === size}
+                    aria-label={isOutOfStock ? `Tamanho ${size} - Indisponível` : `Tamanho ${size}`}
+                    className={`h-14 text-sm font-black border transition-all uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${
                       isOutOfStock
                         ? 'bg-zinc-50 text-zinc-300 border-zinc-100 line-through cursor-not-allowed shadow-none'
                         : selectedSize === size
@@ -302,9 +304,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="w-full py-4 text-[12px] font-black tracking-[0.2em] bg-black text-white uppercase border-2 border-black active:translate-y-px transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-4 text-[12px] font-black tracking-[0.2em] bg-black text-white uppercase border-2 border-black active:translate-y-px transition-all disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
-              {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={14} /></>}
+              {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={14} aria-hidden="true" /></>}
             </button>
             {selectedSize && (
               <div className="w-full border-2 border-black p-1">
@@ -323,17 +325,22 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               <div key={a.key} className="border-b border-black/10">
                 <button
                   onClick={() => toggleAccordion(a.key)}
-                  className="w-full flex justify-between items-center py-4 text-left"
+                  aria-expanded={openAccordion === a.key}
+                  aria-controls={`accordion-panel-mobile-${a.key}`}
+                  className="w-full flex justify-between items-center py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
                 >
                   <span className="text-[12px] font-black uppercase tracking-wide">{a.label}</span>
                   <ChevronDown
                     size={16}
+                    aria-hidden="true"
                     className={`transition-transform duration-300 ${openAccordion === a.key ? 'rotate-180' : ''}`}
                   />
                 </button>
                 <AnimatePresence>
                   {openAccordion === a.key && (
                     <motion.div
+                      id={`accordion-panel-mobile-${a.key}`}
+                      role="region"
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
@@ -406,7 +413,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
 
           {/* COL 2: GALERIA (CENTER SCROLL) */}
           <div className="col-span-6 space-y-6">
-            {images.map((img: { src: string; deliveryType: 'fetch' | 'upload' }, idx: number) => (
+            {images.map((img: { src: string; deliveryType: 'fetch' | 'upload' | 'local' }, idx: number) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 40 }}
@@ -508,7 +515,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       key={size}
                       onClick={() => !isOutOfStock && setSelectedSize(size)}
                       disabled={isOutOfStock}
-                      className={`h-12 text-[11px] font-black border transition-all uppercase ${
+                      aria-pressed={selectedSize === size}
+                      aria-label={isOutOfStock ? `Tamanho ${size} - Indisponível` : `Tamanho ${size}`}
+                      className={`h-12 text-[11px] font-black border transition-all uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${
                         isOutOfStock
                           ? 'bg-zinc-50 text-zinc-300 border-zinc-100 line-through cursor-not-allowed shadow-none'
                           : selectedSize === size
@@ -531,9 +540,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors uppercase flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000] disabled:opacity-50"
+                className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors uppercase flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               >
-                {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} /></>}
+                {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} aria-hidden="true" /></>}
               </button>
               {selectedSize ? (
                 <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000]">
@@ -554,13 +563,26 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <div className="border-t-2 border-black pt-3 space-y-0">
               {accordions.map((a) => (
                 <div key={a.key} className="border-b border-black/10">
-                  <button onClick={() => toggleAccordion(a.key)} className="w-full flex justify-between items-center py-3 text-left">
+                  <button 
+                    onClick={() => toggleAccordion(a.key)} 
+                    aria-expanded={openAccordion === a.key}
+                    aria-controls={`accordion-panel-desktop-${a.key}`}
+                    className="w-full flex justify-between items-center py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
+                  >
                     <span className="text-[10px] font-black uppercase tracking-wide">{a.label}</span>
-                    <ChevronDown size={13} className={`transition-transform duration-300 ${openAccordion === a.key ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={13} aria-hidden="true" className={`transition-transform duration-300 ${openAccordion === a.key ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {openAccordion === a.key && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                      <motion.div 
+                        id={`accordion-panel-desktop-${a.key}`}
+                        role="region"
+                        initial={{ height: 0, opacity: 0 }} 
+                        animate={{ height: 'auto', opacity: 1 }} 
+                        exit={{ height: 0, opacity: 0 }} 
+                        transition={{ duration: 0.2 }} 
+                        className="overflow-hidden"
+                      >
                         <p className="pb-3 text-[11px] text-zinc-600 leading-relaxed">{a.content}</p>
                       </motion.div>
                     )}
@@ -604,7 +626,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     key={size}
                     onClick={() => !isOutOfStock && setSelectedSize(size)}
                     disabled={isOutOfStock}
-                    className={`w-10 h-10 text-[10px] font-black border uppercase transition-all ${
+                    aria-pressed={selectedSize === size}
+                    aria-label={isOutOfStock ? `Tamanho ${size} - Indisponível` : `Tamanho ${size}`}
+                    className={`w-10 h-10 text-[10px] font-black border uppercase transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${
                       isOutOfStock
                         ? 'bg-zinc-50 text-zinc-300 border-zinc-100 line-through cursor-not-allowed shadow-none'
                         : selectedSize === size
@@ -620,7 +644,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="bg-black text-white text-[10px] font-black px-5 py-3 uppercase tracking-widest disabled:opacity-50 shrink-0"
+              className="bg-black text-white text-[10px] font-black px-5 py-3 uppercase tracking-widest disabled:opacity-50 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
               {isAdding ? '...' : 'COMPRAR'}
             </button>

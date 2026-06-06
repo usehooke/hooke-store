@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useCartStore } from "@/store/cart-store";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface GalleryCardProps {
   product: Product;
@@ -45,12 +47,11 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
     }
     setIsAdding(true);
     addItem(product, selectedSize);
-    // Redirecionamento brutal direto pro checkout
     router.push("/checkout");
   };
 
   return (
-    <article className="flex flex-col h-full gap-3 border border-zinc-200 p-2 bg-white">
+    <Card variant="product" className="flex flex-col h-full gap-3 p-2">
       {/* Foto (Direta, sem zoom) */}
       <Link href={`/produto/${product.slug || product.id}`} className="block relative w-full aspect-[2/3] bg-zinc-100">
         {imageProps.src ? (
@@ -96,32 +97,35 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
 
       {/* Container de Ações (Fixo no fundo) */}
       <div className="mt-auto">
-        {/* Seleção de Tamanho Permanente (Sem hover escondendo) */}
+        {/* Seleção de Tamanho */}
         <div className="grid grid-cols-4 gap-1 mt-1">
           {sizes.map((s) => (
-            <button
+            <Button
               key={s}
+              variant={selectedSize === s ? "buy" : "outline"}
+              size="xs"
               onClick={() => setSelectedSize(s)}
-              className={`py-2 text-xs font-bold uppercase border ${
-                selectedSize === s
-                  ? "bg-black text-white border-black"
-                  : "bg-white text-black border-zinc-200 hover:border-black"
-              }`}
+              aria-pressed={selectedSize === s}
+              className={selectedSize === s ? "" : "border-zinc-200 hover:border-black"}
             >
               {s}
-            </button>
+            </Button>
           ))}
         </div>
 
         {/* Botão de Compra Direta */}
-        <button
+        <Button
+          variant="buy"
+          size="lg"
+          fullWidth
           onClick={handleBuyNow}
           disabled={isAdding}
-          className="w-full mt-2 py-4 bg-black text-white text-sm font-black uppercase tracking-widest hover:bg-zinc-800 transition-colors"
+          aria-label={`Comprar ${product.name} agora`}
+          className="mt-2 py-4"
         >
           {isAdding ? "Processando..." : "Comprar Agora →"}
-        </button>
+        </Button>
       </div>
-    </article>
+    </Card>
   );
 }

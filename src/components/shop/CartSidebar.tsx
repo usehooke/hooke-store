@@ -3,6 +3,7 @@
 
 import { useCartStore, selectCartSubTotal, selectCartPromoDiscount, selectCartFinalTotal } from "@/store/cart-store";
 import { X, Trash2, ShoppingBag, ArrowRight, Tag, CupSoda } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -88,12 +89,12 @@ export default function CartSidebar() {
  <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 space-y-4">
  <ShoppingBag className="w-12 h-12 opacity-20" strokeWidth={1} />
  <p className="text-xs tracking-widest font-bold">Sua sacola está vazia</p>
- <button
- onClick={closeCart}
- className="text-xs border-b border-black pb-1 tracking-widest text-black hover:opacity-70 transition-opacity"
+ <Button
+  variant="link"
+  onClick={closeCart}
  >
- Continuar Comprando
- </button>
+  Continuar Comprando
+ </Button>
  </div>
  ) : (
  items.map((item) => (
@@ -161,12 +162,15 @@ export default function CartSidebar() {
  <span className="text-xl font-black tracking-tight">{formatter.format(finalTotal)}</span>
  </div>
 
-  <button
-  onClick={handleCheckout}
-  className="w-full bg-hooke-900 text-white py-5 font-bold tracking-[0.2em] text-[10px] uppercase hover:bg-black transition-all flex items-center justify-center gap-3 group"
-  >
-  <CupSoda size={14} className="group-hover:rotate-12 transition-transform" /> Acessar Concierge Hooke <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-  </button>
+   <Button
+   variant="buy"
+   size="xl"
+   fullWidth
+   onClick={handleCheckout}
+   className="gap-3 group"
+   >
+   <CupSoda size={14} className="group-hover:rotate-12 transition-transform" /> Acessar Concierge Hooke <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+   </Button>
 
  <p className="text-[10px] text-center text-gray-400 leading-tight">
  Frete e pagamento combinados diretamente com nosso time.

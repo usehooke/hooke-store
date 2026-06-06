@@ -1,11 +1,14 @@
 import { adminDb } from '@/lib/firebase-admin';
 import { AdminOrdersView } from '@/features/admin/components/AdminOrdersView';
 import { Order } from '@/types/order';
+import { connection } from 'next/server';
 
 // Esta página agora é renderizada 100% no servidor.
 // Impede o cliente de baixar todo o banco do Firestore antes de montar a tela.
 // Também implementa um limit() para evitar vazamentos de memória e sobrecarga do DOM.
 export default async function AdminOrdersPage() {
+    await connection();
+    
     if (!adminDb) {
         return (
             <div className="p-10 text-red-500 font-bold uppercase tracking-widest text-sm text-center">

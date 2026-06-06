@@ -51,7 +51,7 @@ export default function CouponSection() {
 
   return (
     <div className="border-t border-hooke-100 pt-6 mt-4">
-      <label className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase block mb-3">
+      <label htmlFor="coupon-input" className="text-[10px] font-black tracking-[0.2em] text-hooke-900 uppercase block mb-3">
         Possui um cupom?
       </label>
       
@@ -59,6 +59,7 @@ export default function CouponSection() {
         <div className="animate-in fade-in duration-300">
           <div className="flex gap-2">
             <input
+              id="coupon-input"
               type="text"
               placeholder="CÓDIGO"
               value={input}
@@ -68,12 +69,12 @@ export default function CouponSection() {
             <button
               onClick={applyCoupon}
               disabled={!input || isLoading}
-              className="bg-hooke-900 text-white px-6 py-3 text-[10px] font-black tracking-[0.2em] uppercase hover:bg-black transition-all rounded-none disabled:opacity-50"
+              className="bg-hooke-900 text-white px-6 py-3 text-[10px] font-black tracking-[0.2em] uppercase hover:bg-black transition-all rounded-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
-              {isLoading ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Aplicar"}
+              {isLoading ? <Loader2 size={16} className="animate-spin mx-auto" aria-hidden="true" /> : "Aplicar"}
             </button>
           </div>
-          {error && <p className="text-[10px] text-red-500 font-bold mt-2 animate-pulse">{error}</p>}
+          {error && <p className="text-[10px] text-red-500 font-bold mt-2 animate-pulse" role="alert" aria-live="assertive">{error}</p>}
         </div>
       ) : (
         <div className="flex items-center justify-between border-2 border-green-500 bg-green-50 px-4 py-3 animate-in zoom-in-95 duration-500 relative overflow-hidden">
@@ -87,8 +88,12 @@ export default function CouponSection() {
               <span className="text-[10px] text-green-700 font-bold uppercase tracking-tighter">Benefício Ativado</span>
             </div>
           </div>
-          <button onClick={removeCoupon} className="text-green-900 hover:text-red-500 transition-colors p-1 relative z-10">
-            <X size={16} />
+          <button 
+            onClick={removeCoupon} 
+            className="text-green-900 hover:text-red-500 transition-colors p-1 relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+            aria-label="Remover cupom"
+          >
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
       )}

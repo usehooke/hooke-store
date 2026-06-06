@@ -32,11 +32,20 @@ export default function Navbar() {
     
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("keydown", handleEscape);
       unsub();
     };
-  }, []);
+  }, [isMobileMenuOpen]);
 
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -68,10 +77,11 @@ export default function Navbar() {
             <div className="flex-1 flex items-center justify-start">
               <button 
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden text-hooke-900 -ml-2 w-11 h-11 flex items-center justify-center hover:text-gray-600 transition-colors"
+                className="md:hidden text-hooke-900 -ml-2 w-11 h-11 flex items-center justify-center hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                 aria-label="Abrir Menu"
+                aria-expanded={isMobileMenuOpen}
               >
-                <Menu strokeWidth={1.5} size={24} />
+                <Menu strokeWidth={1.5} size={24} aria-hidden="true" />
               </button>
 
               <div className="hidden md:flex items-center gap-6 lg:gap-8">
@@ -135,16 +145,26 @@ export default function Navbar() {
       </header>
 
       {/* MENU MOBILE */}
-      <div className={`fixed inset-0 z-50 flex ${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <div 
+        className={`fixed inset-0 z-50 flex ${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu de Navegação Mobile"
+      >
         <div 
           className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
         />
         <div className={`relative w-4/5 max-w-xs bg-white h-full shadow-2xl transition-transform duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="p-6 flex justify-between items-center border-b border-gray-100">
             <h2 className="font-heading text-xl font-bold tracking-widest text-hooke-900 uppercase">Menu</h2>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-500">
-              <X strokeWidth={1.5} size={24} />
+            <button 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+              aria-label="Fechar Menu"
+            >
+              <X strokeWidth={1.5} size={24} aria-hidden="true" />
             </button>
           </div>
           <div className="flex flex-col p-6 gap-6">
@@ -182,9 +202,9 @@ export default function Navbar() {
           {/* Busca no Menu Mobile */}
           <button
             onClick={() => { setIsMobileMenuOpen(false); setIsSearchOpen(true); }}
-            className="flex items-center gap-3 text-sm font-medium text-gray-600 font-heading tracking-wide mt-2"
+            className="flex items-center gap-3 text-sm font-medium text-gray-600 font-heading tracking-wide mt-2 mx-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
           >
-            <Search size={18} /> Buscar Peças
+            <Search size={18} aria-hidden="true" /> Buscar Peças
           </button>
         </div>
       </div>

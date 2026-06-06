@@ -3,6 +3,7 @@ import { Product } from "@/types";
 import { ProductSchema } from "./schemas";
 import { FilterOptions } from "./productService";
 import { getColorFamily } from "@/utils/colorMap";
+import { MOCK_PRODUCTS } from "./mockData";
 
 export const COLLECTION_NAME = "produtos";
 
@@ -28,6 +29,9 @@ const mapToProduct = (docId: string, data: any): Product | null => {
 };
 
 export async function getProductsByModelIdAdmin(modelId: string): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.filter(p => p.modelId === modelId);
+    }
     if (!adminDb || !modelId) return [];
     try {
         const query = adminDb.collection(COLLECTION_NAME).where("modelId", "==", modelId);
@@ -46,6 +50,9 @@ export async function getProductsByModelIdAdmin(modelId: string): Promise<Produc
 }
 
 export async function getProductsAdmin(category?: string): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return category ? MOCK_PRODUCTS.filter(p => p.category === category) : MOCK_PRODUCTS;
+    }
     if (!adminDb) return [];
     try {
         let query: any = adminDb.collection(COLLECTION_NAME);
@@ -65,6 +72,9 @@ export async function getProductsAdmin(category?: string): Promise<Product[]> {
 }
 
 export async function getProductBySlugAdmin(slug: string): Promise<Product | null> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.find(p => p.slug === slug || p.id === slug) || null;
+    }
     if (!adminDb) return null;
     try {
         const query = adminDb.collection(COLLECTION_NAME).where("slug", "==", slug).limit(1);
@@ -83,6 +93,9 @@ export async function getProductBySlugAdmin(slug: string): Promise<Product | nul
 }
 
 export async function getFeaturedProductsAdmin(limitCount: number = 8): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.filter(p => p.featured).slice(0, limitCount);
+    }
     if (!adminDb) return [];
     try {
         const query = adminDb.collection(COLLECTION_NAME).where("featured", "==", true).limit(limitCount);
@@ -101,9 +114,23 @@ export async function getFeaturedProductsAdmin(limitCount: number = 8): Promise<
 }
 
 export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<Product[]> {
-    if (!adminDb) return [];
-    
     const { category, department, size, color, minPrice, maxPrice, featured, limitCount } = filters;
+    
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        let prods = [...MOCK_PRODUCTS];
+        if (category) prods = prods.filter(p => p.category === category);
+        if (department) prods = prods.filter(p => p.department === department);
+        if (size) prods = prods.filter(p => p.sizes?.includes(size as any));
+        if (color) prods = prods.filter(p => getColorFamily(p.color || "") === color);
+        if (minPrice !== undefined) prods = prods.filter(p => p.price >= minPrice);
+        if (maxPrice !== undefined) prods = prods.filter(p => p.price <= maxPrice);
+        if (featured !== undefined) prods = prods.filter(p => p.featured === featured);
+        if (limitCount) prods = prods.slice(0, limitCount);
+        prods.sort((a, b) => a.price - b.price);
+        return prods;
+    }
+
+    if (!adminDb) return [];
     
     try {
         let query: any = adminDb.collection(COLLECTION_NAME);
@@ -139,6 +166,9 @@ export async function getFilteredProductsAdmin(filters: FilterOptions): Promise<
 }
 
 export async function getHeroBannersAdmin(): Promise<Product[]> {
+    if (process.env.PLAYWRIGHT_TEST === "true" || process.env.NEXT_PUBLIC_APP_ENV === "test") {
+        return MOCK_PRODUCTS.filter(p => p.isHeroBanner);
+    }
     if (!adminDb) return [];
     try {
         const query = adminDb.collection(COLLECTION_NAME).where("isHeroBanner", "==", true);

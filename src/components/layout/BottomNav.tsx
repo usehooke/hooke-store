@@ -29,7 +29,7 @@ export default function BottomNav() {
                     const Icon = item.icon;
 
                     return (
-                        <Link key={item.name} href={item.href} aria-label={item.name} className="relative flex flex-col items-center">
+                        <Link key={item.name} href={item.href} aria-label={item.name} className="relative flex flex-col items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 rounded-sm">
                             <motion.div
                                 whileTap={{ scale: 0.9 }}
                                 className={`

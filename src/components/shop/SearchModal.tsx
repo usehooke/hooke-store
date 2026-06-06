@@ -67,6 +67,9 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
       transition={{ duration: 0.15 }}
       className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Buscar produtos"
     >
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -78,14 +81,18 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
       >
         {/* Campo de Busca */}
         <form onSubmit={handleSubmit} className="flex items-center border-b-2 border-black">
-          <div className="pl-5 shrink-0">
+          <div className="pl-5 shrink-0" aria-hidden="true">
             {isLoading ? (
               <Loader2 size={18} className="animate-spin text-zinc-400" />
             ) : (
               <Search size={18} className="text-zinc-400" />
             )}
           </div>
+          <label htmlFor="search-input-modal" className="sr-only">
+            Buscar peças
+          </label>
           <input
+            id="search-input-modal"
             ref={inputRef}
             type="text"
             value={query}
@@ -96,9 +103,10 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-4 text-zinc-400 hover:text-black transition-colors"
+            className="px-4 py-4 text-zinc-400 hover:text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
+            aria-label="Fechar busca"
           >
-            <X size={18} />
+            <X size={18} aria-hidden="true" />
           </button>
         </form>
 
@@ -125,7 +133,7 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
                         key={product.id}
                         href={`/produto/${product.slug || product.id}`}
                         onClick={onClose}
-                        className="flex items-center gap-4 p-4 hover:bg-zinc-50 transition-colors group"
+                        className="flex items-center gap-4 p-4 hover:bg-zinc-50 transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-inset"
                       >
                         {/* Thumb */}
                         <div className="relative w-12 h-16 bg-zinc-100 shrink-0 overflow-hidden">
@@ -153,7 +161,7 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
                         {/* Preço */}
                         <div className="flex items-center gap-2 shrink-0">
                           <span className="text-[12px] font-black">{formatter.format(product.price)}</span>
-                          <ArrowRight size={13} className="text-zinc-300 group-hover:text-black transition-colors group-hover:translate-x-0.5 transform" />
+                          <ArrowRight size={13} className="text-zinc-300 group-hover:text-black transition-colors group-hover:translate-x-0.5 transform" aria-hidden="true" />
                         </div>
                       </Link>
                     ))}
@@ -165,12 +173,12 @@ export default function SearchModal({ onClose }: { onClose: () => void }) {
                       <Link
                         href={`/busca?q=${encodeURIComponent(query)}`}
                         onClick={onClose}
-                        className="flex items-center justify-between px-5 py-3.5 bg-black text-white hover:bg-zinc-900 transition-colors"
+                        className="flex items-center justify-between px-5 py-3.5 bg-black text-white hover:bg-zinc-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hooke-900 focus-visible:ring-offset-2"
                       >
                         <span className="text-[10px] font-black uppercase tracking-widest">
                           Ver todos os {total} resultados para "{query}"
                         </span>
-                        <ArrowRight size={14} />
+                        <ArrowRight size={14} aria-hidden="true" />
                       </Link>
                     </div>
                   )}

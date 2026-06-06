@@ -12,10 +12,8 @@ const FB_PIXEL_ID = brandConfig.analytics.metaPixelId;
 // Tipagem global para evitar erro de TS ao usar a janela window.fbq
 declare global {
     interface Window {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        fbq: any;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _fbq: any;
+        fbq: (...args: unknown[]) => void;
+        _fbq: (...args: unknown[]) => void;
     }
 }
 
