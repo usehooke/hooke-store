@@ -1,4 +1,4 @@
-import { getProducts } from "@/lib/productService";
+import { getProducts } from "@/lib/productServiceServer";
 import GalleryCard from "@/components/shop/GalleryCard";
 import Script from 'next/script';
 import React from "react";

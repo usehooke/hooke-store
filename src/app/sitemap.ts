@@ -1,6 +1,6 @@
 // src/app/sitemap.ts
 import { MetadataRoute } from 'next';
-import { getProducts } from '@/lib/productService';
+import { getProducts } from '@/lib/productServiceServer';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.usehooke.com.br';

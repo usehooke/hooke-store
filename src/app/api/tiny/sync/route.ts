@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getProducts } from "@/lib/productService";
+import { getProducts } from "@/lib/productServiceServer";
 import { generateSKU, ModelSigla, PrintSigla, ColorSigla } from "@/utils/sku-generator";
 import { TinyClient } from "@/lib/tiny/client";
 

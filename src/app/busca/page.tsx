@@ -1,4 +1,4 @@
-import { getProducts } from "@/lib/productService";
+import { getProducts } from "@/lib/productServiceServer";
 import GalleryCard from "@/components/shop/GalleryCard";
 import Link from "next/link";
 import { ChevronRight, SearchX } from "lucide-react";

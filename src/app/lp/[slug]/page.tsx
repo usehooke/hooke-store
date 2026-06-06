@@ -1,4 +1,4 @@
-import { getProducts } from "@/lib/productService";
+import { getProducts } from "@/lib/productServiceServer";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";

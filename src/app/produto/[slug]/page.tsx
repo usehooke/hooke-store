@@ -1,4 +1,4 @@
-import { getProductBySlug, getProductsByModelId } from "@/lib/productService";
+import { getProductBySlug, getProductsByModelId } from "@/lib/productServiceServer";
 import { notFound } from "next/navigation";
 import SsenseProductView from "@/components/shop/SsenseProductView";
 import React, { Suspense } from "react";
