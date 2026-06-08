@@ -13,7 +13,7 @@ export default function TopBar() {
  <span className="w-0.5 h-0.5 bg-white/40 rounded-none"></span>
 
  <span className="text-[10px] md:text-xs font-medium tracking-[0.2em] font-sans">
- 5% OFF no PIX
+ 15% OFF no PIX
  </span>
  <span className="w-0.5 h-0.5 bg-white/40 rounded-none"></span>
 

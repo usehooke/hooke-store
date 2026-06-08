@@ -90,9 +90,19 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
         <h2 className="text-sm font-black uppercase text-black leading-tight">
           {product.name}
         </h2>
-        <p className="text-lg font-black text-green-600">
-          {formatter.format(product.price)}
-        </p>
+        <div className="flex flex-col gap-0.5 mt-1">
+          <p className="text-xs font-bold text-zinc-400 line-through">
+            {formatter.format(product.price)}
+          </p>
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="text-base font-black text-black">
+              {formatter.format(product.price * 0.85)}
+            </span>
+            <span className="text-[8px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 uppercase tracking-wider">
+              PIX -15%
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Container de Ações (Fixo no fundo) */}

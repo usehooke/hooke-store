@@ -125,7 +125,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const installment = ((product?.price || 0) / 3).toFixed(2).replace('.', ',');
-  const pixPrice = (product?.price || 0) * 0.95;
+  const pixPrice = (product?.price || 0) * 0.85;
   const formattedPixPrice = formatter.format(pixPrice);
   const formattedPrice = formatter.format(product?.price || 0);
   const rawImages = (product?.images?.length ? product.images : [product?.imageUrl || '/placeholder.png']).filter(Boolean);
@@ -291,7 +291,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-black text-black">{formattedPixPrice}</span>
                 <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border border-emerald-300">
-                  PIX -5%
+                  PIX -15%
                 </span>
               </div>
               {/* Opção Cartão/Crédito */}
@@ -542,7 +542,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-black text-black">{formattedPixPrice}</span>
                   <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border border-emerald-300">
-                    PIX -5%
+                    PIX -15%
                   </span>
                 </div>
                 {/* Opção Cartão/Crédito */}

@@ -460,10 +460,10 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
 
                   <div className="flex justify-between items-center text-emerald-700 bg-emerald-50 border border-emerald-100 p-2.5 mt-2">
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-wider">Total no PIX (5% OFF)</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider">Total no PIX (15% OFF)</span>
                       <span className="text-[9px] text-emerald-600 font-medium text-left">Desconto aplicado na tela de pagamento</span>
                     </div>
-                    <span className="text-[15px] font-black">{formatter.format(grandTotal * 0.95)}</span>
+                    <span className="text-[15px] font-black">{formatter.format(grandTotal * 0.85)}</span>
                   </div>
                 </div>
               </section>

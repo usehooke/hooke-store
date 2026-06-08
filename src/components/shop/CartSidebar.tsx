@@ -163,8 +163,8 @@ export default function CartSidebar() {
   </div>
 
   <div className="flex justify-between items-center text-emerald-700 bg-emerald-50 border border-emerald-100 p-2.5 mt-2">
-    <span className="text-[10px] tracking-widest font-black uppercase">No PIX (5% OFF)</span>
-    <span className="text-sm font-black">{formatter.format(finalTotal * 0.95)}</span>
+    <span className="text-[10px] tracking-widest font-black uppercase">No PIX (15% OFF)</span>
+    <span className="text-sm font-black">{formatter.format(finalTotal * 0.85)}</span>
   </div>
 
    <Button
