@@ -806,16 +806,20 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                     {errors.category && <p className="text-[9px] text-red-500 font-bold uppercase">{errors.category.message}</p>}
                   </div>
  
-                  {/* TECIDO / COMPOSIÇÃO DROPDOWN */}
+                  {/* TECIDO / COMPOSIÇÃO INPUT COM SUGESTÕES */}
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tecido / Composição</label>
-                    <select 
+                    <input 
+                      type="text"
+                      list="fabric-options"
+                      placeholder="Ex: Algodão Heavyweight 260g"
                       {...register('details.fabric')}
                       onChange={(e) => {
                         const fabric = e.target.value;
                         setValue('details.fabric', fabric);
-                        // Default logic based on fabric selection
-                        if (fabric === 'Algodão Heavyweight 260g') {
+                        // Lógica de frete sugerido baseada em palavra-chave "Heavyweight" ou gramatura alta
+                        const fabricLower = fabric.toLowerCase();
+                        if (fabricLower.includes('heavyweight') || fabricLower.includes('260g') || fabricLower.includes('300g')) {
                           setValue('shipping.weight', 0.4);
                           setValue('shipping.width', 25);
                           setValue('shipping.height', 2);
@@ -823,13 +827,14 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                         }
                       }}
                       className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
-                    >
-                      <option value="">Selecione o Tecido...</option>
-                      <option value="Algodão Heavyweight 260g">Algodão Heavyweight 260g</option>
-                      <option value="Viscose Nobre">Viscose Nobre</option>
-                      <option value="Linho Premium">Linho Premium</option>
-                      <option value="Algodão Pima">Algodão Pima</option>
-                    </select>
+                    />
+                    <datalist id="fabric-options">
+                      <option value="Algodão Heavyweight 260g" />
+                      <option value="Algodão Heavyweight 300g" />
+                      <option value="Viscose Nobre" />
+                      <option value="Linho Premium" />
+                      <option value="Algodão Pima" />
+                    </datalist>
                   </div>
  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">

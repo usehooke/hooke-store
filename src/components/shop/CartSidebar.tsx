@@ -157,10 +157,15 @@ export default function CartSidebar() {
  </div>
  )}
 
- <div className="flex justify-between items-end text-hooke-900">
- <span className="text-xs tracking-widest font-bold text-gray-500">Total Estimado</span>
- <span className="text-xl font-black tracking-tight">{formatter.format(finalTotal)}</span>
- </div>
+  <div className="flex justify-between items-end text-hooke-900">
+  <span className="text-xs tracking-widest font-bold text-gray-500">Total Estimado</span>
+  <span className="text-xl font-black tracking-tight">{formatter.format(finalTotal)}</span>
+  </div>
+
+  <div className="flex justify-between items-center text-emerald-700 bg-emerald-50 border border-emerald-100 p-2.5 mt-2">
+    <span className="text-[10px] tracking-widest font-black uppercase">No PIX (5% OFF)</span>
+    <span className="text-sm font-black">{formatter.format(finalTotal * 0.95)}</span>
+  </div>
 
    <Button
    variant="buy"

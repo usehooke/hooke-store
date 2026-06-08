@@ -52,6 +52,67 @@ const SIZE_GUIDE: Record<string, { peito: string; comprimento: string; ombro: st
   'GG': { peito: '116cm', comprimento: '74cm', ombro: '48cm' },
 };
 
+
+// Função para construir a descrição premium e rica do tecido de forma dinâmica
+const getFabricDescription = (fabric?: string) => {
+  if (!fabric) {
+    return 'Malha Heavyweight 260g — 100% Algodão Penteado Premium. Fio Egípcio de longa fibra. Estrutura pesada de alta costura com toque macio e permanência absoluta, mantendo a forma após a lavagem.';
+  }
+
+  const fabricLower = fabric.toLowerCase();
+  
+  if (fabric.length > 50) {
+    return fabric;
+  }
+
+  if (fabricLower.includes('heavyweight') || fabricLower.includes('260g') || fabricLower.includes('300g') || fabricLower.includes('280g') || fabricLower.includes('pesada')) {
+    const grammageMatch = fabric.match(/\d+g/i);
+    const grammage = grammageMatch ? grammageMatch[0] : '260g';
+    return `Malha Heavyweight ${grammage} — 100% Algodão Penteado Premium. Fio Egípcio de longa fibra. Estrutura pesada de alta costura com toque macio e permanência absoluta, mantendo a forma após a lavagem.`;
+  }
+
+  if (fabricLower.includes('viscose')) {
+    return `${fabric} — Viscose Nobre de alta costura contemporânea. Proporciona caimento fluido impecável, toque frio incomparável e excelente conforto térmico. Costuras internas reforçadas em viés para acabamento premium de alfaiataria.`;
+  }
+
+  if (fabricLower.includes('pima')) {
+    return `${fabric} — Produzida a partir de Algodão Pima peruano de fibra extra-longa selecionada, garantindo suavidade extraordinária ao toque e brilho sutil extremamente elegante. O básico refinado definitivo com durabilidade superior.`;
+  }
+
+  if (fabricLower.includes('linho')) {
+    return `${fabric} — Linho Premium selecionado de alta qualidade, garantindo conforto térmico superior, alta respirabilidade e caimento leve alinhado com naturalidade elegante e sofisticação essencial.`;
+  }
+
+  return `${fabric} — Matéria-prima de altíssimo padrão selecionada sob curadoria Hooke. Proporciona caimento impecável, toque suave extraordinário e acabamento interno de alta costura para máxima usabilidade diária.`;
+};
+
+// Função para construir a descrição premium e rica da modelagem de forma dinâmica
+const getModelDescription = (model?: string) => {
+  if (!model) {
+    return 'Boxy Fit — Estruturado para o ombro. Gola canelada de 3cm reforçada. Costura dupla nas barras. Um corte pensado para o homem que constrói, não que segue.';
+  }
+
+  if (model.length > 50) {
+    return model;
+  }
+
+  const modelLower = model.toLowerCase();
+
+  if (modelLower.includes('boxy') || modelLower.includes('oversized') || modelLower.includes('estruturado')) {
+    return `${model} — Modelagem estruturada nos ombros com proporções modernas. Apresenta caimento boxy encorpado, gola canelada robusta de 3cm de espessura que não deforma com o uso e acabamento brutalista premium de costuras duplas.`;
+  }
+
+  if (modelLower.includes('relaxed') || modelLower.includes('fluid') || modelLower.includes('elegant')) {
+    return `${model} — Modelagem fluida e descontraída que valoriza o movimento natural do corpo com elegância e caimento fluido impecável. Desenvolvida com acabamentos internos em viés e costuras rebatidas de altíssima longevidade.`;
+  }
+
+  if (modelLower.includes('standard') || modelLower.includes('classic')) {
+    return `${model} — Modelagem clássica atemporal com caimento perfeitamente alinhado. Desenvolvida sob engenharia de alfaiataria contemporânea para garantir excelente proporção de conforto e elegância em qualquer ocasião.`;
+  }
+
+  return `${model} — Modelagem exclusiva Hooke projetada com precisão técnica de alta costura, otimizando proporções e caimento para garantir silhueta limpa e conforto absoluto em qualquer biotipo.`;
+};
+
 const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -64,6 +125,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
 
   const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const installment = ((product?.price || 0) / 3).toFixed(2).replace('.', ',');
+  const pixPrice = (product?.price || 0) * 0.95;
+  const formattedPixPrice = formatter.format(pixPrice);
+  const formattedPrice = formatter.format(product?.price || 0);
   const rawImages = (product?.images?.length ? product.images : [product?.imageUrl || '/placeholder.png']).filter(Boolean);
   const images = rawImages.length > 0 ? rawImages.map(img => prepareImage(img as string)) : [{ src: '/placeholder.png', deliveryType: 'local' as const }];
 
@@ -122,12 +186,12 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
     {
       key: 'tecido',
       label: '🧵 O Tecido',
-      content: product.details?.fabric || 'Malha Heavyweight 260g — 100% Algodão Penteado Premium. Fio Egípcio de longa fibra. Estrutura pesada de alta costura com toque macio e permanência absoluta, mantendo a forma após a lavagem.'
+      content: getFabricDescription(product.details?.fabric)
     },
     {
       key: 'corte',
       label: '📐 O Corte',
-      content: product.details?.model || 'Boxy Fit — Estruturado para o ombro. Gola canelada de 3cm reforçada. Costura dupla nas barras. Um corte pensado para o homem que constrói, não que segue.'
+      content: getModelDescription(product.details?.model)
     },
     {
       key: 'manifesto',
@@ -222,9 +286,18 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <h1 className="text-2xl font-black tracking-tighter text-black uppercase leading-tight">
               {product?.name || 'Produto'}
             </h1>
-            <div className="flex items-baseline gap-3 mt-2">
-              <span className="text-2xl font-black text-black">{formatter.format(product?.price || 0)}</span>
-              <span className="text-xs text-zinc-500">ou 3x de R$ {installment}</span>
+            <div className="mt-2.5 space-y-1">
+              {/* Opção PIX (Destaque Principal) */}
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black text-black">{formattedPixPrice}</span>
+                <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border border-emerald-300">
+                  PIX -5%
+                </span>
+              </div>
+              {/* Opção Cartão/Crédito */}
+              <p className="text-[11px] text-zinc-500 font-medium">
+                ou <span className="font-bold text-black">{formattedPrice}</span> no cartão em até <span className="font-bold text-black">3x de R$ {installment}</span> sem juros
+              </p>
             </div>
           </div>
 
@@ -304,13 +377,13 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="w-full py-4 text-[12px] font-black tracking-[0.2em] bg-black text-white uppercase border-2 border-black active:translate-y-px transition-all disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+              className="w-full py-4 text-[12px] font-black tracking-[0.2em] bg-white text-black border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:bg-black hover:text-white hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:translate-y-px transition-all disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
               {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={14} aria-hidden="true" /></>}
             </button>
             {selectedSize && (
-              <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000] [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-black [&_.mercadopago-button]:!text-white [&_.mercadopago-button]:!border-2 [&_.mercadopago-button]:!border-black [&_.mercadopago-button]:!font-black [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-12 hover:shadow-none transition-all">
-                <p className="text-[9px] text-center font-bold tracking-widest text-black/40 mb-1 uppercase">Compra Expressa</p>
+              <div className="w-full border border-zinc-200 p-2 bg-zinc-50 transition-all [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-11 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
+                <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
                 <Wallet
                   initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
                   customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
@@ -464,9 +537,18 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             <div className="border-b-2 border-black pb-5">
               <span className="text-[9px] font-black tracking-[0.3em] uppercase text-zinc-400">{product?.category || ''}</span>
               <h1 className="text-3xl font-black tracking-tighter uppercase leading-none mt-2">{product?.name || 'Produto'}</h1>
-              <div className="flex items-baseline gap-3 mt-4">
-                <p className="text-2xl font-black text-black">{formatter.format(product?.price || 0)}</p>
-                <p className="text-[11px] text-zinc-500">3x R$ {installment}</p>
+              <div className="mt-4 space-y-1">
+                {/* Opção PIX (Destaque Principal) */}
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-black text-black">{formattedPixPrice}</span>
+                  <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border border-emerald-300">
+                    PIX -5%
+                  </span>
+                </div>
+                {/* Opção Cartão/Crédito */}
+                <p className="text-[11px] text-zinc-500 font-medium">
+                  ou <span className="font-bold text-black">{formattedPrice}</span> no cartão em até <span className="font-bold text-black">3x de R$ {installment}</span> sem juros
+                </p>
               </div>
             </div>
 
@@ -540,20 +622,20 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-colors uppercase flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-white text-black border-2 border-black hover:bg-black hover:text-white hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               >
                 {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} aria-hidden="true" /></>}
               </button>
               {selectedSize ? (
-                <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000] [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-black [&_.mercadopago-button]:!text-white [&_.mercadopago-button]:!border-2 [&_.mercadopago-button]:!border-black [&_.mercadopago-button]:!font-black [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-12 hover:shadow-none transition-all">
-                  <p className="text-[8px] text-center font-bold tracking-widest text-black/40 mb-1 uppercase">Compra Expressa</p>
+                <div className="w-full border border-zinc-200 p-2 bg-zinc-50 transition-all [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-10 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
+                  <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
                   <Wallet
                     initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
                     customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
                   />
                 </div>
               ) : (
-                <button disabled className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-black/5 text-black/30 border-2 border-black/10 uppercase flex items-center justify-center gap-2">
+                <button disabled className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-zinc-50 text-zinc-400 border border-zinc-200 uppercase flex items-center justify-center gap-2">
                   <Zap size={13} /> EXPRESSO (GPay)
                 </button>
               )}
