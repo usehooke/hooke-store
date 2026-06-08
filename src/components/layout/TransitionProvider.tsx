@@ -7,8 +7,10 @@ import { useState, useEffect } from 'react';
 export default function TransitionProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || "";
   const [prevPath, setPrevPath] = useState(pathname);
+  const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
+    setIsMounted(true);
     setPrevPath(pathname);
   }, [pathname]);
 
@@ -29,6 +31,10 @@ export default function TransitionProvider({ children }: { children: React.React
   }
 
   const isSwipe = Math.abs(initialX) > 0;
+
+  if (!isMounted) {
+    return <div className="w-full">{children}</div>;
+  }
 
   return (
     <AnimatePresence mode="wait">

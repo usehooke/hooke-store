@@ -102,18 +102,22 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
       <head>
         <link rel="preconnect" href="https://res.cloudinary.com" />
-        <script dangerouslySetInnerHTML={{ __html: `
-          if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-              for (const registration of registrations) { registration.unregister(); }
-            });
-            if ('caches' in window) {
-              caches.keys().then(names => {
-                for (const name of names) caches.delete(name);
+        <Script
+          id="unregister-sw"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: `
+            if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (const registration of registrations) { registration.unregister(); }
               });
+              if ('caches' in window) {
+                caches.keys().then(names => {
+                  for (const name of names) caches.delete(name);
+                });
+              }
             }
-          }
-        `}} />
+          `}}
+        />
         {GTM_ID && (
           <Script
             id="gtm-script"
@@ -177,8 +181,6 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <ConditionalTracking gaId={GA_MEASUREMENT_ID} />
           </Suspense>
-          <Analytics />
-          <SpeedInsights />
         </Providers>
       </body>
     </html>

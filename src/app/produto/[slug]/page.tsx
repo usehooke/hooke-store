@@ -205,11 +205,58 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 }
 
-// Skeleton para transição suave durante o PPR
+// Skeleton estrutural de alta fidelidade para transição suave durante o PPR
 function ProductSkeleton() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-hooke-100 border-t-hooke-900 rounded-full animate-spin"></div>
+    <div className="min-h-screen bg-white pt-24 md:pt-28 pb-24 px-4 md:px-8 lg:px-16 animate-pulse">
+      {/* Layout Mobile Skeleton */}
+      <div className="md:hidden space-y-6">
+        <div className="w-full aspect-[3/4] bg-zinc-100" />
+        <div className="h-8 bg-zinc-200 w-3/4" />
+        <div className="h-6 bg-zinc-200 w-1/3 mt-2" />
+        <div className="grid grid-cols-4 gap-2 pt-2">
+          {Array(4).fill(null).map((_, i) => (
+            <div key={i} className="h-14 bg-zinc-100" />
+          ))}
+        </div>
+        <div className="h-14 bg-zinc-200 w-full" />
+      </div>
+
+      {/* Layout Desktop Skeleton */}
+      <div className="hidden md:grid grid-cols-12 gap-10 items-start max-w-[1440px] mx-auto">
+        {/* Col 1: Especificações */}
+        <div className="col-span-3 border-2 border-zinc-100 p-6 space-y-6 h-[400px]">
+          <div className="h-4 bg-zinc-200 w-1/2" />
+          <div className="space-y-3 pt-4">
+            <div className="h-3 bg-zinc-100 w-1/3" />
+            <div className="h-4 bg-zinc-200 w-3/4" />
+          </div>
+          <div className="space-y-3">
+            <div className="h-3 bg-zinc-100 w-1/3" />
+            <div className="h-4 bg-zinc-200 w-2/3" />
+          </div>
+        </div>
+        {/* Col 2: Galeria */}
+        <div className="col-span-6 space-y-6">
+          <div className="aspect-[2/3] w-full bg-zinc-100 border-2 border-zinc-100" />
+          <div className="aspect-[2/3] w-full bg-zinc-100 border-2 border-zinc-100" />
+        </div>
+        {/* Col 3: Bloco de Compra */}
+        <div className="col-span-3 border-2 border-zinc-100 p-6 space-y-6 h-[500px]">
+          <div className="h-8 bg-zinc-200 w-3/4" />
+          <div className="h-6 bg-zinc-200 w-1/3 mt-4" />
+          <div className="space-y-3 pt-6">
+            <div className="h-3 bg-zinc-100 w-1/4" />
+            <div className="grid grid-cols-4 gap-2">
+              {Array(4).fill(null).map((_, i) => (
+                <div key={i} className="h-12 bg-zinc-100" />
+              ))}
+            </div>
+          </div>
+          <div className="h-14 bg-zinc-200 w-full pt-6" />
+        </div>
+      </div>
     </div>
   );
 }
+

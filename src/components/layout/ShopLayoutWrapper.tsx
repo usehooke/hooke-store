@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import TopBar from "./TopBar";
 import Navbar from "./Navbar";
-import DynamicCart from "./DynamicCart";
+
+const DynamicCart = dynamic(() => import("./DynamicCart"), { ssr: false });
+
 
 // 🚀 EXTREME PERFORMANCE: Code Splitting & Lazy Loading
 const Footer = dynamic(() => import("./Footer"));

@@ -381,15 +381,21 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             >
               {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={14} aria-hidden="true" /></>}
             </button>
-            {selectedSize && (
-              <div className="w-full border border-zinc-200 p-2 bg-zinc-50 transition-all [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-11 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
-                <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
-                <Wallet
-                  initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
-                  customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                />
-              </div>
-            )}
+            <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[76px] flex flex-col justify-center transition-all">
+              <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
+              {selectedSize ? (
+                <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-11 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
+                  <Wallet
+                    initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
+                    customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
+                  />
+                </div>
+              ) : (
+                <button disabled className="w-full h-11 bg-zinc-100 text-zinc-400 text-[9px] font-black uppercase tracking-[0.2em] border border-zinc-200 flex items-center justify-center gap-2 cursor-not-allowed">
+                  <Zap size={11} /> Selecione o Tamanho
+                </button>
+              )}
+            </div>
           </div>
 
           {/* ACORDEÕES RETRÁTEIS */}
@@ -486,48 +492,68 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
 
           {/* COL 2: GALERIA (CENTER SCROLL) */}
           <div className="col-span-6 space-y-6">
-            {images.map((img: { src: string; deliveryType: 'fetch' | 'upload' | 'local' }, idx: number) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.7, delay: idx * 0.1 }}
-                className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
-              >
-                {img.deliveryType === 'local' ? (
-                  <Image
-                    src={img.src}
-                    alt={`${product.name} - Vista ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
-                    priority={idx === 0}
-                    loading={idx === 0 ? undefined : "lazy"}
-                  />
-                ) : (
-                  <CldImage
-                    src={img.src}
-                    alt={`${product.name} - Vista ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
-                    priority={idx === 0}
-                    loading={idx === 0 ? undefined : "lazy"}
-                    deliveryType={img.deliveryType as any}
-                    format="avif"
-                    quality="auto"
-                  />
-                )}
-                {idx === 0 && product.category && (
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-black text-white text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1">
-                      {product.category}
-                    </span>
+            {images.map((img: { src: string; deliveryType: 'fetch' | 'upload' | 'local' }, idx: number) => {
+              const isFirst = idx === 0;
+              const content = (
+                <>
+                  {img.deliveryType === 'local' ? (
+                    <Image
+                      src={img.src}
+                      alt={`${product.name} - Vista ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
+                      priority={isFirst}
+                      loading={isFirst ? undefined : "lazy"}
+                    />
+                  ) : (
+                    <CldImage
+                      src={img.src}
+                      alt={`${product.name} - Vista ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
+                      priority={isFirst}
+                      loading={isFirst ? undefined : "lazy"}
+                      deliveryType={img.deliveryType as any}
+                      format="avif"
+                      quality="auto"
+                    />
+                  )}
+                  {isFirst && product.category && (
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-black text-white text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1">
+                        {product.category}
+                      </span>
+                    </div>
+                  )}
+                </>
+              );
+
+              if (isFirst) {
+                return (
+                  <div
+                    key={idx}
+                    className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
+                  >
+                    {content}
                   </div>
-                )}
-              </motion.div>
-            ))}
+                );
+              }
+
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.7, delay: idx * 0.1 }}
+                  className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
+                >
+                  {content}
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* COL 3: COMPRA (STICKY RIGHT) */}
@@ -626,19 +652,21 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               >
                 {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} aria-hidden="true" /></>}
               </button>
-              {selectedSize ? (
-                <div className="w-full border border-zinc-200 p-2 bg-zinc-50 transition-all [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-10 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
-                  <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
-                  <Wallet
-                    initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
-                    customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                  />
-                </div>
-              ) : (
-                <button disabled className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-zinc-50 text-zinc-400 border border-zinc-200 uppercase flex items-center justify-center gap-2">
-                  <Zap size={13} /> EXPRESSO (GPay)
-                </button>
-              )}
+              <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[72px] flex flex-col justify-center transition-all">
+                <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
+                {selectedSize ? (
+                  <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-10 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
+                    <Wallet
+                      initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
+                      customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
+                    />
+                  </div>
+                ) : (
+                  <button disabled className="w-full h-10 bg-zinc-100 text-zinc-400 text-[9px] font-black uppercase tracking-[0.2em] border border-zinc-200 flex items-center justify-center gap-2 cursor-not-allowed">
+                    <Zap size={11} /> Selecione o Tamanho
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Acordeões Desktop */}
