@@ -122,7 +122,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
     {
       key: 'tecido',
       label: '🧵 O Tecido',
-      content: product.details?.fabric || 'Malha Premium 100% Algodão Penteado — 210g/m². Fio Egípcio de longa fibra. Extremamente macio ao toque, com resistência estrutural que não encolhe após lavagem.'
+      content: product.details?.fabric || 'Malha Heavyweight 260g — 100% Algodão Penteado Premium. Fio Egípcio de longa fibra. Estrutura pesada de alta costura com toque macio e permanência absoluta, mantendo a forma após a lavagem.'
     },
     {
       key: 'corte',
@@ -198,7 +198,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               {images.map((_: any, i: number) => (
                 <div
                   key={i}
-                  className={`h-1 transition-all duration-300 rounded-full ${i === activeSlide ? 'w-8 bg-black' : 'w-2 bg-black/20'}`}
+                  className={`h-1.5 transition-all duration-300 ${i === activeSlide ? 'w-8 bg-black' : 'w-2 bg-black/20'}`}
                 />
               ))}
             </div>
@@ -309,7 +309,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={14} aria-hidden="true" /></>}
             </button>
             {selectedSize && (
-              <div className="w-full border-2 border-black p-1">
+              <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000] [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-black [&_.mercadopago-button]:!text-white [&_.mercadopago-button]:!border-2 [&_.mercadopago-button]:!border-black [&_.mercadopago-button]:!font-black [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-12 hover:shadow-none transition-all">
                 <p className="text-[9px] text-center font-bold tracking-widest text-black/40 mb-1 uppercase">Compra Expressa</p>
                 <Wallet
                   initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
@@ -391,7 +391,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               <h2 className="text-[9px] font-black tracking-[0.3em] uppercase border-b-2 border-black pb-2">Especificações</h2>
               {[
                 { label: 'SKU', value: product.id },
-                { label: 'Composição', value: product.details?.fabric || 'Algodão 100% Penteado 210g' },
+                { label: 'Composição', value: product.details?.fabric || 'Algodão 100% Penteado Heavyweight 260g' },
                 { label: 'Corte', value: product.details?.model || 'Boxy Fit Estruturado' },
                 { label: 'Lavagem', value: product.details?.wash || 'Manual / Máquina Fria' },
               ].map(({ label, value }) => (
@@ -545,7 +545,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                 {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} aria-hidden="true" /></>}
               </button>
               {selectedSize ? (
-                <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000]">
+                <div className="w-full border-2 border-black p-1 shadow-[4px_4px_0px_0px_#000] [&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-black [&_.mercadopago-button]:!text-white [&_.mercadopago-button]:!border-2 [&_.mercadopago-button]:!border-black [&_.mercadopago-button]:!font-black [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-12 hover:shadow-none transition-all">
                   <p className="text-[8px] text-center font-bold tracking-widest text-black/40 mb-1 uppercase">Compra Expressa</p>
                   <Wallet
                     initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
