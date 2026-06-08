@@ -102,6 +102,30 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
       <head>
         <link rel="preconnect" href="https://res.cloudinary.com" />
+        
+        {/* Gemini-First: Organization Schema Global */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Hooke Elite",
+              "url": baseUrl,
+              "logo": `${baseUrl}/pdv-icon.png`,
+              "sameAs": [
+                "https://instagram.com/usehooke"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+55-11-97590-2528",
+                "contactType": "Customer Service"
+              }
+            })
+          }}
+        />
+      </head>
+      <body className="font-jost antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
         <Script
           id="unregister-sw"
           strategy="afterInteractive"
@@ -133,30 +157,6 @@ export default function RootLayout({
             }}
           />
         )}
-        
-        {/* Gemini-First: Organization Schema Global */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Hooke Elite",
-              "url": baseUrl,
-              "logo": `${baseUrl}/pdv-icon.png`,
-              "sameAs": [
-                "https://instagram.com/usehooke"
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+55-11-97590-2528",
-                "contactType": "Customer Service"
-              }
-            })
-          }}
-        />
-      </head>
-      <body className="font-jost antialiased bg-hooke-paper text-hooke-900 flex flex-col min-h-screen">
         {GTM_ID && (
           <noscript>
             <iframe
