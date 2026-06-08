@@ -2,13 +2,7 @@ import { NextResponse } from 'next/server';
 import admin from 'firebase-admin';
 import { PRODUTOS } from '@/config';
 
-/**
- * HOOKE ELITE: ADMIN MIGRATION SERVICE
- * Bypasses Firestore Security Rules using the Service Account.
- * Syncs the local PRODUTOS array to the products collection.
- */
-
-export async function GET() {
+export async function POST() {
     try {
         console.log('🚀 [Hooke Admin] Iniciando Sincronização de Elite...');
 
