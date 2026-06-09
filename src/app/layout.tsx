@@ -6,8 +6,7 @@ import "@/app/globals.css"; // Importação absoluta para garantir carregamento
 
 // Importações para Análise de Dados e Performance
 import ConditionalTracking from "@/components/layout/ConditionalTracking";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+
 
 // Importações dos Componentes de Layout Globais
 import ClientToaster from "@/components/layout/ClientToaster";
