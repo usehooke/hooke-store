@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use, Suspense } from 'react';
 import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 import { Product } from '@/types';
@@ -41,7 +41,7 @@ const prepareImage = (src: string) => {
 
 interface SsenseProductViewProps {
   product: Product;
-  variants?: Product[];
+  variantsPromise: Promise<Product[]>;
 }
 
 // Tabela de medidas para o guia contextual
@@ -195,7 +195,69 @@ const VantagensComerciais = () => {
   );
 };
 
-const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) => {
+interface VariantColorsSelectorProps {
+  variantsPromise: Promise<Product[]>;
+  currentProductId: string;
+  isDesktop?: boolean;
+}
+
+const VariantColorsSelectorContent = ({ variantsPromise, currentProductId, isDesktop }: VariantColorsSelectorProps) => {
+  const variants = use(variantsPromise);
+
+  if (!variants || variants.length <= 1) return null;
+
+  return (
+    <div className={isDesktop ? "space-y-3 pt-2" : "space-y-3"}>
+      <p className={isDesktop ? "text-[10px] font-black tracking-[0.2em] uppercase text-black" : "text-[11px] font-black tracking-[0.2em] text-black uppercase"}>
+        Cores Disponíveis
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {variants.map((v) => {
+          const isActive = v?.id === currentProductId;
+          const variantColor = v?.color || v?.name?.split(' ').pop() || 'Cor';
+          return (
+            <Link
+              key={v.id}
+              href={`/produto/${v.slug}`}
+              className={isDesktop 
+                ? `px-3 py-2 text-[9px] font-black border transition-all uppercase tracking-wider ${
+                    isActive
+                      ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-white text-black border-zinc-200 hover:border-black'
+                  }`
+                : `px-4 py-2.5 text-[10px] font-black border transition-all uppercase tracking-wider ${
+                    isActive
+                      ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-white text-black border-zinc-200 hover:border-black'
+                  }`
+              }
+            >
+              {variantColor}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const VariantColorsSelector = (props: VariantColorsSelectorProps) => {
+  return (
+    <Suspense fallback={
+      <div className="space-y-2 animate-pulse font-mono">
+        <div className="h-3 bg-zinc-100 w-24" />
+        <div className="flex gap-2">
+          <div className="h-9 bg-zinc-100 w-16" />
+          <div className="h-9 bg-zinc-100 w-16" />
+        </div>
+      </div>
+    }>
+      <VariantColorsSelectorContent {...props} />
+    </Suspense>
+  );
+};
+
+const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -339,6 +401,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     className="object-cover object-top"
                     priority={i === 0}
                     loading={i === 0 ? undefined : "lazy"}
+                    fetchPriority={i === 0 ? "high" : "low"}
                   />
                 ) : (
                   <CldImage
@@ -352,6 +415,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     deliveryType={img.deliveryType as any}
                     format="avif"
                     quality="auto"
+                    fetchPriority={i === 0 ? "high" : "low"}
                   />
                 )}
                 {i === 0 && hasCollar3cm && (
@@ -420,30 +484,10 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
           </div>
 
           {/* SELEÇÃO DE VARIANTES DE COR (MOBILE) */}
-          {variants && variants.length > 1 && (
-            <div className="space-y-3">
-              <p className="text-[11px] font-black tracking-[0.2em] text-black uppercase">Cores Disponíveis</p>
-              <div className="flex flex-wrap gap-2">
-                {(variants || []).map((v) => {
-                  const isActive = v?.id === product?.id;
-                  const variantColor = v?.color || v?.name?.split(' ').pop() || 'Cor';
-                  return (
-                    <Link
-                      key={v.id}
-                      href={`/produto/${v.slug}`}
-                      className={`px-4 py-2.5 text-[10px] font-black border transition-all uppercase tracking-wider ${
-                        isActive
-                          ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-white text-black border-zinc-200 hover:border-black'
-                      }`}
-                    >
-                      {variantColor}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          <VariantColorsSelector 
+            variantsPromise={variantsPromise} 
+            currentProductId={product.id} 
+          />
 
           {/* SELEÇÃO DE TAMANHO ONE-TAP */}
           <div ref={stickyRef}>
@@ -625,6 +669,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       className="object-cover object-top transition-transform duration-[2000ms] group-hover:scale-105"
                       priority={isFirst}
                       loading={isFirst ? undefined : "lazy"}
+                      fetchPriority={isFirst ? "high" : "low"}
                     />
                   ) : (
                     <CldImage
@@ -638,6 +683,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       deliveryType={img.deliveryType as any}
                       format="avif"
                       quality="auto"
+                      fetchPriority={isFirst ? "high" : "low"}
                     />
                   )}
                   {isFirst && product.category && (
@@ -715,30 +761,11 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             </div>
 
             {/* SELEÇÃO DE VARIANTES DE COR (DESKTOP) */}
-            {variants && variants.length > 1 && (
-              <div className="space-y-3 mb-4">
-                <p className="text-[10px] font-black tracking-[0.2em] uppercase">Cores Disponíveis</p>
-                <div className="flex flex-wrap gap-2">
-                  {(variants || []).map((v) => {
-                    const isActive = v?.id === product?.id;
-                    const variantColor = v?.color || v?.name?.split(' ').pop() || 'Cor';
-                    return (
-                      <Link
-                        key={v.id}
-                        href={`/produto/${v.slug}`}
-                        className={`px-3 py-2 text-[9px] font-black border transition-all uppercase tracking-wider ${
-                          isActive
-                            ? 'bg-black text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white text-black border-zinc-200 hover:border-black'
-                        }`}
-                      >
-                        {variantColor}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <VariantColorsSelector 
+              variantsPromise={variantsPromise} 
+              currentProductId={product.id} 
+              isDesktop 
+            />
 
             {/* Tamanho ONE-TAP */}
             <div>

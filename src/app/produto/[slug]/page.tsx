@@ -65,11 +65,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) notFound();
 
-  // Buscar variantes de cores baseadas no modelId
-  let variants: any[] = [];
-  if (product.modelId) {
-    variants = await getProductsByModelId(product.modelId);
-  }
+  // Buscar variantes de cores de forma assíncrona (sem await) para evitar waterfall
+  const variantsPromise = product.modelId
+    ? getProductsByModelId(product.modelId)
+    : Promise.resolve([]);
 
   // Gemini-First: Estruturação Semântica de Alta Densidade (JSON-LD Schema.org)
   const productUrl = `https://www.usehooke.com.br/produto/${slug}`;
@@ -190,6 +189,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
+      {product.imageUrl && (
+        <link
+          rel="preload"
+          href={product.imageUrl}
+          as="image"
+          fetchPriority="high"
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -199,7 +206,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <Suspense fallback={<ProductSkeleton />}>
-        <SsenseProductView product={product} variants={variants} />
+        <SsenseProductView product={product} variantsPromise={variantsPromise} />
       </Suspense>
     </>
   );
