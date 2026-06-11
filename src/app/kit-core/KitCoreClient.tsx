@@ -275,7 +275,7 @@ function HeroSection({ onScrollToBuy }: { onScrollToBuy: () => void }) {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: 'url(/banner-home.jpg)',
+              backgroundImage: 'url(/kit-core-hero.png)',
               backgroundPosition: 'center top',
             }}
           />
