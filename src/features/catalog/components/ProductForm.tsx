@@ -372,7 +372,7 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     }
   };
 
-  // Motor Semântico Elite Local (Em português robusto, sem estrangeirismos)
+  // Motor Semântico Elite Local (Em português robusto, com foco em conversão comercial e durabilidade)
   const handleSemanticRefine = () => {
     const name = getValues('name');
     const category = getValues('category') || '';
@@ -393,21 +393,21 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
     const fabricLower = selectedFabric.toLowerCase();
 
     if (fabricLower.includes('viscose')) {
-      refinedDesc = `Conjunto de alta costura contemporânea desenvolvido em ${selectedFabric}, proporcionando caimento fluido impecável, toque frio incomparável e excelente conforto térmico. Composto por peças minimalistas de design atemporal e costuras internas reforçadas em viés, é o equipamento perfeito que combina sofisticação brutalista e máxima usabilidade diária.`;
-      refinedMeta = `Compre o ${name} Hooke. Conjunto contemporâneo confeccionado em ${selectedFabric} com caimento fluido elegante e toque frio de alto padrão.`;
-    } else if (fabricLower.includes('heavyweight')) {
-      refinedDesc = `Camiseta de caimento estruturado e amplo desenvolvida em ${selectedFabric}, garantindo conforto térmico ideal e caimento encorpado impecável. Possui gola robusta de 3cm com costuras reforçadas de alta definição que não deformam com o uso e nossa etiqueta Woven Label aplicada na barra como assinatura visual. Uma peça pesada e essencial de máxima longevidade.`;
-      refinedMeta = `Compre a ${name} Hooke. Camiseta de algodão pesado de gramatura robusta em ${selectedFabric}. Gola de 3cm, caimento boxy estruturado e longevidade.`;
+      refinedDesc = `Desenvolvido com viscose nobre de toque frio e caimento extremamente fluido. Ideal para o uso diário, oferece excelente conforto térmico mesmo em dias quentes e toque suave sobre a pele. Com acabamento minimalista de alta qualidade, une sofisticação visual a uma peça prática de secagem rápida e alta flexibilidade que resiste ao desgaste do dia a dia.`;
+      refinedMeta = `Compre o ${name} Hooke. Confeccionado em viscose de toque frio e caimento fluido com excelente conforto térmico diário.`;
+    } else if (fabricLower.includes('heavyweight') || fabricLower.includes('pesad') || fabricLower.includes('260g')) {
+      refinedDesc = `Projetada com malha pesada de alta gramatura, proporcionando caimento encorpado de corte estruturado moderno que valoriza a silhueta no corpo. A gola de 3cm canelada possui reforço de ombro a ombro de alta densidade, garantindo firmeza que não deforma ou esgarça mesmo após diversas lavagens. Um clássico de alta durabilidade e custo-benefício incomparável para o seu guarda-roupa.`;
+      refinedMeta = `Compre a ${name} Hooke. Camiseta pesada premium estruturada com gola canelada de 3cm que não deforma e alta durabilidade cotidiana.`;
     } else if (fabricLower.includes('pima')) {
-      refinedDesc = `Camiseta de altíssimo nível produzida a partir de ${selectedFabric} de fibra extra-longa selecionada, garantindo suavidade extraordinária ao toque e brilho sutil extremamente elegante. Apresenta costuras internas reforçadas e caimento clássico impecável que não encolhe após lavagem. O básico refinado definitivo com durabilidade superior.`;
-      refinedMeta = `Compre a ${name} Hooke. Confeccionada em nobre ${selectedFabric} peruano, proporcionando toque aveludado, caimento alinhado impecável e conforto.`;
+      refinedDesc = `Confeccionada em algodão Pima premium de fibra extra-longa selecionada, proporcionando um toque sedoso extraordinário que não irrita a pele e brilho discreto. O tecido passa por tratamento especial para não encolher após a lavagem. O básico durável definitivo com caimento clássico impecável, alta resistência e conforto superior para todas as horas.`;
+      refinedMeta = `Compre a ${name} Hooke. Produzida em algodão Pima premium de toque sedoso incomparável, que não encolhe e oferece alta durabilidade.`;
     } else if (fabricLower.includes('linho')) {
-      refinedDesc = `Peça contemporânea sofisticada produzida em ${selectedFabric} selecionado de alta qualidade, garantindo conforto térmico superior, alta respirabilidade e caimento leve alinhado com naturalidade elegante. Possui modelagem moderna minimalista com acabamento brutalista de costuras rebatidas de altíssima longevidade.`;
-      refinedMeta = `Compre o ${name} Hooke. Equipamento de alfaiataria em ${selectedFabric} com excelente respirabilidade e estética minimalista moderna.`;
+      refinedDesc = `Peça desenvolvida com linho selecionado de alto padrão, combinando a sofisticação natural das fibras com a durabilidade necessária para a rotina diária. Oferece alta respirabilidade e frescor contínuo, com caimento elegante e caimento fluido ideal. Suas costuras são duplamente reforçadas para garantir longevidade e resistência sem perder a elegância.`;
+      refinedMeta = `Compre o ${name} Hooke. Equipamento contemporâneo em linho nobre de alta durabilidade, caimento respirável e muito estilo.`;
     } else {
       const fabricText = selectedFabric ? `em ${selectedFabric}` : "em fibras selecionadas";
-      refinedDesc = `Peça exclusiva da coleção Hooke, produzida ${fabricText} de altíssimo padrão com toque sofisticado. O design apresenta linhas limpas e estrutura contemporânea com acabamentos internos e costuras reforçadas. Uma expressão pura de sofisticação essencial que valoriza o caimento natural no corpo.`;
-      refinedMeta = `Equipamento Premium Hooke: ${name}. Confeccionado ${fabricText} de caimento impecável, toque suave e acabamento de altíssimo nível.`;
+      refinedDesc = `Peça exclusiva produzida em tecido selecionado de alta qualidade, perfeita para compor looks minimalistas e modernos com versatilidade. Apresenta costuras internas reforçadas e acabamento impecável, garantindo excelente durabilidade diária e caimento perfeito no corpo que resiste a lavagens frequentes sem perder a estrutura.`;
+      refinedMeta = `Compre o ${name} Hooke. Confeccionado com tecidos selecionados de caimento estruturado, costuras reforçadas e alta durabilidade.`;
     }
 
     setValue('description', refinedDesc, { shouldDirty: true });
@@ -812,12 +812,11 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                     <input 
                       type="text"
                       list="fabric-options"
-                      placeholder="Ex: Algodão Heavyweight 260g"
+                      placeholder="Ex: Algodão Pima, Linho Premium, Viscose Nobre"
                       {...register('details.fabric')}
                       onChange={(e) => {
                         const fabric = e.target.value;
                         setValue('details.fabric', fabric);
-                        // Lógica de frete sugerido baseada em palavra-chave "Heavyweight" ou gramatura alta
                         const fabricLower = fabric.toLowerCase();
                         if (fabricLower.includes('heavyweight') || fabricLower.includes('260g') || fabricLower.includes('300g')) {
                           setValue('shipping.weight', 0.4);
@@ -829,12 +828,78 @@ const ProductForm = forwardRef<ProductFormHandle, ProductFormProps>((props, ref)
                       className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
                     />
                     <datalist id="fabric-options">
-                      <option value="Algodão Heavyweight 260g" />
-                      <option value="Algodão Heavyweight 300g" />
-                      <option value="Viscose Nobre" />
-                      <option value="Linho Premium" />
                       <option value="Algodão Pima" />
+                      <option value="Linho Premium" />
+                      <option value="Viscose Nobre" />
+                      <option value="Algodão Heavyweight" />
                     </datalist>
+                  </div>
+
+                  {/* ESPECIFICAÇÕES TÉCNICAS DA MALHA */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                    {/* GRAMATURA */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Gramatura</label>
+                      <input 
+                        type="text"
+                        list="grammage-options"
+                        placeholder="Ex: 260g/m²"
+                        {...register('details.grammage')}
+                        onChange={(e) => {
+                          const grammage = e.target.value;
+                          setValue('details.grammage', grammage);
+                          const match = grammage.match(/\d+/);
+                          const num = match ? parseInt(match[0], 10) : 0;
+                          if (num >= 240) {
+                            setValue('shipping.weight', 0.4);
+                            setValue('shipping.width', 25);
+                            setValue('shipping.height', 2);
+                            setValue('shipping.length', 35);
+                          }
+                        }}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
+                      />
+                      <datalist id="grammage-options">
+                        <option value="150g/m²" />
+                        <option value="210g/m²" />
+                        <option value="220g/m²" />
+                        <option value="260g/m²" />
+                      </datalist>
+                    </div>
+
+                    {/* TIPO DE FIO */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tipo de Fio</label>
+                      <input 
+                        type="text"
+                        list="yarn-options"
+                        placeholder="Ex: 20.1 Penteado"
+                        {...register('details.yarn')}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
+                      />
+                      <datalist id="yarn-options">
+                        <option value="30.1 Penteado" />
+                        <option value="20.1 Penteado" />
+                        <option value="Fio Egípcio" />
+                      </datalist>
+                    </div>
+
+                    {/* TIPO DE GOLA */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Tipo de Gola</label>
+                      <input 
+                        type="text"
+                        list="collar-options"
+                        placeholder="Ex: Canelada 3cm"
+                        {...register('details.collar')}
+                        className="w-full h-11 border border-zinc-200 focus:border-black px-4 font-mono text-xs focus:outline-none transition-colors bg-white uppercase tracking-widest font-bold"
+                      />
+                      <datalist id="collar-options">
+                        <option value="Canelada 3cm" />
+                        <option value="Canelada Comum" />
+                        <option value="Ribana Tradicional" />
+                      </datalist>
+                    </div>
                   </div>
  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">

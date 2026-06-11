@@ -7,7 +7,7 @@ import { Product } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X } from 'lucide-react';
+import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X, CreditCard, Truck, RotateCcw } from 'lucide-react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -113,6 +113,88 @@ const getModelDescription = (model?: string) => {
   return `${model} — Modelagem exclusiva Hooke projetada com precisão técnica de alta costura, otimizando proporções e caimento para garantir silhueta limpa e conforto absoluto em qualquer biotipo.`;
 };
 
+// Engenharia da Malha - Bloco Técnico Interativo Brutalista
+const EngenhariaDaMalhaDetails = ({ grammage, yarn }: { grammage?: string; yarn?: string }) => {
+  if (!grammage) return null;
+
+  // Extrai a gramatura numérica (ex: 260g/m² -> 260)
+  const match = grammage.match(/\d+/);
+  const weightNum = match ? parseInt(match[0], 10) : 0;
+  
+  if (weightNum === 0) return null;
+
+  // Escala vai de 100g/m² a 300g/m²
+  const minWeight = 100;
+  const maxWeight = 300;
+  const percentage = Math.min(Math.max(((weightNum - minWeight) / (maxWeight - minWeight)) * 100, 0), 100);
+
+  let categoryLabel = "Leve";
+  let categoryColor = "text-zinc-500";
+  if (weightNum >= 230) {
+    categoryLabel = "Heavyweight";
+    categoryColor = "text-black font-black";
+  } else if (weightNum >= 170) {
+    categoryLabel = "Intermediária";
+    categoryColor = "text-zinc-800 font-bold";
+  }
+
+  return (
+    <div className="mt-4 border-t border-black/10 pt-4 font-mono">
+      <div className="flex justify-between items-end mb-2">
+        <div>
+          <span className="text-[8px] font-black uppercase tracking-wider text-zinc-400 block mb-0.5">Engenharia da Malha</span>
+          <span className="text-[10px] font-black uppercase text-black">{yarn || "Algodão Premium"} · {grammage}</span>
+        </div>
+        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 border border-black/10 bg-zinc-50 ${categoryColor}`}>
+          {categoryLabel}
+        </span>
+      </div>
+
+      {/* Escala Gráfica Brutalista */}
+      <div className="relative w-full h-3 border border-black bg-zinc-100 mb-2">
+        {/* Linhas divisórias (160g e 220g) */}
+        <div className="absolute left-[30%] top-0 bottom-0 w-px bg-black/20" />
+        <div className="absolute left-[60%] top-0 bottom-0 w-px bg-black/20" />
+
+        {/* Marcador Reativo */}
+        <div 
+          className="absolute top-0 bottom-0 w-2.5 bg-black -translate-x-1/2 border-x border-white"
+          style={{ left: `${percentage}%` }}
+        />
+      </div>
+
+      <div className="flex justify-between text-[7px] text-zinc-400 font-bold uppercase tracking-wider">
+        <span>Leve (≤ 160g)</span>
+        <span>Intermediária (170-220g)</span>
+        <span>Heavyweight (≥ 230g)</span>
+      </div>
+    </div>
+  );
+};
+
+// Vantagens Comerciais Brutalistas
+const VantagensComerciais = () => {
+  return (
+    <div className="grid grid-cols-3 gap-2 pt-1 pb-1 text-center font-mono">
+      <div className="border border-black p-2 bg-zinc-50 flex flex-col items-center justify-center min-h-[64px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <CreditCard size={14} className="mb-1 text-black" />
+        <span className="text-[8px] font-black uppercase tracking-wider text-black">Até 3x Sem Juros</span>
+        <span className="text-[7px] text-zinc-500 font-bold uppercase mt-0.5">ou 15% Pix</span>
+      </div>
+      <div className="border border-black p-2 bg-zinc-50 flex flex-col items-center justify-center min-h-[64px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <Truck size={14} className="mb-1 text-black" />
+        <span className="text-[8px] font-black uppercase tracking-wider text-black">Frete Prioritário</span>
+        <span className="text-[7px] text-zinc-500 font-bold uppercase mt-0.5">Gratuito nas Regiões</span>
+      </div>
+      <div className="border border-black p-2 bg-zinc-50 flex flex-col items-center justify-center min-h-[64px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <RotateCcw size={14} className="mb-1 text-black" />
+        <span className="text-[8px] font-black uppercase tracking-wider text-black">Troca Facilitada</span>
+        <span className="text-[7px] text-zinc-500 font-bold uppercase mt-0.5">Até 7 dias grátis</span>
+      </div>
+    </div>
+  );
+};
+
 const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -180,30 +262,50 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
   const nextSlide = () => setActiveSlide((p) => (p + 1) % images.length);
   const prevSlide = () => setActiveSlide((p) => (p - 1 + images.length) % images.length);
 
+  const hasCollar3cm = product.details?.collar?.toLowerCase().includes('3cm') || false;
+  const hasFabricSpecs = !!(product.details?.grammage && product.details?.yarn);
   const toggleAccordion = (key: string) => setOpenAccordion(prev => prev === key ? null : key);
 
   const accordions = [
     {
       key: 'tecido',
       label: '🧵 O Tecido',
-      content: getFabricDescription(product.details?.fabric)
+      content: (
+        <div className="space-y-3">
+          <p>{getFabricDescription(product.details?.fabric)}</p>
+          {hasFabricSpecs && (
+            <EngenhariaDaMalhaDetails 
+              grammage={product.details?.grammage} 
+              yarn={product.details?.yarn} 
+            />
+          )}
+        </div>
+      )
     },
     {
       key: 'corte',
       label: '📐 O Corte',
-      content: getModelDescription(product.details?.model)
+      content: <p>{getModelDescription(product.details?.model)}</p>
     },
     {
       key: 'manifesto',
       label: '⚡ O Manifesto',
-      content: product.description
-        ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')
-        : 'Cada peça Hooke é um protocolo de essencialismo. Feita para durar mais do que qualquer tendência. O básico refeito como declaração.'
+      content: (
+        <p>
+          {product.description
+            ? product.description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ')
+            : 'Cada peça Hooke é um protocolo de essencialismo. Feita para durar mais do que qualquer tendência. O básico refeito como declaração.'}
+        </p>
+      )
     },
     {
       key: 'sustentabilidade',
       label: '🌱 Sustentabilidade e Origem da Malha',
-      content: 'Nossas camisetas são confeccionadas com malhas feitas de algodão certificado pela Better Cotton Initiative (BCI). Isso garante um cultivo sustentável com redução do uso de água, melhoria real nas condições de trabalho no campo e total transparência. Através de um sistema rigoroso de transferência de créditos rastreados por nota fiscal, garantimos que a matéria-prima do seu conforto cumpre os mais altos critérios globais de sustentabilidade e responsabilidade.'
+      content: (
+        <p>
+          Nossas camisetas são confeccionadas com malhas feitas de algodão certificado pela Better Cotton Initiative (BCI). Isso garante um cultivo sustentável com redução do uso de água, melhoria real nas condições de trabalho no campo e total transparência. Através de um sistema rigoroso de transferência de créditos rastreados por nota fiscal, garantimos que a matéria-prima do seu conforto cumpre os mais altos critérios globais de sustentabilidade e responsabilidade.
+        </p>
+      )
     },
   ];
 
@@ -251,6 +353,22 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     format="avif"
                     quality="auto"
                   />
+                )}
+                {i === 0 && hasCollar3cm && (
+                  <div className="absolute top-[18%] left-[50%] -translate-x-1/2 flex flex-col items-center pointer-events-none select-none z-10 font-mono scale-[0.85] origin-top">
+                    <div className="relative flex items-center justify-between w-24 h-px bg-black">
+                      <div className="w-px h-2 bg-black absolute left-0 -translate-y-1/2 top-1/2"></div>
+                      <div className="w-px h-2 bg-black absolute right-0 -translate-y-1/2 top-1/2"></div>
+                      <div className="absolute left-1/2 -translate-x-1/2 -translate-y-[10px] bg-white border border-black px-1.5 py-0.5 text-[8px] font-black tracking-widest text-black uppercase whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        3.0 CM
+                      </div>
+                    </div>
+                    <div className="w-px h-4 bg-black"></div>
+                    <div className="bg-white border border-black p-1.5 text-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] max-w-[150px]">
+                      <p className="text-[8px] font-black uppercase tracking-wider text-black">Gola Canelada</p>
+                      <p className="text-[6.5px] font-bold uppercase tracking-widest text-zinc-500 mt-0.5 leading-tight">Firmeza Eterna e Alta Densidade</p>
+                    </div>
+                  </div>
                 )}
               </div>
             ))}
@@ -398,6 +516,8 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
             </div>
           </div>
 
+          <VantagensComerciais />
+
           {/* ACORDEÕES RETRÁTEIS */}
           <div className="border-t-2 border-black pt-4 space-y-0">
             {accordions.map((a) => (
@@ -426,9 +546,9 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                       transition={{ duration: 0.25 }}
                       className="overflow-hidden"
                     >
-                      <p className="pb-4 text-[13px] text-zinc-600 leading-relaxed font-normal">
+                      <div className="pb-4 text-[13px] text-zinc-600 leading-relaxed font-normal">
                         {a.content}
-                      </p>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -537,6 +657,22 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                     className="relative aspect-[2/3] w-full bg-zinc-100 overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_#000] group"
                   >
                     {content}
+                    {hasCollar3cm && (
+                      <div className="absolute top-[18%] left-[50%] -translate-x-1/2 flex flex-col items-center pointer-events-none select-none z-10 font-mono">
+                        <div className="relative flex items-center justify-between w-28 h-px bg-black">
+                          <div className="w-px h-3 bg-black absolute left-0 -translate-y-1/2 top-1/2"></div>
+                          <div className="w-px h-3 bg-black absolute right-0 -translate-y-1/2 top-1/2"></div>
+                          <div className="absolute left-1/2 -translate-x-1/2 -translate-y-[12px] bg-white border border-black px-1.5 py-0.5 text-[9px] font-black tracking-widest text-black uppercase whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            3.0 CM
+                          </div>
+                        </div>
+                        <div className="w-px h-6 bg-black"></div>
+                        <div className="bg-white border-2 border-black p-2 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-[180px]">
+                          <p className="text-[9px] font-black uppercase tracking-wider text-black">Gola Canelada</p>
+                          <p className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500 mt-0.5 leading-tight">Firmeza Eterna e Alta Densidade</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               }
@@ -669,6 +805,8 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
               </div>
             </div>
 
+            <VantagensComerciais />
+
             {/* Acordeões Desktop */}
             <div className="border-t-2 border-black pt-3 space-y-0">
               {accordions.map((a) => (
@@ -693,7 +831,7 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
                         transition={{ duration: 0.2 }} 
                         className="overflow-hidden"
                       >
-                        <p className="pb-3 text-[11px] text-zinc-600 leading-relaxed">{a.content}</p>
+                        <div className="pb-3 text-[11px] text-zinc-600 leading-relaxed">{a.content}</div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -770,6 +908,8 @@ const SsenseProductView = ({ product, variants = [] }: SsenseProductViewProps) =
         onClose={() => setShowSizeGuide(false)} 
         selectedSize={selectedSize} 
         sizeGuideData={SIZE_GUIDE} 
+        grammage={product.details?.grammage}
+        model={product.details?.model}
       />
 
     </div>

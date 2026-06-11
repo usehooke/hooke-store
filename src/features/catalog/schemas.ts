@@ -23,6 +23,9 @@ export const productSchema = z.object({
     fabric: z.string().optional(),
     model: z.string().optional(),
     wash: z.string().optional(),
+    grammage: z.string().optional(),
+    yarn: z.string().optional(),
+    collar: z.string().optional(),
   }).optional(),
   seo: z.object({
     altText: z.string().optional(),

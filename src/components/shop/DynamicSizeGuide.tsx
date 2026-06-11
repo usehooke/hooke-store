@@ -9,9 +9,11 @@ interface DynamicSizeGuideProps {
   onClose: () => void;
   selectedSize: string | null;
   sizeGuideData: Record<string, { peito: string; comprimento: string; ombro: string }>;
+  grammage?: string;
+  model?: string;
 }
 
-export default function DynamicSizeGuide({ show, onClose, selectedSize, sizeGuideData }: DynamicSizeGuideProps) {
+export default function DynamicSizeGuide({ show, onClose, selectedSize, sizeGuideData, grammage, model }: DynamicSizeGuideProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && show) onClose();
@@ -19,6 +21,26 @@ export default function DynamicSizeGuide({ show, onClose, selectedSize, sizeGuid
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [show, onClose]);
+
+  // Detecção da gramatura para o Silhouette Guide
+  let silhouetteTitle = "";
+  let silhouetteDesc = "";
+  if (grammage) {
+    const match = grammage.match(/\d+/);
+    const weightNum = match ? parseInt(match[0], 10) : 0;
+    if (weightNum > 0) {
+      if (weightNum >= 240) {
+        silhouetteTitle = "Estruturado e Boxy (Silhueta Firme)";
+        silhouetteDesc = "A malha pesada (heavyweight) garante que a peça mantenha sua forma estruturada, com ombros bem definidos e caimento reto que não marca o corpo.";
+      } else if (weightNum <= 210) {
+        silhouetteTitle = "Caimento Leve e Fluido (Ajuste Macio)";
+        silhouetteDesc = "Desenvolvido com malha de gramatura leve, proporcionando alta flexibilidade, toque suave e um caimento fluido que se adapta naturalmente aos movimentos do corpo.";
+      } else {
+        silhouetteTitle = "Caimento Regular / Balanceado";
+        silhouetteDesc = "Equilíbrio perfeito entre estrutura e leveza. Oferece caimento confortável que acompanha a linha dos ombros, ideal para conforto térmico e versatilidade diária.";
+      }
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -76,6 +98,16 @@ export default function DynamicSizeGuide({ show, onClose, selectedSize, sizeGuid
                 ))}
               </tbody>
             </table>
+
+            {/* Silhouette Guide (Caimento) */}
+            {silhouetteTitle && (
+              <div className="mt-6 border-2 border-black p-3 bg-zinc-50 font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <span className="text-[8px] font-black uppercase tracking-wider text-zinc-400 block mb-1">Silhouette Guide (Caimento)</span>
+                <p className="text-[10px] font-black uppercase text-black mb-1">{silhouetteTitle}</p>
+                <p className="text-[9px] text-zinc-600 leading-relaxed font-medium">{silhouetteDesc}</p>
+              </div>
+            )}
+
             <p className="text-[10px] text-zinc-400 mt-6 text-center italic">
               As medidas podem variar em até 2cm devido ao processo de lavagem e encolhimento natural do algodão.
             </p>
