@@ -133,12 +133,13 @@ function FadeInUp({
 
 function ScarcityBar() {
   return (
-    <div className="bg-black text-white text-center py-2 px-4 font-jost text-[11px] tracking-widest uppercase">
+    <div className="bg-black text-white text-center py-2 px-4 font-jost text-[11px] tracking-widest uppercase flex flex-wrap items-center justify-center gap-2">
       <span className="opacity-60">Lote 01/26</span>
-      {' '}—{' '}
+      <span className="hidden sm:inline opacity-60">—</span>
       <span className="font-medium">Limitado a 150 kits</span>
-      {' '}
-      <span className="text-[#E8C97A] font-medium">· Restam poucas unidades</span>
+      <span className="hidden sm:inline text-[#E8C97A] font-medium">·</span>
+      <span className="text-[#E8C97A] font-medium">Restam poucas unidades</span>
+      <span className="opacity-40 ml-2">🇧🇷 Torcida Hooke '26</span>
     </div>
   );
 }
@@ -222,7 +223,7 @@ function HeroSection({ onScrollToBuy }: { onScrollToBuy: () => void }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.55 }}
-            className="mb-8"
+            className="mb-8 relative"
           >
             <div className="flex items-baseline gap-3">
               <span className="font-jost text-[clamp(2rem,5vw,2.8rem)] font-light text-black">
@@ -232,9 +233,19 @@ function HeroSection({ onScrollToBuy }: { onScrollToBuy: () => void }) {
                 {formatBRL(KIT_ORIGINAL_PRICE)}
               </span>
             </div>
-            <p className="font-sans text-sm text-emerald-600 mt-1">
+            <p className="font-sans text-sm text-emerald-600 mt-1 mb-3">
               ou {formatBRL(KIT_PIX_PRICE)} no PIX
             </p>
+            {/* Pulse de Gatilho Social */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/5 border border-black/10">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+              </span>
+              <span className="font-sans text-[10px] uppercase tracking-wider text-black/60 font-medium">
+                4 pessoas estão fechando este kit
+              </span>
+            </div>
           </motion.div>
 
           {/* CTA Principal */}
@@ -411,8 +422,8 @@ function GrammageRuler() {
               {DENSITY_SCALE.map((item, i) => (
                 <div
                   key={item.g}
-                  className={`flex-1 border-r border-black/15 last:border-r-0 ${
-                    item.isActive ? 'bg-black text-white' : 'bg-white text-black'
+                  className={`flex-1 border-r border-black/15 last:border-r-0 group relative ${
+                    item.isActive ? 'bg-black text-white' : 'bg-white text-black hover:bg-black/5 transition-colors cursor-crosshair'
                   }`}
                 >
                   <div className="p-3 text-center">
@@ -425,12 +436,21 @@ function GrammageRuler() {
                     </span>
                     <span
                       className={`font-sans text-[9px] tracking-wider uppercase mt-0.5 block ${
-                        item.isActive ? 'text-white/70' : 'text-black/30'
+                        item.isActive ? 'text-white/70' : 'text-black/30 group-hover:text-black/70'
                       }`}
                     >
                       {item.label}
                     </span>
                   </div>
+                  {/* Tooltip interativa CRO */}
+                  {!item.isActive && (
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white px-2 py-1 font-sans text-[10px] tracking-wide whitespace-nowrap pointer-events-none z-10 shadow-sharp">
+                      {item.g === 140 && 'Transparente e fina'}
+                      {item.g === 180 && 'Encolhe na lavagem'}
+                      {item.g === 220 && 'Falta estrutura'}
+                      {item.g === 300 && 'Quente demais'}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -559,18 +579,22 @@ function BundleSelector({
               {/* Grade de tamanhos */}
               <div className="flex gap-2 flex-wrap">
                 {SIZES.map((size) => (
-                  <button
+                  <motion.button
                     key={size}
                     id={`size-btn-${color.id}-${size}`}
                     onClick={() => handleSize(color.id as keyof SizeSelection, size)}
-                    className={`px-4 py-2 font-jost text-xs tracking-widest uppercase border transition-all duration-200 ${
+                    animate={error && !sizes[color.id] ? { x: [-4, 4, -4, 4, 0] } : {}}
+                    transition={{ duration: 0.3 }}
+                    className={`min-h-[48px] min-w-[48px] flex items-center justify-center font-jost text-xs tracking-widest uppercase border transition-colors duration-200 ${
                       sizes[color.id] === size
                         ? 'bg-black text-white border-black shadow-brutal-sm'
+                        : error && !sizes[color.id]
+                        ? 'bg-red-50 text-red-600 border-red-300'
                         : 'bg-white text-black/70 border-black/20 hover:border-black hover:text-black'
                     }`}
                   >
                     {size}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -717,10 +741,10 @@ function SocialProof() {
         </div>
       </FadeInUp>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+      <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-3 gap-0 hide-scrollbar pb-4 md:pb-0 -mx-6 md:mx-0 px-6 md:px-0">
         {REVIEWS.map((review, i) => (
-          <FadeInUp key={review.name} delay={i * 0.12}>
-            <div className="bg-white border border-black/10 border-r-0 last:border-r p-6 md:border-b-0 border-b">
+          <FadeInUp key={review.name} delay={i * 0.12} className="min-w-[85vw] md:min-w-0 snap-center first:ml-0">
+            <div className="bg-white border border-black/10 md:border-r-0 last:border-r p-6 md:border-b-0 border-b h-full">
               {/* Estrelas */}
               <div className="flex gap-1 mb-4">
                 {[...Array(review.rating)].map((_, j) => (
@@ -838,7 +862,7 @@ function FaqSection({ onScrollToBuy }: { onScrollToBuy: () => void }) {
 //  SUB-COMPONENT: STICKY BOTTOM CTA
 // ─────────────────────────────────────────────
 
-function StickyCta({ scrollY, onScrollToBuy }: { scrollY: number; onScrollToBuy: () => void }) {
+function StickyCta({ scrollY, onOpenDrawer }: { scrollY: number; onOpenDrawer: () => void }) {
   const show = scrollY > 320;
 
   return (
@@ -861,7 +885,7 @@ function StickyCta({ scrollY, onScrollToBuy }: { scrollY: number; onScrollToBuy:
             </div>
             <button
               id="sticky-cta-kit-core"
-              onClick={onScrollToBuy}
+              onClick={onOpenDrawer}
               className="btn-hooke-elite flex items-center gap-2 px-5 py-3 text-sm font-jost tracking-widest uppercase flex-1 justify-center"
             >
               <ShoppingBag size={14} />
@@ -869,6 +893,101 @@ function StickyCta({ scrollY, onScrollToBuy }: { scrollY: number; onScrollToBuy:
             </button>
           </div>
         </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─────────────────────────────────────────────
+//  SUB-COMPONENT: MOBILE DRAWER SELECTOR
+// ─────────────────────────────────────────────
+
+function MobileDrawerSelector({ isOpen, onClose, onAddToCart }: { isOpen: boolean; onClose: () => void; onAddToCart: (s: SizeSelection) => void }) {
+  const [sizes, setSizes] = useState<SizeSelection>({ black: null, 'off-white': null, mescla: null });
+  const [error, setError] = useState<string | null>(null);
+  const allSelected = Object.values(sizes).every((s) => s !== null);
+
+  useEffect(() => { if (isOpen) setError(null); }, [isOpen]);
+
+  const handleSize = (colorId: keyof SizeSelection, size: string) => {
+    setSizes((prev) => ({ ...prev, [colorId]: size }));
+    setError(null);
+  };
+
+  const handleSubmit = () => {
+    if (!allSelected) { setError('Escolha o tamanho de cada camiseta.'); return; }
+    onAddToCart(sizes);
+    onClose();
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
+          />
+          <motion.div 
+            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed bottom-0 left-0 right-0 bg-white z-[70] md:hidden flex flex-col max-h-[85vh] shadow-brutal-lg"
+          >
+            {/* Header */}
+            <div className="p-5 border-b border-black/10 flex items-center justify-between bg-[#F5F4F2]">
+              <div>
+                <p className="font-jost text-xl tracking-tight text-black">Montar Kit Core</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="font-sans text-sm text-black/40 line-through">{formatBRL(KIT_ORIGINAL_PRICE)}</span>
+                  <span className="font-sans text-sm text-emerald-600 font-medium">{formatBRL(KIT_PIX_PRICE)} PIX</span>
+                </div>
+              </div>
+              <button onClick={onClose} className="p-2 border border-black/10 hover:bg-black/5 transition-colors"><X size={20} className="text-black/60" /></button>
+            </div>
+            
+            {/* Body */}
+            <div className="overflow-y-auto p-5 space-y-4 pb-32">
+              {COLORS.map((color) => (
+                <div key={color.id} className="border border-black/15 p-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-5 h-5 border border-black/20" style={{ backgroundColor: color.hex }} />
+                    <span className="font-jost text-sm uppercase tracking-widest">{color.name}</span>
+                    {sizes[color.id] && <span className="ml-auto font-jost text-xs border border-black px-2 py-0.5">{sizes[color.id]}</span>}
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {SIZES.map((size) => (
+                      <motion.button
+                        key={size}
+                        onClick={() => handleSize(color.id as keyof SizeSelection, size)}
+                        animate={error && !sizes[color.id] ? { x: [-4, 4, -4, 4, 0] } : {}}
+                        transition={{ duration: 0.3 }}
+                        className={`min-h-[44px] min-w-[44px] flex-1 font-jost text-xs tracking-widest uppercase border transition-colors ${
+                          sizes[color.id] === size ? 'bg-black text-white border-black' : error && !sizes[color.id] ? 'bg-red-50 text-red-600 border-red-300' : 'bg-white text-black/70 border-black/20'
+                        }`}
+                      >
+                        {size}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {error && <p className="font-sans text-xs text-red-600 flex items-center gap-1 mt-2"><X size={12}/>{error}</p>}
+            </div>
+
+            {/* Footer */}
+            <div className="absolute bottom-0 left-0 right-0 p-5 bg-white border-t border-black/10 safe-area-inset-bottom">
+              <button
+                onClick={handleSubmit}
+                className={`w-full flex items-center justify-center gap-2 py-4 font-jost text-sm tracking-widest uppercase transition-colors ${
+                  allSelected ? 'bg-black text-white border border-black shadow-brutal hover:bg-black/90' : 'bg-black/5 text-black/40 border border-black/10 cursor-not-allowed'
+                }`}
+              >
+                <ShoppingBag size={16} />
+                {allSelected ? 'Adicionar ao Carrinho' : 'Escolher tamanhos'}
+              </button>
+            </div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
@@ -937,10 +1056,13 @@ export default function KitCoreClient() {
   const openCart = useCartStore((s) => s.openCart);
   const scrollY = useScrollY();
   const selectorRef = useRef<HTMLDivElement>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const scrollToBuy = () => {
     selectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  const handleOpenDrawer = () => setIsDrawerOpen(true);
 
   const handleAddToCart = (selections: SizeSelection) => {
     // Adiciona 3 itens separados com cores e tamanhos individuais
@@ -1028,8 +1150,11 @@ export default function KitCoreClient() {
       {/* WhatsApp FAB */}
       <WhatsAppFab />
 
+      {/* Mobile Drawer Selector */}
+      <MobileDrawerSelector isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onAddToCart={handleAddToCart} />
+
       {/* Sticky Bottom CTA (mobile) */}
-      <StickyCta scrollY={scrollY} onScrollToBuy={scrollToBuy} />
+      <StickyCta scrollY={scrollY} onOpenDrawer={handleOpenDrawer} />
     </div>
   );
 }
