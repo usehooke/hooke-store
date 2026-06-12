@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cart-store";
 import dynamic from "next/dynamic";
+import { WorldCupMarquee } from "./WorldCupMarquee";
 
 const SearchModal = dynamic(() => import("@/components/shop/SearchModal"), { ssr: false });
 
@@ -65,6 +66,7 @@ export default function Navbar() {
 
   return (
     <>
+      <WorldCupMarquee />
       <header 
         className={`sticky top-0 z-40 w-full bg-white transition-all duration-300 ${
           isScrolled ? "border-b border-gray-100 shadow-sm" : "border-b border-transparent"

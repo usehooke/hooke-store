@@ -11,6 +11,7 @@ import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, 
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { Button } from '@/components/ui/button';
 
 const DynamicSizeGuide = dynamic(() => import('./DynamicSizeGuide'), { ssr: false });
 
@@ -808,13 +809,14 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
 
             {/* Botões de Compra */}
             <div className="flex flex-col gap-2.5">
-              <button
+              <Button
+                variant="hexa"
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className="w-full py-4 text-[10px] font-black tracking-[0.2em] bg-white text-black border-2 border-black hover:bg-black hover:text-white hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all uppercase flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_#000] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                className="w-full py-6 text-[10px]"
               >
                 {isAdding ? <span className="animate-pulse">PROCESSANDO...</span> : <><span>ADICIONAR AO CARRINHO</span><ArrowRight size={13} aria-hidden="true" /></>}
-              </button>
+              </Button>
               <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[72px] flex flex-col justify-center transition-all">
                 <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
                 {selectedSize ? (

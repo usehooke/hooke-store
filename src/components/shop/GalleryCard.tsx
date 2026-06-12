@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Product } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface GalleryCardProps {
   product: Product;
@@ -54,6 +55,9 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
     <Card variant="product" className="flex flex-col h-full gap-3 p-2">
       {/* Foto (Direta, sem zoom) */}
       <Link href={`/produto/${product.slug || product.id}`} className="block relative w-full aspect-[2/3] bg-zinc-100">
+        <div className="absolute top-2 right-2 z-10">
+          <Badge variant="hexa">⭐️⭐️⭐️⭐️⭐️⭐️ MATCH DAY OFF</Badge>
+        </div>
         {imageProps.src ? (
           imageProps.deliveryType === 'local' ? (
             <Image
