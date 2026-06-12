@@ -31,11 +31,19 @@ export default async function Home() {
       <main className="bg-white min-h-screen pb-24 md:pb-0">
         <h1 className="sr-only">Hooke Store - Roupas Masculinas Premium e Minimalistas</h1>
 
-      {/* Subtítulo Discreto (Sem duplicar o logo) */}
-      <section className="pt-3 pb-3 px-4 md:px-8 lg:px-12 border-b border-zinc-100">
+      {/* Subtítulo Discreto (Sem duplicar o logo) e Easter Egg Copa */}
+      <section className="pt-3 pb-3 px-4 md:px-8 lg:px-12 border-b border-zinc-100 flex items-center justify-between">
         <p className="text-[10px] md:text-xs font-bold tracking-[0.25em] text-zinc-400 uppercase">
           Conforto Premium · Preço Justo de Fábrica
         </p>
+        <div 
+          className="flex items-center gap-1.5 opacity-40 hover:opacity-100 transition-opacity cursor-default"
+          title="Hooke na Copa 2026"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+          <span className="text-[9px] font-bold tracking-[0.2em] text-zinc-400 ml-1">2026 🇧🇷</span>
+        </div>
       </section>
 
       {/* Grade de Produtos — Edge-to-Edge */}
