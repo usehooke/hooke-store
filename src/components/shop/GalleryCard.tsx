@@ -55,8 +55,15 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
     <Card variant="product" className="flex flex-col h-full gap-3 p-2">
       {/* Foto (Direta, sem zoom) */}
       <Link href={`/produto/${product.slug || product.id}`} className="block relative w-full aspect-[2/3] bg-zinc-100">
-        <div className="absolute top-2 right-2 z-10">
-          <Badge variant="hexa">⭐️⭐️⭐️⭐️⭐️⭐️ MATCH DAY OFF</Badge>
+        <div className="absolute top-2.5 left-2.5 z-10">
+          <div className="flex border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] text-[8px] font-black uppercase tracking-widest group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
+            <div className="bg-emerald-600 text-white px-1.5 py-1 flex items-center justify-center">
+              🇧🇷
+            </div>
+            <div className="bg-[#E1F522] text-black px-2 py-1 flex items-center justify-center border-l-[1.5px] border-black">
+              Rumo ao Hexa
+            </div>
+          </div>
         </div>
         {imageProps.src ? (
           imageProps.deliveryType === 'local' ? (
