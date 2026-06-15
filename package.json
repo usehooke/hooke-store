@@ -48,6 +48,7 @@
     "framer-motion": "^12.35.2",
     "html5-qrcode": "^2.3.8",
     "idb-keyval": "^6.2.2",
+    "jose": "^6.2.3",
     "localforage": "^1.10.0",
     "lucide-react": "0.453.0",
     "mercadopago": "^2.12.0",

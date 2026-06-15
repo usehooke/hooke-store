@@ -109,7 +109,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         sku: `${product?.id || 'ID'}-${size}`,
         priceCurrency: "BRL",
         price: (product?.price || 0).toFixed(2),
-        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        priceValidUntil: "2027-06-15",
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
         itemCondition: "https://schema.org/NewCondition",
@@ -153,7 +153,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         "@type": "Offer",
         priceCurrency: "BRL",
         price: (product?.price || 0).toFixed(2),
-        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        priceValidUntil: "2027-06-15",
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
         itemCondition: "https://schema.org/NewCondition"
