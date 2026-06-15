@@ -1,21 +1,67 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 🛡️ SEGURANÇA ELITE: Regra Global de Leitura
-    // Qualquer um pode ler produtos e configurações públicas
+
+    // ════════════════════════════════════════════════════
+    // HOOKE STORE — Firestore Rules v2.1 (Fase 3 Arch)
+    // Atualizado em: 15/06/2026
+    // ════════════════════════════════════════════════════
+
+    // 1. CATÁLOGO DE PRODUTOS (Leitura pública, escrita restrita)
+    // Mantém o catálogo acessível para todos os clientes.
+    // A escrita foi relaxada para `auth != null` durante testes
+    // de integração. Reforçar para `admin == true` em produção estável.
     match /produtos/{product} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.token.admin == true;
     }
-    
-    // 📦 Pedidos: Cliente cria, Admin gerencia
-    match /pedidos/{order} {
-      allow read: if request.auth != null && (resource.data.customer.email == request.auth.token.email || request.auth.token.admin == true);
-      allow create: if true; // Permitimos criação anônima para checkout rápido
-      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+
+    // 2. COLEÇÃO /products (alias inglês — Tiny ERP sync)
+    match /products/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
     }
 
-    // 🔒 Coleções Administrativas: Bloqueio Total
+    // 3. ARTIFACTS (Firebase AI / App Check)
+    match /artifacts/{appId}/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 4. PEDIDOS — Checkout Anônimo + Proteção por UID
+    // Mantemos `create: if true` para suportar Guest Checkout (sem login).
+    // Leitura e edição só pelo dono ou admin.
+    match /pedidos/{orderId} {
+      allow create: if true; // Guest Checkout — essencial para conversão
+      allow read, update: if request.auth != null &&
+        (resource.data.customer.email == request.auth.token.email ||
+         request.auth.token.admin == true);
+      allow delete: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // 5. ORDERS (alias inglês — integração Mercado Pago)
+    match /orders/{orderId} {
+      allow create: if true; // Guest Checkout
+      allow read, update: if request.auth != null &&
+        (resource.data.userId == request.auth.uid ||
+         request.auth.token.admin == true);
+      allow delete: if false;
+    }
+
+    // 6. CONFIGURAÇÕES DO SISTEMA (Apenas Admin)
+    match /configuracoes/{doc} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // 7. ANALYTICS E LOGS (Apenas Admin)
+    match /analytics/{doc} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+
+    // 8. CATCH-ALL — Bloqueio Padrão (Postura "Negar por Default")
+    // Qualquer coleção não listada acima requer admin autenticado.
+    // NUNCA usar `read: if true` aqui — exporia todo o banco.
     match /{document=**} {
       allow read, write: if request.auth != null && request.auth.token.admin == true;
     }
