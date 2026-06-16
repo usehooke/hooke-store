@@ -18,31 +18,31 @@ interface SocialPost {
 const SOCIAL_POSTS: SocialPost[] = [
  {
  id: 1,
- imageUrl: "/produtos/hk_prod_ov_black_03.avif",
+ imageUrl: "/produtos/HK_PROD_OV_BLACK_03.avif",
  link: "/produto/camiseta-oversized-preta-premium",
  alt: "Homem usando camiseta oversized preta Hooke",
  },
  {
  id: 2,
- imageUrl: "/produtos/hk_prod_re_military_hero.avif",
+ imageUrl: "/produtos/HK_PROD_RE_MILITARY_HERO.avif",
  link: "/produto/regata-canelada-verde",
  alt: "Homem usando regata canelada verde Hooke",
  },
  {
  id: 3,
- imageUrl: "/produtos/hk_prod_re_lifestyle_bege_01.jpg",
+ imageUrl: "/produtos/HK_PROD_RE_LIFESTYLE_BEGE_01.jpg",
  link: "/produto/regata-lifestyle-bege",
  alt: "Homem usando regata lifestyle bege Hooke",
  },
  {
  id: 4,
- imageUrl: "/produtos/hk_prod_vi_fusca_editorial_01.png",
+ imageUrl: "/produtos/HK_PROD_VI_FUSCA_EDITORIAL_01.png",
  link: "/produto/camiseta-vintage-fusca-preta",
  alt: "Homem usando camiseta vintage fusca preta",
  },
  {
  id: 5,
- imageUrl: "/produtos/hk_prod_ov_offwhite_01.avif",
+ imageUrl: "/produtos/HK_PROD_OV_OFFWHITE_01.avif",
  link: "/produto/camiseta-oversized-offwhite-premium",
  alt: "Homem usando camiseta oversized off-white Hooke",
  },
