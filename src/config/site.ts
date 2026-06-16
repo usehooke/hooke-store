@@ -5,7 +5,7 @@ export const IMAGE_BASE_URL = 'https://www.usehooke.com.br/cdn/shop/files';
 export const siteConfig = {
   name: "Hooke",
   description: "Moda Masculina Premium",
-  whatsappNumber: "5511999999999", // Seu número aqui
+  whatsappNumber: "5511975902528", // Seu número aqui
   links: {
     instagram: "https://instagram.com/usehooke",
     facebook: "https://facebook.com/usehooke",

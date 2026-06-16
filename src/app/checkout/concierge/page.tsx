@@ -111,7 +111,7 @@ export default function ConciergeLounge() {
     const handleWhatsAppConfirmation = () => {
         const productInfo = mainProduct ? `${mainProduct.name} - ${mainProduct.selectedSize}` : 'Curadoria';
         const text = `Olá, sou ${customerName || 'um Cliente Hooke'} e escolhi a Curadoria Hooke: ${productInfo}. Gostaria de confirmar meu pedido ${orderId} com um concierge.`;
-        const url = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511375902528'}?text=${encodeURIComponent(text)}`;
+        const url = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511975902528'}?text=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     };
 
