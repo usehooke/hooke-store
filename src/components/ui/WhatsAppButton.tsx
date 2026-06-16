@@ -23,19 +23,19 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
-      className="fixed bottom-6 right-6 z-50 group flex items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-hooke-900 focus-visible:ring-offset-2"
+      className="fixed bottom-24 md:bottom-6 right-6 z-40 group flex items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-hooke-900 focus-visible:ring-offset-2"
     >
       {/* Tooltip que aparece no hover ou foco */}
-      <span className="absolute right-16 bg-white text-hooke-900 text-xs font-bold px-3 py-1.5 rounded-none shadow-md opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-        Fale Conosco
+      <span className="absolute right-16 bg-white text-hooke-900 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-none shadow-sharp border border-black opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+        Suporte Humano 24h
       </span>
 
-      <div className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-none shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:bg-[#20bd5a] hover:scale-110 hover:-translate-y-1 transition-all duration-300">
+      <div className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black hover:bg-[#20bd5a] hover:scale-105 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-none transition-all duration-300">
         <MessageCircle size={28} fill="white" className="relative z-10" />
         
         {/* Bolinha de notificação pulsante */}
-        <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 rounded-none border-2 border-white z-20">
-          <span className="absolute inline-flex h-full w-full rounded-none bg-red-400 opacity-75 animate-ping"></span>
+        <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-black z-20">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
         </span>
       </div>
     </a>

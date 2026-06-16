@@ -11,6 +11,7 @@ const DynamicCart = dynamic(() => import("./DynamicCart"), { ssr: false });
 // 🚀 EXTREME PERFORMANCE: Code Splitting & Lazy Loading
 const Footer = dynamic(() => import("./Footer"));
 const WhatsAppButton = dynamic(() => import("../ui/WhatsAppButton"), { ssr: false });
+const InstagramPopup = dynamic(() => import("../ui/InstagramPopup"), { ssr: false });
 const DepartmentFAB = dynamic(() => import("./DepartmentFAB"), { ssr: false });
 // O BottomNav é crucial para o Hooke Style (âncora visual), então separamos o bundle mas permitimos SSR
 const BottomNav = dynamic(() => import("./BottomNav"), { ssr: true });
@@ -46,6 +47,7 @@ export default function ShopLayoutWrapper({ children }: ShopLayoutWrapperProps) 
       </main>
 
       <WhatsAppButton />
+      <InstagramPopup />
       <DepartmentFAB />
       <BottomNav />
       <Footer />

@@ -260,6 +260,68 @@ const VariantColorsSelector = (props: VariantColorsSelectorProps) => {
 
 const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps) => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [preferenceId, setPreferenceId] = useState<string | null>(null);
+  const [loadingPreference, setLoadingPreference] = useState(false);
+
+  useEffect(() => {
+    if (!selectedSize) {
+      setPreferenceId(null);
+      return;
+    }
+
+    let isCurrent = true;
+    const fetchPreference = async () => {
+      setLoadingPreference(true);
+      setPreferenceId(null);
+      try {
+        const response = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            items: [
+              {
+                cartItemId: `quick-${product.id}-${selectedSize}`,
+                id: product.id,
+                title: product.name,
+                unit_price: product.price,
+                quantity: 1,
+                size: selectedSize,
+                color: product.color || '',
+                imageUrl: product.imageUrl || '',
+              }
+            ],
+            customer: {
+              name: 'Cliente Hooke',
+            }
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao gerar preferenceId');
+        }
+
+        const data = await response.json();
+        if (isCurrent) {
+          setPreferenceId(data.id);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar preferenceId:', err);
+      } finally {
+        if (isCurrent) {
+          setLoadingPreference(false);
+        }
+      }
+    };
+
+    fetchPreference();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [selectedSize, product.id, product.name, product.price, product.color, product.imageUrl]);
+
   const [isAdding, setIsAdding] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -368,6 +430,30 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
         <p>
           Nossas camisetas são confeccionadas com malhas feitas de algodão certificado pela Better Cotton Initiative (BCI). Isso garante um cultivo sustentável com redução do uso de água, melhoria real nas condições de trabalho no campo e total transparência. Através de um sistema rigoroso de transferência de créditos rastreados por nota fiscal, garantimos que a matéria-prima do seu conforto cumpre os mais altos critérios globais de sustentabilidade e responsabilidade.
         </p>
+      )
+    },
+    {
+      key: 'faq',
+      label: '💬 Perguntas Frequentes (FAQ)',
+      content: (
+        <div className="space-y-4 font-sans text-xs">
+          <div>
+            <h4 className="font-bold text-black mb-1">Qual é a espessura da gola?</h4>
+            <p>Nossa gola canelada possui 3cm de espessura (3.0 cm), desenvolvida com alta densidade de fios para garantir firmeza eterna, mantendo o formato intacto lavagem após lavagem.</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-black mb-1">A camiseta encolhe na máquina de lavar?</h4>
+            <p>Não. Todas as nossas peças são pré-encolhidas no processo de beneficiamento têxtil de fábrica. Seguindo as instruções básicas de lavagem, o encolhimento é zero.</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-black mb-1">Como funciona o processo de troca?</h4>
+            <p>Sua satisfação é prioridade absoluta. A primeira troca é 100% gratuita e pode ser solicitada em até 7 dias úteis após a entrega das peças.</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-black mb-1">Por que o algodão egípcio é superior?</h4>
+            <p>O algodão egípcio possui fibras extra-longas e nobres. Isso resulta em um caimento superior, toque macio inigualável e resistência que previne bolinhas (pilling) ao longo do tempo.</p>
+          </div>
+        </div>
       )
     },
   ];
@@ -547,12 +633,24 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
             <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[76px] flex flex-col justify-center transition-all">
               <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
               {selectedSize ? (
-                <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-11 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
-                  <Wallet
-                    initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
-                    customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                  />
-                </div>
+                loadingPreference ? (
+                  <div className="w-full h-11 bg-zinc-50 border border-zinc-200 flex items-center justify-center gap-2">
+                    <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent animate-spin rounded-full" />
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-black">GERANDO LINK SEGURO...</span>
+                  </div>
+                ) : preferenceId ? (
+                  <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-11 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
+                    <Wallet
+                      key={preferenceId}
+                      initialization={{ preferenceId: preferenceId }}
+                      customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-11 bg-red-50 border border-red-200 flex items-center justify-center">
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-red-500">Erro ao gerar link de pagamento</span>
+                  </div>
+                )
               ) : (
                 <button disabled className="w-full h-11 bg-zinc-100 text-zinc-400 text-[9px] font-black uppercase tracking-[0.2em] border border-zinc-200 flex items-center justify-center gap-2 cursor-not-allowed">
                   <Zap size={11} /> Selecione o Tamanho
@@ -820,12 +918,24 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
               <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[72px] flex flex-col justify-center transition-all">
                 <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
                 {selectedSize ? (
-                  <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-10 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
-                    <Wallet
-                      initialization={{ preferenceId: '<A_PREFERENCE_ID_SERA_GERADA_AQUI>' }}
-                      customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                    />
-                  </div>
+                  loadingPreference ? (
+                    <div className="w-full h-10 bg-zinc-50 border border-zinc-200 flex items-center justify-center gap-2">
+                      <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent animate-spin rounded-full" />
+                      <span className="text-[8px] font-black uppercase tracking-[0.2em] text-black">GERANDO LINK SEGURO...</span>
+                    </div>
+                  ) : preferenceId ? (
+                    <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-10 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
+                      <Wallet
+                        key={preferenceId}
+                        initialization={{ preferenceId: preferenceId }}
+                        customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-10 bg-red-50 border border-red-200 flex items-center justify-center">
+                      <span className="text-[8px] font-black uppercase tracking-[0.2em] text-red-500">Erro ao gerar link de pagamento</span>
+                    </div>
+                  )
                 ) : (
                   <button disabled className="w-full h-10 bg-zinc-100 text-zinc-400 text-[9px] font-black uppercase tracking-[0.2em] border border-zinc-200 flex items-center justify-center gap-2 cursor-not-allowed">
                     <Zap size={11} /> Selecione o Tamanho
@@ -928,6 +1038,73 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ============================================
+          SOCIAL PROOF & REVIEWS SECTION (Soft Brutalism)
+          ============================================ */}
+      <section className="w-full border-t-2 border-black py-20 bg-[#F9F9F8] px-6 md:px-12 lg:px-24">
+        <div className="max-w-[1440px] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+            <div>
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-zinc-400 block mb-2">Social Club</span>
+              <h3 className="text-3xl md:text-4xl font-black tracking-tighter text-black uppercase">Quem veste, confirma</h3>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className="text-amber-400 text-lg">★</span>
+              ))}
+              <span className="text-[10px] font-black font-mono tracking-wider ml-1 text-black">4.9 / 5.0 (Baseado em +120 feedbacks)</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Print 1 */}
+            <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_#000] relative overflow-hidden group hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
+              <span className="absolute top-3 right-4 text-[7px] font-black tracking-widest text-emerald-600 uppercase border border-emerald-300 bg-emerald-50 px-2 py-0.5">✓ Cliente Verificado</span>
+              <div className="flex gap-0.5 mb-4 text-xs text-amber-400">
+                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
+              </div>
+              <p className="text-xs md:text-sm text-zinc-700 italic leading-relaxed mb-6 font-medium">
+                "Nando, a camiseta chegou aqui e pqp... A gola de 3cm realmente não deforma de jeito nenhum. A malha de 260g é pesada pra caralho, veste muito estruturado nos ombros. Já vou pedir mais duas."
+              </p>
+              <div className="flex items-center justify-between border-t border-zinc-100 pt-4 font-mono text-[9px]">
+                <span className="font-black text-black">Rafael M.</span>
+                <span className="text-zinc-400">São Paulo, SP · WhatsApp</span>
+              </div>
+            </div>
+
+            {/* Print 2 */}
+            <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_#000] relative overflow-hidden group hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
+              <span className="absolute top-3 right-4 text-[7px] font-black tracking-widest text-emerald-600 uppercase border border-emerald-300 bg-emerald-50 px-2 py-0.5">✓ Cliente Verificado</span>
+              <div className="flex gap-0.5 mb-4 text-xs text-amber-400">
+                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
+              </div>
+              <p className="text-xs md:text-sm text-zinc-700 italic leading-relaxed mb-6 font-medium">
+                "Cara, surreal a qualidade. Já lavei a minha vintage umas 15 vezes no mínimo, a cor preta continua preta pura e não encolheu nadinha. Vira e mexe alguém na rua me pergunta de onde é a camiseta."
+              </p>
+              <div className="flex items-center justify-between border-t border-zinc-100 pt-4 font-mono text-[9px]">
+                <span className="font-black text-black">Lucas A.</span>
+                <span className="text-zinc-400">Curitiba, PR · Instagram</span>
+              </div>
+            </div>
+
+            {/* Print 3 */}
+            <div className="bg-white border-2 border-black p-6 shadow-[4px_4px_0px_0px_#000] relative overflow-hidden group hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
+              <span className="absolute top-3 right-4 text-[7px] font-black tracking-widest text-emerald-600 uppercase border border-emerald-300 bg-emerald-50 px-2 py-0.5">✓ Cliente Verificado</span>
+              <div className="flex gap-0.5 mb-4 text-xs text-amber-400">
+                {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
+              </div>
+              <p className="text-xs md:text-sm text-zinc-700 italic leading-relaxed mb-6 font-medium">
+                "O caimento Boxy Fit é perfeito. Tenho 1,78m, peguei a M e ficou exatamente com a estrutura que eu queria. O básico brasileiro elevado ao nível de alta costura. Vale cada centavo."
+              </p>
+              <div className="flex items-center justify-between border-t border-zinc-100 pt-4 font-mono text-[9px]">
+                <span className="font-black text-black">Thiago R.</span>
+                <span className="text-zinc-400">Rio de Janeiro, RJ · WhatsApp</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ============================================
           SIZE GUIDE MODAL (DYNAMIC IMPORT)

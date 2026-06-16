@@ -65,7 +65,7 @@ export const ProductSchema = z.object({
   updatedAt: z.any().optional(),
 });
 
-export const OrderStatusSchema = z.enum(["pending", "approved", "in_process", "rejected", "cancelled", "sent", "paid", "shipped"]);
+export const OrderStatusSchema = z.enum(["pending", "approved", "in_process", "rejected", "cancelled", "sent", "paid", "shipped", "abandoned_cart"]);
 
 export const CustomerSchema = z.object({
   name: z.string().trim().min(3, "Nome muito curto"),

@@ -187,6 +187,45 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ]
   };
 
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Qual é a espessura da gola?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nossa gola canelada possui 3cm de espessura (3.0 cm), desenvolvida com alta densidade de fios para garantir firmeza eterna, mantendo o formato intacto lavagem após lavagem."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "A camiseta encolhe na máquina de lavar?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Não. Todas as nossas peças são pré-encolhidas no processo de beneficiamento têxtil de fábrica. Seguindo as instruções básicas de lavagem, o encolhimento é zero."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como funciona o processo de troca?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sua satisfação é prioridade absoluta. A primeira troca é 100% gratuita e pode ser solicitada em até 7 dias úteis após a entrega das peças."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Por que o algodão egípcio é superior?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O algodão egípcio possui fibras extra-longas e nobres. Isso resulta em um caimento superior, toque macio inigualável e resistência que previne bolinhas (pilling) ao longo do tempo."
+        }
+      }
+    ]
+  };
+
   return (
     <>
       {product.imageUrl && (
@@ -204,6 +243,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
       <Suspense fallback={<ProductSkeleton />}>
         <SsenseProductView product={product} variantsPromise={variantsPromise} />

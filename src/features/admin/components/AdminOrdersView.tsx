@@ -28,6 +28,7 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => {
     sent:       { cls: "bg-zinc-900 text-white border-zinc-900", label: "Enviado" },
     paid:       { cls: "bg-emerald-100 text-emerald-800 border-emerald-200", label: "Pago" },
     shipped:    { cls: "bg-indigo-100 text-indigo-800 border-indigo-200", label: "Postado" },
+    abandoned_cart: { cls: "bg-rose-100 text-rose-800 border-rose-200", label: "Abandono" },
   };
   const s = map[status] ?? { cls: "bg-gray-100 text-gray-600 border-gray-200", label: status };
   return (
@@ -38,6 +39,13 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => {
 };
 
 export function AdminOrdersView({ initialOrders }: { initialOrders: Order[] }) {
+  const getWhatsAppRecoverLink = (order: Order) => {
+    const phone = order.customer?.phone?.replace(/\D/g, "") || "";
+    const name = order.customer?.name?.split(" ")[0] || "";
+    const firstItem = order.items?.[0]?.title || "peça";
+    const text = `Oi ${name}! Vi que você ficou de olho na ${firstItem}. Conseguiu escolher o seu tamanho? Se tiver qualquer dúvida sobre o caimento ou frete, me avisa aqui! A Hooke é instalável como aplicativo no celular, se preferir!`;
+    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  };
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [viewMode, setViewMode] = useState<"all" | "opportunities">("all");
   const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>(() => {
@@ -273,6 +281,7 @@ export function AdminOrdersView({ initialOrders }: { initialOrders: Order[] }) {
                       <option value="in_process">Em Análise</option>
                       <option value="sent">Enviado</option>
                       <option value="shipped">Postado</option>
+                      <option value="abandoned_cart">Carrinho Abandonado</option>
                     </select>
                     <StatusBadge status={order.status} />
                   </td>
@@ -289,12 +298,25 @@ export function AdminOrdersView({ initialOrders }: { initialOrders: Order[] }) {
                     </div>
                   </td>
                   <td className="p-4 align-middle">
-                    <button
-                      onClick={() => handleOptimisticUpdate(order.id, order.status, currentTracking)}
-                      className="bg-black hover:bg-zinc-800 text-white px-4 py-3 text-[9px] font-black tracking-widest uppercase transition-all w-full flex justify-center items-center gap-2 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5"
-                    >
-                      <Save size={12} /> Salvar
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => handleOptimisticUpdate(order.id, order.status, currentTracking)}
+                        className="bg-black hover:bg-zinc-800 text-white px-4 py-3 text-[9px] font-black tracking-widest uppercase transition-all w-full flex justify-center items-center gap-2 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5"
+                      >
+                        <Save size={12} /> Salvar
+                      </button>
+
+                      {order.status === "abandoned_cart" && order.customer?.phone && (
+                        <a
+                          href={getWhatsAppRecoverLink(order)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-4 py-3 text-[9px] font-black tracking-widest uppercase transition-all w-full flex justify-center items-center gap-2 border-2 border-[#25D366] shadow-[2px_2px_0px_rgba(37,211,102,0.3)] hover:shadow-none text-center"
+                        >
+                          <MessageCircle size={12} /> Recuperar
+                        </a>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
