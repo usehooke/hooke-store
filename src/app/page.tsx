@@ -59,9 +59,6 @@ export default async function Home() {
         {/* Bento Hero Editorial - Divisão Masculino/Feminino */}
         <BentoHero banners={heroBanners} />
 
-        {/* Diferenciais da Marca e Filosofia (BCI Cotton) */}
-        <BrandBento />
-
         {/* Grade de Produtos Principal */}
         <section className="py-16 px-3 md:px-6 lg:px-10 w-full border-t border-zinc-100 bg-[#FAF9F7]">
           <div className="text-center mb-12">
@@ -91,6 +88,9 @@ export default async function Home() {
             </div>
           )}
         </section>
+
+        {/* Diferenciais da Marca e Filosofia (BCI Cotton) imbutido perto do rodapé */}
+        <BrandBento />
 
         {/* Carrossel de Social Proof do Instagram */}
         <SocialFeed />
