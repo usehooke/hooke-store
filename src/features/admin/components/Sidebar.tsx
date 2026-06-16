@@ -18,7 +18,8 @@ import {
     Tag,
     Rocket,
     PackagePlus,
-    Store
+    Store,
+    Star
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -31,6 +32,7 @@ const menuItems = [
     { label: 'Catálogo', href: '/admin/produtos', icon: Package },
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },
+    { label: 'Avaliações', href: '/admin/reviews', icon: Star },
 ];
 
 export function Sidebar({ user }: { user: User }) {

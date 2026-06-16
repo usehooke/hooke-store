@@ -8,12 +8,36 @@ export default function WhatsAppButton() {
   const [isVisible, setIsVisible] = useState(false);
 
   // Efeito de entrada suave após montar
+  const [whatsappUrl, setWhatsappUrl] = useState("");
+
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 1500); // Aparece após 1.5s
     return () => clearTimeout(timer);
   }, []);
 
-  const whatsappUrl = brandConfig.contact.whatsapp.getLink();
+  useEffect(() => {
+    const updateUrl = () => {
+      const defaultNumber = "5511975902528";
+      let baseText = "Olá! Estou navegando no site da Hooke e tenho uma dúvida.";
+      
+      if (typeof window !== 'undefined') {
+        const currentProduct = (window as any).__currentProduct;
+        if (currentProduct) {
+          baseText = `Olá! Estou na página do produto "${currentProduct}" no site da Hooke e gostaria de tirar uma dúvida.`;
+        }
+      }
+      
+      setWhatsappUrl(`https://wa.me/${defaultNumber}?text=${encodeURIComponent(baseText)}`);
+    };
+
+    updateUrl();
+
+    // Ouvir mudanças de produto nas páginas de produto
+    window.addEventListener('hooke-product-changed', updateUrl);
+    return () => {
+      window.removeEventListener('hooke-product-changed', updateUrl);
+    };
+  }, []);
 
   if (!isVisible) return null;
 

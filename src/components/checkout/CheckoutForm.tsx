@@ -52,6 +52,21 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [hasInitializedExpress, setHasInitializedExpress] = useState(false);
+  const [referrer, setReferrer] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setReferrer(localStorage.getItem("hooke_referrer") || "");
+    }
+  }, []);
+
+  // Estados locais para endereço (autocompletar via CEP)
+  const [street, setStreet] = useState("");
+  const [number, setNumber] = useState("");
+  const [complement, setComplement] = useState("");
+  const [neighborhood, setNeighborhood] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
 
   const handleChangeItemSize = (item: any, newSize: string) => {
     // Remove o item com tamanho antigo do carrinho
@@ -113,6 +128,19 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
     setIsFetchingShipping(true);
     setShippingOptions([]);
     setSelectedShipping(null);
+
+    // Busca do ViaCEP para autocompletar o endereço
+    fetch(`https://viacep.com.br/ws/${clean}/json/`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && !data.erro) {
+          setStreet(data.logradouro || "");
+          setNeighborhood(data.bairro || "");
+          setCity(data.localidade || "");
+          setState(data.uf || "");
+        }
+      })
+      .catch(err => console.warn("Erro ao buscar endereço via ViaCEP:", err));
 
     try {
       const weight = Math.max(0.3, items.reduce((acc, item) => acc + (((item.shipping?.weight || item.weight) || 0.3) * item.quantity), 0));
@@ -180,7 +208,14 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
     const errors: Record<string, string> = {};
     if (!customer.name.trim()) errors.name = "Nome obrigatório";
     if (!customer.phone.trim()) errors.phone = "WhatsApp obrigatório";
+    if (!cep.trim() || cep.length !== 8) errors.cep = "CEP válido obrigatório";
+    if (!street.trim()) errors.street = "Rua obrigatória";
+    if (!number.trim()) errors.number = "Número obrigatório";
+    if (!neighborhood.trim()) errors.neighborhood = "Bairro obrigatório";
+    if (!city.trim()) errors.city = "Cidade obrigatória";
+    if (!state.trim()) errors.state = "Estado obrigatório";
     if (!selectedShipping) errors.shipping = "Selecione o frete";
+    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -195,6 +230,8 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
 
     setIsSubmitting(true);
 
+    // Loop de Indicação MGM ativo via state
+
     try {
       const payload = {
         items: items.map((item) => ({
@@ -208,12 +245,21 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
           name: customer.name,
           email: customer.email,
           phone: customer.phone,
+          address: {
+            zip_code: cep,
+            street_name: street,
+            street_number: number,
+            neighborhood: neighborhood,
+            city: city,
+            state: state,
+          }
         },
         shippingValue: selectedShipping?.cost || 0,
         shippingMethod: selectedShipping?.method || "",
         shippingZipcode: cep,
-        discountValue: promoDiscount,
+        discountValue: promoDiscount + referralDiscount,
         couponCode: appliedCoupon || "",
+        referrer: referrer || undefined,
       };
 
       const res = await fetch("/api/checkout", {
@@ -244,7 +290,8 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
 
   if (items.length === 0) return null;
 
-  const grandTotal = finalTotal + (selectedShipping?.cost || 0);
+  const referralDiscount = referrer ? (subtotal - promoDiscount) * 0.15 : 0;
+  const grandTotal = finalTotal - referralDiscount + (selectedShipping?.cost || 0);
   const installment = (grandTotal / 3).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 
   return (
@@ -386,7 +433,108 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Formulário de Endereço Brutalista (Condicional à cotação do frete) */}
+              <AnimatePresence>
+                {shippingOptions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mt-6 border-t-2 border-black pt-4 flex flex-col gap-4"
+                  >
+                    <h3 className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Endereço de Entrega</h3>
+                    
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">Rua / Logradouro *</label>
+                      <input
+                        type="text"
+                        value={street}
+                        onChange={(e) => setStreet(e.target.value)}
+                        placeholder="Nome da rua, avenida, etc."
+                        className={`border-b-2 bg-transparent py-2 text-sm focus:outline-none placeholder-zinc-300 ${
+                          formErrors.street ? "border-red-500" : "border-black"
+                        }`}
+                      />
+                      {formErrors.street && <p className="text-red-600 text-[10px] font-bold">{formErrors.street}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">Número *</label>
+                        <input
+                          type="text"
+                          value={number}
+                          onChange={(e) => setNumber(e.target.value)}
+                          placeholder="Número"
+                          className={`border-b-2 bg-transparent py-2 text-sm focus:outline-none placeholder-zinc-300 ${
+                            formErrors.number ? "border-red-500" : "border-black"
+                          }`}
+                        />
+                        {formErrors.number && <p className="text-red-600 text-[10px] font-bold">{formErrors.number}</p>}
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">Complemento</label>
+                        <input
+                          type="text"
+                          value={complement}
+                          onChange={(e) => setComplement(e.target.value)}
+                          placeholder="Apto, Bloco, etc."
+                          className="border-b-2 border-black bg-transparent py-2 text-sm focus:outline-none placeholder-zinc-300"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">Bairro *</label>
+                      <input
+                        type="text"
+                        value={neighborhood}
+                        onChange={(e) => setNeighborhood(e.target.value)}
+                        placeholder="Bairro"
+                        className={`border-b-2 bg-transparent py-2 text-sm focus:outline-none placeholder-zinc-300 ${
+                          formErrors.neighborhood ? "border-red-500" : "border-black"
+                        }`}
+                      />
+                      {formErrors.neighborhood && <p className="text-red-600 text-[10px] font-bold">{formErrors.neighborhood}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="col-span-2 flex flex-col gap-1">
+                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">Cidade *</label>
+                        <input
+                          type="text"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          placeholder="Cidade"
+                          className={`border-b-2 bg-transparent py-2 text-sm focus:outline-none placeholder-zinc-300 ${
+                            formErrors.city ? "border-red-500" : "border-black"
+                          }`}
+                        />
+                        {formErrors.city && <p className="text-red-600 text-[10px] font-bold">{formErrors.city}</p>}
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">Estado (UF) *</label>
+                        <input
+                          type="text"
+                          value={state}
+                          onChange={(e) => setState(e.target.value)}
+                          placeholder="UF"
+                          maxLength={2}
+                          className={`border-b-2 bg-transparent py-2 text-sm focus:outline-none placeholder-zinc-300 uppercase ${
+                            formErrors.state ? "border-red-500" : "border-black"
+                          }`}
+                        />
+                        {formErrors.state && <p className="text-red-600 text-[10px] font-bold">{formErrors.state}</p>}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {formErrors.shipping && <p className="text-red-600 text-[10px] font-bold mt-2">{formErrors.shipping}</p>}
+              {formErrors.cep && <p className="text-red-600 text-[10px] font-bold mt-2">{formErrors.cep}</p>}
             </section>
 
             {/* [3] DADOS DO COMPRADOR */}
@@ -437,6 +585,13 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
                     <div className="flex justify-between text-emerald-700">
                       <span className="font-black">Kit Hooke</span>
                       <span className="font-black">- {formatter.format(promoDiscount)}</span>
+                    </div>
+                  )}
+
+                  {referralDiscount > 0 && (
+                    <div className="flex justify-between text-indigo-700 bg-indigo-50 border border-indigo-100 p-2 my-1">
+                      <span className="font-black">🎁 Social Club (15% OFF)</span>
+                      <span className="font-black">- {formatter.format(referralDiscount)}</span>
                     </div>
                   )}
 

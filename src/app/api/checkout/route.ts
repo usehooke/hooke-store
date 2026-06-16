@@ -34,7 +34,7 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
-        const { items, customer, shippingValue, shippingMethod, shippingZipcode, discountValue, couponCode } = validation.data;
+        const { items, customer, shippingValue, shippingMethod, shippingZipcode, discountValue, couponCode, referrer } = validation.data;
 
         // --- IDEMPOTENCY CHECK ---
         cleanIdempotencyCache();
@@ -104,7 +104,14 @@ export async function POST(req: Request) {
             calculatedDiscount = calculatedSubtotal * 0.05; // 5% OFF
         }
 
-        const totalAmount = calculatedSubtotal + (shippingValue || 0) - calculatedDiscount;
+        // Aplicação do desconto de 15% do Social Club (MGM) se houver referrer
+        let referralDiscount = 0;
+        if (referrer && referrer.trim() !== "") {
+            referralDiscount = (calculatedSubtotal - calculatedDiscount) * 0.15;
+        }
+
+        const totalDiscount = calculatedDiscount + referralDiscount;
+        const totalAmount = calculatedSubtotal + (shippingValue || 0) - totalDiscount;
 
         // 2. Prepara o Documento Inicial (Pending) no Firestore
         // MVP Pragmatismo Brutal: Firebase Desativado Localmente para Checkout 
@@ -121,8 +128,9 @@ export async function POST(req: Request) {
             shippingValue: shippingValue || 0,
             shippingMethod: shippingMethod || "",
             shippingZipcode: shippingZipcode || "",
-            discountValue: calculatedDiscount,
+            discountValue: totalDiscount,
             couponCode: calculatedDiscount > 0 ? upperCoupon : "",
+            referrer: referrer || "",
             createdAt: Date.now(),
             updatedAt: Date.now()
         };
@@ -136,7 +144,7 @@ export async function POST(req: Request) {
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
         // MP não aceita itens negativos facilmente. Aplicar desconto sobre o unit_price proporcionalmente.
-        const discountMultiplier = calculatedDiscount ? (1 - (calculatedDiscount / calculatedSubtotal)) : 1;
+        const discountMultiplier = totalDiscount ? (1 - (totalDiscount / calculatedSubtotal)) : 1;
 
         const mpItems = verifiedItems.map((i) => ({
             id: i.id,
@@ -167,6 +175,11 @@ export async function POST(req: Request) {
                     phone: customer.phone ? {
                         area_code: customer.phone.replace(/\D/g, "").substring(0, 2),
                         number: customer.phone.replace(/\D/g, "").substring(2)
+                    } : undefined,
+                    address: customer.address ? {
+                        zip_code: customer.address.zip_code,
+                        street_name: customer.address.street_name,
+                        street_number: Number(customer.address.street_number) || undefined
                     } : undefined
                 },
                 external_reference: orderId, // Crucial: amarra o Webhook ao nosso Doc no FB
@@ -177,8 +190,15 @@ export async function POST(req: Request) {
                     failure: `${appUrl}/checkout?error=payment_failed`,
                     pending: `${appUrl}/meus-pedidos?email=${safeEmail}&id=${orderId}&status=pending`,
                 },
-                // Caso a loja tenha frete, o shipements entra aqui.
-                // No momento assumiremos setup básico (ou grátis/fora do sistema MP) como acordado.
+                shipments: customer.address ? {
+                    receiver_address: {
+                        zip_code: customer.address.zip_code,
+                        street_name: customer.address.street_name,
+                        street_number: Number(customer.address.street_number) || undefined,
+                        floor: "",
+                        apartment: ""
+                    }
+                } : undefined
             }
         });
 

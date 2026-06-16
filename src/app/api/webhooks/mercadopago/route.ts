@@ -142,12 +142,20 @@ export async function POST(req: Request) {
                     }
                 }
 
-                transaction.update(orderRef, {
+                const updateFields: Record<string, any> = {
                     status: orderStatus,
                     paymentId: paymentData.id?.toString(),
                     paymentMethod: paymentData.payment_type_id || paymentData.payment_method_id,
                     updatedAt: Date.now()
-                });
+                };
+
+                // Captura automática de CPF/CNPJ do comprador no Mercado Pago
+                const docNum = paymentData.payer?.identification?.number;
+                if (docNum) {
+                    updateFields["customer.document"] = docNum;
+                }
+
+                transaction.update(orderRef, updateFields);
             });
 
             if (isDev) console.log(`✅ [Hooke Webhook] Pedido ${externalReference} atualizado para ${orderStatus}`);
@@ -161,12 +169,30 @@ export async function POST(req: Request) {
                         
                         const nome = orderData?.customer?.name || "Cliente Hooke";
                         const whatsapp = orderData?.customer?.phone || "Não informado";
-                        const cep = orderData?.shipping?.zipCode || "Não informado";
+                        const cep = orderData?.shippingZipcode || orderData?.shipping?.zipCode || "Não informado";
                         const produto = orderData?.items?.[0]?.name || "Produto(s) da loja";
                         const tamanho = orderData?.items?.[0]?.size || "-";
-                        const valor_total = Number(orderData?.total || paymentData.transaction_amount || 0).toFixed(2).replace('.', ',');
+                        const valor_total = Number(orderData?.totalAmount || orderData?.total || paymentData.transaction_amount || 0).toFixed(2).replace('.', ',');
+                        const referrer = orderData?.referrer || "";
 
-                        const message = `💸 HOOKE STORE - NOVA VENDA! 💸\n\n👤 Cliente: ${nome}\n📱 WhatsApp: ${whatsapp}\n📍 CEP: ${cep}\n\n📦 Pedido: ${produto} (Tamanho: ${tamanho})\n💰 Valor: R$ ${valor_total}\n\nChame o cliente para combinar a entrega!`;
+                        let message = `💸 HOOKE STORE - NOVA VENDA! 💸\n\n👤 Cliente: ${nome}\n📱 WhatsApp: ${whatsapp}\n📍 CEP: ${cep}\n\n📦 Pedido: ${produto} (Tamanho: ${tamanho})\n💰 Valor: R$ ${valor_total}`;
+
+                        if (referrer) {
+                            message += `\n\n🎁 INDICAÇÃO SOCIAL CLUB!\n👤 Padrinho: ${referrer}\n(Lembre-se de enviar o cupom de R$ 35,00!)`;
+                            
+                            // Registra na coleção mgm_rewards para controle do admin
+                            await adminDb.collection("mgm_rewards").add({
+                                referrer: referrer,
+                                refereeName: nome,
+                                refereePhone: whatsapp,
+                                orderId: externalReference,
+                                orderTotal: Number(orderData?.totalAmount || paymentData.transaction_amount || 0),
+                                status: "pending",
+                                createdAt: Date.now()
+                            });
+                        }
+
+                        message += `\n\nChame o cliente para combinar a entrega!`;
 
                         const waApiUrl = process.env.WHATSAPP_API_URL;
                         const waNotifyNumber = process.env.WHATSAPP_NOTIFY_NUMBER;

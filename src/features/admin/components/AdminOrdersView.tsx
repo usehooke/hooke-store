@@ -39,6 +39,207 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => {
 };
 
 export function AdminOrdersView({ initialOrders }: { initialOrders: Order[] }) {
+  const handleExportXML = (order: Order) => {
+    try {
+      const customer = order.customer;
+      const items = order.items || [];
+      const dateStr = new Date(order.createdAt).toISOString();
+      
+      // CNPJ e dados do Emitente (Hooke Store)
+      const emitCNPJ = "00000000000000"; // CNPJ fictício da loja Hooke
+      const emitNome = "HOOKE STORE LTDA";
+      const emitBairro = "BELA VISTA";
+      const emitLgr = "AVENIDA PAULISTA";
+      const emitNro = "1000";
+      const emitMun = "3550308"; // Sao Paulo
+      const emitXMun = "SAO PAULO";
+      const emitUF = "SP";
+      const emitCEP = "01311000";
+      
+      // Dados do destinatário
+      const destNome = (customer.name || "CLIENTE HOOKE").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, "");
+      const destDoc = customer.document ? customer.document.replace(/\D/g, "") : "";
+      const isCPF = destDoc.length <= 11;
+      const docTag = isCPF ? `<CPF>${destDoc || "00000000000"}</CPF>` : `<CNPJ>${destDoc}</CNPJ>`;
+      
+      const street = (customer.address?.street_name || "ENDERECO").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, "");
+      const number = customer.address?.street_number || "S/N";
+      const neighborhood = (customer.address?.neighborhood || "BAIRRO").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, "");
+      const city = (customer.address?.city || "SAO PAULO").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, "");
+      const state = (customer.address?.state || "SP").toUpperCase().trim();
+      const cep = order.shippingZipcode ? order.shippingZipcode.replace(/\D/g, "") : "01001000";
+      
+      // Mapeamento dos itens
+      let itemsXML = "";
+      let totalItemsValue = 0;
+      
+      items.forEach((item, index) => {
+        const nItem = index + 1;
+        const itemId = item.id;
+        const itemTitle = (item.title || "PRODUTO HOOKE").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s-]/g, "");
+        const itemSize = item.size || "G";
+        const qty = item.quantity || 1;
+        const price = item.unit_price || 0;
+        const itemTotal = price * qty;
+        totalItemsValue += itemTotal;
+        
+        // Determina o CFOP: 5102 para dentro de SP (remetente SP), 6102 para fora de SP
+        const cfop = state === "SP" ? "5102" : "6102";
+        
+        itemsXML += `
+      <det nItem="${nItem}">
+        <prod>
+          <cProd>${itemId}</cProd>
+          <cEAN>SEM GTIN</cEAN>
+          <xProd>${itemTitle} - TAM: ${itemSize}</xProd>
+          <NCM>61091000</NCM>
+          <CFOP>${cfop}</CFOP>
+          <uCom>UN</uCom>
+          <qCom>${qty.toFixed(4)}</qCom>
+          <vUnCom>${price.toFixed(2)}</vUnCom>
+          <vProd>${itemTotal.toFixed(2)}</vProd>
+          <cEANTrib>SEM GTIN</cEANTrib>
+          <uTrib>UN</uTrib>
+          <qTrib>${qty.toFixed(4)}</qTrib>
+          <vUnTrib>${price.toFixed(2)}</vUnTrib>
+          <indTot>1</indTot>
+        </prod>
+        <imposto>
+          <ICMS>
+            <ICMSSN102>
+              <orig>0</orig>
+              <CSOSN>102</CSOSN>
+            </ICMSSN102>
+          </ICMS>
+          <PIS>
+            <PISOutr>
+              <CST>49</CST>
+              <vBC>0.00</vBC>
+              <pPIS>0.00</pPIS>
+              <vPIS>0.00</vPIS>
+            </PISOutr>
+          </PIS>
+          <COFINS>
+            <COFINSOutr>
+              <CST>49</CST>
+              <vBC>0.00</vBC>
+              <pCOFINS>0.00</pCOFINS>
+              <vCOFINS>0.00</vCOFINS>
+            </COFINSOutr>
+          </COFINS>
+        </imposto>
+      </det>`;
+      });
+
+      const shippingValue = order.shippingValue || 0;
+      const discountValue = order.discountValue || 0;
+      const grandTotal = totalItemsValue + shippingValue - discountValue;
+
+      const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+  <infNFe versao="4.00" Id="NFe35260600000000000000550010000000011000000001">
+    <ide>
+      <cUF>35</cUF>
+      <cNF>00000001</cNF>
+      <natOp>VENDA DE MERCADORIA</natOp>
+      <mod>55</mod>
+      <serie>1</serie>
+      <nNF>1</nNF>
+      <dhEmi>${dateStr}</dhEmi>
+      <tpNF>1</tpNF>
+      <idDest>${state === "SP" ? "1" : "2"}</idDest>
+      <cMunFG>${emitMun}</cMunFG>
+      <tpImp>1</tpImp>
+      <tpEmis>1</tpEmis>
+      <cDV>1</cDV>
+      <tpAmb>2</tpAmb>
+      <finNFe>1</finNFe>
+      <indFinal>1</indFinal>
+      <indPres>2</indPres>
+      <procEmi>0</procEmi>
+      <verProc>HookeStore_v1</verProc>
+    </ide>
+    <emit>
+      <CNPJ>${emitCNPJ}</CNPJ>
+      <xNome>${emitNome}</xNome>
+      <enderEmit>
+        <xLgr>${emitLgr}</xLgr>
+        <nro>${emitNro}</nro>
+        <xBairro>${emitBairro}</xBairro>
+        <cMun>${emitMun}</cMun>
+        <xMun>${emitXMun}</xMun>
+        <UF>${emitUF}</UF>
+        <CEP>${emitCEP}</CEP>
+        <cPais>1058</cPais>
+        <xPais>BRASIL</xPais>
+      </enderEmit>
+      <IE>111111111111</IE>
+      <CRT>1</CRT>
+    </emit>
+    <dest>
+      ${docTag}
+      <xNome>${destNome}</xNome>
+      <enderDest>
+        <xLgr>${street}</xLgr>
+        <nro>${number}</nro>
+        <xBairro>${neighborhood}</xBairro>
+        <cMun>3550308</cMun>
+        <xMun>${city}</xMun>
+        <UF>${state}</UF>
+        <CEP>${cep}</CEP>
+        <cPais>1058</cPais>
+        <xPais>BRASIL</xPais>
+      </enderDest>
+      <indIEDest>9</indIEDest>
+    </dest>${itemsXML}
+    <total>
+      <ICMSTot>
+        <vBC>0.00</vBC>
+        <vICMS>0.00</vICMS>
+        <vICMSDeson>0.00</vICMSDeson>
+        <vFCPUFDest>0.00</vFCPUFDest>
+        <vICMSUFDest>0.00</vICMSUFDest>
+        <vICMSUFRemet>0.00</vICMSUFRemet>
+        <vFCP>0.00</vFCP>
+        <vBCST>0.00</vBCST>
+        <vST>0.00</vST>
+        <vFCPST>0.00</vFCPST>
+        <vFCPSTRet>0.00</vFCPSTRet>
+        <vProd>${totalItemsValue.toFixed(2)}</vProd>
+        <vFrete>${shippingValue.toFixed(2)}</vFrete>
+        <vSeg>0.00</vSeg>
+        <vDesc>${discountValue.toFixed(2)}</vDesc>
+        <vII>0.00</vII>
+        <vIPI>0.00</vIPI>
+        <vIPIDevol>0.00</vIPIDevol>
+        <vPIS>0.00</vPIS>
+        <vCOFINS>0.00</vCOFINS>
+        <vOutro>0.00</vOutro>
+        <vNF>${grandTotal.toFixed(2)}</vNF>
+      </ICMSTot>
+    </total>
+    <transp>
+      <modFrete>0</modFrete>
+    </transp>
+  </infNFe>
+</NFe>`;
+
+      const blob = new Blob([xmlContent.trim()], { type: "text/xml;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `NFe_Rascunho_${order.id}.xml`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("XML de rascunho de NF-e baixado! Importe-o no Sebrae.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao gerar XML da NF-e.");
+    }
+  };
+
   const getWhatsAppRecoverLink = (order: Order) => {
     const phone = order.customer?.phone?.replace(/\D/g, "") || "";
     const name = order.customer?.name?.split(" ")[0] || "";
@@ -315,6 +516,15 @@ export function AdminOrdersView({ initialOrders }: { initialOrders: Order[] }) {
                         >
                           <MessageCircle size={12} /> Recuperar
                         </a>
+                      )}
+
+                      {(order.status === "approved" || order.status === "paid" || order.status === "sent" || order.status === "shipped") && (
+                        <button
+                          onClick={() => handleExportXML(order)}
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 text-[9px] font-black tracking-widest uppercase transition-all w-full flex justify-center items-center gap-2 border-2 border-indigo-600 shadow-[2px_2px_0px_rgba(79,70,229,0.3)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5"
+                        >
+                          📄 Exportar NFe
+                        </button>
                       )}
                     </div>
                   </td>

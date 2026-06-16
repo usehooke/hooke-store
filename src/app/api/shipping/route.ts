@@ -81,9 +81,9 @@ export async function POST(req: Request) {
         let fretes = [];
 
         try {
-            // 2. CORREIOS COM TIMEOUT DE 8 SEGUNDOS
+            // 2. CORREIOS COM TIMEOUT RÁPIDO DE 1.8 SEGUNDOS (EVITA LENTIDÃO NO CHECKOUT)
             const timeoutPromise = new Promise<never>((_, reject) =>
-                setTimeout(() => reject(new Error("Timeout de 8 segundos nos Correios")), 8000)
+                setTimeout(() => reject(new Error("Timeout de 1.8 segundos nos Correios")), 1800)
             );
 
             const response = await Promise.race([
@@ -102,30 +102,19 @@ export async function POST(req: Request) {
                 prazo: item.PrazoEntrega
             }));
         } catch (correiosError) {
-            console.warn("Correios indisponíveis ou timeout, partindo para Fallback Melhor Envio:", correiosError);
+            console.warn("Correios indisponíveis ou timeout, ativando contingência de frete regional:", correiosError.message);
 
-            // 3. FALLBACK INTELIGENTE (MELHOR ENVIO API / FRENET)
+            // 3. FALLBACK DE CONTINGÊNCIA REGIONAL DE ALTA DISPONIBILIDADE
             try {
                 fretes = await getFallbackShipping(sCepDestino, pesoFinal);
             } catch (fallbackError) {
-                console.warn("Fallback (Melhor Envio/Frenet) também falhou, analisando Tiny ERP offline:", fallbackError);
-                
-                // 4. VERIFICAÇÃO DE CONTINGÊNCIA CORREIOS NO TINY ERP OFFLINE
-                try {
-                    const offlineRates = await TinyClient.getOfflineShippingRates(sCepDestino, pesoFinal);
-                    if (offlineRates && offlineRates.length > 0) {
-                        return NextResponse.json({ fretes: offlineRates }, { status: 200 });
-                    }
-                    throw new Error("Sem tabelas de contingência offline disponíveis.");
-                } catch (tinyError) {
-                    console.error("Falha Absoluta de Frete! Devolvendo erro de Fallback_Whatsapp.", tinyError);
-                    
-                    // Falha Crítica de Todos os Serviços: Devolvermos 503 com flag de fallback pro frontend lidar
-                    return NextResponse.json(
-                        { message: "Serviço dos Correios, Melhor Envio e tabelas offline indisponíveis temporariamente.", fallbackWhatsApp: true },
-                        { status: 503 }
-                    );
-                }
+                console.error("Erro grave no fallback interno, entregando tarifas padrão de segurança:", fallbackError);
+                // Garantia final: Tarifas padrão para não travar a venda
+                const isSP = sCepDestino.startsWith("0") || sCepDestino.startsWith("1");
+                fretes = [
+                    { nome: "Jadlog Package (PAC)", valor: isSP ? "18.90" : "34.50", prazo: isSP ? "3" : "8" },
+                    { nome: "Jadlog .Com (SEDEX)", valor: isSP ? "24.90" : "68.50", prazo: isSP ? "1" : "4" }
+                ];
             }
         }
 

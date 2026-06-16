@@ -42,6 +42,13 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
   const [number, setNumber] = useState("");
   const numberInputRef = useRef<HTMLInputElement>(null);
 
+  const [referrer, setReferrer] = useState("");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setReferrer(localStorage.getItem("hooke_referrer") || "");
+    }
+  }, []);
+
   // Sincroniza a rua com o ViaCEP quando disponível
   useEffect(() => {
     if (customer.address?.street) {
@@ -57,8 +64,8 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
   }, [shippingMethod, street]);
 
   // Totais (Cálculo Seguro) - Nota: O desconto de cupom será aplicado aqui se necessário
-  // Por enquanto mantendo a lógica de valor fixo ou percentual vindo da store/api
-  const totalGeral = subtotal - promoDiscount + (shippingCost || 0);
+  const referralDiscount = referrer ? (subtotal - promoDiscount) * 0.15 : 0;
+  const totalGeral = subtotal - promoDiscount - referralDiscount + (shippingCost || 0);
 
   // --- PERSISTÊNCIA REATIVA (META CAPI & ABANDONED CART) ---
   useEffect(() => {
@@ -140,8 +147,9 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
         shippingValue: shippingCost,
         shippingMethod,
         shippingZipcode: shippingZipCode,
-        discountValue: promoDiscount,
+        discountValue: promoDiscount + referralDiscount,
         couponCode: appliedCoupon || "",
+        referrer: referrer || undefined,
         items: items.map(item => ({ ...item, id: item.id, title: item.name, unit_price: item.price, quantity: item.quantity, size: item.selectedSize }))
       };
 
@@ -178,6 +186,11 @@ export default function CheckoutForm({ onClose }: CheckoutFormProps) {
           <div className="bg-gray-50 border border-gray-100 p-5 mt-6 flex flex-col gap-1">
             <span className="text-[10px] text-gray-400 font-black tracking-widest uppercase">Total a pagar</span>
             <span className="text-4xl font-black text-hooke-900 tracking-tighter">{formatter.format(totalGeral)}</span>
+            {referralDiscount > 0 && (
+              <span className="text-[10px] text-indigo-600 font-black uppercase tracking-wider mt-1">
+                🎁 Desconto Social Club 15% OFF ativo (-{formatter.format(referralDiscount)})
+              </span>
+            )}
           </div>
         </header>
 

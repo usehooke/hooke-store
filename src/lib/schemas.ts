@@ -80,11 +80,11 @@ export const CustomerSchema = z.object({
     neighborhood: z.string().trim().optional().default(""),
     city: z.string().trim().optional().default(""),
     state: z.string().trim().optional().default(""),
-  }).strict().optional(),
-}).strict();
+  }).optional(),
+});
 
 export const OrderItemSchema = z.object({
-  cartItemId: z.string(),
+  cartItemId: z.string().optional(),
   id: z.string(),
   title: z.string(),
   unit_price: z.number().positive(),
@@ -92,7 +92,7 @@ export const OrderItemSchema = z.object({
   size: z.string(),
   color: z.string().optional(),
   imageUrl: z.string().optional(),
-}).strict();
+});
 
 export const OrderSchema = z.object({
   id: z.string(),
@@ -108,6 +108,7 @@ export const OrderSchema = z.object({
   discountValue: z.number().default(0),
   couponCode: z.string().optional().default(""),
   trackingCode: z.string().optional(),
+  referrer: z.string().optional(),
   createdAt: z.number(),
   updatedAt: z.number(),
 });
@@ -128,6 +129,7 @@ export const CheckoutRequestSchema = z.object({
   shippingZipcode: z.string().optional().default(""),
   discountValue: z.number().optional().default(0),
   couponCode: z.string().optional().default(""),
+  referrer: z.string().optional(),
 }).strict();
 
 export const MPNotificationSchema = z.object({
