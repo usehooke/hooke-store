@@ -19,7 +19,8 @@ import {
     Rocket,
     PackagePlus,
     Store,
-    Star
+    Star,
+    Camera
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -33,6 +34,7 @@ const menuItems = [
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },
     { label: 'Avaliações', href: '/admin/reviews', icon: Star },
+    { label: 'Gerador IA', href: '/admin/gerador', icon: Camera },
 ];
 
 export function Sidebar({ user }: { user: User }) {
