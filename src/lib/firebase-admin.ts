@@ -1,4 +1,6 @@
-import * as admin from "firebase-admin";
+import { getApps, getApp, initializeApp, cert } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
 /**
  * Hooke Elite: Firebase Admin SDK
@@ -6,7 +8,9 @@ import * as admin from "firebase-admin";
  * Resolve erros de 'PERMISSION_DENIED' ao salvar pedidos.
  */
 
-if (!admin.apps.length) {
+let adminApp;
+
+if (getApps().length === 0) {
     try {
         const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
@@ -15,19 +19,20 @@ if (!admin.apps.length) {
                 Buffer.from(serviceAccountBase64, "base64").toString("utf-8")
             );
 
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount),
+            adminApp = initializeApp({
+                credential: cert(serviceAccount),
             });
-
         } else {
             // Fallback para quando estamos em build time ou sem chaves
         }
     } catch (error) {
         console.error("❌ [Hooke Admin] Erro ao inicializar Admin SDK:", error);
     }
+} else {
+    adminApp = getApp();
 }
 
-const adminDb = admin.apps.length ? admin.firestore() : null;
-const adminAuth = admin.apps.length ? admin.auth() : null;
+const adminDb = getApps().length ? getFirestore() : null;
+const adminAuth = getApps().length ? getAuth() : null;
 
 export { adminDb, adminAuth };
