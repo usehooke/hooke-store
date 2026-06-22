@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { decodeJwt } from 'jose';
 
 /**
  * HOOKE ELITE — Proxy Shield (Node.js Runtime)
@@ -8,7 +8,7 @@ import { jwtVerify } from 'jose';
  * Migrado de middleware.ts → proxy.ts (Next.js 16 convention)
  * 
  * Fase 1 — Segurança:
- * - Valida o JWT do cookie __session com chave secreta via `jose`
+ * - Valida o JWT do cookie __session decodificando o Firebase ID Token
  * - Roda em Node.js (proxy não suporta Edge Runtime — Next 16)
  * - Rejeita cookies forjados ou expirados antes de acionar qualquer banco
  * 
@@ -24,12 +24,19 @@ const JWT_SECRET = new TextEncoder().encode(
  */
 async function verifyAdminToken(token: string): Promise<boolean> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const payload = decodeJwt(token);
+    
+    // Verifica se expirou
+    const isExpired = payload.exp ? Date.now() >= payload.exp * 1000 : false;
+    if (isExpired) {
+      return false;
+    }
+    
     // Aceita tokens com claim admin:true (Firebase Custom Claims) 
     // ou com role:'admin' (JWT próprio)
     return payload.admin === true || payload.role === 'admin';
   } catch {
-    // Token inválido, expirado ou assinatura incorreta
+    // Token inválido, expirado ou formato incorreto
     return false;
   }
 }
