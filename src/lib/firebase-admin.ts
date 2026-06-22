@@ -32,7 +32,16 @@ if (getApps().length === 0) {
     adminApp = getApp();
 }
 
+// ⚡ BLINDAGEM VERCEL SERVERLESS: Habilitamos preferRest: true para usar chamadas HTTP REST
+// em vez de conexões persistentes gRPC (evitando vazamentos e timeouts gRPC sob suspensão de containers).
 const adminDb = getApps().length ? getFirestore() : null;
+if (adminDb) {
+    try {
+        adminDb.settings({ preferRest: true } as any);
+    } catch (e) {
+        // Silencia erro caso as settings já tenham sido aplicadas em inicializações concorrentes
+    }
+}
 const adminAuth = getApps().length ? getAuth() : null;
 
 export { adminDb, adminAuth };

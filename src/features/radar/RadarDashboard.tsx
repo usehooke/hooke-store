@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MotionDiv, MotionSpan } from '@/components/admin/MotionComponents';
 import { db } from '@/lib/firebase';
@@ -18,6 +18,7 @@ export function RadarDashboard() {
   const [vendasHoje, setVendasHoje] = useState(0);
   const [estoqueCritico, setEstoqueCritico] = useState(0);
   const [recentEvents, setRecentEvents] = useState<any[]>([]);
+  const vendasHojeRef = useRef(0);
 
   // Histórico de Faturamento e Tendência Sparklines Premium (Escala de Cinzas Brutalista)
   const caixaChartData = [
@@ -71,10 +72,12 @@ export function RadarDashboard() {
       });
 
       // Dispara Alerta Sensorial se o número aumentar (Nova Venda)
-      if (count > vendasHoje) {
+      // Usamos o Ref para evitar re-registrar os listeners do Firestore em loop a cada alteração de estado
+      if (count > vendasHojeRef.current) {
         playSuccessChime();
         window.dispatchEvent(new CustomEvent('hooke-sale-success'));
       }
+      vendasHojeRef.current = count;
 
       setCaixaHoje(total);
       setVendasHoje(count);
@@ -104,7 +107,7 @@ export function RadarDashboard() {
       unsubStock();
       unsubEvents();
     };
-  }, [vendasHoje]);
+  }, []);
 
   return (
     <div className="space-y-12">

@@ -25,8 +25,13 @@ if (isConfigPresent) {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         try {
-            db = initializeFirestore(app, { experimentalForceLongPolling: true });
+            db = initializeFirestore(app, {
+                experimentalForceLongPolling: true,
+                experimentalAutoDetectLongPolling: false,
+                useFetchStreams: false
+            } as any);
         } catch (e) {
+            console.warn("⚠️ [Hooke Rescue] Falha ao inicializar com configurações avançadas, usando fallback getFirestore:", e);
             db = getFirestore(app);
         }
         auth = getAuth(app);
