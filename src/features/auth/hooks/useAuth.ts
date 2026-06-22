@@ -21,11 +21,14 @@ export function useAuth() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await userCredential.user.getIdToken();
       
-      // Hooke Elite: Sincronização de Sessão com Middleware
-      // Definimos um cookie que o Middleware consegue ler no Edge.
-      document.cookie = `hooke-admin-token=${idToken}; path=/; max-age=86400; SameSite=Lax`;
+      // Hooke Elite: Sincronização de Sessão com Cookies Seguros
+      // Definimos ambos os cookies para compatibilidade total com CDNs (como Firebase Hosting) e HTTPS
+      const cookieOpts = `; path=/; max-age=86400; SameSite=Lax; Secure`;
+      document.cookie = `hooke-admin-token=${idToken}${cookieOpts}`;
+      document.cookie = `__session=${idToken}${cookieOpts}`;
       
-      router.push(redirectTo);
+      // Força recarga completa para garantir que o Next.js leia o cookie no SSR
+      window.location.href = redirectTo;
     } catch (err: any) {
       const msg = err.code === 'auth/invalid-credential' ? 'E-mail ou senha inválidos.' :
                   err.code === 'auth/user-not-found' ? 'Conta não encontrada.' :
@@ -49,8 +52,12 @@ export function useAuth() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const idToken = await userCredential.user.getIdToken();
-      document.cookie = `hooke-admin-token=${idToken}; path=/; max-age=86400; SameSite=Lax`;
-      router.push(redirectTo);
+      
+      const cookieOpts = `; path=/; max-age=86400; SameSite=Lax; Secure`;
+      document.cookie = `hooke-admin-token=${idToken}${cookieOpts}`;
+      document.cookie = `__session=${idToken}${cookieOpts}`;
+      
+      window.location.href = redirectTo;
     } catch (err: any) {
       const msg = err.code === 'auth/email-already-in-use' ? 'Este e-mail já possui uma conta.' :
                   err.code === 'auth/weak-password' ? 'A senha deve ter pelo menos 6 caracteres.' :
@@ -94,9 +101,12 @@ export function useAuth() {
     try {
       const userCredential = await signInWithPopup(auth, facebookProvider);
       const idToken = await userCredential.user.getIdToken();
-      document.cookie = `hooke-admin-token=${idToken}; path=/; max-age=86400; SameSite=Lax`;
       
-      router.push(redirectTo);
+      const cookieOpts = `; path=/; max-age=86400; SameSite=Lax; Secure`;
+      document.cookie = `hooke-admin-token=${idToken}${cookieOpts}`;
+      document.cookie = `__session=${idToken}${cookieOpts}`;
+      
+      window.location.href = redirectTo;
     } catch (err: any) {
       setError(err.message.replace("Firebase: ", ""));
     } finally {
@@ -107,9 +117,12 @@ export function useAuth() {
   const logout = async (redirectTo = "/login") => {
     if (!auth) return;
     await signOut(auth);
-    // Remove o cookie de sessão
-    document.cookie = "hooke-admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    router.push(redirectTo);
+    // Remove os cookies de sessão
+    const expireOpts = "; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = `hooke-admin-token=${expireOpts}`;
+    document.cookie = `__session=${expireOpts}`;
+    
+    window.location.href = redirectTo;
   };
 
   return {
