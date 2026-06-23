@@ -10,7 +10,16 @@ export const metadata: Metadata = {
 
 export default async function GeradorPage() {
   await connection();
-  const products = await getAdminProducts();
+
+  // ✅ try/catch explícito: evita tela branca em caso de falha no Firestore
+  let products: Awaited<ReturnType<typeof getAdminProducts>> = [];
+  try {
+    products = await getAdminProducts();
+  } catch (err) {
+    console.error("❌ [GeradorPage] Falha ao carregar produtos:", err);
+    // O error.tsx vai capturar se o throw chegar até aqui
+    throw err;
+  }
 
   // Mapeia apenas os campos necessários para o gerador (leve para o client)
   const productOptions = products
@@ -44,6 +53,11 @@ export default async function GeradorPage() {
             <p className="text-sm text-zinc-400 mt-2 max-w-lg">
               Selecione um produto, gere os 4 prompts de fotografia e copie direto para a IA.
             </p>
+          </div>
+          {/* Indicador de produtos carregados */}
+          <div className="flex items-center gap-2 text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-none" />
+            {productOptions.length} produto{productOptions.length !== 1 ? 's' : ''} disponível{productOptions.length !== 1 ? 'is' : ''}
           </div>
         </header>
 

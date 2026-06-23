@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebase-admin';
 import { z } from 'zod';
+
+/**
+ * Hooke Tiny Webhook — Atualização de Estoque em Tempo Real
+ * 
+ * ✅ MIGRADO para o Admin SDK (firebase-admin):
+ * O Firebase Client SDK não deve ser usado em API Routes (server-side).
+ * O Admin SDK oferece acesso privilegiado e sem as restrições gRPC do client SDK.
+ */
 
 // Schema Zod: aceita os múltiplos formatos de webhook do Tiny ERP
 const TinyWebhookSchema = z.object({
@@ -37,18 +44,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payload inválido. SKU ou Saldo ausentes.' }, { status: 400 });
     }
 
-    // ⚡ A TRAVA DO TECH LEAD: Se o banco estiver offline, o Webhook não pode atualizar o estoque.
-    const firestore = db;
-    if (!firestore) {
+    // ⚡ Guard do Admin SDK
+    if (!adminDb) {
+      console.error('❌ [Tiny Webhook] adminDb não inicializado.');
       return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
     }
 
-    // Varredura cirúrgica no Firebase para encontrar a qual produto esse SKU pertence
-    const produtosRef = collection(firestore, 'produtos');
-    const snapshot = await getDocs(produtosRef);
+    // Varredura cirúrgica no Firestore para encontrar a qual produto esse SKU pertence
+    const snapshot = await adminDb.collection('produtos').get();
     
+    const updatePromises: Promise<any>[] = [];
     let updated = false;
-    let productIdToUpdate = null;
 
     snapshot.forEach((document) => {
       const data = document.data();
@@ -58,18 +64,22 @@ export async function POST(req: Request) {
            if (skuCode === sku) {
               // SKU Localizado!
               const currentStockObj = data.stock || {};
-              // Atualiza de forma atômica apenas a grade específica
               currentStockObj[tamanhoCor] = Number(newStock);
               
-              updateDoc(doc(firestore, 'produtos', document.id), {
-                 stock: currentStockObj
-              });
+              // ✅ await correto: updateDoc deve ser aguardado
+              updatePromises.push(
+                adminDb.collection('produtos').doc(document.id).update({ stock: currentStockObj })
+              );
               updated = true;
-              productIdToUpdate = document.id;
            }
         }
       }
     });
+
+    // Aguarda todas as atualizações de estoque
+    if (updatePromises.length > 0) {
+      await Promise.all(updatePromises);
+    }
 
     if (updated) {
       return NextResponse.json({ success: true, message: `Estoque do SKU ${sku} atualizado com sucesso.` });

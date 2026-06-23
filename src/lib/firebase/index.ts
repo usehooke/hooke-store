@@ -1,6 +1,9 @@
 // Hooke Elite: Firebase Infrastructure Hub
+// IMPORTANTE: Este módulo é exclusivo do lado CLIENT (browser).
+// O Admin SDK (firebase-admin.ts) deve ser usado para operações server-side.
+
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getFirestore, Firestore, initializeFirestore } from "firebase/firestore";
+import { getFirestore, Firestore } from "firebase/firestore";
 import { getAuth, Auth, FacebookAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
@@ -20,26 +23,24 @@ let db: Firestore | null = null;
 let auth: Auth | null = null;
 const facebookProvider = new FacebookAuthProvider();
 
-/** 📐 Inicialização Silenciosa & Resiliente */
-if (isConfigPresent) {
+/**
+ * 📐 Inicialização Silenciosa & Resiliente — APENAS no browser
+ * 
+ * ⚠️ GUARD `typeof window !== 'undefined'`:
+ * O Firebase Client SDK usa gRPC para conectar ao Firestore. Em ambiente
+ * Node.js (SSR / next build), o gRPC falha com "undefined undefined: undefined".
+ * 
+ * Esta inicialização só ocorre no browser. Para operações server-side,
+ * use o Admin SDK em src/lib/firebase-admin.ts.
+ */
+if (isConfigPresent && typeof window !== "undefined") {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-        try {
-            db = initializeFirestore(app, {
-                experimentalForceLongPolling: true,
-                experimentalAutoDetectLongPolling: false,
-                useFetchStreams: false
-            } as any);
-        } catch (e) {
-            console.warn("⚠️ [Hooke Rescue] Falha ao inicializar com configurações avançadas, usando fallback getFirestore:", e);
-            db = getFirestore(app);
-        }
+        db = getFirestore(app);
         auth = getAuth(app);
     } catch (error) {
         console.error("❌ [Hooke Rescue] Falha crítica ao despertar o Firebase:", error);
     }
-} else if (typeof window !== "undefined") {
-    console.warn("⚠️ [Hooke System] Rodando sem Firebase (Chaves ausentes).");
 }
 
 export { app, db, auth, facebookProvider };

@@ -5,43 +5,47 @@ import { getAuth } from "firebase-admin/auth";
 /**
  * Hooke Elite: Firebase Admin SDK
  * Fornece acesso privilegiado ao Firestore em API Routes (Server-Side).
- * Resolve erros de 'PERMISSION_DENIED' ao salvar pedidos.
+ * 
+ * ⚡ BLINDAGEM VERCEL SERVERLESS:
+ * - preferRest: true é configurado ANTES de qualquer chamada ao Firestore
+ * - Evita vazamentos e timeouts gRPC sob suspensão de containers serverless
  */
 
-let adminApp;
+let adminDb: ReturnType<typeof getFirestore> | null = null;
+let adminAuth: ReturnType<typeof getAuth> | null = null;
 
-if (getApps().length === 0) {
-    try {
-        const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+try {
+  if (getApps().length === 0) {
+    const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
-        if (serviceAccountBase64) {
-            const serviceAccount = JSON.parse(
-                Buffer.from(serviceAccountBase64, "base64").toString("utf-8")
-            );
+    if (serviceAccountBase64) {
+      const serviceAccount = JSON.parse(
+        Buffer.from(serviceAccountBase64, "base64").toString("utf-8")
+      );
 
-            adminApp = initializeApp({
-                credential: cert(serviceAccount),
-            });
-        } else {
-            // Fallback para quando estamos em build time ou sem chaves
-        }
-    } catch (error) {
-        console.error("❌ [Hooke Admin] Erro ao inicializar Admin SDK:", error);
+      const adminApp = initializeApp({
+        credential: cert(serviceAccount),
+      });
+
+      // ✅ ORDEM CORRETA: Firestore instanciado IMEDIATAMENTE após initializeApp,
+      // com settings aplicadas antes de qualquer operação de leitura/escrita.
+      const db = getFirestore(adminApp);
+      db.settings({ preferRest: true } as any);
+      adminDb = db;
+      adminAuth = getAuth(adminApp);
+    } else {
+      // Build time ou ambiente sem credenciais (CI/CD preview)
+      console.warn("⚠️ [Hooke Admin] FIREBASE_SERVICE_ACCOUNT_KEY ausente. AdminDB desabilitado.");
     }
-} else {
-    adminApp = getApp();
+  } else {
+    // App já inicializado (hot reload em dev)
+    const existingApp = getApp();
+    adminDb = getFirestore(existingApp);
+    adminAuth = getAuth(existingApp);
+    // settings não pode ser chamado novamente — já foram aplicadas
+  }
+} catch (error) {
+  console.error("❌ [Hooke Admin] Erro ao inicializar Admin SDK:", error);
 }
-
-// ⚡ BLINDAGEM VERCEL SERVERLESS: Habilitamos preferRest: true para usar chamadas HTTP REST
-// em vez de conexões persistentes gRPC (evitando vazamentos e timeouts gRPC sob suspensão de containers).
-const adminDb = getApps().length ? getFirestore() : null;
-if (adminDb) {
-    try {
-        adminDb.settings({ preferRest: true } as any);
-    } catch (e) {
-        // Silencia erro caso as settings já tenham sido aplicadas em inicializações concorrentes
-    }
-}
-const adminAuth = getApps().length ? getAuth() : null;
 
 export { adminDb, adminAuth };
