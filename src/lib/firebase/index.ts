@@ -12,10 +12,11 @@ const firebaseConfig = {
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const isConfigPresent = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
+const isConfigPresent =
+    !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
 
 // Instâncias Globais (Singletons)
 let app: FirebaseApp | null = null;
@@ -24,16 +25,20 @@ let auth: Auth | null = null;
 const facebookProvider = new FacebookAuthProvider();
 
 /**
- * 📐 Inicialização Silenciosa & Resiliente — APENAS no browser
- * 
- * ⚠️ GUARD `typeof window !== 'undefined'`:
- * O Firebase Client SDK usa gRPC para conectar ao Firestore. Em ambiente
- * Node.js (SSR / next build), o gRPC falha com "undefined undefined: undefined".
- * 
- * Esta inicialização só ocorre no browser. Para operações server-side,
- * use o Admin SDK em src/lib/firebase-admin.ts.
+ * 📐 Inicialização Silenciosa & Resiliente
+ *
+ * ✅ Inicializa sempre que a config estiver presente (browser ou servidor).
+ *
+ * ⚠️ IMPORTANTE — Por que não há guard `typeof window !== 'undefined'`:
+ * O admin layout é um componente `'use client'` que o Next.js pré-renderiza
+ * no servidor (SSR). Um guard de módulo bloquearia a inicialização nessa fase,
+ * fazendo com que `auth` seja `null` e o layout retorne `null` (tela branca).
+ *
+ * Os erros gRPC do Firebase Client SDK em ambiente Node.js são esperados
+ * durante o build e não afetam a experiência do usuário no browser.
+ * Para operações server-side, use o Admin SDK em src/lib/firebase-admin.ts.
  */
-if (isConfigPresent && typeof window !== "undefined") {
+if (isConfigPresent) {
     try {
         app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         db = getFirestore(app);

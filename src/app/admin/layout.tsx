@@ -22,7 +22,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         if (!auth) {
-            setLoading(false);
+            // Firebase Client SDK não inicializou — redireciona para login de forma segura
+            router.push('/login');
             return;
         }
         

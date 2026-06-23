@@ -10,8 +10,15 @@ export const metadata: Metadata = {
 
 export default async function AdminProductsPage() {
   await connection(); // Opt into dynamic rendering (Dynamic I/O)
-  // Leitura com privilégios de Admin direto no Firebase Admin SDK
-  const products = await getAdminProducts();
+
+  // ✅ try/catch explícito: qualquer falha do Firestore é capturada pelo error.tsx
+  let products: Awaited<ReturnType<typeof getAdminProducts>> = [];
+  try {
+    products = await getAdminProducts();
+  } catch (err) {
+    console.error("❌ [AdminProductsPage] Falha ao carregar produtos:", err);
+    throw err; // O error.tsx da rota vai capturar
+  }
 
   // Cálculos de Health Dashboard (Feitos no servidor = 0 processamento no cliente)
   let eliteProductsCount = 0;
