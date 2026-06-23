@@ -6,7 +6,7 @@ import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from '@/features/admin';
-import { Toaster } from 'sonner';
+import { Toaster } from 'sonner'
 import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
 import { GlobalCommand } from '@/components/admin/GlobalCommand';
 import { NotificationPulse } from '@/components/admin/NotificationPulse';
@@ -21,13 +21,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const isZenMode = pathname?.includes('/admin/pdv') || pathname?.includes('/admin/produtos/novo');
 
     useEffect(() => {
+        // ─── Timeout de segurança ────────────────────────────────────────────────
+        // Garante que o estado de loading nunca fique preso para sempre.
+        // Se Firebase não responder em 8 segundos, redireciona para login.
+        const fallbackTimer = setTimeout(() => {
+            console.warn('[AdminLayout] Firebase auth timeout — redirecionando para login');
+            router.push('/login');
+        }, 8000);
+
         if (!auth) {
-            // Firebase Client SDK não inicializou — redireciona para login de forma segura
+            // Firebase Client SDK não inicializou (config ausente ou erro de init).
+            clearTimeout(fallbackTimer);
+            setLoading(false); // ← CRÍTICO: sem isso, loading fica true eternamente
             router.push('/login');
             return;
         }
-        
+
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            clearTimeout(fallbackTimer); // Cancela o timeout pois Firebase respondeu
             if (!currentUser) {
                 router.push('/login');
             } else {
@@ -36,13 +47,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             setLoading(false);
         });
 
-        return () => unsubscribe();
+        return () => {
+            clearTimeout(fallbackTimer);
+            unsubscribe();
+        };
     }, [router]);
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
-                <div className="text-hooke-900 text-[10px] tracking-[0.5em] uppercase animate-pulse font-black">
+            // ⚠️ Inline styles obrigatórios aqui:
+            // `text-hooke-900` usa CSS var que no dark mode é quase branco (0 0% 98%),
+            // tornando o texto invisível contra o fundo claro e parecendo tela branca.
+            <div style={{ minHeight: '100vh', background: '#FDFDFD', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ color: '#111111', fontSize: '10px', letterSpacing: '0.5em', textTransform: 'uppercase', fontWeight: 900, animation: 'pulse 2s infinite' }}>
                     Hooke Alpha Command
                 </div>
             </div>
