@@ -29,6 +29,7 @@ export function AdminBottomNav() {
           <Link 
             key={item.href} 
             href={item.href}
+            prefetch={false}
             className={`flex flex-col items-center justify-center gap-1 w-full h-full transition-all active:scale-95 ${
               isActive ? 'bg-black text-white' : 'text-zinc-400 hover:text-black'
             }`}

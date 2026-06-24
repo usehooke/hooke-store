@@ -336,6 +336,7 @@ export function AdminOrdersView({ initialOrders }: { initialOrders: Order[] }) {
         </div>
         <Link
           href="/admin"
+          prefetch={false}
           className="self-start md:self-auto text-xs font-black tracking-widest border-2 border-black px-6 py-3 hover:bg-black hover:text-white transition-all shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-none uppercase"
         >
           ← Radar

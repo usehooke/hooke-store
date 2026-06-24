@@ -45,7 +45,7 @@ export default function InventoryModePage() {
  <div className="max-w-4xl mx-auto">
  <header className="flex flex-col md:flex-row md:items-center justify-between mb-12 border-b border-black/10 pb-8 gap-6">
  <div className="flex items-center gap-6">
- <Link href="/admin/pdv" className="p-3 border border-black/10 hover:bg-black hover:text-white transition-all">
+ <Link href="/admin/pdv" prefetch={false} className="p-3 border border-black/10 hover:bg-black hover:text-white transition-all">
  <ArrowLeft className="h-5 w-5" />
  </Link>
  <div>

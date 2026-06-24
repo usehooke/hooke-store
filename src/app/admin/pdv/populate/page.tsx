@@ -75,7 +75,7 @@ export default function PopulateDictionaryPage() {
  <div className="min-h-screen bg-white p-8 font-sans">
  <div className="max-w-2xl mx-auto space-y-8">
  <header className="flex items-center gap-4">
- <Link href="/admin/pdv" className="p-3 border border-black shadow-sharp rounded-none">
+ <Link href="/admin/pdv" prefetch={false} className="p-3 border border-black shadow-sharp rounded-none">
  <ArrowLeft className="h-5 w-5" />
  </Link>
  <h1 className="text-2xl font-black tracking-tighter">Carga de Dicionário 2026</h1>

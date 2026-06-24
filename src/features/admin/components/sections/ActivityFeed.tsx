@@ -88,6 +88,7 @@ export default function ActivityFeed({ conciergeCount, sessions }: ActivityFeedP
 
           <Link 
             href="/admin/pedidos"
+            prefetch={false}
             className="flex items-center justify-center w-full py-4 mt-6 border border-black bg-black text-white text-[9px] font-black uppercase tracking-[0.3em] hover:bg-zinc-800 transition-all gap-3"
           >
             Ver Todos os Pedidos

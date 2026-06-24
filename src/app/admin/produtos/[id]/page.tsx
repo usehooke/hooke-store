@@ -108,7 +108,7 @@ export default function EditarProdutoPage() {
       {/* HEADER EDIT */}
       <header className="p-8 md:p-12 border-b-4 border-black bg-zinc-50 flex flex-col md:flex-row justify-between items-end gap-6">
         <div className="space-y-4">
-          <Link href="/admin/produtos" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform">
+          <Link href="/admin/produtos" prefetch={false} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:translate-x-[-4px] transition-transform">
             <ChevronLeft size={14} />
             Voltar ao Arsenal
           </Link>

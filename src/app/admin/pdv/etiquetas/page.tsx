@@ -43,7 +43,7 @@ export default function LabelGeneratorPage() {
  <div className="min-h-screen bg-white text-hooke-900 font-sans p-6">
  <div className="max-w-6xl mx-auto">
  <header className="flex items-center gap-4 mb-8">
- <Link href="/admin/pdv" className="p-3 border border-black shadow-sharp rounded-none active:bg-zinc-50 border border-black/5 shadow-inner">
+ <Link href="/admin/pdv" prefetch={false} className="p-3 border border-black shadow-sharp rounded-none active:bg-zinc-50 border border-black/5 shadow-inner">
  <ArrowLeft className="h-5 w-5" />
  </Link>
  <h1 className="text-2xl font-black tracking-tighter ">Gerador de Etiquetas</h1>

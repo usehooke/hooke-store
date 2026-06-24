@@ -17,7 +17,7 @@ export function CommandGrid() {
   return (
     <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       {commands.map((cmd) => (
-        <Link key={cmd.href} href={cmd.href} className="w-full">
+        <Link key={cmd.href} href={cmd.href} prefetch={false} className="w-full">
           <Button
             variant="brutalist"
             className={`w-full h-32 flex flex-col items-center justify-center gap-3 transition-transform active:scale-95 group border-2 border-black`}

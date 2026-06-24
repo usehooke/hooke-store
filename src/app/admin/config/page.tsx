@@ -36,7 +36,7 @@ export default function AdminConfigPage() {
       
       {/* Header */}
       <header className="border-b-2 border-black p-8">
-        <Link href="/admin" className="flex items-center gap-2 text-zinc-400 hover:text-black transition-colors text-xs font-bold tracking-widest mb-6">
+        <Link href="/admin" prefetch={false} className="flex items-center gap-2 text-zinc-400 hover:text-black transition-colors text-xs font-bold tracking-widest mb-6">
           <ArrowLeft size={14} /> Voltar ao Dashboard
         </Link>
         <h1 className="text-4xl font-black tracking-tighter mb-2">Configurações do Sistema</h1>
@@ -297,6 +297,7 @@ export default function AdminConfigPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black p-6 md:p-8 flex justify-end gap-4 z-50">
         <Link 
           href="/admin" 
+          prefetch={false}
           className="px-6 py-3 border-2 border-black text-xs font-black tracking-widest hover:bg-zinc-100 transition-colors"
         >
           Cancelar

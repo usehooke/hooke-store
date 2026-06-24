@@ -80,6 +80,7 @@ export function Sidebar({ user }: { user: User }) {
                         <Link 
                             key={item.href} 
                             href={item.href}
+                            prefetch={false}
                             className={cn(
                                 "flex items-center gap-4 px-5 py-5 transition-all group relative overflow-hidden",
                                 isActive 
@@ -122,7 +123,7 @@ export function Sidebar({ user }: { user: User }) {
                     
                     {!isCollapsed && (
                         <div className="flex justify-between items-center pt-2 px-2">
-                             <Link href="/admin/config" className="text-zinc-300 hover:text-black transition-colors">
+                             <Link href="/admin/config" prefetch={false} className="text-zinc-300 hover:text-black transition-colors">
                                 <Settings size={14} />
                              </Link>
                              <div className="flex gap-2 opacity-10">
