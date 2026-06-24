@@ -15,11 +15,17 @@ export const metadata: Metadata = {
 
 export default async function PDVPage() {
   await connection(); // Opt into dynamic rendering (Dynamic I/O)
-  // 1. Busca os produtos diretamente do Firebase Admin SDK no Servidor!
-  // Isso garante 0 delays, 0 mocks e 100% de segurança.
-  const products = await getAdminProducts();
 
-  // 2. Filtramos apenas os produtos ativos para o PDV
+  // ✅ try/catch explícito: falhas do Firestore são capturadas pelo error.tsx
+  let products: Awaited<ReturnType<typeof getAdminProducts>> = [];
+  try {
+    products = await getAdminProducts();
+  } catch (err) {
+    console.error("❌ [PDVPage] Falha ao carregar produtos:", err);
+    throw err; // O error.tsx da rota vai capturar
+  }
+
+  // Filtramos apenas os produtos ativos para o PDV
   const activeProducts = products.filter(p => p.isActive);
 
   return (

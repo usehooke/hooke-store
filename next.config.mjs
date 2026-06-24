@@ -54,9 +54,13 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
-  // Limpeza de console.log em produção
+  // Limpeza seletiva de console em produção:
+  // ✅ Preserva console.error e console.warn (críticos para debugging na Vercel)
+  // ❌ Remove console.log e console.debug (ruído desnecessário em prod)
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: process.env.NODE_ENV === "production"
+      ? { exclude: ["error", "warn"] }
+      : false,
   },
 
   // Logs detalhados em dev
