@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart-store';
+import { Size, Department } from '@/types';
 import {
   ShoppingBag,
   ChevronDown,
@@ -52,7 +53,7 @@ const COLORS = [
   },
 ] as const;
 
-const SIZES = ['P', 'M', 'G', 'GG', 'XGG'];
+const SIZES: Size[] = [Size.P, Size.M, Size.G, Size.GG, Size.XG];
 
 const KIT_PRICE = 199.90;
 const KIT_ORIGINAL_PRICE = 249.90;
@@ -64,10 +65,13 @@ const KIT_PRODUCT_BASE = {
   name: 'Kit Core Hooke',
   slug: 'kit-core-hooke',
   price: KIT_PRICE,
-  category: 'camisetas-lisas' as const,
+  category: 'Camisetas' as const,
   description: 'Kit com 3 camisetas heavyweight 260g',
+  imageUrl: '/produtos/HK_PROD_OV_BLACK_01.avif',
   images: [],
   sizes: SIZES,
+  department: Department.MASCULINO,
+  featured: false,
   details: {
     grammage: '260g/m²',
     yarn: 'Algodão Pima',

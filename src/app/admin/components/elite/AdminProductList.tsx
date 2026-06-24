@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { 
   Eye, EyeOff, Edit3, Trash2, 
@@ -11,7 +11,12 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/types";
 import { QualityBadge } from "./QualityBadge";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import dynamic from 'next/dynamic';
+
+const PDFDownloadLink = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
+  { ssr: false }
+);
 import { LookbookPDF } from "@/features/admin/components/pdf/LookbookPDF";
 import { createLookbook } from "@/actions/lookbook";
 import { toast } from "sonner";

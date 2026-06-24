@@ -102,7 +102,7 @@ export async function POST(req: Request) {
                 prazo: item.PrazoEntrega
             }));
         } catch (correiosError) {
-            console.warn("Correios indisponíveis ou timeout, ativando contingência de frete regional:", correiosError.message);
+            console.warn("Correios indisponíveis ou timeout, ativando contingência de frete regional:", (correiosError as any).message);
 
             // 3. FALLBACK DE CONTINGÊNCIA REGIONAL DE ALTA DISPONIBILIDADE
             try {

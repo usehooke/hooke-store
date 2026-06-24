@@ -25,6 +25,12 @@ const TinyWebhookSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  if (!adminDb) {
+    console.error("❌ [Tiny Webhook] Firebase Admin não inicializado (adminDb é null)");
+    return NextResponse.json({ error: 'Serviço temporariamente indisponível (Database).' }, { status: 500 });
+  }
+  const dbInstance = adminDb;
+
   try {
     const rawPayload = await req.json();
 
@@ -44,14 +50,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payload inválido. SKU ou Saldo ausentes.' }, { status: 400 });
     }
 
-    // ⚡ Guard do Admin SDK
-    if (!adminDb) {
-      console.error('❌ [Tiny Webhook] adminDb não inicializado.');
-      return NextResponse.json({ error: "[Hooke System] Service Unavailable" }, { status: 503 });
-    }
-
     // Varredura cirúrgica no Firestore para encontrar a qual produto esse SKU pertence
-    const snapshot = await adminDb.collection('produtos').get();
+    const snapshot = await dbInstance.collection('produtos').get();
     
     const updatePromises: Promise<any>[] = [];
     let updated = false;
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
               
               // ✅ await correto: updateDoc deve ser aguardado
               updatePromises.push(
-                adminDb.collection('produtos').doc(document.id).update({ stock: currentStockObj })
+                dbInstance.collection('produtos').doc(document.id).update({ stock: currentStockObj })
               );
               updated = true;
            }

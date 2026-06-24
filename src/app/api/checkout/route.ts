@@ -179,7 +179,7 @@ export async function POST(req: Request) {
                     address: customer.address ? {
                         zip_code: customer.address.zip_code,
                         street_name: customer.address.street_name,
-                        street_number: Number(customer.address.street_number) || undefined
+                        street_number: customer.address.street_number ? String(customer.address.street_number) : undefined
                     } : undefined
                 },
                 external_reference: orderId, // Crucial: amarra o Webhook ao nosso Doc no FB
@@ -194,7 +194,7 @@ export async function POST(req: Request) {
                     receiver_address: {
                         zip_code: customer.address.zip_code,
                         street_name: customer.address.street_name,
-                        street_number: Number(customer.address.street_number) || undefined,
+                        street_number: customer.address.street_number ? String(customer.address.street_number) : undefined,
                         floor: "",
                         apartment: ""
                     }
