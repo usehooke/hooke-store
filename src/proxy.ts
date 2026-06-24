@@ -44,8 +44,12 @@ async function verifyAdminToken(token: string): Promise<boolean> {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protege apenas rotas administrativas
-  if (pathname.startsWith('/admin')) {
+  // Injeção tática de cabeçalho de depuração conforme o plano
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-hooke-admin', 'true');
+
+  // Protege todas as rotas administrativas, exceto a rota de diagnóstico de emergência (/admin/debug)
+  if (pathname.startsWith('/admin') && pathname !== '/admin/debug') {
     const sessionToken =
       request.cookies.get('__session')?.value ||
       request.cookies.get('hooke-admin-token')?.value;
@@ -54,33 +58,42 @@ export async function proxy(request: NextRequest) {
     if (!sessionToken) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(loginUrl);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      redirectResponse.headers.set('X-Debug-Middleware', 'Redirect-No-Token');
+      redirectResponse.headers.set('X-Pathname', pathname);
+      return redirectResponse;
     }
 
-    // 2. Token presente mas inválido/forjado → bloqueia com 401
+    // 2. Token presente mas inválido/forjado → bloqueia com 401 e redireciona
     const isValid = await verifyAdminToken(sessionToken);
     if (!isValid) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       loginUrl.searchParams.set('error', 'session_invalid');
       
-      // Limpa o cookie inválido na resposta
-      const response = NextResponse.redirect(loginUrl);
-      response.cookies.delete('__session');
-      response.cookies.delete('hooke-admin-token');
-      return response;
+      // Limpa os cookies inválidos na resposta
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      redirectResponse.cookies.delete('__session');
+      redirectResponse.cookies.delete('hooke-admin-token');
+      redirectResponse.headers.set('X-Debug-Middleware', 'Redirect-Invalid-Token');
+      redirectResponse.headers.set('X-Pathname', pathname);
+      return redirectResponse;
     }
 
     // 3. Token válido → adiciona header de identidade para Server Components
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-hooke-admin', 'true');
-    
-    return NextResponse.next({
+    const response = NextResponse.next({
       request: { headers: requestHeaders },
     });
+    response.headers.set('X-Debug-Middleware', 'Active-Admin');
+    response.headers.set('X-Pathname', pathname);
+    return response;
   }
 
-  return NextResponse.next();
+  // Rota pública ou de debug (/admin/debug)
+  const response = NextResponse.next();
+  response.headers.set('X-Debug-Middleware', 'Active-Public');
+  response.headers.set('X-Pathname', pathname);
+  return response;
 }
 
 // Sem export const config aqui — proxy.ts não aceita route segment config
