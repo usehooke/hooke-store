@@ -52,6 +52,12 @@ export function AdminProductList({
   onToggleActive, 
   onSync 
 }: AdminProductListProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [searchInput, setSearchInput] = useState("");
   const [activeTab, setActiveTab] = useState<"todos" | "masculino" | "feminino">("todos");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -261,14 +267,16 @@ export function AdminProductList({
                 {isGeneratingLink ? "GERANDO..." : "1. GERAR LINK INTERATIVO"}
               </button>
               
-              <PDFDownloadLink
-                document={<LookbookPDF products={selectedProductsData} />}
-                fileName={`Hooke_Lookbook_${new Date().getTime()}.pdf`}
-                className="px-4 py-2 bg-zinc-800 text-white border border-white/20 text-[10px] font-black tracking-widest uppercase hover:bg-zinc-700 transition-colors"
-              >
-                {/* @ts-ignore */}
-                {({ loading }) => (loading ? "PREPARANDO PDF..." : "2. EXPORTAR PDF")}
-              </PDFDownloadLink>
+              {mounted && (
+                <PDFDownloadLink
+                  document={<LookbookPDF products={selectedProductsData} />}
+                  fileName={`Hooke_Lookbook_${new Date().getTime()}.pdf`}
+                  className="px-4 py-2 bg-zinc-800 text-white border border-white/20 text-[10px] font-black tracking-widest uppercase hover:bg-zinc-700 transition-colors"
+                >
+                  {/* @ts-ignore */}
+                  {({ loading }) => (loading ? "PREPARANDO PDF..." : "2. EXPORTAR PDF")}
+                </PDFDownloadLink>
+              )}
 
               <button onClick={() => setSelectedIds(new Set())} className="ml-2 text-[10px] uppercase font-bold text-zinc-400 hover:text-white underline underline-offset-4">
                 Cancelar

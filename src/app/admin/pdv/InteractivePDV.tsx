@@ -16,6 +16,12 @@ interface InteractivePDVProps {
 }
 
 export function InteractivePDV({ initialProducts }: InteractivePDVProps) {
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { isSyncing, pendingCount, exhaustedCount, isContingencyMode } = useSyncOfflineSales();
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -26,6 +32,17 @@ export function InteractivePDV({ initialProducts }: InteractivePDVProps) {
   const count = usePDVStore(selectPDVCount);
 
   const products = initialProducts || [];
+
+  if (!mounted) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center p-8 w-full">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-black" />
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 animate-pulse">Carregando Módulo PDV...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddWithSize = (product: Product, size: string) => {
     // Feedback tátil brutalista (vibrar o dispositivo mobile)
