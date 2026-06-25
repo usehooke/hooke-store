@@ -102,24 +102,94 @@ function translateColor(ptColor: string): string {
 const FOUNDER_ANCHOR = `The same man from the reference photo. Brazilian man, early 30s, broad stocky athletic build, fair skin, very short buzzed dark hair, well-groomed short dark beard, blue-green eyes, strong jaw, confident serious expression with subtle intensity. He wears a thin black cord necklace with a small gold Hamsa pendant.`;
 
 // ---------------------------------------------------------------------------
+// Graphic Print Detection & Description Map
+// Products with category "Vintage" have screen-printed graphics.
+// This map describes each print so the AI reproduces it instead of ignoring it.
+// ---------------------------------------------------------------------------
+
+interface GraphicPrint {
+  designName: string;
+  description: string;
+  detailDescription: string;
+}
+
+const GRAPHIC_PRINTS: Record<string, GraphicPrint> = {
+  fusca: {
+    designName: 'Vintage Beetle',
+    description:
+      'a large vintage-style screen-printed illustration of a classic Volkswagen Beetle (Fusca) seen from the front, rendered in a bold flat line-art style with visible headlights, bumper, windshield, and side mirrors. The license plate reads "HOOKE" in bold capital letters. The print is centered on the chest area, printed in a single dark ink tone that contrasts with the fabric color',
+    detailDescription:
+      'the screen-printed Beetle illustration showing the ink texture, the fine line work of the headlights and windshield details, and the "HOOKE" text on the license plate. The print has a slightly worn vintage screen-print feel with visible ink grain on the cotton fabric',
+  },
+  kombi: {
+    designName: 'Vintage Kombi',
+    description:
+      'a large vintage-style screen-printed illustration of a classic Volkswagen Kombi (Type 2 Bus) seen from the front, rendered in minimalist bold black line-art style showing the split windshield, VW logo emblem, round headlights, and front bumper. Below the illustration, the word "HOOKE" is printed in stylized bold capital letters. The print is centered on the chest area',
+    detailDescription:
+      'the screen-printed Kombi illustration showing the clean black ink lines of the split windshield, the VW circular emblem, and the minimalist front-end details. The "HOOKE" text below is crisp. The print has a hand-drawn artisan quality with solid black ink on the fabric',
+  },
+  maverick: {
+    designName: 'Vintage Maverick',
+    description:
+      'a large vintage-style screen-printed illustration of a classic Ford Maverick muscle car seen from the rear, rendered in bold silhouette style showing the distinctive rear lights, trunk, rear bumper, and muscular body lines. The license plate reads "HOOKE" in bold capital letters. The print is centered on the chest area, printed in dark ink that contrasts with the fabric',
+    detailDescription:
+      'the screen-printed Maverick illustration showing the ink texture of the rear silhouette, the distinctive taillights detail, and the "HOOKE" license plate text. The print has a vintage American muscle car aesthetic with solid dark ink on the fabric',
+  },
+};
+
+/**
+ * Detects if a product is a Vintage (graphic print) product and returns
+ * the matching GraphicPrint info, or null for plain products.
+ */
+function detectGraphicPrint(category: string, productName: string): GraphicPrint | null {
+  if (category?.toLowerCase() !== 'vintage') return null;
+  const nameLower = productName.toLowerCase();
+  if (nameLower.includes('fusca') || nameLower.includes('beetle')) return GRAPHIC_PRINTS.fusca;
+  if (nameLower.includes('kombi')) return GRAPHIC_PRINTS.kombi;
+  if (nameLower.includes('maverick')) return GRAPHIC_PRINTS.maverick;
+  // Fallback: unknown vintage design — still flag as graphic
+  return GRAPHIC_PRINTS.fusca;
+}
+
+// ---------------------------------------------------------------------------
 // Prompt generators (kept for JSON spec & copy)
 // ---------------------------------------------------------------------------
 
-function buildProductDesc(color: string, details: ProductOption['details']): string {
+function buildProductDesc(
+  color: string,
+  details: ProductOption['details'],
+  graphicPrint: GraphicPrint | null
+): string {
   const fabric = details.fabric || 'heavyweight cotton';
   const grammage = details.grammage || '260gsm';
   const collar = details.collar || 'thick ribbed crew neck collar';
   const model = details.model || 'oversized drop-shoulder';
 
-  return `${color} ${model} ${fabric} t-shirt with waffle textured knit fabric, ${grammage}, ${collar}, relaxed boxy fit`;
+  const base = `${color} ${model} ${fabric} t-shirt`;
+
+  if (graphicPrint) {
+    // Vintage: describe the graphic ON the shirt
+    return `${base}, ${collar}, featuring ${graphicPrint.description}`;
+  }
+
+  // Plain: waffle texture, no graphics
+  return `${base} with waffle textured knit fabric, ${grammage}, ${collar}, relaxed boxy fit`;
 }
 
 function generatePrompt(
   shot: ShotType,
   colorEN: string,
-  details: ProductOption['details']
+  details: ProductOption['details'],
+  category: string,
+  productName: string
 ): string {
-  const productDesc = buildProductDesc(colorEN, details);
+  const graphicPrint = detectGraphicPrint(category, productName);
+  const productDesc = buildProductDesc(colorEN, details, graphicPrint);
+
+  // Graphic instruction: for plain → "No graphics"; for vintage → "Preserve the print"
+  const graphicInstruction = graphicPrint
+    ? `CRITICAL: The t-shirt MUST display the screen-printed graphic as described above. Reproduce the ${graphicPrint.designName} illustration exactly as shown in the reference product image. The graphic is the key visual element of this product. Do NOT render a blank or plain shirt.`
+    : `No logos, no text, no graphics on the shirt.`;
 
   const prompts: Record<ShotType, string> = {
     hero: `Full body studio photograph of ${FOUNDER_ANCHOR}
@@ -128,7 +198,7 @@ He is wearing a ${productDesc}, hem falling below the waist. Paired with dark wa
 
 Standing in a relaxed confident pose, one hand in pocket, facing the camera. Full body shot from head to shoes.
 
-Clean minimal studio with soft gray concrete wall background. Soft diffused natural lighting from the left. Editorial fashion e-commerce photography, shot on 85mm lens, f/2.8, high resolution, 4K. No logos, no text, no graphics on the shirt.`,
+Clean minimal studio with soft gray concrete wall background. Soft diffused natural lighting from the left. Editorial fashion e-commerce photography, shot on 85mm lens, f/2.8, high resolution, 4K. ${graphicInstruction}`,
 
     meioCorpo: `Medium shot photograph of ${FOUNDER_ANCHOR}
 
@@ -138,7 +208,7 @@ He is wearing a ${productDesc}. Arms relaxed at sides.
 
 Medium shot framing from waist to top of head.
 
-Clean minimal studio, soft gray concrete wall background. Soft diffused lighting, slight shadow on the right side of the face for depth. Editorial fashion photography, shot on 85mm lens, f/2.0, shallow depth of field, high resolution. No logos, no text, no graphics on the shirt.`,
+Clean minimal studio, soft gray concrete wall background. Soft diffused lighting, slight shadow on the right side of the face for depth. Editorial fashion photography, shot on 85mm lens, f/2.0, shallow depth of field, high resolution. ${graphicInstruction}`,
 
     editorial: `Candid editorial photograph of ${FOUNDER_ANCHOR}
 
@@ -148,15 +218,23 @@ He is wearing a ${productDesc}. Paired with dark jeans and white sneakers.
 
 Walking naturally through an urban industrial setting, raw concrete walls, warm golden hour sunlight creating dramatic side lighting. Candid editorial pose.
 
-Cinematic streetwear photography, warm color grading, shallow depth of field with blurred background, shot on 85mm lens, f/1.8, 4K resolution. Mood: premium urban masculinity. No logos, no text, no graphics on the shirt.`,
+Cinematic streetwear photography, warm color grading, shallow depth of field with blurred background, shot on 85mm lens, f/1.8, 4K resolution. Mood: premium urban masculinity. ${graphicInstruction}`,
 
-    detalhe: `Extreme close-up detail photograph of the neckline and upper chest area of a ${productDesc} being worn.
+    detalhe: graphicPrint
+      ? `Extreme close-up detail photograph of the chest area of a ${productDesc} being worn.
+
+Focus on ${graphicPrint.detailDescription}.
+
+The gold Hamsa pendant on a black cord necklace is partially visible resting near the graphic.
+
+Macro photography style, soft studio lighting from the left creating subtle fabric shadows. Very shallow depth of field, the printed graphic in sharp focus showing ink texture on fabric. Premium fashion detail photography, 4K resolution. ${graphicInstruction}`
+      : `Extreme close-up detail photograph of the neckline and upper chest area of a ${productDesc} being worn.
 
 Focus on the thick ribbed crew neck collar showing the dense knit texture, the heavy waffle textured cotton fabric with clearly visible weave pattern, and the drop-shoulder seam construction.
 
 The gold Hamsa pendant on a black cord necklace is partially visible resting on the fabric.
 
-Macro photography style, soft studio lighting from the left creating subtle fabric shadows that enhance texture visibility. Very shallow depth of field, fabric weave in sharp focus. Premium fashion detail photography, 4K resolution. No logos, no text, no graphics on the shirt.`,
+Macro photography style, soft studio lighting from the left creating subtle fabric shadows that enhance texture visibility. Very shallow depth of field, fabric weave in sharp focus. Premium fashion detail photography, 4K resolution. ${graphicInstruction}`,
   };
 
   return prompts[shot];
@@ -248,13 +326,15 @@ function buildAntigravitySpec(product: ProductOption, colorEN: string): object {
     shots: SHOTS.map((s) => ({
       key: s.key,
       label: s.label,
-      prompt: generatePrompt(s.key, colorEN, product.details),
+      prompt: generatePrompt(s.key, colorEN, product.details, product.category, product.name),
       outputPath: `/lookbook/${product.id}/${s.key}.jpg`,
       settings: {
         lens: s.key === 'detalhe' ? '100mm macro' : '85mm',
         aperture: s.key === 'editorial' ? 'f/1.8' : s.key === 'meioCorpo' ? 'f/2.0' : 'f/2.8',
         resolution: '4K',
-        negativePrompt: 'logos, text, graphics on shirt, distorted face, extra fingers',
+        negativePrompt: detectGraphicPrint(product.category, product.name)
+          ? 'distorted face, extra fingers, blank plain shirt without graphic, missing print'
+          : 'logos, text, graphics on shirt, distorted face, extra fingers',
       },
     })),
     rules: [
@@ -327,7 +407,7 @@ export function GeradorView({ products }: GeradorViewProps) {
 
   const handleCopyPrompt = useCallback((shotKey: ShotType) => {
     if (!selectedProduct) return;
-    const prompt = generatePrompt(shotKey, colorEN, selectedProduct.details);
+    const prompt = generatePrompt(shotKey, colorEN, selectedProduct.details, selectedProduct.category, selectedProduct.name);
     handleCopy(prompt, shotKey);
   }, [selectedProduct, colorEN, handleCopy]);
 
@@ -483,6 +563,45 @@ export function GeradorView({ products }: GeradorViewProps) {
             </div>
           </div>
         )}
+
+        {/* Product Type Indicator: Estampado (Vintage) vs Liso */}
+        {selectedProduct && (() => {
+          const gp = detectGraphicPrint(selectedProduct.category, selectedProduct.name);
+          return (
+            <div className={cn(
+              'flex items-center gap-3 p-4 border',
+              gp
+                ? 'bg-violet-50 border-violet-200/50'
+                : 'bg-zinc-50 border-black/5'
+            )}>
+              {gp ? (
+                <>
+                  <ImageIcon size={14} className="text-violet-500" />
+                  <div>
+                    <p className="text-[9px] font-black tracking-[0.2em] uppercase text-violet-500">
+                      Produto Estampado — {gp.designName}
+                    </p>
+                    <p className="text-[10px] text-violet-400 mt-0.5">
+                      O prompt inclui a descrição da estampa. Anexe a foto do produto como referência visual.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Package size={14} className="text-zinc-400" />
+                  <div>
+                    <p className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400">
+                      Produto Liso — Sem estampa
+                    </p>
+                    <p className="text-[10px] text-zinc-300 mt-0.5">
+                      O prompt instrui a IA a manter a camiseta sem gráficos.
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
       </section>
 
       {/* ─── Lookbook Studio ─── */}
@@ -669,7 +788,7 @@ export function GeradorView({ products }: GeradorViewProps) {
                     {isExpanded && (
                       <div className="px-5 pb-5 space-y-3 animate-in slide-in-from-top-1 duration-200">
                         <pre className="text-[11px] leading-relaxed text-zinc-600 font-mono whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto custom-scrollbar p-4 bg-zinc-50 border border-black/5">
-                          {generatePrompt(shot.key, colorEN, selectedProduct.details)}
+                          {generatePrompt(shot.key, colorEN, selectedProduct.details, selectedProduct.category, selectedProduct.name)}
                         </pre>
                         <button
                           onClick={() => handleCopyPrompt(shot.key)}
