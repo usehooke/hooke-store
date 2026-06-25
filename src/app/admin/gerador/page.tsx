@@ -4,8 +4,8 @@ import { Metadata } from 'next';
 import { connection } from "next/server";
 
 export const metadata: Metadata = {
-  title: 'Gerador de Fotos IA | Hooke Command Center',
-  description: 'Gerador automático de prompts para fotos de produto com IA',
+  title: 'Estúdio Lookbook | Hooke Command Center',
+  description: 'Estúdio visual pré-computado de lookbook com controle Antigravity Engine',
 };
 
 export default async function GeradorPage() {
@@ -47,11 +47,11 @@ export default async function GeradorPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-8 h-[2px] bg-black" />
-              <p className="text-[10px] font-black tracking-[0.2em] text-black uppercase">Produção Visual IA</p>
+              <p className="text-[10px] font-black tracking-[0.2em] text-black uppercase">Antigravity Engine</p>
             </div>
-            <h1 className="text-4xl font-black tracking-tighter text-black">Gerador de Prompts</h1>
+            <h1 className="text-4xl font-black tracking-tighter text-black">Estúdio Lookbook</h1>
             <p className="text-sm text-zinc-400 mt-2 max-w-lg">
-              Selecione um produto, gere os 4 prompts de fotografia e copie direto para a IA.
+              Selecione um produto, visualize os 4 shots do lookbook e baixe as imagens prontas.
             </p>
           </div>
           {/* Indicador de produtos carregados */}

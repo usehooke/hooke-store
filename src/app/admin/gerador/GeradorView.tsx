@@ -13,6 +13,15 @@ import {
   Focus,
   SunMedium,
   Search,
+  Download,
+  ImageIcon,
+  Code2,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle2,
+  Package,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -41,7 +50,7 @@ interface GeradorViewProps {
 type ShotType = 'hero' | 'meioCorpo' | 'editorial' | 'detalhe';
 
 // ---------------------------------------------------------------------------
-// Color translation map (PT-BR → English for prompts)
+// Color translation map (PT-BR → English for JSON spec)
 // ---------------------------------------------------------------------------
 
 const COLOR_EN_MAP: Record<string, string> = {
@@ -93,7 +102,7 @@ function translateColor(ptColor: string): string {
 const FOUNDER_ANCHOR = `The same man from the reference photo. Brazilian man, early 30s, broad stocky athletic build, fair skin, very short buzzed dark hair, well-groomed short dark beard, blue-green eyes, strong jaw, confident serious expression with subtle intensity. He wears a thin black cord necklace with a small gold Hamsa pendant.`;
 
 // ---------------------------------------------------------------------------
-// Prompt generators
+// Prompt generators (kept for JSON spec & copy)
 // ---------------------------------------------------------------------------
 
 function buildProductDesc(color: string, details: ProductOption['details']): string {
@@ -162,37 +171,100 @@ const SHOTS: {
   label: string;
   sublabel: string;
   icon: React.ElementType;
-  tip: string;
+  aspect: string;
 }[] = [
   {
     key: 'hero',
     label: 'HERO',
     sublabel: 'Corpo inteiro • Thumbnail',
     icon: User,
-    tip: 'Use sua foto SEM camiseta como referência para este shot.',
+    aspect: 'aspect-[3/4]',
   },
   {
     key: 'meioCorpo',
     label: 'MEIO CORPO',
     sublabel: 'Caimento • Textura',
     icon: Maximize,
-    tip: 'Use uma foto com camiseta similar como referência.',
+    aspect: 'aspect-[3/4]',
   },
   {
     key: 'editorial',
     label: 'EDITORIAL',
     sublabel: 'Lifestyle • Anúncio',
     icon: SunMedium,
-    tip: 'Use sua foto SEM camiseta como referência para este shot.',
+    aspect: 'aspect-[3/4]',
   },
   {
     key: 'detalhe',
     label: 'DETALHE',
     sublabel: 'Close no tecido • Gola',
     icon: Focus,
-    tip: 'Use uma foto vestindo peça similar como referência.',
+    aspect: 'aspect-square',
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Lookbook image path resolver
+// Checks /lookbook/{productId}/{shotKey}.jpg (convention)
+// Falls back to product imageUrl for hero, placeholder for others
+// ---------------------------------------------------------------------------
+
+function getLookbookImagePath(productId: string, shotKey: ShotType, fallbackUrl: string): string | null {
+  // Convention: /lookbook/{productId}/{shotKey}.jpg
+  // If the file doesn't exist, we return null to trigger the placeholder
+  const conventionPath = `/lookbook/${productId}/${shotKey}.jpg`;
+  // We can't check file existence client-side reliably, so we use a convention-based approach
+  // For hero shots, fall back to the product's main image
+  if (shotKey === 'hero') return fallbackUrl || null;
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// JSON Control Spec Builder
+// ---------------------------------------------------------------------------
+
+function buildAntigravitySpec(product: ProductOption, colorEN: string): object {
+  return {
+    engine: 'antigravity-v2',
+    model: 'gemini-2.5-flash',
+    codename: 'Nano Banana 2',
+    product: {
+      id: product.id,
+      name: product.name,
+      color: { original: product.color, translated: colorEN },
+      category: product.category,
+      details: {
+        fabric: product.details.fabric || 'heavyweight cotton',
+        grammage: product.details.grammage || '260gsm',
+        collar: product.details.collar || '3cm ribbed crew neck',
+        model: product.details.model || 'oversized drop-shoulder',
+      },
+    },
+    founderAnchor: {
+      description: 'Brazilian man, early 30s, broad stocky athletic build',
+      accessories: ['thin black cord necklace', 'small gold Hamsa pendant'],
+      expression: 'confident serious with subtle intensity',
+    },
+    shots: SHOTS.map((s) => ({
+      key: s.key,
+      label: s.label,
+      prompt: generatePrompt(s.key, colorEN, product.details),
+      outputPath: `/lookbook/${product.id}/${s.key}.jpg`,
+      settings: {
+        lens: s.key === 'detalhe' ? '100mm macro' : '85mm',
+        aperture: s.key === 'editorial' ? 'f/1.8' : s.key === 'meioCorpo' ? 'f/2.0' : 'f/2.8',
+        resolution: '4K',
+        negativePrompt: 'logos, text, graphics on shirt, distorted face, extra fingers',
+      },
+    })),
+    rules: [
+      'NO logos, text, or graphics on the shirt',
+      'Collar must show 3cm ribbed knit texture',
+      'Fabric weight: 260g heavyweight feel',
+      'Waffle texture must be visible in close-ups',
+    ],
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -203,6 +275,8 @@ export function GeradorView({ products }: GeradorViewProps) {
   const [copiedShot, setCopiedShot] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showJsonSpec, setShowJsonSpec] = useState(false);
+  const [expandedShot, setExpandedShot] = useState<ShotType | null>(null);
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === selectedProductId) || null,
@@ -245,14 +319,27 @@ export function GeradorView({ products }: GeradorViewProps) {
     }
   }, []);
 
-  const handleCopyAll = useCallback(() => {
+  const handleCopySpec = useCallback(() => {
     if (!selectedProduct) return;
-    const allPrompts = SHOTS.map(
-      (s, i) =>
-        `=== SHOT ${i + 1}: ${s.label} ===\n${s.tip}\n\n${generatePrompt(s.key, colorEN, selectedProduct.details)}`
-    ).join('\n\n' + '═'.repeat(60) + '\n\n');
-    handleCopy(allPrompts, 'all');
+    const spec = buildAntigravitySpec(selectedProduct, colorEN);
+    handleCopy(JSON.stringify(spec, null, 2), 'json-spec');
   }, [selectedProduct, colorEN, handleCopy]);
+
+  const handleCopyPrompt = useCallback((shotKey: ShotType) => {
+    if (!selectedProduct) return;
+    const prompt = generatePrompt(shotKey, colorEN, selectedProduct.details);
+    handleCopy(prompt, shotKey);
+  }, [selectedProduct, colorEN, handleCopy]);
+
+  const handleDownloadImage = useCallback((imageUrl: string, filename: string) => {
+    const a = document.createElement('a');
+    a.href = imageUrl;
+    a.download = filename;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -386,7 +473,7 @@ export function GeradorView({ products }: GeradorViewProps) {
             <Sparkles size={14} className="text-zinc-400" />
             <div>
               <p className="text-[9px] font-black tracking-[0.2em] uppercase text-zinc-400">
-                Tradução para o prompt
+                Tradução para o Engine
               </p>
               <p className="text-sm font-bold mt-0.5">
                 <span className="text-zinc-400">{selectedProduct.color || '—'}</span>
@@ -398,51 +485,98 @@ export function GeradorView({ products }: GeradorViewProps) {
         )}
       </section>
 
-      {/* ─── Generated Prompts ─── */}
+      {/* ─── Lookbook Studio ─── */}
       {selectedProduct && (
         <>
-          {/* Copy All Button */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleCopyAll}
-              className={cn(
-                'flex items-center gap-2 px-6 py-3 text-[10px] font-black tracking-[0.2em] uppercase transition-all',
-                copiedShot === 'all'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-black text-white hover:bg-zinc-800'
-              )}
-            >
-              {copiedShot === 'all' ? (
-                <>
-                  <Check size={14} /> Todos copiados!
-                </>
-              ) : (
-                <>
-                  <Copy size={14} /> Copiar os 4 prompts
-                </>
-              )}
-            </button>
+          {/* Action Bar */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Status Badge */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200/50">
+                <AlertCircle size={14} className="text-amber-600" />
+                <span className="text-[10px] font-black tracking-[0.15em] uppercase text-amber-700">
+                  Lookbook pendente — Gerar imagens via Antigravity
+                </span>
+              </div>
+            </div>
+
+            {/* JSON Spec Toggle + Copy */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowJsonSpec(!showJsonSpec)}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2.5 text-[10px] font-black tracking-[0.15em] uppercase transition-all border',
+                  showJsonSpec
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-zinc-600 border-black/10 hover:border-black/30'
+                )}
+              >
+                <Code2 size={14} />
+                {showJsonSpec ? 'Ocultar JSON' : 'Ver JSON Engine Spec'}
+              </button>
+              <button
+                onClick={handleCopySpec}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2.5 text-[10px] font-black tracking-[0.15em] uppercase transition-all',
+                  copiedShot === 'json-spec'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-black text-white hover:bg-zinc-800'
+                )}
+              >
+                {copiedShot === 'json-spec' ? (
+                  <>
+                    <Check size={14} /> Copiado!
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} /> Copiar Spec
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Shot Cards */}
+          {/* JSON Engine Spec Panel (Collapsible) */}
+          {showJsonSpec && (
+            <section className="border border-black/10 bg-zinc-950 p-6 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2 mb-4">
+                <Code2 size={14} className="text-emerald-400" />
+                <p className="text-[10px] font-black tracking-[0.2em] uppercase text-emerald-400">
+                  Antigravity Engine Control Spec
+                </p>
+              </div>
+              <pre className="text-[11px] leading-relaxed text-zinc-300 font-mono whitespace-pre-wrap break-words max-h-[500px] overflow-y-auto custom-scrollbar">
+                {JSON.stringify(buildAntigravitySpec(selectedProduct, colorEN), null, 2)}
+              </pre>
+            </section>
+          )}
+
+          {/* Shot Cards — Image Preview Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {SHOTS.map((shot, index) => {
-              const prompt = generatePrompt(
+              const lookbookImage = getLookbookImagePath(
+                selectedProduct.id,
                 shot.key,
-                colorEN,
-                selectedProduct.details
+                selectedProduct.imageUrl
               );
+              const hasImage = !!lookbookImage;
+              const isExpanded = expandedShot === shot.key;
               const isCopied = copiedShot === shot.key;
 
               return (
                 <div
                   key={shot.key}
-                  className="border border-black/10 bg-white flex flex-col"
+                  className="border border-black/10 bg-white flex flex-col group"
                 >
                   {/* Card Header */}
                   <div className="flex items-center justify-between p-5 border-b border-black/5">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-black text-white flex items-center justify-center text-[10px] font-black">
+                      <div className={cn(
+                        'w-8 h-8 flex items-center justify-center text-[10px] font-black',
+                        hasImage
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-black text-white'
+                      )}>
                         {index + 1}
                       </div>
                       <div>
@@ -454,54 +588,135 @@ export function GeradorView({ products }: GeradorViewProps) {
                         </p>
                       </div>
                     </div>
-                    <shot.icon size={18} className="text-zinc-300" />
-                  </div>
-
-                  {/* Tip */}
-                  <div className="px-5 py-3 bg-amber-50/50 border-b border-amber-100/50">
-                    <p className="text-[9px] font-black tracking-wider uppercase text-amber-700/70">
-                      💡 {shot.tip}
-                    </p>
-                  </div>
-
-                  {/* Prompt Content */}
-                  <div className="flex-1 p-5">
-                    <pre className="text-[11px] leading-relaxed text-zinc-600 font-mono whitespace-pre-wrap break-words max-h-[280px] overflow-y-auto custom-scrollbar">
-                      {prompt}
-                    </pre>
-                  </div>
-
-                  {/* Copy Button */}
-                  <div className="p-4 border-t border-black/5">
-                    <button
-                      onClick={() => handleCopy(prompt, shot.key)}
-                      className={cn(
-                        'w-full flex items-center justify-center gap-2 py-3 text-[10px] font-black tracking-[0.2em] uppercase transition-all',
-                        isCopied
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-zinc-100 text-zinc-600 hover:bg-black hover:text-white'
-                      )}
-                    >
-                      {isCopied ? (
-                        <>
-                          <Check size={14} /> Copiado!
-                        </>
+                    <div className="flex items-center gap-2">
+                      {hasImage ? (
+                        <CheckCircle2 size={16} className="text-emerald-500" />
                       ) : (
-                        <>
-                          <Copy size={14} /> Copiar prompt
-                        </>
+                        <AlertCircle size={16} className="text-amber-400" />
                       )}
-                    </button>
+                      <shot.icon size={18} className="text-zinc-300" />
+                    </div>
                   </div>
+
+                  {/* Image Preview Area */}
+                  <div className={cn('relative overflow-hidden bg-zinc-100', shot.aspect)}>
+                    {hasImage ? (
+                      <>
+                        <Image
+                          src={lookbookImage}
+                          alt={`${selectedProduct.name} — ${shot.label}`}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        />
+                        {/* Hover overlay with download */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <button
+                            onClick={() => handleDownloadImage(
+                              lookbookImage,
+                              `${selectedProduct.id}_${shot.key}.jpg`
+                            )}
+                            className="flex items-center gap-2 px-6 py-3 bg-white text-black text-[10px] font-black tracking-[0.2em] uppercase hover:bg-zinc-100 transition-colors"
+                          >
+                            <Download size={14} /> Baixar Imagem
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                        <div className="w-14 h-14 bg-zinc-200/50 flex items-center justify-center mb-4">
+                          <ImageIcon size={24} className="text-zinc-300" />
+                        </div>
+                        <p className="text-[10px] font-black tracking-[0.15em] uppercase text-zinc-400">
+                          Imagem pendente
+                        </p>
+                        <p className="text-[10px] text-zinc-300 mt-1 max-w-[240px]">
+                          Gere via Antigravity Engine e salve em:
+                        </p>
+                        <code className="text-[9px] font-mono text-zinc-400 mt-2 bg-zinc-200/30 px-3 py-1.5">
+                          /lookbook/{selectedProduct.id}/{shot.key}.jpg
+                        </code>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Prompt Toggle & Actions */}
+                  <div className="border-t border-black/5">
+                    {/* Expand/collapse prompt */}
+                    <button
+                      onClick={() => setExpandedShot(isExpanded ? null : shot.key)}
+                      className="w-full flex items-center justify-between p-4 text-left hover:bg-zinc-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        {isExpanded ? (
+                          <EyeOff size={14} className="text-zinc-400" />
+                        ) : (
+                          <Eye size={14} className="text-zinc-400" />
+                        )}
+                        <span className="text-[10px] font-black tracking-[0.15em] uppercase text-zinc-500">
+                          {isExpanded ? 'Ocultar prompt' : 'Ver prompt de geração'}
+                        </span>
+                      </div>
+                      <ChevronRight
+                        size={14}
+                        className={cn(
+                          'text-zinc-300 transition-transform',
+                          isExpanded && 'rotate-90'
+                        )}
+                      />
+                    </button>
+
+                    {/* Expanded prompt area */}
+                    {isExpanded && (
+                      <div className="px-5 pb-5 space-y-3 animate-in slide-in-from-top-1 duration-200">
+                        <pre className="text-[11px] leading-relaxed text-zinc-600 font-mono whitespace-pre-wrap break-words max-h-[220px] overflow-y-auto custom-scrollbar p-4 bg-zinc-50 border border-black/5">
+                          {generatePrompt(shot.key, colorEN, selectedProduct.details)}
+                        </pre>
+                        <button
+                          onClick={() => handleCopyPrompt(shot.key)}
+                          className={cn(
+                            'w-full flex items-center justify-center gap-2 py-3 text-[10px] font-black tracking-[0.2em] uppercase transition-all',
+                            isCopied
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-zinc-100 text-zinc-600 hover:bg-black hover:text-white'
+                          )}
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check size={14} /> Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={14} /> Copiar prompt
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom action bar */}
+                  {hasImage && (
+                    <div className="p-4 border-t border-black/5">
+                      <button
+                        onClick={() => handleDownloadImage(
+                          lookbookImage,
+                          `${selectedProduct.id}_${shot.key}.jpg`
+                        )}
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-black text-white text-[10px] font-black tracking-[0.2em] uppercase hover:bg-zinc-800 transition-all"
+                      >
+                        <Download size={14} /> Baixar Imagem
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* Instructions footer */}
+          {/* Workflow Guide */}
           <section className="border border-black/10 bg-white p-6 md:p-8 space-y-4">
             <h3 className="text-[10px] font-black tracking-[0.25em] uppercase">
-              Como Usar
+              Fluxo Antigravity
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {[
@@ -512,18 +727,18 @@ export function GeradorView({ products }: GeradorViewProps) {
                 },
                 {
                   step: '02',
-                  title: 'Copie',
-                  desc: 'Clique em "Copiar Prompt" no shot desejado',
+                  title: 'Copie o Prompt',
+                  desc: 'Expanda o shot e copie o prompt de geração',
                 },
                 {
                   step: '03',
-                  title: 'Cole na IA',
-                  desc: 'Anexe sua foto de referência + cole o prompt',
+                  title: 'Gere na IA',
+                  desc: 'Cole o prompt + sua foto de referência na IA',
                 },
                 {
                   step: '04',
-                  title: 'Publique',
-                  desc: 'Baixe a imagem e suba no catálogo',
+                  title: 'Salve no Lookbook',
+                  desc: 'Salve em /lookbook/{id}/{shot}.jpg para exibição automática',
                 },
               ].map((s) => (
                 <div key={s.step} className="flex gap-3">
@@ -547,14 +762,14 @@ export function GeradorView({ products }: GeradorViewProps) {
       {!selectedProduct && (
         <div className="border border-dashed border-black/10 bg-white p-16 flex flex-col items-center justify-center text-center space-y-4">
           <div className="w-16 h-16 bg-zinc-100 flex items-center justify-center">
-            <Camera size={28} strokeWidth={1} className="text-zinc-300" />
+            <Package size={28} strokeWidth={1} className="text-zinc-300" />
           </div>
           <div>
             <p className="text-sm font-black tracking-tight">
               Nenhum produto selecionado
             </p>
             <p className="text-[11px] text-zinc-400 mt-1">
-              Selecione um produto acima para gerar os 4 prompts de fotografia.
+              Selecione um produto acima para abrir o Estúdio Lookbook.
             </p>
           </div>
         </div>
