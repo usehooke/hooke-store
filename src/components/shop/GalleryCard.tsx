@@ -40,6 +40,21 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
   const imageProps = prepareImage(product.imageUrl || "");
   const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
+  const secondaryImageSrc = (() => {
+    const src = product.imageUrl || "";
+    if (src.includes("-1.jpg")) return src.replace("-1.jpg", "-2.jpg");
+    if (src.includes("_01.png")) return src.replace("_01.png", "_02.png");
+    if (src.includes("_01.jpg")) return src.replace("_01.jpg", "_02.jpg");
+    if (src.includes("_01.avif")) return src.replace("_01.avif", "_02.avif");
+    if (src.includes("HK_ELITE_WAFER_OW.png")) return "/produtos/HK_ELITE_WAFER_OW_V2.png";
+    if (src.includes("HK_ELITE_HEAVY_BLACK.png")) return "/produtos/HK_ELITE_HEAVY_BLACK_V2.png";
+    if (src.includes("hk_prod_vi_fusca_areia_01.png")) return "/produtos/HK_PROD_VI_FUSCA_EDITORIAL_01.png";
+    return null;
+  })();
+
+  const secondaryProps = secondaryImageSrc ? prepareImage(secondaryImageSrc) : null;
+  const weightBadge = product.name.toLowerCase().includes("wafer") ? "280g/m²" : "260g/m²";
+
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!selectedSize) {
@@ -52,33 +67,73 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
   };
 
   return (
-    <Card variant="product" className="flex flex-col h-full gap-3 p-2">
-      {/* Foto (Direta, sem zoom) */}
-      <Link href={`/produto/${product.slug || product.id}`} className="block relative w-full aspect-[2/3] bg-zinc-100">
+    <Card variant="product" className="flex flex-col h-full gap-3 p-2 bg-white">
+      {/* Foto (Com Hover Reveal e Badge de Peso) */}
+      <Link 
+        href={`/produto/${product.slug || product.id}`} 
+        className="block relative w-full aspect-[2/3] bg-[#FAF9F7] overflow-hidden group border border-black/5"
+      >
+        {/* Badge Têxtil Discreta */}
+        <span className="absolute top-2 left-2 text-[8px] font-mono tracking-widest uppercase bg-black text-white px-2 py-0.5 z-10">
+          {weightBadge}
+        </span>
+
         {imageProps.src ? (
-          imageProps.deliveryType === 'local' ? (
-            <Image
-              src={imageProps.src}
-              alt={product.name}
-              fill
-              className="object-cover object-top"
-              priority={priority}
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-            />
-          ) : (
-            <CldImage
-              src={imageProps.src}
-              alt={product.name}
-              fill
-              className="object-cover object-top"
-              priority={priority}
-              loading={priority ? undefined : "lazy"}
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
-              deliveryType={imageProps.deliveryType as any}
-              format="avif"
-              quality="auto"
-            />
-          )
+          <div className="w-full h-full relative">
+            {/* Imagem Principal */}
+            {imageProps.deliveryType === 'local' ? (
+              <Image
+                src={imageProps.src}
+                alt={product.name}
+                fill
+                className={`object-cover object-top transition-all duration-700 ${
+                  secondaryProps ? "opacity-100 group-hover:opacity-0" : "group-hover:scale-105"
+                }`}
+                priority={priority}
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+              />
+            ) : (
+              <CldImage
+                src={imageProps.src}
+                alt={product.name}
+                fill
+                className={`object-cover object-top transition-all duration-700 ${
+                  secondaryProps ? "opacity-100 group-hover:opacity-0" : "group-hover:scale-105"
+                }`}
+                priority={priority}
+                loading={priority ? undefined : "lazy"}
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                deliveryType={imageProps.deliveryType as any}
+                format="avif"
+                quality="auto"
+              />
+            )}
+
+            {/* Imagem de Hover (Se disponível) */}
+            {secondaryProps && (
+              secondaryProps.deliveryType === 'local' ? (
+                <Image
+                  src={secondaryProps.src}
+                  alt={`${product.name} Editorial`}
+                  fill
+                  className="absolute inset-0 object-cover object-top opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-103 transition-transform duration-700"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                />
+              ) : (
+                <CldImage
+                  src={secondaryProps.src}
+                  alt={`${product.name} Editorial`}
+                  fill
+                  className="absolute inset-0 object-cover object-top opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-103 transition-transform duration-700"
+                  loading="lazy"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                  deliveryType={secondaryProps.deliveryType as any}
+                  format="avif"
+                  quality="auto"
+                />
+              )
+            )}
+          </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-zinc-400 text-xs font-bold uppercase">Sem Foto</span>

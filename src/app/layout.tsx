@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Jost } from "next/font/google";
+import { Inter, Jost, Cormorant_Garamond } from "next/font/google";
 import "@/app/globals.css"; // Importação absoluta para garantir carregamento
 
 // Importações para Análise de Dados e Performance
@@ -27,6 +27,14 @@ const jost = Jost({
   subsets: ["latin"],
   variable: "--font-jost",
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -98,7 +106,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${jost.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${jost.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://res.cloudinary.com" />
         

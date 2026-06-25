@@ -7,7 +7,7 @@ import { Product } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X, CreditCard, Truck, RotateCcw, Star, MessageSquare } from 'lucide-react';
+import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X, CreditCard, Truck, RotateCcw, Star, MessageSquare, Sparkles } from 'lucide-react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -264,6 +264,39 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [loadingPreference, setLoadingPreference] = useState(false);
+
+  // Estados do Provador Virtual Inteligente
+  const [height, setHeight] = useState(175);
+  const [weight, setWeight] = useState(80);
+  const [showAiAdvisor, setShowAiAdvisor] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState<string | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  useEffect(() => {
+    if (!showAiAdvisor) return;
+    setIsCalculating(true);
+    const timer = setTimeout(() => {
+      let recommended = "G";
+      let note = "";
+      if (weight >= 90) {
+        recommended = "GG";
+        note = "Proporciona a folga de 6cm ideal para a silhueta boxy de 260g sem marcar.";
+      } else if (weight >= 78) {
+        recommended = "G";
+        note = "Caimento boxy estruturado com excelente alinhamento nos ombros.";
+      } else if (weight >= 68) {
+        recommended = "M";
+        note = "Visual oversized na medida certa, sem sobras nas mangas.";
+      } else {
+        recommended = "P";
+        note = "Ajuste ideal para o perfil mais magro, preservando a gola de 3cm.";
+      }
+      setAiRecommendation(`Recomendamos o tamanho ${recommended}. ${note}`);
+      setIsCalculating(false);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [height, weight, showAiAdvisor]);
 
   // Estados de Reviews (UGC)
   const [reviewsList, setReviewsList] = useState<Review[]>([]);
@@ -703,6 +736,72 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
             <p className="text-[10px] text-zinc-500 mt-2 font-medium">
               Fernando (1,82m, 82kg) veste <span className="font-black text-black underline">M</span>.
             </p>
+
+            {/* Provador Virtual de Luxo */}
+            <div className="mt-4 border border-black/10 bg-white p-4">
+              <button
+                type="button"
+                onClick={() => setShowAiAdvisor(p => !p)}
+                className="w-full flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-black font-bold focus:outline-none"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Sparkles size={11} className="text-[#8C6B4F]" />
+                  Provador Inteligente (IA)
+                </span>
+                <span className="text-[9px] text-[#8C6B4F] underline">
+                  {showAiAdvisor ? "[ Ocultar ]" : "[ Calcular Tamanho ]"}
+                </span>
+              </button>
+
+              {showAiAdvisor && (
+                <div className="mt-4 space-y-4 pt-3 border-t border-black/5">
+                  {/* Altura */}
+                  <div>
+                    <div className="flex justify-between text-[10px] font-mono text-zinc-500 uppercase mb-1">
+                      <span>Altura</span>
+                      <span className="font-bold text-black">{height} cm</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="160" 
+                      max="200" 
+                      value={height} 
+                      onChange={(e) => setHeight(Number(e.target.value))}
+                      className="w-full accent-black h-1 bg-[#FAF9F7] appearance-none outline-none border border-black/5"
+                    />
+                  </div>
+
+                  {/* Peso */}
+                  <div>
+                    <div className="flex justify-between text-[10px] font-mono text-zinc-500 uppercase mb-1">
+                      <span>Peso</span>
+                      <span className="font-bold text-black">{weight} kg</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="60" 
+                      max="120" 
+                      value={weight} 
+                      onChange={(e) => setWeight(Number(e.target.value))}
+                      className="w-full accent-black h-1 bg-[#FAF9F7] appearance-none outline-none border border-black/5"
+                    />
+                  </div>
+
+                  {/* Recomendação de IA */}
+                  <div className="bg-[#FAF9F7] p-3 border border-black/5 min-h-[50px] flex items-center justify-center">
+                    {isCalculating ? (
+                      <span className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest animate-pulse">
+                        Calculando caimento têxtil...
+                      </span>
+                    ) : (
+                      <p className="text-[9px] font-mono text-zinc-700 leading-relaxed uppercase">
+                        {aiRecommendation}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Modal de Medidas (Mobile/Desktop compartilhado abaixo) */}
           </div>

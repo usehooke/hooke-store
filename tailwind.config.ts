@@ -17,6 +17,7 @@ const config: Config = {
                 sans: ["var(--font-inter)", "sans-serif"],    
                 heading: ["var(--font-jost)", "sans-serif"], 
                 jost: ["var(--font-jost)", "sans-serif"],
+                serif: ["var(--font-serif)", "serif"],
             },
             // 2. Cores: Hooke 900 agora é PRETO PURO (#000)
             colors: {
