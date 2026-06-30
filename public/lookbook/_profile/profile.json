@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "name": "Hooke Atelier — Lookbook Visual Profile",
+  "description": "Perfil visual fixo para garantir consistência em todas as fotos geradas por IA do catálogo Hooke.",
+
+  "model": {
+    "name": "Fernando — Fundador Hooke",
+    "anchor": "The same man from the reference photo. Brazilian man, early 30s, broad stocky athletic build, fair skin, very short buzzed dark hair, well-groomed short dark beard, blue-green eyes, strong jaw, confident serious expression with subtle intensity.",
+    "accessories": [
+      "thin black cord necklace with a small gold Hamsa pendant",
+      "black digital watch on left wrist"
+    ],
+    "expression": "confident serious with subtle intensity",
+    "skinTone": "fair",
+    "hairStyle": "very short buzzed dark hair",
+    "facialHair": "well-groomed short dark beard"
+  },
+
+  "photography": {
+    "studio": {
+      "background": "soft gray concrete wall",
+      "lighting": "soft diffused natural lighting from the left",
+      "lens": "85mm",
+      "aperture": "f/2.8",
+      "colorGrading": "neutral warm, minimal post-processing, clean whites",
+      "resolution": "4K"
+    },
+    "editorial": {
+      "setting": "urban industrial, raw concrete walls",
+      "lighting": "warm golden hour sunlight, dramatic side lighting",
+      "lens": "85mm",
+      "aperture": "f/1.8",
+      "colorGrading": "warm cinematic, shallow depth of field with blurred background",
+      "mood": "premium urban masculinity"
+    },
+    "detail": {
+      "style": "macro photography",
+      "lighting": "soft studio lighting from the left, subtle fabric shadows",
+      "lens": "100mm macro",
+      "aperture": "f/2.8",
+      "focus": "very shallow depth of field, fabric/print in sharp focus"
+    }
+  },
+
+  "wardrobe": {
+    "bottomWear": "dark washed baggy jeans",
+    "footwear": "white sneakers (Nike Air Force 1 style)",
+    "watch": "black digital watch on left wrist"
+  },
+
+  "shots": {
+    "hero": {
+      "framing": "Full body shot from head to shoes",
+      "pose": "Standing in a relaxed confident pose, one hand in pocket, facing the camera",
+      "setting": "studio"
+    },
+    "meioCorpo": {
+      "framing": "Medium shot framing from waist to top of head",
+      "pose": "Arms relaxed at sides, pendant visible on chest",
+      "setting": "studio"
+    },
+    "editorial": {
+      "framing": "Full body or 3/4 shot",
+      "pose": "Walking naturally, looking slightly to the side, candid editorial pose",
+      "setting": "editorial"
+    },
+    "detalhe": {
+      "framing": "Extreme close-up of neckline, chest, and upper body area",
+      "focus": "Fabric texture, collar construction, print details (if vintage), pendant",
+      "setting": "detail"
+    }
+  },
+
+  "productLines": {
+    "elite": {
+      "description": "Linha lisa, sem estampa. Foco na textura waffle heavyweight 260g.",
+      "graphicRule": "No logos, no text, no graphics on the shirt.",
+      "categories": ["Oversized", "Regatas"]
+    },
+    "vintage": {
+      "description": "Linha estampada com silk screen automotivo retrô.",
+      "graphicRule": "MUST display the screen-printed graphic. Reproduce exactly from reference.",
+      "categories": ["Vintage"],
+      "designs": {
+        "fusca": "VW Beetle front view, bold line-art, 'HOOKE' on license plate",
+        "kombi": "VW Kombi front view, minimalist line-art, VW emblem, 'HOOKE' below",
+        "maverick": "Ford Maverick rear view, bold silhouette, 'HOOKE' on license plate"
+      }
+    }
+  },
+
+  "references": {
+    "founderPhoto": "_profile/reference-founder.png",
+    "founderCafe": "_profile/reference-founder-cafe.png"
+  }
+}

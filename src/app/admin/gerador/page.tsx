@@ -2,11 +2,47 @@ import { getAdminProducts } from '@/features/admin/services/adminProductService'
 import { GeradorView } from './GeradorView';
 import { Metadata } from 'next';
 import { connection } from "next/server";
+import fs from 'fs';
+import path from 'path';
 
 export const metadata: Metadata = {
   title: 'Estúdio Lookbook | Hooke Command Center',
   description: 'Estúdio visual pré-computado de lookbook com controle Antigravity Engine',
 };
+
+function getExistingLookbookImages(productId: string): Record<string, string | null> {
+  const lookbookDir = path.join(process.cwd(), 'public', 'lookbook', productId);
+  const result: Record<string, string | null> = {
+    hero: null,
+    meioCorpo: null,
+    editorial: null,
+    detalhe: null,
+  };
+
+  try {
+    if (fs.existsSync(lookbookDir)) {
+      const files = fs.readdirSync(lookbookDir);
+      const shotKeys = ['hero', 'meioCorpo', 'editorial', 'detalhe'];
+      const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
+
+      for (const shot of shotKeys) {
+        // Find if a file starting with shot name and having one of the extensions exists
+        const matchedFile = files.find(file => {
+          const lower = file.toLowerCase();
+          return extensions.some(ext => lower === `${shot.toLowerCase()}${ext}`);
+        });
+
+        if (matchedFile) {
+          result[shot] = `/lookbook/${productId}/${matchedFile}`;
+        }
+      }
+    }
+  } catch (err) {
+    console.error(`❌ [GeradorPage] Erro ao escanear lookbook de ${productId}:`, err);
+  }
+
+  return result;
+}
 
 export default async function GeradorPage() {
   await connection();
@@ -24,19 +60,23 @@ export default async function GeradorPage() {
   // Mapeia apenas os campos necessários para o gerador (leve para o client)
   const productOptions = products
     .filter((p) => p.isActive !== false)
-    .map((p) => ({
-      id: p.id || '',
-      name: p.name,
-      color: (p as any).color || '',
-      category: p.category || '',
-      imageUrl: p.imageUrl || (p.images?.[0] ?? ''),
-      details: {
-        fabric: (p as any).details?.fabric || '',
-        grammage: (p as any).details?.grammage || '',
-        collar: (p as any).details?.collar || '',
-        model: (p as any).details?.model || '',
-      },
-    }));
+    .map((p) => {
+      const productId = p.id || '';
+      return {
+        id: productId,
+        name: p.name,
+        color: (p as any).color || '',
+        category: p.category || '',
+        imageUrl: p.imageUrl || (p.images?.[0] ?? ''),
+        details: {
+          fabric: (p as any).details?.fabric || '',
+          grammage: (p as any).details?.grammage || '',
+          collar: (p as any).details?.collar || '',
+          model: (p as any).details?.model || '',
+        },
+        lookbookImages: getExistingLookbookImages(productId),
+      };
+    });
 
   return (
     <div className="min-h-screen bg-zinc-50 p-4 md:p-10 font-sans">

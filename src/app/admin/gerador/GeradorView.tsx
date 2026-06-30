@@ -41,6 +41,7 @@ interface ProductOption {
     collar: string;
     model: string;
   };
+  lookbookImages?: Record<ShotType, string | null>;
 }
 
 interface GeradorViewProps {
@@ -280,22 +281,6 @@ const SHOTS: {
     aspect: 'aspect-square',
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Lookbook image path resolver
-// Checks /lookbook/{productId}/{shotKey}.jpg (convention)
-// Falls back to product imageUrl for hero, placeholder for others
-// ---------------------------------------------------------------------------
-
-function getLookbookImagePath(productId: string, shotKey: ShotType, fallbackUrl: string): string | null {
-  // Convention: /lookbook/{productId}/{shotKey}.jpg
-  // If the file doesn't exist, we return null to trigger the placeholder
-  const conventionPath = `/lookbook/${productId}/${shotKey}.jpg`;
-  // We can't check file existence client-side reliably, so we use a convention-based approach
-  // For hero shots, fall back to the product's main image
-  if (shotKey === 'hero') return fallbackUrl || null;
-  return null;
-}
 
 // ---------------------------------------------------------------------------
 // JSON Control Spec Builder
@@ -673,12 +658,10 @@ export function GeradorView({ products }: GeradorViewProps) {
           {/* Shot Cards — Image Preview Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {SHOTS.map((shot, index) => {
-              const lookbookImage = getLookbookImagePath(
-                selectedProduct.id,
-                shot.key,
-                selectedProduct.imageUrl
-              );
-              const hasImage = !!lookbookImage;
+              const realLookbookImage = selectedProduct.lookbookImages?.[shot.key] || null;
+              const hasImage = !!realLookbookImage;
+              const displayImage = realLookbookImage || (shot.key === 'hero' ? selectedProduct.imageUrl : null);
+              
               const isExpanded = expandedShot === shot.key;
               const isCopied = copiedShot === shot.key;
 
@@ -719,27 +702,39 @@ export function GeradorView({ products }: GeradorViewProps) {
 
                   {/* Image Preview Area */}
                   <div className={cn('relative overflow-hidden bg-zinc-100', shot.aspect)}>
-                    {hasImage ? (
-                      <>
+                    {displayImage ? (
+                      <div className="relative w-full h-full">
                         <Image
-                          src={lookbookImage}
+                          src={displayImage}
                           alt={`${selectedProduct.name} — ${shot.label}`}
                           fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                          className={cn(
+                            "object-cover transition-transform duration-500 group-hover:scale-[1.02]",
+                            !hasImage && "opacity-50 grayscale"
+                          )}
                         />
-                        {/* Hover overlay with download */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                          <button
-                            onClick={() => handleDownloadImage(
-                              lookbookImage,
-                              `${selectedProduct.id}_${shot.key}.jpg`
-                            )}
-                            className="flex items-center gap-2 px-6 py-3 bg-white text-black text-[10px] font-black tracking-[0.2em] uppercase hover:bg-zinc-100 transition-colors"
-                          >
-                            <Download size={14} /> Baixar Imagem
-                          </button>
-                        </div>
-                      </>
+                        
+                        {!hasImage && (
+                          <div className="absolute top-3 left-3 bg-amber-500 text-white text-[8px] font-black tracking-widest uppercase px-2.5 py-1">
+                            Rascunho Catálogo
+                          </div>
+                        )}
+
+                        {/* Hover overlay with download - only active when real image is present */}
+                        {hasImage && (
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <button
+                              onClick={() => handleDownloadImage(
+                                displayImage,
+                                `${selectedProduct.id}_${shot.key}.jpg`
+                              )}
+                              className="flex items-center gap-2 px-6 py-3 bg-white text-black text-[10px] font-black tracking-[0.2em] uppercase hover:bg-zinc-100 transition-colors"
+                            >
+                              <Download size={14} /> Baixar Imagem
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
                         <div className="w-14 h-14 bg-zinc-200/50 flex items-center justify-center mb-4">
@@ -818,7 +813,7 @@ export function GeradorView({ products }: GeradorViewProps) {
                     <div className="p-4 border-t border-black/5">
                       <button
                         onClick={() => handleDownloadImage(
-                          lookbookImage,
+                          displayImage!,
                           `${selectedProduct.id}_${shot.key}.jpg`
                         )}
                         className="w-full flex items-center justify-center gap-2 py-3 bg-black text-white text-[10px] font-black tracking-[0.2em] uppercase hover:bg-zinc-800 transition-all"
