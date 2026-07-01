@@ -16,7 +16,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function EditarProdutoPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params?.id as string;
+  
+  // Blindagem contra o bug de useParams do Next.js na Vercel que retorna o placeholder dinâmico '[id]' ou '%5Bid%5D'
+  let id = params?.id as string;
+  if (id === '[id]' || id === '%5Bid%5D') {
+    if (typeof window !== 'undefined') {
+      const parts = window.location.pathname.split('/');
+      const lastPart = parts[parts.length - 1];
+      if (lastPart && lastPart !== '[id]' && lastPart !== '%5Bid%5D') {
+        id = decodeURIComponent(lastPart);
+      }
+    }
+  }
+
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [isMagicMode, setIsMagicMode] = useState(false);
@@ -24,6 +36,10 @@ export default function EditarProdutoPage() {
 
   useEffect(() => {
     async function loadProduct() {
+      // Cláusula de guarda para evitar chamadas de API com placeholders antes do ID real estar resolvido
+      if (!id || id === '[id]' || id === '%5Bid%5D') {
+        return;
+      }
       try {
         if (!db) throw new Error("Firebase não inicializado");
         const docRef = doc(db, 'produtos', id);
@@ -50,7 +66,7 @@ export default function EditarProdutoPage() {
       }
     }
 
-    if (id) loadProduct();
+    loadProduct();
   }, [id, router]);
 
   const handleSubmit = async (data: any) => {
