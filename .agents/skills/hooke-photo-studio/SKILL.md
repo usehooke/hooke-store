@@ -54,6 +54,7 @@ When generating a Vintage (Graphic) T-shirt:
 1. Always incorporate the exact print description (e.g., "vintage-style screen-printed illustration of a classic Volkswagen Beetle...").
 2. Explicitly tell the AI to "display the screen-printed graphic on the chest".
 3. Provide the flat-lay product image as an ImagePath reference to the `generate_image` tool so the AI can accurately reproduce the print.
+4. **CRITICAL SCALE RULE**: The graphic must ALWAYS be scaled to occupy **exactly 50% (half) of the t-shirt's total width** across the chest. Do NOT allow the graphic to be larger than 50%. This is the golden standard to mimic real-world proportions.
 
 ## 5. File Output Strategy
 All generated final campaign photos MUST be saved directly to the site's public folder for immediate use:
