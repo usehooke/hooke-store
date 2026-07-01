@@ -1028,7 +1028,7 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
             {/* Título + Preço */}
             <div className="border-b-2 border-black pb-5">
               <span className="text-[9px] font-black tracking-[0.3em] uppercase text-zinc-400">{product?.category || ''}</span>
-              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none mt-2">{product?.name || 'Produto'}</h1>
+              <h2 className="text-3xl font-black tracking-tighter uppercase leading-none mt-2">{product?.name || 'Produto'}</h2>
               <div className="mt-4 space-y-1">
                 {/* Opção PIX (Destaque Principal) */}
                 <div className="flex items-center gap-2">

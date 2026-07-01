@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   if (!product) return { title: 'Produto não encontrado' };
 
   // Prioriza a imagem principal, mas garante fallback estético
-  const previewImage = product.imageUrl || '/banner-home.jpg';
+  const previewImage = product.imageUrl || '/pdv-icon.png';
 
   return {
     title: product?.name ? `${product.name} | Hooke Elite` : 'Produto Exclusivo | Hooke Elite',
@@ -74,6 +74,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const productUrl = `https://www.usehooke.com.br/produto/${slug}`;
   const isAvailable = (product.totalStock ?? 1) > 0;
   
+  // Computa validade do preço dinamicamente (final do ano subsequente) para evitar dados estruturados expirados no Google
+  const currentYear = new Date().getFullYear();
+  const dynamicPriceValidUntil = `${currentYear + 1}-12-31`;
+
   // Base do produto
   const jsonLd: any = {
     "@context": "https://schema.org",
@@ -109,7 +113,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         sku: `${product?.id || 'ID'}-${size}`,
         priceCurrency: "BRL",
         price: (product?.price || 0).toFixed(2),
-        priceValidUntil: "2027-06-15",
+        priceValidUntil: dynamicPriceValidUntil,
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
         itemCondition: "https://schema.org/NewCondition",
@@ -153,7 +157,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         "@type": "Offer",
         priceCurrency: "BRL",
         price: (product?.price || 0).toFixed(2),
-        priceValidUntil: "2027-06-15",
+        priceValidUntil: dynamicPriceValidUntil,
         availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         url: productUrl,
         itemCondition: "https://schema.org/NewCondition"
