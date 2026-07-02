@@ -46,7 +46,7 @@ export default function EditarProdutoPage() {
         const docSnap = await getDoc(docRef);
         
         if (!docSnap.exists()) {
-          toast.error('Equipamento não encontrado.');
+          toast.error(`Equipamento não encontrado (${id}).`);
           router.push('/admin/produtos');
           return;
         }
