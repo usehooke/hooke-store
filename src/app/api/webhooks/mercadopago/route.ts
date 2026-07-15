@@ -155,6 +155,39 @@ export async function POST(req: Request) {
                     updateFields["customer.document"] = docNum;
                 }
 
+                // Extração resiliente de dados do comprador (Failsafe para 'Cliente Hooke')
+                const mpPayer = paymentData.payer;
+                if (mpPayer) {
+                    if (currentData?.customer?.name === 'Cliente Hooke' || !currentData?.customer?.name) {
+                        const firstName = mpPayer.first_name || '';
+                        const lastName = mpPayer.last_name || '';
+                        const fullName = `${firstName} ${lastName}`.trim();
+                        if (fullName) {
+                            updateFields["customer.name"] = fullName;
+                        }
+                    }
+                    if (!currentData?.customer?.email && mpPayer.email) {
+                        updateFields["customer.email"] = mpPayer.email;
+                    }
+                    if (!currentData?.customer?.phone && mpPayer.phone?.number) {
+                        updateFields["customer.phone"] = `${mpPayer.phone.area_code || ''}${mpPayer.phone.number}`;
+                    }
+                }
+                
+                // Extração resiliente de endereço de entrega
+                const mpAddress = paymentData.additional_info?.shipments?.receiver_address;
+                if (mpAddress && !currentData?.customer?.address?.street_name) {
+                    updateFields["customer.address"] = {
+                        zip_code: mpAddress.zip_code || '',
+                        street_name: mpAddress.street_name || '',
+                        street_number: mpAddress.street_number || '',
+                        neighborhood: mpAddress.neighborhood || '',
+                        city: mpAddress.city_name || '',
+                        state: mpAddress.state_name || '',
+                    };
+                    updateFields["shippingZipcode"] = mpAddress.zip_code || '';
+                }
+
                 transaction.update(orderRef, updateFields);
             });
 

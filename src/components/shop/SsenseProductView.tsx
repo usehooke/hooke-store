@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
 import { Check, ArrowRight, Zap, ChevronDown, ChevronLeft, ChevronRight, Ruler, X, CreditCard, Truck, RotateCcw, Star, MessageSquare, Sparkles } from 'lucide-react';
-import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { getApprovedReviews, addReview } from '@/lib/reviewsService';
@@ -17,14 +17,7 @@ import { Review } from '@/types';
 
 const DynamicSizeGuide = dynamic(() => import('./DynamicSizeGuide'), { ssr: false });
 
-// Lazy: inicializa MP SDK apenas uma vez quando necessário
-let mpInitialized = false;
-function ensureMercadoPago() {
-  if (!mpInitialized) {
-    initMercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY || 'TEST-mock-key', { locale: 'pt-BR' });
-    mpInitialized = true;
-  }
-}
+
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://usehooke.com.br';
 
@@ -261,9 +254,8 @@ const VariantColorsSelector = (props: VariantColorsSelectorProps) => {
 };
 
 const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps) => {
+  const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [preferenceId, setPreferenceId] = useState<string | null>(null);
-  const [loadingPreference, setLoadingPreference] = useState(false);
 
   // Estados do Provador Virtual Inteligente
   const [height, setHeight] = useState(175);
@@ -382,64 +374,7 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
     }
   };
 
-  useEffect(() => {
-    if (!selectedSize) {
-      setPreferenceId(null);
-      return;
-    }
 
-    let isCurrent = true;
-    const fetchPreference = async () => {
-      setLoadingPreference(true);
-      setPreferenceId(null);
-      try {
-        const response = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            items: [
-              {
-                cartItemId: `quick-${product.id}-${selectedSize}`,
-                id: product.id,
-                title: product.name,
-                unit_price: product.price,
-                quantity: 1,
-                size: selectedSize,
-                color: product.color || '',
-                imageUrl: product.imageUrl || '',
-              }
-            ],
-            customer: {
-              name: 'Cliente Hooke',
-            }
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao gerar preferenceId');
-        }
-
-        const data = await response.json();
-        if (isCurrent) {
-          setPreferenceId(data.id);
-        }
-      } catch (err) {
-        console.error('Erro ao buscar preferenceId:', err);
-      } finally {
-        if (isCurrent) {
-          setLoadingPreference(false);
-        }
-      }
-    };
-
-    fetchPreference();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [selectedSize, product.id, product.name, product.price, product.color, product.imageUrl]);
 
   const [isAdding, setIsAdding] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -472,7 +407,7 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
     }
   };
 
-  useEffect(() => { ensureMercadoPago(); trackEcommerceEvent('view_item'); }, []);
+  useEffect(() => { trackEcommerceEvent('view_item'); }, []);
 
   // Sticky Buy Button ao scrollar
   useEffect(() => {
@@ -818,24 +753,12 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
             <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[76px] flex flex-col justify-center transition-all">
               <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
               {selectedSize ? (
-                loadingPreference ? (
-                  <div className="w-full h-11 bg-zinc-50 border border-zinc-200 flex items-center justify-center gap-2">
-                    <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent animate-spin rounded-full" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-black">GERANDO LINK SEGURO...</span>
-                  </div>
-                ) : preferenceId ? (
-                  <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-11 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
-                    <Wallet
-                      key={preferenceId}
-                      initialization={{ preferenceId: preferenceId }}
-                      customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-11 bg-red-50 border border-red-200 flex items-center justify-center">
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-red-500">Erro ao gerar link de pagamento</span>
-                  </div>
-                )
+                <button 
+                  onClick={() => router.push(`/checkout?productId=${product.id}&size=${selectedSize}`)}
+                  className="w-full h-11 bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center hover:bg-zinc-900 transition-colors"
+                >
+                  IR PARA PAGAMENTO
+                </button>
               ) : (
                 <button disabled className="w-full h-11 bg-zinc-100 text-zinc-400 text-[9px] font-black uppercase tracking-[0.2em] border border-zinc-200 flex items-center justify-center gap-2 cursor-not-allowed">
                   <Zap size={11} /> Selecione o Tamanho
@@ -1103,24 +1026,12 @@ const SsenseProductView = ({ product, variantsPromise }: SsenseProductViewProps)
               <div className="w-full border border-zinc-200 p-2 bg-zinc-50 min-h-[72px] flex flex-col justify-center transition-all">
                 <p className="text-[8px] text-center font-bold tracking-widest text-zinc-400 mb-1.5 uppercase">Compra Expressa</p>
                 {selectedSize ? (
-                  loadingPreference ? (
-                    <div className="w-full h-10 bg-zinc-50 border border-zinc-200 flex items-center justify-center gap-2">
-                      <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent animate-spin rounded-full" />
-                      <span className="text-[8px] font-black uppercase tracking-[0.2em] text-black">GERANDO LINK SEGURO...</span>
-                    </div>
-                  ) : preferenceId ? (
-                    <div className="[&_.mercadopago-button]:!rounded-none [&_.mercadopago-button]:!bg-white [&_.mercadopago-button]:!text-black [&_.mercadopago-button]:!border [&_.mercadopago-button]:!border-zinc-200 [&_.mercadopago-button]:!font-bold [&_.mercadopago-button]:!tracking-[0.2em] [&_.mercadopago-button]:!h-10 [&_.mercadopago-button]:!shadow-none hover:bg-zinc-100">
-                      <Wallet
-                        key={preferenceId}
-                        initialization={{ preferenceId: preferenceId }}
-                        customization={{ texts: { action: 'pay', valueProp: 'security_details' } } as any}
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-full h-10 bg-red-50 border border-red-200 flex items-center justify-center">
-                      <span className="text-[8px] font-black uppercase tracking-[0.2em] text-red-500">Erro ao gerar link de pagamento</span>
-                    </div>
-                  )
+                  <button 
+                    onClick={() => router.push(`/checkout?productId=${product.id}&size=${selectedSize}`)}
+                    className="w-full h-10 bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center hover:bg-zinc-900 transition-colors"
+                  >
+                    IR PARA PAGAMENTO
+                  </button>
                 ) : (
                   <button disabled className="w-full h-10 bg-zinc-100 text-zinc-400 text-[9px] font-black uppercase tracking-[0.2em] border border-zinc-200 flex items-center justify-center gap-2 cursor-not-allowed">
                     <Zap size={11} /> Selecione o Tamanho
