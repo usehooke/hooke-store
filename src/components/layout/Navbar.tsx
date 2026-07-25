@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cart-store";
 import dynamic from "next/dynamic";
-import { WorldCupMarquee } from "./WorldCupMarquee";
+import { AnnouncementMarquee } from "./AnnouncementMarquee";
 
 const SearchModal = dynamic(() => import("@/components/shop/SearchModal"), { ssr: false });
 
@@ -48,16 +48,6 @@ export default function Navbar() {
     };
   }, [isMobileMenuOpen]);
 
-  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
-
-  useEffect(() => {
-    if (totalItems > 0) {
-      setIsBouncing(true);
-      const timer = setTimeout(() => setIsBouncing(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [totalItems]);
-
   const navLinks = [
     { name: 'Masculino', href: '/masculino' },
     { name: 'Feminino', href: '/feminino' },
@@ -66,7 +56,7 @@ export default function Navbar() {
 
   return (
     <>
-      <WorldCupMarquee />
+      <AnnouncementMarquee />
       <header 
         className={`sticky top-0 z-40 w-full bg-white transition-all duration-300 ${
           isScrolled ? "border-b border-gray-100 shadow-sm" : "border-b border-transparent"
@@ -106,17 +96,13 @@ export default function Navbar() {
 
             {/* 2. CENTRO - LOGO */}
             <div className="flex-1 flex justify-center">
-              <Link href="/" className="group text-center relative z-10 inline-flex items-start cursor-pointer" aria-label="Hooke Store - Torcida Hexa 2026">
+              <Link href="/" className="group text-center relative z-10 inline-flex items-start cursor-pointer" aria-label="Hooke Store - Home">
                 <span className="font-heading text-4xl md:text-[2.75rem] font-bold tracking-[-0.05em] text-hooke-900 lowercase group-hover:tracking-[-0.02em] transition-all duration-500 relative">
                   hooke
                   <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-hooke-900 group-hover:w-full transition-all duration-500" />
                 </span>
-                {/* Trademark Style Flag (Easter Egg Copa) */}
-                <span 
-                  className="text-[10px] md:text-xs ml-0.5 mt-1 md:mt-1.5 opacity-60 group-hover:opacity-100 transition-all duration-300 grayscale-[30%] group-hover:grayscale-0 saturate-150 cursor-default" 
-                  title="Hooke na Torcida pelo Brasil '26"
-                >
-                  🇧🇷
+                <span className="text-[9px] md:text-[10px] ml-1 mt-1 font-mono tracking-widest text-zinc-400 font-bold uppercase">
+                  ®
                 </span>
               </Link>
             </div>

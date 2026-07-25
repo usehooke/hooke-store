@@ -43,7 +43,7 @@ const buttonVariants = cva(
         destructive:
           "bg-red-600 text-white border-0 hover:bg-red-700 active:scale-[0.98]",
         hexa:
-          "bg-[#E1F522] text-black border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
+          "bg-black text-white border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
       },
       size: {
         xs: "h-8 px-4 text-[10px]",
