@@ -25,6 +25,15 @@ export default function Navbar() {
   const [isBouncing, setIsBouncing] = useState(false);
   const openCart = useCartStore((state) => state.openCart);
   const items = useCartStore((state) => state.items);
+  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  useEffect(() => {
+    if (totalItems > 0) {
+      setIsBouncing(true);
+      const timer = setTimeout(() => setIsBouncing(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [totalItems]);
 
   useEffect(() => {
     // ⚡ VERCEL EDGE OPTIMIZATION: Sincronização com IndexedDB
