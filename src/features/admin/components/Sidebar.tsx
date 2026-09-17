@@ -20,7 +20,8 @@ import {
     PackagePlus,
     Store,
     Star,
-    Camera
+    Camera,
+    Activity
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -30,6 +31,7 @@ import { cn } from '@/lib/utils';
 const menuItems = [
     { label: 'Voltar ao Site', href: '/', icon: Store },
     { label: 'PDV Elite', href: '/admin/pdv', icon: Zap },
+    { label: 'Diagnóstico', href: '/admin/diagnostics', icon: Activity },
     { label: 'Catálogo', href: '/admin/produtos', icon: Package },
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },

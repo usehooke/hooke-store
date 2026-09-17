@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 
-export async function GET() {
-  // 🛡️ Trava de segurança: só roda em ambiente de desenvolvimento local
-  if (process.env.NODE_ENV !== "development") {
-    return new NextResponse("Not Found", { status: 404 });
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const isDetailed = searchParams.get("detailed") === "true";
+
+  // Em produção sem detailed, retorna heartbeat rápido e seguro
+  if (process.env.NODE_ENV !== "development" && !isDetailed) {
+    return NextResponse.json({
+      status: "UP",
+      service: "Hooke E-Commerce Core",
+      timestamp: new Date().toISOString(),
+    });
   }
 
   // 1. Teste do Firebase Admin / Firestore
