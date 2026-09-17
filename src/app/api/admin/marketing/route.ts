@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateMarketingIntelligence } from "@/lib/marketing/engine";
 
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   try {
     const report = generateMarketingIntelligence();
