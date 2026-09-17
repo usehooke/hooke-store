@@ -51,8 +51,11 @@ export const metadata: Metadata = {
   },
   description: brandConfig.description,
   keywords: [
-    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino", "algodão egípcio", "oversized premium",
-    "Camiseta Básica Premium", "Algodão Sustentável", "Direto de Fábrica"
+    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino",
+    "oversized premium", "camiseta básica premium", "algodão sustentável",
+    "algodão heavyweight 260g", "soft brutalism moda", "direto de fábrica",
+    "camiseta oversized heavyweight", "t-shirt vintage brasileira",
+    "conjunto viscose nobre", "camiseta algodão 30.1 penteado"
   ],
   verification: {
     google: "F1l-lLTgz0IA50BtjKavSlVt3WTmh3DANMB5gr2bmnk",
@@ -117,16 +120,20 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Hooke Elite",
+              "@id": "https://www.usehooke.com.br/#organization",
+              "name": "Hooke",
               "url": baseUrl,
               "logo": `${baseUrl}/pdv-icon.png`,
               "sameAs": [
-                "https://instagram.com/usehooke"
+                "https://instagram.com/use.hooke",
+                "https://facebook.com/usehooke",
+                "https://twitter.com/usehooke"
               ],
               "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+55-11-97590-2528",
-                "contactType": "Customer Service"
+                "contactType": "Customer Service",
+                "availableLanguage": "Portuguese"
               }
             })
           }}

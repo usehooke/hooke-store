@@ -175,7 +175,7 @@ export async function POST(req: Request) {
                 }
                 
                 // Extração resiliente de endereço de entrega
-                const mpAddress = paymentData.additional_info?.shipments?.receiver_address;
+                const mpAddress = paymentData.additional_info?.shipments?.receiver_address as any;
                 if (mpAddress && !currentData?.customer?.address?.street_name) {
                     updateFields["customer.address"] = {
                         zip_code: mpAddress.zip_code || '',

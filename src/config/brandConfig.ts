@@ -60,7 +60,9 @@ export const brandConfig = {
   shop: {
     baseUrl: "https://www.usehooke.com.br",
     freeShippingThreshold: 299.00,
-    maxInstallments: 3,
+    maxInstallments: 12,
+    pixDiscount: 0.15,
+    pixInstallments: true,
     currency: "BRL",
     locale: "pt-BR",
   },

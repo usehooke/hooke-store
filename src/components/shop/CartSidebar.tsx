@@ -75,6 +75,11 @@ export default function CartSidebar() {
  <div className="flex items-center gap-3">
  <ShoppingBag className="w-5 h-5 text-hooke-900" strokeWidth={1.5} />
  <h2 className="text-sm font-black tracking-widest text-hooke-900">Sua Sacola ({items.length})</h2>
+ {subTotal >= 299 && (
+   <span className="text-[8px] font-black tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 uppercase">
+     Frete Grátis ✓
+   </span>
+ )}
  </div>
  <button onClick={closeCart} className="p-2 hover:bg-gray-50 transition-colors text-gray-500 hover:text-black">
  <X className="w-5 h-5" strokeWidth={1.5} />
@@ -84,7 +89,14 @@ export default function CartSidebar() {
  {/* Lista de Itens */}
  <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
  <FreeShippingBar subtotal={subTotal} />
- 
+
+ {items.length > 0 && (
+   <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 px-3 py-2 -mt-2 mb-4">
+     <span className="text-[9px] font-black tracking-[0.3em] text-emerald-800 uppercase">Desconto PIX 15%</span>
+     <span className="text-xs font-black text-emerald-800">-{formatter.format(subTotal * 0.15)}</span>
+   </div>
+ )}
+
  {items.length === 0 ? (
  <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 space-y-4">
  <ShoppingBag className="w-12 h-12 opacity-20" strokeWidth={1} />

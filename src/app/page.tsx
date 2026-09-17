@@ -4,6 +4,7 @@ import VIPGreeting from "@/components/home/VIPGreeting";
 import BentoHero from "@/components/home/BentoHero";
 import BrandBento from "@/components/home/BrandBento";
 import SocialFeed from "@/components/home/SocialFeed";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
 import React from "react";
 
 export const metadata = {
@@ -39,7 +40,7 @@ export default async function Home() {
       <VIPGreeting />
 
       <main className="bg-white min-h-screen pb-24 md:pb-0">
-        <h1 className="sr-only">Hooke Store - Roupas Masculinas Premium e Minimalistas</h1>
+
 
         {/* Subtítulo Discreto e Identidade Minimalista */}
         <section className="pt-3 pb-3 px-4 md:px-8 lg:px-12 border-b border-zinc-100 flex items-center justify-between">
@@ -55,15 +56,29 @@ export default async function Home() {
         {/* Bento Hero Editorial - Divisão Masculino/Feminino */}
         <BentoHero banners={heroBanners} />
 
+        {/* CTA Acima do Fold */}
+        <div className="flex items-center justify-center gap-4 py-4 px-4 bg-hooke-900 text-white">
+          <span className="text-[10px] font-bold tracking-[0.3em] uppercase">
+            Nova coleção disponível
+          </span>
+          <span className="w-1 h-1 rounded-full bg-white/40" />
+          <a
+            href="/colecao"
+            className="text-[10px] font-black tracking-[0.3em] uppercase underline underline-offset-4 hover:no-underline transition-all"
+          >
+            Ver Catálogo Completo →
+          </a>
+        </div>
+
         {/* Grade de Produtos Principal */}
         <section className="py-16 px-3 md:px-6 lg:px-10 w-full border-t border-zinc-100 bg-[#FAF9F7]">
           <div className="text-center mb-12">
             <span className="text-[10px] md:text-xs font-black tracking-[0.4em] uppercase text-zinc-400 block mb-3">
               Catálogo Curado
             </span>
-            <h2 className="text-3xl font-black text-hooke-900 tracking-tighter uppercase">
+            <h1 className="text-3xl font-black text-hooke-900 tracking-tighter uppercase">
               Equipamento em Destaque
-            </h2>
+            </h1>
           </div>
 
           {allProducts.length > 0 ? (
@@ -84,6 +99,9 @@ export default async function Home() {
             </div>
           )}
         </section>
+
+        {/* Seção de Depoimentos */}
+        <TestimonialsSection />
 
         {/* Diferenciais da Marca e Filosofia (BCI Cotton) imbutido perto do rodapé */}
         <BrandBento />

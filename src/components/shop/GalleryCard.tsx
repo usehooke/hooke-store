@@ -10,6 +10,7 @@ import { Product } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface GalleryCardProps {
   product: Product;
@@ -58,7 +59,9 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!selectedSize) {
-      alert("Por favor, selecione um tamanho antes de comprar.");
+      toast.error("Selecione um tamanho antes de comprar", {
+        style: { borderRadius: 0, background: '#111827', color: '#fff', border: 'none' }
+      });
       return;
     }
     setIsAdding(true);
@@ -78,6 +81,12 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
           {weightBadge}
         </span>
 
+        {/* Badge NOVO */}
+        {product.isNew && (
+          <span className="absolute top-2 right-2 text-[8px] font-black tracking-widest uppercase bg-white text-hooke-900 border border-hooke-900 px-2 py-0.5 z-10">
+            NOVO
+          </span>
+        )}
         {imageProps.src ? (
           <div className="w-full h-full relative">
             {/* Imagem Principal */}
@@ -165,19 +174,40 @@ export default function GalleryCard({ product, priority = false }: GalleryCardPr
       <div className="mt-auto">
         {/* Seleção de Tamanho */}
         <div className="grid grid-cols-4 gap-1 mt-1">
-          {sizes.map((s) => (
-            <Button
-              key={s}
-              variant={selectedSize === s ? "buy" : "outline"}
-              size="xs"
-              onClick={() => setSelectedSize(s)}
-              aria-pressed={selectedSize === s}
-              className={selectedSize === s ? "" : "border-zinc-200 hover:border-black"}
-            >
-              {s}
-            </Button>
-          ))}
+          {sizes.map((s) => {
+            const stockForSize = product.stock ? (product.stock as Record<string, number>)[s] ?? 1 : 1;
+            const isOutOfStock = stockForSize === 0;
+            return (
+              <Button
+                key={s}
+                variant={selectedSize === s ? "buy" : "outline"}
+                size="xs"
+                onClick={() => !isOutOfStock && setSelectedSize(s)}
+                aria-pressed={selectedSize === s}
+                disabled={isOutOfStock}
+                className={`${
+                  isOutOfStock
+                    ? 'opacity-30 cursor-not-allowed line-through'
+                    : selectedSize === s
+                    ? ''
+                    : 'border-zinc-200 hover:border-black'
+                }`}
+              >
+                {s}
+              </Button>
+            );
+          })}
         </div>
+
+        {/* Badge de estoque crítico */}
+        {product.totalStock !== undefined && product.totalStock > 0 && product.totalStock <= 5 && (
+          <div className="flex items-center gap-1.5 justify-center mt-2 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-[9px] font-black tracking-[0.2em] text-amber-700 uppercase">
+              Últimas {product.totalStock} unidades
+            </span>
+          </div>
+        )}
 
         {/* Botão de Compra Direta */}
         <Button

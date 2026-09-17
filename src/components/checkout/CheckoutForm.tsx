@@ -12,6 +12,7 @@ import {
 } from "@/store/cart-store";
 import { toast } from "sonner";
 import { Minus, Plus, Trash2, ChevronDown, Loader2, ArrowRight, Package, ShieldCheck } from "lucide-react";
+import FreeShippingBar from "@/components/shop/FreeShippingBar";
 
 const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -53,12 +54,22 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [hasInitializedExpress, setHasInitializedExpress] = useState(false);
   const [referrer, setReferrer] = useState("");
+  const [activeStep, setActiveStep] = useState(1);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setReferrer(localStorage.getItem("hooke_referrer") || "");
     }
   }, []);
+
+  // Atualiza o step ativo do stepper conforme preenchimento
+  useEffect(() => {
+    if (customer?.name && customer?.phone && customer?.email) {
+      setActiveStep(3);
+    } else if (items.length > 0) {
+      setActiveStep(1);
+    }
+  }, [customer, items]);
 
   // Estados locais para endereço (autocompletar via CEP)
   const [street, setStreet] = useState("");
@@ -117,7 +128,11 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
   // Redireciona se carrinho vazio (apenas após inicializar e hidratar)
   useEffect(() => {
     if (hasInitializedExpress && items.length === 0) {
-      router.push("/");
+      toast('Sua sacola está vazia. Redirecionando...', {
+        style: { borderRadius: 0, background: '#111827', color: '#fff', border: 'none' },
+        duration: 2000,
+      });
+      setTimeout(() => router.push("/"), 2000);
     }
   }, [items, hasInitializedExpress, router]);
 
@@ -299,11 +314,55 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
       <div className="max-w-[1100px] mx-auto">
 
         {/* HEADER */}
-        <div className="mb-10">
+        <div className="mb-6">
           <p className="text-[9px] font-black tracking-[0.4em] text-zinc-400 uppercase mb-2">HOOKE CHECKOUT</p>
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-black">
             Finalizar Pedido
           </h1>
+        </div>
+
+        {/* Stepper de Progresso */}
+        <div className="w-full bg-white border border-zinc-200 px-4 py-3 mb-4">
+          <div className="max-w-2xl flex items-center justify-between">
+            {[
+              { id: 1, label: 'Sacola' },
+              { id: 2, label: 'Seus Dados' },
+              { id: 3, label: 'Pagamento' },
+            ].map((step, index) => (
+              <React.Fragment key={step.id}>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-6 h-6 flex items-center justify-center text-[10px] font-black border-2 transition-all ${
+                      activeStep >= step.id
+                        ? 'border-black bg-black text-white'
+                        : 'border-zinc-200 bg-white text-zinc-400'
+                    }`}
+                  >
+                    {activeStep > step.id ? '✓' : step.id}
+                  </div>
+                  <span
+                    className={`text-[9px] font-black tracking-[0.2em] uppercase hidden sm:block ${
+                      activeStep >= step.id ? 'text-black' : 'text-zinc-400'
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                </div>
+                {index < 2 && (
+                  <div
+                    className={`flex-1 h-px mx-3 transition-all ${
+                      activeStep > step.id ? 'bg-black' : 'bg-zinc-200'
+                    }`}
+                  />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Barra de Frete Grátis */}
+        <div className="mb-6">
+          <FreeShippingBar subtotal={subtotal} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -613,12 +672,19 @@ export default function CheckoutForm({ expressProduct, expressSize }: { expressP
                     ou 3x de R$ {installment} sem juros
                   </p>
 
-                  <div className="flex justify-between items-center text-emerald-700 bg-emerald-50 border border-emerald-100 p-2.5 mt-2">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-wider">Total no PIX (15% OFF)</span>
-                      <span className="text-[9px] text-emerald-600 font-medium text-left">Desconto aplicado na tela de pagamento</span>
+                  {/* Banner PIX Premium */}
+                  <div className="bg-emerald-50 border border-emerald-200 p-4 mt-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] font-black tracking-[0.3em] text-emerald-800 uppercase">Pagando no PIX</p>
+                        <p className="text-[10px] text-emerald-700 mt-0.5">Aprovação imediata · Sem taxas</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] text-emerald-600 line-through">{formatter.format(grandTotal)}</p>
+                        <p className="text-xl font-black text-emerald-800">{formatter.format(grandTotal * 0.85)}</p>
+                        <p className="text-[9px] font-black text-emerald-600 bg-emerald-200 px-1.5 py-0.5 inline-block tracking-wider">ECONOMIA: {formatter.format(grandTotal * 0.15)}</p>
+                      </div>
                     </div>
-                    <span className="text-[15px] font-black">{formatter.format(grandTotal * 0.85)}</span>
                   </div>
                 </div>
               </section>
