@@ -21,7 +21,8 @@ import {
     Store,
     Star,
     Camera,
-    Activity
+    Activity,
+    Target
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -32,6 +33,7 @@ const menuItems = [
     { label: 'Voltar ao Site', href: '/', icon: Store },
     { label: 'PDV Elite', href: '/admin/pdv', icon: Zap },
     { label: 'Diagnóstico', href: '/admin/diagnostics', icon: Activity },
+    { label: 'Marketing', href: '/admin/marketing', icon: Target },
     { label: 'Catálogo', href: '/admin/produtos', icon: Package },
     { label: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
     { label: 'Etiquetas', href: '/admin/etiquetas', icon: Tag },
