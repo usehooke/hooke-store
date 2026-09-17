@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 import { addContactToBrevo } from "@/lib/brevo";
+import { buildAbandonedCartRecoveryMessage, sendWhatsAppMessage } from "@/lib/whatsapp/engine";
 
 export async function POST(req: Request) {
   try {
@@ -22,6 +23,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Serviço de Banco de Dados Admin indisponível" }, { status: 500 });
     }
 
+    // 1. Gera mensagem e link de recuperação direta via WhatsApp
+    const productNames = Array.isArray(items) ? items.map((i: any) => i.name || "Camiseta Hooke") : [];
+    const { message: recoveryMessage, waLink: recoveryWhatsappUrl } = buildAbandonedCartRecoveryMessage({
+      customerName: customer.name || "Cliente",
+      customerPhone: customer.phone,
+      productNames,
+      totalValue: Number(total || 0),
+      discountCoupon: "HOOKE-VIP",
+      checkoutUrl: `https://www.usehooke.com.br/checkout?phone=${phoneId}`,
+    });
+
     await adminDb.collection("pedidos").doc(`draft_${phoneId}`).set({
       customer,
       items,
@@ -29,8 +41,20 @@ export async function POST(req: Request) {
       status: "abandoned_cart",
       createdAt,
       expiresAt,
-      recovered: false
+      recovered: false,
+      recoveryWhatsappUrl,
+      recoveryMessage,
+      whatsappNotified: false,
     }, { merge: true });
+
+    // Dispara via WhatsApp Cloud API em background se credenciais ativas
+    sendWhatsAppMessage({
+      to: customer.phone,
+      bodyText: recoveryMessage,
+      category: "recuperacao_carrinho",
+    }).catch((err) => {
+      console.warn("[Abandoned Cart] Disparo automático WhatsApp:", err?.message);
+    });
 
     // Sincroniza o lead no Brevo se houver e-mail associado
     // Lista ID 3: Carrinho Abandonado

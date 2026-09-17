@@ -22,7 +22,8 @@ import {
     Star,
     Camera,
     Activity,
-    Target
+    Target,
+    MessageSquare
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut, User } from 'firebase/auth';
@@ -32,6 +33,7 @@ import { cn } from '@/lib/utils';
 const menuItems = [
     { label: 'Voltar ao Site', href: '/', icon: Store },
     { label: 'PDV Elite', href: '/admin/pdv', icon: Zap },
+    { label: 'WhatsApp', href: '/admin/whatsapp', icon: MessageSquare },
     { label: 'Diagnóstico', href: '/admin/diagnostics', icon: Activity },
     { label: 'Marketing', href: '/admin/marketing', icon: Target },
     { label: 'Catálogo', href: '/admin/produtos', icon: Package },
