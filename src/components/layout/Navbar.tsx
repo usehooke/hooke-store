@@ -59,7 +59,6 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Masculino', href: '/masculino' },
-    { name: 'Feminino', href: '/feminino' },
     { name: 'Lançamento', href: '/lancamento', highlight: true },
   ];
 

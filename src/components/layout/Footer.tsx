@@ -77,7 +77,6 @@ export default function Footer() {
       </summary>
       <ul className="space-y-3 text-xs text-gray-400 font-medium">
         <li><Link href="/masculino" className="hover:text-white transition-colors">Masculino</Link></li>
-        <li><Link href="/feminino" className="hover:text-white transition-colors">Feminino</Link></li>
         <li><Link href="/lancamento" className="hover:text-white transition-colors">Novidades</Link></li>
         <li><Link href="/bazar-vip-hooke" className="hover:text-white transition-colors">Bazar VIP</Link></li>
       </ul>
