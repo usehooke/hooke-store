@@ -14,8 +14,9 @@ export default function BentoHero({ banners = [] }: { banners?: Product[] }) {
     setMounted(true);
   }, []);
 
-  // Busca o banner ativo (preferência masculino/geral)
-  const mainBanner = banners.find(p => p.department === "masculino") || banners[0];
+  // Busca o banner ativo (garante que não seja feminino e esteja ativo)
+  const activeBanners = banners.filter(p => p.department !== "feminino" && p.isActive !== false);
+  const mainBanner = activeBanners.find(p => p.department === "masculino") || activeBanners[0];
 
   const mainImage = mainBanner?.heroImageUrl || mainBanner?.imageUrl || "/produtos/HK_ELITE_HEAVY_BLACK_V2.png";
   const mainDesc = mainBanner 
