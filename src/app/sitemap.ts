@@ -92,7 +92,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/lookbook`,
+      url: `${baseUrl}/lookbook/v1-7-1`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
@@ -102,12 +102,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/busca`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.5,
     },
     {
       url: `${baseUrl}/sobre`,

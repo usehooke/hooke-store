@@ -70,6 +70,17 @@ const nextConfig = {
     },
   },
 
+  // Redirecionamentos permanentes (301 SEO)
+  async redirects() {
+    return [
+      {
+        source: '/lookbook',
+        destination: '/lookbook/v1-7-1',
+        permanent: true,
+      },
+    ];
+  },
+
   // Turbopack (dev)
   turbopack: {},
 };
