@@ -51,11 +51,10 @@ export const metadata: Metadata = {
   },
   description: brandConfig.description,
   keywords: [
-    "moda masculina", "camisetas masculinas", "hooke", "minimalismo masculino",
-    "oversized premium", "camiseta básica premium", "algodão sustentável",
-    "algodão heavyweight 260g", "soft brutalism moda", "direto de fábrica",
-    "camiseta oversized heavyweight", "t-shirt vintage brasileira",
-    "conjunto viscose nobre", "camiseta algodão 30.1 penteado"
+    "hooke", "use hooke", "use huck", "hooke camisetas", "moda masculina",
+    "camisetas masculinas", "minimalismo masculino", "algodão heavyweight 260g",
+    "gola canelada 3cm", "t-shirt vintage", "camiseta oversized heavyweight",
+    "soft brutalism moda", "roupas masculinas de fábrica", "camiseta básica premium"
   ],
   verification: {
     google: "F1l-lLTgz0IA50BtjKavSlVt3WTmh3DANMB5gr2bmnk",
@@ -68,13 +67,12 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Hooke PDV",
-    // startUpImage: "/pdv-icon.png",
   },
   openGraph: {
-    title: `${brandConfig.name} | Moda Masculina Premium`,
+    title: `Hooke® | Loja Oficial de Moda Masculina & Camisetas Heavyweight`,
     description: brandConfig.description,
     url: baseUrl,
-    siteName: brandConfig.name,
+    siteName: "Hooke®",
     locale: brandConfig.shop.locale,
     type: "website",
     images: [
@@ -82,7 +80,7 @@ export const metadata: Metadata = {
         url: "/banner-home.jpg",
         width: 1200,
         height: 630,
-        alt: `${brandConfig.name} - Moda Masculina Premium`,
+        alt: `Hooke® - Camisetas Masculinas Heavyweight 260g`,
       },
     ],
   },

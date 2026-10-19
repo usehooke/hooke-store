@@ -5,9 +5,9 @@
  */
 
 export const brandConfig = {
-  name: "Hooke",
-  tagline: "Essencialismo Brasileiro | Design para a Permanência",
-  description: "Matéria-prima nacional moldada para o cotidiano tropical. A união entre a densidade têxtil e o frescor necessário para a estrutura masculina.",
+  name: "Hooke®",
+  tagline: "Loja Oficial | Camisetas Masculinas Heavyweight 260g (Use Hooke)",
+  description: "Loja Oficial Hooke®. Camisetas masculinas de alta costura em algodão puro Heavyweight 260g, gola canelada de 3cm e modelagem boxy fit estruturada. Envio rápido para todo o Brasil.",
   
   // Contatos
   contact: {
